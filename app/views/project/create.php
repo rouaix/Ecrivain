@@ -12,6 +12,7 @@
     </div>
 <?php endif; ?>
 <form method="post" action="<?php echo $base; ?>/project/create">
+    <input type="hidden" name="csrf_token" value="<?php echo htmlspecialchars($csrfToken ?? ''); ?>">
     <div class="form-group">
         <label for="title">Titre du projet *</label>
         <input type="text" id="title" name="title" value="<?php echo $old['title'] ?? ''; ?>" required>

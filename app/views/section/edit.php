@@ -24,6 +24,7 @@
 <form method="post"
     action="<?php echo $base; ?>/project/<?php echo $project['id']; ?>/section/<?php echo $sectionType; ?><?php echo $section ? '?id=' . $section['id'] : ''; ?>"
     enctype="multipart/form-data">
+    <input type="hidden" name="csrf_token" value="<?php echo htmlspecialchars($csrfToken ?? ''); ?>">
     <div class="form-group">
         <label for="title">Titre (optionnel)</label>
         <input type="text" id="title" name="title" value="<?php echo htmlspecialchars($section['title'] ?? ''); ?>">
@@ -43,7 +44,7 @@
                 </div>
             <?php endif; ?>
             <input type="file" id="image" name="image" accept="image/*">
-            <small>Formats acceptés : JPG, PNG, GIF. Taille recommandée : 600x800 pixels</small>
+            <small>Formats acceptés : JPG, PNG, WEBP. Taille recommandée : 600x800 pixels</small>
         </div>
     <?php endif; ?>
 
