@@ -916,7 +916,8 @@ $characterCount = count($characters);
                     fetch('<?php echo $base; ?>/project/' + projectId + '/chapters/reorder', {
                         method: 'POST',
                         headers: {
-                            'Content-Type': 'application/json'
+                            'Content-Type': 'application/json',
+                            'X-CSRF-Token': window.CSRF_TOKEN
                         },
                         body: JSON.stringify({ order: order })
                     })
@@ -993,7 +994,10 @@ $characterCount = count($characters);
     function saveSectionsOrder(order) {
         fetch('<?php echo $base; ?>/project/<?php echo $project['id']; ?>/sections/reorder', {
             method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRF-Token': window.CSRF_TOKEN
+            },
             body: JSON.stringify({ order: order })
         }).then(function (resp) {
             if (resp.ok) {
@@ -1012,7 +1016,10 @@ $characterCount = count($characters);
 
             fetch('<?php echo $base; ?>/project/' + projectId + '/export-toggle', {
                 method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRF-Token': window.CSRF_TOKEN
+                },
                 body: JSON.stringify({
                     type: type,
                     id: id,

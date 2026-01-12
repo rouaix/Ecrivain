@@ -10,6 +10,7 @@
     <title><?php echo htmlspecialchars($title ?? 'Assistant'); ?></title>
     <link rel="manifest" href="<?php echo $base; ?>/public/manifest.json">
     <meta name="theme-color" content="#3f51b5">
+    <meta name="csrf-token" content="<?php echo htmlspecialchars($csrfToken ?? ''); ?>">
     <script src="https://cdn.tiny.cloud/1/4c2e77otz0bu6nml5zzxiszsp8ax7m4nx2u4egj2zaus9anz/tinymce/7/tinymce.min.js" referrerpolicy="origin"></script>
     <?php
     // Determine user‑selected theme stored in a cookie. Default is "default".
@@ -159,6 +160,7 @@
             <?php endif; ?>
             <!-- Theme selector -->
             <form id="themeForm" method="post" action="<?php echo $base; ?>/theme" style="margin-left:20px;">
+                <input type="hidden" name="csrf_token" value="<?php echo htmlspecialchars($csrfToken ?? ''); ?>">
                 <label for="themeSelect" style="color: var(--header-text); margin-right:5px;">Thème:</label>
                 <select name="theme" id="themeSelect" onchange="document.getElementById('themeForm').submit();">
                     <?php $themes = ['default' => 'Classique', 'dark' => 'Sombre', 'modern' => 'Moderne'];
@@ -182,6 +184,18 @@
 
     <!-- Register service worker for PWA support -->
     <script>
+        window.CSRF_TOKEN = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') || '';
+        document.querySelectorAll('form[method="post"]').forEach(function (form) {
+            if (form.querySelector('input[name="csrf_token"]')) {
+                return;
+            }
+            var hidden = document.createElement('input');
+            hidden.type = 'hidden';
+            hidden.name = 'csrf_token';
+            hidden.value = window.CSRF_TOKEN;
+            form.appendChild(hidden);
+        });
+
         if ('serviceWorker' in navigator) {
             window.addEventListener('load', function () {
                 navigator.serviceWorker.register('<?php echo $base; ?>/public/service-worker.js').catch(function (err) {

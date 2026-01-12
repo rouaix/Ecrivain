@@ -24,7 +24,7 @@ Cette version s’efforce de reproduire l’esprit de ces fonctionnalités tout 
 
 ## Installation et exécution
 
-1. **Pré‑requis** : installez PHP 7.4 ou supérieur avec l’extension SQLite. Aucune base de données externe n’est requise ; les données sont stockées dans un fichier `data/database.db`.
+1. **Pré‑requis** : installez PHP 7.4 ou supérieur avec l’extension MySQLi et une base MySQL disponible.
 2. **Déploiement** : placez l’ensemble du dossier `Assistant` dans un serveur web supportant PHP.
 3. **Lancement avec le serveur interne** :
 
@@ -34,13 +34,23 @@ Cette version s’efforce de reproduire l’esprit de ces fonctionnalités tout 
 
    Rendez‑vous ensuite sur <http://localhost:8080/index.php> dans votre navigateur.
 
-4. **Structure du projet** :
+4. **Déploiement en production (recommandé)** :
+
+   * **Configurer vos variables d’environnement** (ou un fichier `.env` hors web‑root) :
+     * `DB_HOST`, `DB_NAME`, `DB_USER`, `DB_PASS`
+     * `DB_AUTO_CREATE=false` pour désactiver la création automatique de la base
+     * `SESSION_DOMAIN` si vous souhaitez limiter la portée du cookie de session
+   * **Forcer HTTPS** et activer HSTS côté serveur web.
+   * **Désactiver l’affichage des erreurs** en production (`display_errors=Off`) et activer le logging.
+   * **Supprimer les fichiers de debug** (phpinfo, scripts utilitaires).
+
+5. **Structure du projet** :
 
    * `index.php` : point d’entrée de l’application et définition des routes.
    * `lib/Base.php` : micro‑framework léger inspiré de Fat‑Free Framework pour la gestion des routes et du rendu.
    * `app/models/` : classes modèles pour les utilisateurs, projets, chapitres et personnages.
    * `app/views/` : templates HTML organisés par section (authentification, projets, éditeur, personnages).
-   * `data/` : emplacement du fichier SQLite.
+   * `public/uploads/` : stockage des images de couverture uploadées.
    * `public/style.css` : feuille de styles minimale.
 
 ## Remarque

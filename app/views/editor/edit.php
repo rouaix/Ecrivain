@@ -30,7 +30,8 @@
         <?php echo htmlspecialchars($success); ?>
     </div>
 <?php endif; ?>
-<form method="post" action="<?php echo $base; ?>/chapter/<?php echo $chapter['id']; ?>/save" id="editorForm">
+        <form method="post" action="<?php echo $base; ?>/chapter/<?php echo $chapter['id']; ?>/save" id="editorForm">
+            <input type="hidden" name="csrf_token" value="<?php echo htmlspecialchars($csrfToken ?? ''); ?>">
     <div class="form-group">
         <label for="title">Titre</label>
         <input type="text" id="title" name="title" value="<?php echo htmlspecialchars($chapter['title'] ?? ''); ?>"
@@ -296,6 +297,9 @@
 
         fetch('<?php echo $base; ?>/chapter/' + chapterId + '/save', {
             method: 'POST',
+            headers: {
+                'X-CSRF-Token': window.CSRF_TOKEN
+            },
             body: formData
         }).then(function (resp) {
             if (resp.ok) {
@@ -382,7 +386,10 @@
 
         fetch('<?php echo $base; ?>/chapter/' + chapterId + '/comment', {
             method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRF-Token': window.CSRF_TOKEN
+            },
             body: JSON.stringify({ start: start, end: end, content: userContent })
         }).then(function (resp) { return resp.json().catch(function () { return null; }); }).then(function (data) {
             // Reload comments list

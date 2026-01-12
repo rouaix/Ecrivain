@@ -12,6 +12,7 @@
     </div>
 <?php endif; ?>
 <form method="post" action="<?php echo $base; ?>/register">
+    <input type="hidden" name="csrf_token" value="<?php echo htmlspecialchars($csrfToken ?? ''); ?>">
     <div class="form-group">
         <label for="username">Nom d’utilisateur *</label>
         <input type="text" id="username" name="username" value="<?php echo $old['username'] ?? ''; ?>" required>

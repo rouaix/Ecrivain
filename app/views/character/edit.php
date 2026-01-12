@@ -14,6 +14,7 @@
     </div>
 <?php endif; ?>
 <form method="post" action="<?php echo $base; ?>/character/<?php echo $character['id']; ?>/edit">
+    <input type="hidden" name="csrf_token" value="<?php echo htmlspecialchars($csrfToken ?? ''); ?>">
     <div class="form-group">
         <label for="name">Nom *</label>
         <input type="text" id="name" name="name" value="<?php echo htmlspecialchars($character['name'] ?? ''); ?>"

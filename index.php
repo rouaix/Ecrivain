@@ -1,7 +1,50 @@
 <?php
 // Entry point for the Assistant application.
 
+$isHttps = (!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off')
+    || (!empty($_SERVER['HTTP_X_FORWARDED_PROTO']) && $_SERVER['HTTP_X_FORWARDED_PROTO'] === 'https');
+
+session_set_cookie_params([
+    'lifetime' => 0,
+    'path' => '/',
+    'domain' => getenv('SESSION_DOMAIN') ?: '',
+    'secure' => $isHttps,
+    'httponly' => true,
+    'samesite' => 'Lax',
+]);
+
 session_start();
+
+/**
+ * Get or create a CSRF token for the current session.
+ *
+ * @return string
+ */
+function csrfToken(): string
+{
+    if (empty($_SESSION['csrf_token'])) {
+        $_SESSION['csrf_token'] = bin2hex(random_bytes(32));
+    }
+
+    return $_SESSION['csrf_token'];
+}
+
+/**
+ * Require a valid CSRF token for state-changing requests.
+ *
+ * @return void
+ */
+function requireCsrf(): void
+{
+    $token = $_POST['csrf_token'] ?? ($_SERVER['HTTP_X_CSRF_TOKEN'] ?? '');
+    $sessionToken = $_SESSION['csrf_token'] ?? '';
+
+    if ($token === '' || $sessionToken === '' || !hash_equals($sessionToken, $token)) {
+        http_response_code(403);
+        echo 'Token CSRF invalide.';
+        exit;
+    }
+}
 
 // Autoload or require our minimal framework and models
 // Load the Fat‑Free base (compatibility wrapper). This will include our minimal
@@ -21,10 +64,11 @@ require_once __DIR__ . '/app/models/Section.php';
 $f3 = Base::instance();
 
 // Initialize the database connection (MySQLi)
-$dbHost = 'localhost';
-$dbName = 'ecrivain';
-$dbUser = 'root';
-$dbPass = '';
+$dbHost = getenv('DB_HOST') ?: 'localhost';
+$dbName = getenv('DB_NAME') ?: 'ecrivain';
+$dbUser = getenv('DB_USER') ?: 'root';
+$dbPass = getenv('DB_PASS') ?: '';
+$dbAutoCreate = filter_var(getenv('DB_AUTO_CREATE') ?: 'true', FILTER_VALIDATE_BOOLEAN);
 
 // Connect to MySQL server (no database selected yet)
 $mysqli = new mysqli($dbHost, $dbUser, $dbPass);
@@ -33,7 +77,9 @@ if ($mysqli->connect_error) {
 }
 
 // Create database if it doesn't exist
-$mysqli->query("CREATE DATABASE IF NOT EXISTS `$dbName` CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci");
+if ($dbAutoCreate) {
+    $mysqli->query("CREATE DATABASE IF NOT EXISTS `$dbName` CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci");
+}
 
 // Select the database
 if (!$mysqli->select_db($dbName)) {
@@ -208,6 +254,7 @@ function renderView(Base $f3, string $view, array $data = []): void
 {
     // Make base path available to views
     $data['base'] = $f3->get('BASE');
+    $data['csrfToken'] = csrfToken();
 
     // Extract data variables so they are accessible in the view
     extract($data);
@@ -251,6 +298,7 @@ $f3->route('GET /register', function (Base $f3) {
 
 // Handle registration
 $f3->route('POST /register', function (Base $f3) {
+    requireCsrf();
     $userModel = new User($f3->get('DB'));
     $username = trim($_POST['username'] ?? '');
     $password = $_POST['password'] ?? '';
@@ -265,6 +313,7 @@ $f3->route('POST /register', function (Base $f3) {
     if (empty($errors)) {
         $userId = $userModel->create($username, $password, $email);
         if ($userId) {
+            session_regenerate_id(true);
             $_SESSION['user_id'] = $userId;
             $f3->reroute('/dashboard');
         } else {
@@ -288,12 +337,14 @@ $f3->route('GET /login', function (Base $f3) {
 
 // Handle login
 $f3->route('POST /login', function (Base $f3) {
+    requireCsrf();
     $userModel = new User($f3->get('DB'));
     $username = trim($_POST['username'] ?? '');
     $password = $_POST['password'] ?? '';
     $errors = [];
     $user = $userModel->authenticate($username, $password);
     if ($user) {
+        session_regenerate_id(true);
         $_SESSION['user_id'] = $user['id'];
         $f3->reroute('/dashboard');
     } else {
@@ -340,6 +391,7 @@ $f3->route('GET /project/create', function (Base $f3) {
 
 // Handle project creation
 $f3->route('POST /project/create', function (Base $f3) {
+    requireCsrf();
     $user = currentUser($f3);
     if (!$user || !isset($user['id'])) {
         $f3->reroute('/login');
@@ -452,6 +504,7 @@ $f3->route('GET /project/@id/edit', function (Base $f3) {
 
 // Handle project update
 $f3->route('POST /project/@id/edit', function (Base $f3) {
+    requireCsrf();
     $user = currentUser($f3);
     if (!$user) {
         $f3->reroute('/login');
@@ -528,6 +581,7 @@ $f3->route('GET /project/@pid/act/create', function (Base $f3) {
 
 // Handle new act creation
 $f3->route('POST /project/@pid/act/create', function (Base $f3) {
+    requireCsrf();
     $user = currentUser($f3);
     if (!$user) {
         $f3->reroute('/login');
@@ -593,6 +647,7 @@ $f3->route('GET /act/@id/edit', function (Base $f3) {
 
 // Handle act update
 $f3->route('POST /act/@id/edit', function (Base $f3) {
+    requireCsrf();
     $user = currentUser($f3);
     if (!$user) {
         $f3->reroute('/login');
@@ -652,6 +707,7 @@ $f3->route('GET /act/@id/delete', function (Base $f3) {
 
 // Reorder acts
 $f3->route('POST /project/@id/acts/reorder', function (Base $f3) {
+    requireCsrf();
     $user = currentUser($f3);
     if (!$user) {
         http_response_code(403);
@@ -702,6 +758,7 @@ $f3->route('GET /project/@pid/chapter/create', function (Base $f3) {
 
 // Handle new chapter creation
 $f3->route('POST /project/@pid/chapter/create', function (Base $f3) {
+    requireCsrf();
     $user = currentUser($f3);
     if (!$user) {
         $f3->reroute('/login');
@@ -811,6 +868,7 @@ $f3->route('GET /chapter/@id', function (Base $f3) {
 
 // Save chapter changes
 $f3->route('POST /chapter/@id/save', function (Base $f3) {
+    requireCsrf();
     $user = currentUser($f3);
     if (!$user) {
         $f3->reroute('/login');
@@ -938,6 +996,7 @@ $f3->route('GET /project/@pid/section/@type', function (Base $f3) {
 
 // Handle section creation/update
 $f3->route('POST /project/@pid/section/@type', function (Base $f3) {
+    requireCsrf();
     $user = currentUser($f3);
     if (!$user) {
         $f3->reroute('/login');
@@ -965,6 +1024,7 @@ $f3->route('POST /project/@pid/section/@type', function (Base $f3) {
     $sectionModel = new Section($f3->get('DB'));
     $id = $f3->get('GET.id') ?: ($f3->get('POST.id') ?: null);
     $imagePath = null;
+    $errors = [];
 
     if ($id) {
         $existing = $sectionModel->find($id, $pid);
@@ -975,12 +1035,42 @@ $f3->route('POST /project/@pid/section/@type', function (Base $f3) {
 
     // Handle image upload for cover and back_cover
     if (($type === 'cover' || $type === 'back_cover') && isset($_FILES['image']) && $_FILES['image']['error'] === UPLOAD_ERR_OK) {
+        $maxSize = 5 * 1024 * 1024;
+        $allowedExtensions = ['jpg', 'jpeg', 'png', 'webp'];
+        $allowedMimeTypes = ['image/jpeg', 'image/png', 'image/webp'];
+
+        if ($_FILES['image']['size'] > $maxSize) {
+            $errors[] = 'L’image dépasse la taille maximale autorisée (5 Mo).';
+        } else {
+            $ext = strtolower(pathinfo($_FILES['image']['name'], PATHINFO_EXTENSION));
+            if (!in_array($ext, $allowedExtensions, true)) {
+                $errors[] = 'Format de fichier non autorisé.';
+            } else {
+                $finfo = new finfo(FILEINFO_MIME_TYPE);
+                $mime = $finfo->file($_FILES['image']['tmp_name']);
+                if ($mime === false || !in_array($mime, $allowedMimeTypes, true)) {
+                    $errors[] = 'Type de fichier invalide.';
+                }
+            }
+        }
+
+        if (!empty($errors)) {
+            renderView($f3, 'section/edit', [
+                'title' => 'Modifier - ' . Section::getTypeName($type),
+                'project' => $project,
+                'section' => ['title' => $title, 'content' => $content, 'type' => $type],
+                'sectionType' => $type,
+                'sectionTypeName' => Section::getTypeName($type),
+                'errors' => $errors,
+            ]);
+            return;
+        }
+
         $uploadDir = __DIR__ . '/public/uploads/';
         if (!is_dir($uploadDir)) {
             mkdir($uploadDir, 0755, true);
         }
-        $ext = pathinfo($_FILES['image']['name'], PATHINFO_EXTENSION);
-        $filename = uniqid('section_') . '.' . $ext;
+        $filename = 'section_' . bin2hex(random_bytes(16)) . '.' . $ext;
         $uploadPath = $uploadDir . $filename;
         if (move_uploaded_file($_FILES['image']['tmp_name'], $uploadPath)) {
             $imagePath = '/public/uploads/' . $filename;
@@ -1026,6 +1116,7 @@ $f3->route('GET /section/@id/delete', function (Base $f3) {
 
 // Reorder sections
 $f3->route('POST /project/@id/sections/reorder', function (Base $f3) {
+    requireCsrf();
     $user = currentUser($f3);
     if (!$user) {
         http_response_code(403);
@@ -1090,6 +1181,7 @@ $f3->route('GET /project/@pid/character/create', function (Base $f3) {
 
 // Handle new character creation
 $f3->route('POST /project/@pid/character/create', function (Base $f3) {
+    requireCsrf();
     $user = currentUser($f3);
     if (!$user) {
         $f3->reroute('/login');
@@ -1155,6 +1247,7 @@ $f3->route('GET /character/@id/edit', function (Base $f3) {
 
 // Handle character update
 $f3->route('POST /character/@id/edit', function (Base $f3) {
+    requireCsrf();
     $user = currentUser($f3);
     if (!$user) {
         $f3->reroute('/login');
@@ -1215,6 +1308,7 @@ $f3->route('GET /character/@id/delete', function (Base $f3) {
 // Add a comment (annotation) to a chapter. Expects JSON payload with
 // start_pos, end_pos and content.
 $f3->route('POST /chapter/@id/comment', function (Base $f3) {
+    requireCsrf();
     $user = currentUser($f3);
     if (!$user) {
         http_response_code(403);
@@ -1734,6 +1828,7 @@ $f3->route('GET /project/@id/export', function (Base $f3) {
 
 // Reorder chapters via drag‑and‑drop. Accepts JSON payload {order: [id1,id2,...]}
 $f3->route('POST /project/@pid/chapters/reorder', function (Base $f3) {
+    requireCsrf();
     $user = currentUser($f3);
     if (!$user) {
         http_response_code(403);
@@ -1768,6 +1863,7 @@ $f3->route('POST /project/@pid/chapters/reorder', function (Base $f3) {
 // correspond to CSS variable overrides defined in public/theme-*.css. A cookie
 // persists the selection for a month.
 $f3->route('POST /theme', function (Base $f3) {
+    requireCsrf();
     $theme = $_POST['theme'] ?? 'default';
     $allowed = ['default', 'dark', 'modern'];
     if (!in_array($theme, $allowed)) {
@@ -1790,6 +1886,7 @@ $f3->route('GET /synonyms/@word', function (Base $f3) {
 
 // Toggle element export status
 $f3->route('POST /project/@pid/export-toggle', function (Base $f3) {
+    requireCsrf();
     $user = currentUser($f3);
     if (!$user) {
         http_response_code(403);
