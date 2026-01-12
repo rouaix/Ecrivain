@@ -1492,10 +1492,10 @@ $f3->route('GET /project/@id/export/html', function (Base $f3) {
         return;
     }
     $chapterModel = new Chapter($f3->get('DB'));
-    $chapters = $chapterModel->getAllByProject($pid);
+    $chapters = array_filter($chapterModel->getAllByProject($pid), fn($c) => ($c['is_exported'] ?? 1));
     $sectionModel = new Section($f3->get('DB'));
-    $sectionsBeforeChapters = $sectionModel->getBeforeChapters($pid);
-    $sectionsAfterChapters = $sectionModel->getAfterChapters($pid);
+    $sectionsBeforeChapters = array_filter($sectionModel->getBeforeChapters($pid), fn($s) => ($s['is_exported'] ?? 1));
+    $sectionsAfterChapters = array_filter($sectionModel->getAfterChapters($pid), fn($s) => ($s['is_exported'] ?? 1));
 
     $title = htmlspecialchars($project['title']);
 
