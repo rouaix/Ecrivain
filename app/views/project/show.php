@@ -81,199 +81,6 @@ $characterCount = count($characters);
 
 <div class="project-grid">
     <main class="project-main">
-        <section class="panel panel-open">
-            <div class="panel-heading">
-                <div>
-                    <h3>Actes et Chapitres</h3>
-                    <p class="panel-subtitle">Structure principale du récit.</p>
-                </div>
-                <div class="panel-actions">
-                    <a class="button" href="<?php echo $base; ?>/project/<?php echo $project['id']; ?>/act/create">Ajouter un acte</a>
-                    <a class="button" href="<?php echo $base; ?>/project/<?php echo $project['id']; ?>/chapter/create">Ajouter un chapitre</a>
-                </div>
-            </div>
-<?php if (empty($acts) && empty($chaptersWithoutAct)): ?>
-    <p>Aucun chapitre ou acte pour ce projet.</p>
-<?php else: ?>
-    <?php foreach ($acts as $act): ?>
-        <div class="act-container" style="margin-bottom: 20px; border: 1px solid #ddd; padding: 10px; border-radius: 4px;">
-            <div
-                style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #eee; padding-bottom: 5px; margin-bottom: 10px;">
-                <h4 style="margin: 0;"><?php echo htmlspecialchars($act['title']); ?></h4>
-                <div>
-                    <a class="button small" href="<?php echo $base; ?>/act/<?php echo $act['id']; ?>/edit">Modifier l'acte</a>
-                    <a class="button small delete" href="<?php echo $base; ?>/act/<?php echo $act['id']; ?>/delete"
-                        onclick="return confirm('Supprimer cet acte et tous ses chapitres ?');">Supprimer</a>
-                </div>
-            </div>
-            <?php if (!empty($act['description'])): ?>
-                <p style="font-size: 0.9em; color: #666; font-style: italic;">
-                    <?php echo nl2br(htmlspecialchars($act['description'])); ?>
-                </p>
-            <?php endif; ?>
-
-            <?php $actChapters = $chaptersByAct[$act['id']] ?? []; ?>
-            <?php if (empty($actChapters)): ?>
-                <p>Aucun chapitre dans cet acte.</p>
-            <?php else: ?>
-                <table>
-                    <thead>
-                        <tr>
-                            <th>Titre</th>
-                            <th>Mots / Pages</th>
-                            <th>Actions</th>
-                        </tr>
-                    </thead>
-                    <tbody class="sortable-chapters">
-                        <?php foreach ($actChapters as $ch): ?>
-                            <?php
-                            $subs = $subChaptersByParent[$ch['id']] ?? [];
-                            $wcParent = str_word_count($ch['content'] ?? '');
-                            $wcSubs = 0;
-                            foreach ($subs as $sub) {
-                                $wcSubs += str_word_count($sub['content'] ?? '');
-                            }
-                            $totalWcChapter = $wcParent + $wcSubs;
-                            ?>
-                            <tr data-id="<?php echo $ch['id']; ?>">
-                                <td>
-                                    <span class="sortable-handle">☰</span>
-                                    <input type="checkbox" class="export-toggle" data-type="chapter" data-id="<?php echo $ch['id']; ?>"
-                                        <?php echo ($ch['is_exported'] ?? 1) ? 'checked' : ''; ?> title="Inclure dans l'export">
-                                    <strong class="preview-trigger"
-                                        data-preview-content="<?php echo htmlspecialchars($ch['content'] ?? ''); ?>">
-                                        <?php echo htmlspecialchars($ch['title']); ?>
-                                    </strong>
-                                </td>
-                                <td>
-                                    <?php echo $totalWcChapter; ?> mots
-                                    <br><small style="color: #666; font-weight: bold;"><?php echo ceil($totalWcChapter / $wpp); ?>
-                                        pages</small>
-                                    <?php if ($wcSubs > 0): ?>
-                                        <br><small style="color: #999;">(<?php echo $wcParent; ?> + <?php echo $wcSubs; ?>)</small>
-                                    <?php endif; ?>
-                                </td>
-                                <td>
-                                    <a class="button small" href="<?php echo $base; ?>/chapter/<?php echo $ch['id']; ?>">Éditer</a>
-                                    <a class="button small"
-                                        href="<?php echo $base; ?>/project/<?php echo $project['id']; ?>/chapter/create?parent_id=<?php echo $ch['id']; ?>&act_id=<?php echo $ch['act_id'] ?? ''; ?>">+
-                                        Sous-chapitre</a>
-                                    <a class="button small delete" href="<?php echo $base; ?>/chapter/<?php echo $ch['id']; ?>/delete"
-                                        onclick="return confirm('Supprimer ce chapitre ?');">Supprimer</a>
-                                </td>
-                            </tr>
-                            <?php $subs = $subChaptersByParent[$ch['id']] ?? []; ?>
-                            <?php foreach ($subs as $sub): ?>
-                                <?php $swc = str_word_count($sub['content'] ?? ''); ?>
-                                <tr data-id="<?php echo $sub['id']; ?>">
-                                    <td style="padding-left: 30px;">
-                                        <span class="sortable-handle">☰</span>
-                                        <input type="checkbox" class="export-toggle" data-type="chapter" data-id="<?php echo $sub['id']; ?>"
-                                            <?php echo ($sub['is_exported'] ?? 1) ? 'checked' : ''; ?> title="Inclure dans l'export">
-                                        <span class="preview-trigger"
-                                            data-preview-content="<?php echo htmlspecialchars($sub['content'] ?? ''); ?>">
-                                            └─ <?php echo htmlspecialchars($sub['title']); ?>
-                                        </span>
-                                    </td>
-                                    <td>
-                                        <?php echo $swc; ?> mots
-                                        <br><small style="color: #999;"><?php echo ceil($swc / $wpp); ?> pages</small>
-                                    </td>
-                                    <td>
-                                        <a class="button small" href="<?php echo $base; ?>/chapter/<?php echo $sub['id']; ?>">Éditer</a>
-                                        <a class="button small delete" href="<?php echo $base; ?>/chapter/<?php echo $sub['id']; ?>/delete"
-                                            onclick="return confirm('Supprimer ce sous-chapitre ?');">Supprimer</a>
-                                    </td>
-                                </tr>
-                            <?php endforeach; ?>
-                        <?php endforeach; ?>
-                    </tbody>
-                </table>
-            <?php endif; ?>
-        </div>
-    <?php endforeach; ?>
-
-    <?php if (!empty($chaptersWithoutAct)): ?>
-        <h4>Chapitres hors actes</h4>
-        <table>
-            <thead>
-                <tr>
-                    <th>Titre</th>
-                    <th>Mots / Pages</th>
-                    <th>Actions</th>
-                </tr>
-            </thead>
-            <tbody class="sortable-chapters">
-                <?php foreach ($chaptersWithoutAct as $ch): ?>
-                    <?php
-                    $subs = $subChaptersByParent[$ch['id']] ?? [];
-                    $wcParent = str_word_count($ch['content'] ?? '');
-                    $wcSubs = 0;
-                    foreach ($subs as $sub) {
-                        $wcSubs += str_word_count($sub['content'] ?? '');
-                    }
-                    $totalWcChapter = $wcParent + $wcSubs;
-                    ?>
-                    <tr data-id="<?php echo $ch['id']; ?>">
-                        <td>
-                            <span class="sortable-handle">☰</span>
-                            <input type="checkbox" class="export-toggle" data-type="chapter" data-id="<?php echo $ch['id']; ?>"
-                                <?php echo ($ch['is_exported'] ?? 1) ? 'checked' : ''; ?> title="Inclure dans l'export">
-                            <strong class="preview-trigger"
-                                data-preview-content="<?php echo htmlspecialchars($ch['content'] ?? ''); ?>">
-                                <?php echo htmlspecialchars($ch['title']); ?>
-                            </strong>
-                        </td>
-                        <td>
-                            <?php echo $totalWcChapter; ?> mots
-                            <br><small style="color: #666; font-weight: bold;"><?php echo ceil($totalWcChapter / $wpp); ?>
-                                pages</small>
-                            <?php if ($wcSubs > 0): ?>
-                                <br><small style="color: #999;">(<?php echo $wcParent; ?> + <?php echo $wcSubs; ?>)</small>
-                            <?php endif; ?>
-                        </td>
-                        <td>
-                            <a class="button small" href="<?php echo $base; ?>/chapter/<?php echo $ch['id']; ?>">Éditer</a>
-                            <a class="button small"
-                                href="<?php echo $base; ?>/project/<?php echo $project['id']; ?>/chapter/create?parent_id=<?php echo $ch['id']; ?>&act_id=<?php echo $ch['act_id'] ?? ''; ?>">+
-                                Sous-chapitre</a>
-                            <a class="button small delete" href="<?php echo $base; ?>/chapter/<?php echo $ch['id']; ?>/delete"
-                                onclick="return confirm('Supprimer ce chapitre ?');">Supprimer</a>
-                        </td>
-                    </tr>
-                    <?php $subs = $subChaptersByParent[$ch['id']] ?? []; ?>
-                    <?php foreach ($subs as $sub): ?>
-                        <?php $swc = str_word_count($sub['content'] ?? ''); ?>
-                        <tr data-id="<?php echo $sub['id']; ?>">
-                            <td style="padding-left: 30px;">
-                                <span class="sortable-handle">☰</span>
-                                <input type="checkbox" class="export-toggle" data-type="chapter" data-id="<?php echo $sub['id']; ?>"
-                                    <?php echo ($sub['is_exported'] ?? 1) ? 'checked' : ''; ?> title="Inclure dans l'export">
-                                <span class="preview-trigger"
-                                    data-preview-content="<?php echo htmlspecialchars($sub['content'] ?? ''); ?>">
-                                    └─ <?php echo htmlspecialchars($sub['title']); ?>
-                                </span>
-                            </td>
-                            <td>
-                                <?php echo $swc; ?> mots
-                                <br><small style="color: #999;"><?php echo ceil($swc / $wpp); ?> pages</small>
-                            </td>
-                            <td>
-                                <a class="button small" href="<?php echo $base; ?>/chapter/<?php echo $sub['id']; ?>">Éditer</a>
-                                <a class="button small delete" href="<?php echo $base; ?>/chapter/<?php echo $sub['id']; ?>/delete"
-                                    onclick="return confirm('Supprimer ce sous-chapitre ?');">Supprimer</a>
-                            </td>
-                        </tr>
-                    <?php endforeach; ?>
-                <?php endforeach; ?>
-            </tbody>
-        </table>
-    <?php endif; ?>
-<?php endif; ?>
-        </section>
-    </main>
-
-    <aside class="project-sidebar">
         <details class="panel" <?php echo $beforeCount > 0 ? 'open' : ''; ?>>
             <summary>Sections avant les chapitres <span class="panel-count"><?php echo $beforeCount; ?></span></summary>
             <p class="panel-subtitle">Couverture, Préface, Introduction, Prologue.</p>
@@ -356,6 +163,200 @@ $characterCount = count($characters);
                 <?php endforeach; ?>
             </div>
         </details>
+        <section class="panel panel-open">
+            <div class="panel-heading">
+                <div>
+                    <h3>Actes et Chapitres</h3>
+                    <p class="panel-subtitle">Structure principale du récit.</p>
+                </div>
+                <div class="panel-actions">
+                    <a class="button" href="<?php echo $base; ?>/project/<?php echo $project['id']; ?>/act/create">Ajouter un acte</a>
+                    <a class="button" href="<?php echo $base; ?>/project/<?php echo $project['id']; ?>/chapter/create">Ajouter un chapitre</a>
+                </div>
+            </div>
+<?php if (empty($acts) && empty($chaptersWithoutAct)): ?>
+    <p>Aucun chapitre ou acte pour ce projet.</p>
+<?php else: ?>
+    <?php foreach ($acts as $act): ?>
+        <details class="act-container" open>
+            <summary class="act-summary">
+                <h4><?php echo htmlspecialchars($act['title']); ?></h4>
+                <div class="act-actions">
+                    <a class="button small" href="<?php echo $base; ?>/act/<?php echo $act['id']; ?>/edit" onclick="event.stopPropagation();">Modifier l'acte</a>
+                    <a class="button small delete" href="<?php echo $base; ?>/act/<?php echo $act['id']; ?>/delete"
+                        onclick="event.stopPropagation(); return confirm('Supprimer cet acte et tous ses chapitres ?');">Supprimer</a>
+                </div>
+            </summary>
+            <?php if (!empty($act['description'])): ?>
+                <p class="act-description">
+                    <?php echo nl2br(htmlspecialchars($act['description'])); ?>
+                </p>
+            <?php endif; ?>
+
+            <?php $actChapters = $chaptersByAct[$act['id']] ?? []; ?>
+            <?php if (empty($actChapters)): ?>
+                <p>Aucun chapitre dans cet acte.</p>
+            <?php else: ?>
+                <details class="act-chapters" open>
+                    <summary>Chapitres de l'acte <span class="panel-count"><?php echo count($actChapters); ?></span></summary>
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Titre</th>
+                                <th>Mots / Pages</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody class="sortable-chapters">
+                            <?php foreach ($actChapters as $ch): ?>
+                                <?php
+                                $subs = $subChaptersByParent[$ch['id']] ?? [];
+                                $wcParent = str_word_count($ch['content'] ?? '');
+                                $wcSubs = 0;
+                                foreach ($subs as $sub) {
+                                    $wcSubs += str_word_count($sub['content'] ?? '');
+                                }
+                                $totalWcChapter = $wcParent + $wcSubs;
+                                ?>
+                                <tr data-id="<?php echo $ch['id']; ?>">
+                                    <td>
+                                        <span class="sortable-handle">☰</span>
+                                        <input type="checkbox" class="export-toggle" data-type="chapter" data-id="<?php echo $ch['id']; ?>"
+                                            <?php echo ($ch['is_exported'] ?? 1) ? 'checked' : ''; ?> title="Inclure dans l'export">
+                                        <strong class="preview-trigger"
+                                            data-preview-content="<?php echo htmlspecialchars($ch['content'] ?? ''); ?>">
+                                            <?php echo htmlspecialchars($ch['title']); ?>
+                                        </strong>
+                                    </td>
+                                    <td>
+                                        <?php echo $totalWcChapter; ?> mots
+                                        <br><small style="color: #666; font-weight: bold;"><?php echo ceil($totalWcChapter / $wpp); ?>
+                                            pages</small>
+                                        <?php if ($wcSubs > 0): ?>
+                                            <br><small style="color: #999;">(<?php echo $wcParent; ?> + <?php echo $wcSubs; ?>)</small>
+                                        <?php endif; ?>
+                                    </td>
+                                    <td>
+                                        <a class="button small" href="<?php echo $base; ?>/chapter/<?php echo $ch['id']; ?>">Éditer</a>
+                                        <a class="button small"
+                                            href="<?php echo $base; ?>/project/<?php echo $project['id']; ?>/chapter/create?parent_id=<?php echo $ch['id']; ?>&act_id=<?php echo $ch['act_id'] ?? ''; ?>">+
+                                            Sous-chapitre</a>
+                                        <a class="button small delete" href="<?php echo $base; ?>/chapter/<?php echo $ch['id']; ?>/delete"
+                                            onclick="return confirm('Supprimer ce chapitre ?');">Supprimer</a>
+                                    </td>
+                                </tr>
+                                <?php $subs = $subChaptersByParent[$ch['id']] ?? []; ?>
+                                <?php foreach ($subs as $sub): ?>
+                                    <?php $swc = str_word_count($sub['content'] ?? ''); ?>
+                                    <tr data-id="<?php echo $sub['id']; ?>">
+                                        <td style="padding-left: 30px;">
+                                            <span class="sortable-handle">☰</span>
+                                            <input type="checkbox" class="export-toggle" data-type="chapter" data-id="<?php echo $sub['id']; ?>"
+                                                <?php echo ($sub['is_exported'] ?? 1) ? 'checked' : ''; ?> title="Inclure dans l'export">
+                                            <span class="preview-trigger"
+                                                data-preview-content="<?php echo htmlspecialchars($sub['content'] ?? ''); ?>">
+                                                └─ <?php echo htmlspecialchars($sub['title']); ?>
+                                            </span>
+                                        </td>
+                                        <td>
+                                            <?php echo $swc; ?> mots
+                                            <br><small style="color: #999;"><?php echo ceil($swc / $wpp); ?> pages</small>
+                                        </td>
+                                        <td>
+                                            <a class="button small" href="<?php echo $base; ?>/chapter/<?php echo $sub['id']; ?>">Éditer</a>
+                                            <a class="button small delete" href="<?php echo $base; ?>/chapter/<?php echo $sub['id']; ?>/delete"
+                                                onclick="return confirm('Supprimer ce sous-chapitre ?');">Supprimer</a>
+                                        </td>
+                                    </tr>
+                                <?php endforeach; ?>
+                            <?php endforeach; ?>
+                        </tbody>
+                    </table>
+                </details>
+            <?php endif; ?>
+        </details>
+    <?php endforeach; ?>
+
+    <?php if (!empty($chaptersWithoutAct)): ?>
+        <details class="act-chapters" open>
+            <summary>Chapitres hors actes <span class="panel-count"><?php echo count($chaptersWithoutAct); ?></span></summary>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Titre</th>
+                        <th>Mots / Pages</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody class="sortable-chapters">
+                    <?php foreach ($chaptersWithoutAct as $ch): ?>
+                        <?php
+                        $subs = $subChaptersByParent[$ch['id']] ?? [];
+                        $wcParent = str_word_count($ch['content'] ?? '');
+                        $wcSubs = 0;
+                        foreach ($subs as $sub) {
+                            $wcSubs += str_word_count($sub['content'] ?? '');
+                        }
+                        $totalWcChapter = $wcParent + $wcSubs;
+                        ?>
+                        <tr data-id="<?php echo $ch['id']; ?>">
+                            <td>
+                                <span class="sortable-handle">☰</span>
+                                <input type="checkbox" class="export-toggle" data-type="chapter" data-id="<?php echo $ch['id']; ?>"
+                                    <?php echo ($ch['is_exported'] ?? 1) ? 'checked' : ''; ?> title="Inclure dans l'export">
+                                <strong class="preview-trigger"
+                                    data-preview-content="<?php echo htmlspecialchars($ch['content'] ?? ''); ?>">
+                                    <?php echo htmlspecialchars($ch['title']); ?>
+                                </strong>
+                            </td>
+                            <td>
+                                <?php echo $totalWcChapter; ?> mots
+                                <br><small style="color: #666; font-weight: bold;"><?php echo ceil($totalWcChapter / $wpp); ?>
+                                    pages</small>
+                                <?php if ($wcSubs > 0): ?>
+                                    <br><small style="color: #999;">(<?php echo $wcParent; ?> + <?php echo $wcSubs; ?>)</small>
+                                <?php endif; ?>
+                            </td>
+                            <td>
+                                <a class="button small" href="<?php echo $base; ?>/chapter/<?php echo $ch['id']; ?>">Éditer</a>
+                                <a class="button small"
+                                    href="<?php echo $base; ?>/project/<?php echo $project['id']; ?>/chapter/create?parent_id=<?php echo $ch['id']; ?>&act_id=<?php echo $ch['act_id'] ?? ''; ?>">+
+                                    Sous-chapitre</a>
+                                <a class="button small delete" href="<?php echo $base; ?>/chapter/<?php echo $ch['id']; ?>/delete"
+                                    onclick="return confirm('Supprimer ce chapitre ?');">Supprimer</a>
+                            </td>
+                        </tr>
+                        <?php $subs = $subChaptersByParent[$ch['id']] ?? []; ?>
+                        <?php foreach ($subs as $sub): ?>
+                            <?php $swc = str_word_count($sub['content'] ?? ''); ?>
+                            <tr data-id="<?php echo $sub['id']; ?>">
+                                <td style="padding-left: 30px;">
+                                    <span class="sortable-handle">☰</span>
+                                    <input type="checkbox" class="export-toggle" data-type="chapter" data-id="<?php echo $sub['id']; ?>"
+                                        <?php echo ($sub['is_exported'] ?? 1) ? 'checked' : ''; ?> title="Inclure dans l'export">
+                                    <span class="preview-trigger"
+                                        data-preview-content="<?php echo htmlspecialchars($sub['content'] ?? ''); ?>">
+                                        └─ <?php echo htmlspecialchars($sub['title']); ?>
+                                    </span>
+                                </td>
+                                <td>
+                                    <?php echo $swc; ?> mots
+                                    <br><small style="color: #999;"><?php echo ceil($swc / $wpp); ?> pages</small>
+                                </td>
+                                <td>
+                                    <a class="button small" href="<?php echo $base; ?>/chapter/<?php echo $sub['id']; ?>">Éditer</a>
+                                    <a class="button small delete" href="<?php echo $base; ?>/chapter/<?php echo $sub['id']; ?>/delete"
+                                        onclick="return confirm('Supprimer ce sous-chapitre ?');">Supprimer</a>
+                                </td>
+                            </tr>
+                        <?php endforeach; ?>
+                    <?php endforeach; ?>
+                </tbody>
+            </table>
+        </details>
+    <?php endif; ?>
+<?php endif; ?>
+        </section>
 
         <details class="panel" <?php echo $afterCount > 0 ? 'open' : ''; ?>>
             <summary>Sections après les chapitres <span class="panel-count"><?php echo $afterCount; ?></span></summary>
@@ -459,7 +460,7 @@ $characterCount = count($characters);
                 </ul>
             <?php endif; ?>
         </details>
-    </aside>
+    </main>
 </div>
 
 <script src="https://cdn.jsdelivr.net/npm/sortablejs@1.15.0/Sortable.min.js"></script>
@@ -579,7 +580,7 @@ $characterCount = count($characters);
 
     .project-grid {
         display: grid;
-        grid-template-columns: minmax(0, 2fr) minmax(280px, 1fr);
+        grid-template-columns: minmax(0, 1fr);
         gap: 24px;
         align-items: start;
     }
@@ -601,6 +602,83 @@ $characterCount = count($characters);
         align-items: center;
         justify-content: space-between;
         gap: 8px;
+    }
+
+    .act-container {
+        margin-bottom: 20px;
+        border: 1px solid #e2e8f0;
+        border-radius: 12px;
+        padding: 10px 12px;
+        background: #fdfdfd;
+    }
+
+    .act-summary {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 12px;
+        cursor: pointer;
+        list-style: none;
+        border-bottom: 1px solid #eef0f4;
+        padding-bottom: 6px;
+        margin-bottom: 10px;
+    }
+
+    .act-summary h4 {
+        margin: 0;
+        font-size: 1rem;
+    }
+
+    .act-actions {
+        display: flex;
+        gap: 8px;
+        flex-wrap: wrap;
+    }
+
+    .act-description {
+        font-size: 0.9em;
+        color: #666;
+        font-style: italic;
+        margin: 0 0 10px;
+    }
+
+    .act-summary::-webkit-details-marker {
+        display: none;
+    }
+
+    .act-summary::after {
+        content: '▾';
+        color: #94a3b8;
+        transition: transform 0.2s ease;
+    }
+
+    details[open] > .act-summary::after {
+        transform: rotate(180deg);
+    }
+
+    .act-chapters summary {
+        font-weight: 600;
+        cursor: pointer;
+        list-style: none;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 8px;
+        margin: 8px 0 12px;
+    }
+
+    .act-chapters summary::-webkit-details-marker {
+        display: none;
+    }
+
+    .act-chapters summary::after {
+        content: '▾';
+        color: #94a3b8;
+        transition: transform 0.2s ease;
+    }
+
+    .act-chapters[open] summary::after {
+        transform: rotate(180deg);
     }
 
     .panel summary::-webkit-details-marker {
