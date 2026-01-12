@@ -1,0 +1,192 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="AutoImportSettings">
+    <option name="autoReloadType" value="SELECTIVE" />
+  </component>
+  <component name="ChangeListManager">
+    <list default="true" id="17de52e9-e946-4570-8a81-f6c966b2052b" name="Changes" comment="">
+      <change afterPath="$PROJECT_DIR$/.idea/.gitignore" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/Ecrivain.iml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/dbnavigator.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/deployment.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/inspectionProfiles/Project_Default.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/modules.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/php.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/README.md" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/app/models/Chapter.php" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/app/models/Character.php" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/app/models/Comment.php" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/app/models/Project.php" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/app/models/Synonyms.php" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/app/models/User.php" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/app/views/auth/login.php" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/app/views/auth/register.php" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/app/views/character/create.php" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/app/views/character/edit.php" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/app/views/character/list.php" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/app/views/editor/edit.php" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/app/views/home.php" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/app/views/layouts/main.php" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/app/views/project/create.php" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/app/views/project/create_chapter.php" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/app/views/project/dashboard.php" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/app/views/project/edit.php" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/app/views/project/mindmap.php" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/app/views/project/show.php" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/composer.json" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/composer.lock" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/data/.keep" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/index.php" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/phpinfo.php" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/public/icons/icon-192.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/public/icons/icon-512.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/public/manifest.json" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/public/service-worker.js" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/public/style.css" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/public/theme-dark.css" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/public/theme-default.css" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/public/theme-modern.css" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/vendor/autoload.php" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/vendor/bcosca/fatfree-core/.github/FUNDING.yml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/vendor/bcosca/fatfree-core/CHANGELOG.md" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/vendor/bcosca/fatfree-core/COPYING" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/vendor/bcosca/fatfree-core/README.md" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/vendor/bcosca/fatfree-core/audit.php" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/vendor/bcosca/fatfree-core/auth.php" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/vendor/bcosca/fatfree-core/base.php" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/vendor/bcosca/fatfree-core/basket.php" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/vendor/bcosca/fatfree-core/bcrypt.php" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/vendor/bcosca/fatfree-core/cli/ws.php" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/vendor/bcosca/fatfree-core/code.css" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/vendor/bcosca/fatfree-core/composer.json" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/vendor/bcosca/fatfree-core/db/cursor.php" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/vendor/bcosca/fatfree-core/db/jig.php" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/vendor/bcosca/fatfree-core/db/jig/mapper.php" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/vendor/bcosca/fatfree-core/db/jig/session.php" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/vendor/bcosca/fatfree-core/db/mongo.php" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/vendor/bcosca/fatfree-core/db/mongo/mapper.php" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/vendor/bcosca/fatfree-core/db/mongo/session.php" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/vendor/bcosca/fatfree-core/db/sql.php" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/vendor/bcosca/fatfree-core/db/sql/mapper.php" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/vendor/bcosca/fatfree-core/db/sql/session.php" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/vendor/bcosca/fatfree-core/f3.php" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/vendor/bcosca/fatfree-core/image.php" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/vendor/bcosca/fatfree-core/log.php" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/vendor/bcosca/fatfree-core/magic.php" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/vendor/bcosca/fatfree-core/markdown.php" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/vendor/bcosca/fatfree-core/matrix.php" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/vendor/bcosca/fatfree-core/session.php" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/vendor/bcosca/fatfree-core/sessionadapter.php" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/vendor/bcosca/fatfree-core/smtp.php" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/vendor/bcosca/fatfree-core/template.php" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/vendor/bcosca/fatfree-core/test.php" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/vendor/bcosca/fatfree-core/utf.php" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/vendor/bcosca/fatfree-core/web.php" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/vendor/bcosca/fatfree-core/web/geo.php" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/vendor/bcosca/fatfree-core/web/google/recaptcha.php" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/vendor/bcosca/fatfree-core/web/google/staticmap.php" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/vendor/bcosca/fatfree-core/web/oauth2.php" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/vendor/bcosca/fatfree-core/web/openid.php" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/vendor/bcosca/fatfree-core/web/pingback.php" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/vendor/bcosca/fatfree/.gitignore" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/vendor/bcosca/fatfree/.gitmodules" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/vendor/bcosca/fatfree/.htaccess" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/vendor/bcosca/fatfree/SECURITY.md" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/vendor/bcosca/fatfree/composer.json" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/vendor/bcosca/fatfree/config.ini" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/vendor/bcosca/fatfree/index.php" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/vendor/bcosca/fatfree/readme.md" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/vendor/bcosca/fatfree/ui/css/base.css" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/vendor/bcosca/fatfree/ui/css/theme.css" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/vendor/bcosca/fatfree/ui/images/logo.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/vendor/bcosca/fatfree/ui/layout.htm" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/vendor/bcosca/fatfree/ui/userref.htm" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/vendor/bcosca/fatfree/ui/welcome.htm" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/vendor/composer/ClassLoader.php" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/vendor/composer/InstalledVersions.php" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/vendor/composer/LICENSE" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/vendor/composer/autoload_classmap.php" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/vendor/composer/autoload_namespaces.php" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/vendor/composer/autoload_psr4.php" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/vendor/composer/autoload_real.php" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/vendor/composer/autoload_static.php" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/vendor/composer/installed.json" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/vendor/composer/installed.php" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/vendor/composer/platform_check.php" afterDir="false" />
+    </list>
+    <option name="SHOW_DIALOG" value="false" />
+    <option name="HIGHLIGHT_CONFLICTS" value="true" />
+    <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
+    <option name="LAST_RESOLUTION" value="IGNORE" />
+  </component>
+  <component name="ComposerSettings" synchronizationState="SYNCHRONIZE">
+    <pharConfigPath>$PROJECT_DIR$/composer.json</pharConfigPath>
+    <execution />
+  </component>
+  <component name="EmbeddingIndexingInfo">
+    <option name="cachedIndexableFilesCount" value="60" />
+    <option name="fileBasedEmbeddingIndicesEnabled" value="true" />
+  </component>
+  <component name="Git.Settings">
+    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
+  </component>
+  <component name="McpProjectServerCommands">
+    <commands />
+    <urls />
+  </component>
+  <component name="PhpWorkspaceProjectConfiguration" interpreter_name="HP 7.4.3.3">
+    <include_path>
+      <path value="$PROJECT_DIR$/vendor/composer" />
+      <path value="$PROJECT_DIR$/vendor/bcosca/fatfree-core" />
+      <path value="$PROJECT_DIR$/vendor/bcosca/fatfree" />
+    </include_path>
+  </component>
+  <component name="ProjectColorInfo">{
+  &quot;associatedIndex&quot;: 4
+}</component>
+  <component name="ProjectId" id="34TEzIEH8MDf0GQV9ecbgff4HHP" />
+  <component name="ProjectViewState">
+    <option name="autoscrollFromSource" value="true" />
+    <option name="hideEmptyMiddlePackages" value="true" />
+    <option name="showLibraryContents" value="true" />
+  </component>
+  <component name="PropertiesComponent"><![CDATA[{
+  "keyToString": {
+    "ModuleVcsDetector.initialDetectionPerformed": "true",
+    "RunOnceActivity.MCP Project settings loaded": "true",
+    "RunOnceActivity.ShowReadmeOnStart": "true",
+    "RunOnceActivity.TerminalTabsStorage.copyFrom.TerminalArrangementManager.252": "true",
+    "RunOnceActivity.git.unshallow": "true",
+    "RunOnceActivity.typescript.service.memoryLimit.init": "true",
+    "git-widget-placeholder": "main",
+    "ignore.virus.scanning.warn.message": "true",
+    "last_opened_file_path": "P:/Projets/Ecrivain",
+    "node.js.detected.package.eslint": "true",
+    "node.js.selected.package.eslint": "(autodetect)",
+    "nodejs_package_manager_path": "npm",
+    "settings.editor.selected.configurable": "reference.webide.settings.project.settings.php"
+  }
+}]]></component>
+  <component name="SharedIndexes">
+    <attachedChunks>
+      <set>
+        <option value="bundled-js-predefined-d6986cc7102b-9b0f141eb926-JavaScript-PS-253.29346.257" />
+        <option value="bundled-php-predefined-a98d8de5180a-0e0d91225499-com.jetbrains.php.sharedIndexes-PS-253.29346.257" />
+      </set>
+    </attachedChunks>
+  </component>
+  <component name="TaskManager">
+    <task active="true" id="Default" summary="Default task">
+      <changelist id="17de52e9-e946-4570-8a81-f6c966b2052b" name="Changes" comment="" />
+      <created>1761229424253</created>
+      <option name="number" value="Default" />
+      <option name="presentableId" value="Default" />
+      <updated>1761229424253</updated>
+    </task>
+    <servers />
+  </component>
+  <component name="TypeScriptGeneratedFilesManager">
+    <option name="version" value="3" />
+  </component>
+</project>
