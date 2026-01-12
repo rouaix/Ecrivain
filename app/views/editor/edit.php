@@ -285,10 +285,14 @@
         if (!editor) return;
 
         var title = document.getElementById('title').value;
+        var actId = document.getElementById('act_id').value;
+        var parentId = document.getElementById('parent_id').value;
         var content = editor.getContent();
         var formData = new FormData();
         formData.append('title', title);
         formData.append('content', content);
+        formData.append('act_id', actId);
+        formData.append('parent_id', parentId);
 
         fetch('<?php echo $base; ?>/chapter/' + chapterId + '/save', {
             method: 'POST',
