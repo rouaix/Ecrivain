@@ -6,36 +6,7 @@ foreach ($sectionsBeforeChapters as $sec) {
         break;
     }
 }
-?>
 
-<div style="display: flex; gap: 40px; align-items: flex-start; margin-bottom: 20px;">
-    <div style="flex: 1;">
-        <h2><?php echo htmlspecialchars($project['title']); ?></h2>
-        <p><?php echo nl2br(htmlspecialchars($project['description'] ?? '')); ?></p>
-        <p>Objectif : <?php echo (int) $project['target_words']; ?> mots (environ
-            <?php echo ceil($project['target_words'] / ($project['words_per_page'] ?: 350)); ?> pages)
-        </p>
-
-        <p>
-            <a class="button" href="<?php echo $base; ?>/project/<?php echo $project['id']; ?>/mindmap">Voir la carte
-                mentale</a>
-            <a class="button" href="<?php echo $base; ?>/project/<?php echo $project['id']; ?>/export">Exporter en
-                texte</a>
-            <a class="button" href="<?php echo $base; ?>/project/<?php echo $project['id']; ?>/export/epub">Exporter en
-                EPUB</a>
-            <a class="button" href="<?php echo $base; ?>/project/<?php echo $project['id']; ?>/export/html">Exporter en
-                HTML</a>
-        </p>
-    </div>
-    <?php if ($coverImage): ?>
-        <div style="width: 150px; flex-shrink: 0;">
-            <img src="<?php echo $base . $coverImage; ?>" alt="Couverture"
-                style="max-height: 175px; border-radius: 8px; box-shadow: 0 4px 10px rgba(0,0,0,0.1);">
-        </div>
-    <?php endif; ?>
-</div>
-
-<?php
 // Calculate total word count across all chapters and sections
 $totalWords = 0;
 foreach ($allChapters as $ch) {
@@ -49,107 +20,78 @@ foreach ($sectionsAfterChapters as $sec) {
 }
 $target = (int) $project['target_words'];
 $progress = $target > 0 ? min(100, round($totalWords / $target * 100)) : 0;
+$wpp = $project['words_per_page'] ?: 350;
+$beforeCount = count($sectionsBeforeChapters);
+$afterCount = count($sectionsAfterChapters);
+$characterCount = count($characters);
 ?>
-<div class="progress-container" style="background: #f0f0f0; padding: 20px; border-radius: 8px; margin-bottom: 20px;">
-    <?php $wpp = $project['words_per_page'] ?: 350; ?>
+
+<div class="project-page">
+    <header class="project-header">
+        <div class="project-header__content">
+            <div class="project-title-row">
+                <h2><?php echo htmlspecialchars($project['title']); ?></h2>
+                <div class="project-actions">
+                    <a class="button" href="<?php echo $base; ?>/project/<?php echo $project['id']; ?>/mindmap">Carte mentale</a>
+                    <a class="button" href="<?php echo $base; ?>/project/<?php echo $project['id']; ?>/export">Exporter texte</a>
+                    <a class="button" href="<?php echo $base; ?>/project/<?php echo $project['id']; ?>/export/epub">Exporter EPUB</a>
+                    <a class="button" href="<?php echo $base; ?>/project/<?php echo $project['id']; ?>/export/html">Exporter HTML</a>
+                </div>
+            </div>
+            <?php if (!empty($project['description'])): ?>
+                <p class="project-description"><?php echo nl2br(htmlspecialchars($project['description'] ?? '')); ?></p>
+            <?php endif; ?>
+            <div class="project-meta">
+                <div class="meta-card">
+                    <span class="meta-label">Objectif</span>
+                    <strong><?php echo (int) $project['target_words']; ?> mots</strong>
+                    <span class="meta-sub">≈ <?php echo ceil($project['target_words'] / $wpp); ?> pages</span>
+                </div>
+                <div class="meta-card">
+                    <span class="meta-label">Progression</span>
+                    <strong><?php echo $totalWords; ?> mots</strong>
+                    <span class="meta-sub"><?php echo $progress; ?>%</span>
+                    <div class="progress-track">
+                        <div class="progress-bar" style="width: <?php echo $progress; ?>%;"></div>
+                    </div>
+                </div>
+                <div class="meta-card">
+                    <span class="meta-label">Pages estimées</span>
+                    <strong><?php echo ceil($totalWords / $wpp); ?> / <?php echo ceil($target / $wpp); ?></strong>
+                    <span class="meta-sub">mots/page : <?php echo $wpp; ?></span>
+                </div>
+            </div>
+        </div>
+        <?php if ($coverImage): ?>
+            <div class="project-cover">
+                <img src="<?php echo $base . $coverImage; ?>" alt="Couverture">
+            </div>
+        <?php endif; ?>
+    </header>
+</div>
+
+<div class="progress-container">
     <strong>Progression globale : <?php echo $totalWords; ?> / <?php echo $target ?: '0'; ?> mots
         (<?php echo $progress; ?>%) — environ <?php echo ceil($totalWords / $wpp); ?> /
         <?php echo ceil($target / $wpp); ?> pages</strong>
-    <div style="background: #ddd; height: 10px; border-radius: 5px; margin-top: 10px; overflow: hidden;">
-        <div style="background: #3f51b5; width: <?php echo $progress; ?>%; height: 100%;"></div>
+    <div class="progress-shell">
+        <div class="progress-fill" style="width: <?php echo $progress; ?>%;"></div>
     </div>
 </div>
 
-<h3>Sections avant les chapitres</h3>
-<p><small>Couverture, Préface, Introduction, Prologue</small></p>
-<?php
-$beforeSectionTypes = ['cover', 'preface', 'introduction', 'prologue'];
-$existingSectionsBeforeByType = [];
-foreach ($sectionsBeforeChapters as $sec) {
-    $existingSectionsBeforeByType[$sec['type']] = $sec;
-}
-?>
-<div class="sortable-groups" id="beforeChaptersGroups">
-    <?php
-    $beforeSectionTypes = ['cover', 'preface', 'introduction', 'prologue'];
-    $sectionsByType = [];
-    foreach ($sectionsBeforeChapters as $section) {
-        $sectionsByType[$section['type']][] = $section;
-    }
-
-    // Determine the order of types
-    $orderedTypes = [];
-    $seenTypes = [];
-    foreach ($sectionsBeforeChapters as $section) {
-        if (!in_array($section['type'], $seenTypes)) {
-            $orderedTypes[] = $section['type'];
-            $seenTypes[] = $section['type'];
-        }
-    }
-    foreach ($beforeSectionTypes as $type) {
-        if (!in_array($type, $seenTypes)) {
-            $orderedTypes[] = $type;
-        }
-    }
-
-    foreach ($orderedTypes as $type):
-        $items = $sectionsByType[$type] ?? [];
-        $sectionTypeName = \Section::getTypeName($type);
-        ?>
-        <div class="section-group-block" data-type="<?php echo $type; ?>"
-            style="margin-bottom: 20px; border: 1px solid #eee; padding: 10px; border-radius: 8px;">
-            <div
-                style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; padding-bottom: 5px; border-bottom: 1px solid #f5f5f5;">
-                <h4 style="margin: 0;">
-                    <span class="group-drag-handle" style="cursor: move; color: #ccc; margin-right: 10px;">⠿</span>
-                    <?php echo htmlspecialchars($sectionTypeName); ?>
-                </h4>
-                <?php if (empty($items)): ?>
-                    <a class="button small"
-                        href="<?php echo $base; ?>/project/<?php echo $project['id']; ?>/section/<?php echo $type; ?>">Créer</a>
-                <?php endif; ?>
+<div class="project-grid">
+    <main class="project-main">
+        <section class="panel panel-open">
+            <div class="panel-heading">
+                <div>
+                    <h3>Actes et Chapitres</h3>
+                    <p class="panel-subtitle">Structure principale du récit.</p>
+                </div>
+                <div class="panel-actions">
+                    <a class="button" href="<?php echo $base; ?>/project/<?php echo $project['id']; ?>/act/create">Ajouter un acte</a>
+                    <a class="button" href="<?php echo $base; ?>/project/<?php echo $project['id']; ?>/chapter/create">Ajouter un chapitre</a>
+                </div>
             </div>
-
-            <?php if (!empty($items)): ?>
-                <table style="margin-bottom: 0;">
-                    <tbody class="sortable-items" data-type="<?php echo $type; ?>">
-                        <?php foreach ($items as $section): ?>
-                            <tr data-id="<?php echo $section['id']; ?>">
-                                <td class="item-drag-handle" style="width: 30px; cursor: move; color: #ddd;">☰</td>
-                                <td>
-                                    <div class="preview-trigger"
-                                        data-preview-content="<?php echo htmlspecialchars($section['content'] ?? ''); ?>">
-                                        <input type="checkbox" class="export-toggle" data-type="section"
-                                            data-id="<?php echo $section['id']; ?>" <?php echo ($section['is_exported'] ?? 1) ? 'checked' : ''; ?> title="Inclure dans l'export">
-                                        <?php echo htmlspecialchars($section['title'] ?: $sectionTypeName); ?>
-                                    </div>
-                                </td>
-                                <td style="width: 100px;"><?php echo str_word_count($section['content'] ?? ''); ?> mots</td>
-                                <td style="width: 220px; text-align: right; white-space: nowrap;">
-                                    <a class="button small"
-                                        href="<?php echo $base; ?>/project/<?php echo $project['id']; ?>/section/<?php echo $type; ?>?id=<?php echo $section['id']; ?>">Modifier</a>
-                                    <a class="button small delete"
-                                        href="<?php echo $base; ?>/section/<?php echo $section['id']; ?>/delete"
-                                        onclick="return confirm('Supprimer cette section ?');">Supprimer</a>
-                                </td>
-                            </tr>
-                        <?php endforeach; ?>
-                    </tbody>
-                </table>
-            <?php else: ?>
-                <p style="margin: 0; padding: 10px; font-style: italic; color: #999; font-size: 0.9em;">Aucun contenu créé.</p>
-            <?php endif; ?>
-        </div>
-    <?php endforeach; ?>
-</div>
-
-<h3>Actes et Chapitres</h3>
-<p>
-    <a class="button" href="<?php echo $base; ?>/project/<?php echo $project['id']; ?>/act/create">Ajouter un acte</a>
-    <a class="button" href="<?php echo $base; ?>/project/<?php echo $project['id']; ?>/chapter/create">Ajouter un
-        chapitre</a>
-</p>
-
 <?php if (empty($acts) && empty($chaptersWithoutAct)): ?>
     <p>Aucun chapitre ou acte pour ce projet.</p>
 <?php else: ?>
@@ -328,110 +270,479 @@ foreach ($sectionsBeforeChapters as $sec) {
         </table>
     <?php endif; ?>
 <?php endif; ?>
+        </section>
+    </main>
 
-<h3>Sections après les chapitres</h3>
-<p><small>Postface, Annexes, Notes, Dos du livre</small></p>
+    <aside class="project-sidebar">
+        <details class="panel" <?php echo $beforeCount > 0 ? 'open' : ''; ?>>
+            <summary>Sections avant les chapitres <span class="panel-count"><?php echo $beforeCount; ?></span></summary>
+            <p class="panel-subtitle">Couverture, Préface, Introduction, Prologue.</p>
+            <?php
+            $beforeSectionTypes = ['cover', 'preface', 'introduction', 'prologue'];
+            $existingSectionsBeforeByType = [];
+            foreach ($sectionsBeforeChapters as $sec) {
+                $existingSectionsBeforeByType[$sec['type']] = $sec;
+            }
+            ?>
+            <div class="sortable-groups" id="beforeChaptersGroups">
+                <?php
+                $beforeSectionTypes = ['cover', 'preface', 'introduction', 'prologue'];
+                $sectionsByType = [];
+                foreach ($sectionsBeforeChapters as $section) {
+                    $sectionsByType[$section['type']][] = $section;
+                }
 
-<div class="sortable-groups" id="afterChaptersGroups">
-    <?php
-    $afterSectionTypes = ['postface', 'appendices', 'notes', 'back_cover'];
-    $sectionsByType = [];
-    foreach ($sectionsAfterChapters as $section) {
-        $sectionsByType[$section['type']][] = $section;
-    }
+                // Determine the order of types
+                $orderedTypes = [];
+                $seenTypes = [];
+                foreach ($sectionsBeforeChapters as $section) {
+                    if (!in_array($section['type'], $seenTypes)) {
+                        $orderedTypes[] = $section['type'];
+                        $seenTypes[] = $section['type'];
+                    }
+                }
+                foreach ($beforeSectionTypes as $type) {
+                    if (!in_array($type, $seenTypes)) {
+                        $orderedTypes[] = $type;
+                    }
+                }
 
-    // Determine the order of types based on the first occurrence in sectionsAfterChapters
-    // or the default order if not present.
-    $orderedTypes = [];
-    $seenTypes = [];
-    foreach ($sectionsAfterChapters as $section) {
-        if (!in_array($section['type'], $seenTypes)) {
-            $orderedTypes[] = $section['type'];
-            $seenTypes[] = $section['type'];
-        }
-    }
-    foreach ($afterSectionTypes as $type) {
-        if (!in_array($type, $seenTypes)) {
-            $orderedTypes[] = $type;
-        }
-    }
+                foreach ($orderedTypes as $type):
+                    $items = $sectionsByType[$type] ?? [];
+                    $sectionTypeName = \Section::getTypeName($type);
+                    ?>
+                    <div class="section-group-block" data-type="<?php echo $type; ?>">
+                        <div class="section-group-heading">
+                            <h4>
+                                <span class="group-drag-handle">⠿</span>
+                                <?php echo htmlspecialchars($sectionTypeName); ?>
+                            </h4>
+                            <?php if (empty($items)): ?>
+                                <a class="button small"
+                                    href="<?php echo $base; ?>/project/<?php echo $project['id']; ?>/section/<?php echo $type; ?>">Créer</a>
+                            <?php endif; ?>
+                        </div>
 
-    foreach ($orderedTypes as $type):
-        $isMulti = ($type === 'notes' || $type === 'appendices');
-        $items = $sectionsByType[$type] ?? [];
-        $sectionTypeName = \Section::getTypeName($type);
-
-        // Skip display of single-entry types if not created yet (they will be handled below or shown as empty)
-        // Actually, let's always show the block header if it's a multi type or if it has items.
-        if (!$isMulti && empty($items) && $type !== 'postface' && $type !== 'back_cover')
-            continue;
-        ?>
-        <div class="section-group-block" data-type="<?php echo $type; ?>"
-            style="margin-bottom: 20px; border: 1px solid #eee; padding: 10px; border-radius: 8px;">
-            <div
-                style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; padding-bottom: 5px; border-bottom: 1px solid #f5f5f5;">
-                <h4 style="margin: 0;">
-                    <span class="group-drag-handle" style="cursor: move; color: #ccc; margin-right: 10px;">⠿</span>
-                    <?php echo htmlspecialchars($sectionTypeName); ?>
-                </h4>
-                <?php if ($isMulti): ?>
-                    <a class="button small"
-                        href="<?php echo $base; ?>/project/<?php echo $project['id']; ?>/section/<?php echo $type; ?>">+ Ajouter
-                        <?php echo ($type === 'notes' ? 'une note' : 'une annexe'); ?></a>
-                <?php elseif (empty($items)): ?>
-                    <a class="button small"
-                        href="<?php echo $base; ?>/project/<?php echo $project['id']; ?>/section/<?php echo $type; ?>">Créer</a>
-                <?php endif; ?>
+                        <?php if (!empty($items)): ?>
+                            <table class="compact-table">
+                                <tbody class="sortable-items" data-type="<?php echo $type; ?>">
+                                    <?php foreach ($items as $section): ?>
+                                        <tr data-id="<?php echo $section['id']; ?>">
+                                            <td class="item-drag-handle">☰</td>
+                                            <td>
+                                                <div class="preview-trigger"
+                                                    data-preview-content="<?php echo htmlspecialchars($section['content'] ?? ''); ?>">
+                                                    <input type="checkbox" class="export-toggle" data-type="section"
+                                                        data-id="<?php echo $section['id']; ?>" <?php echo ($section['is_exported'] ?? 1) ? 'checked' : ''; ?> title="Inclure dans l'export">
+                                                    <?php echo htmlspecialchars($section['title'] ?: $sectionTypeName); ?>
+                                                </div>
+                                            </td>
+                                            <td class="compact-meta"><?php echo str_word_count($section['content'] ?? ''); ?> mots</td>
+                                            <td class="compact-actions">
+                                                <a class="button small"
+                                                    href="<?php echo $base; ?>/project/<?php echo $project['id']; ?>/section/<?php echo $type; ?>?id=<?php echo $section['id']; ?>">Modifier</a>
+                                                <a class="button small delete"
+                                                    href="<?php echo $base; ?>/section/<?php echo $section['id']; ?>/delete"
+                                                    onclick="return confirm('Supprimer cette section ?');">Supprimer</a>
+                                            </td>
+                                        </tr>
+                                    <?php endforeach; ?>
+                                </tbody>
+                            </table>
+                        <?php else: ?>
+                            <p class="panel-empty">Aucun contenu créé.</p>
+                        <?php endif; ?>
+                    </div>
+                <?php endforeach; ?>
             </div>
+        </details>
 
-            <?php if (!empty($items)): ?>
-                <table style="margin-bottom: 0;">
-                    <tbody class="sortable-items" data-type="<?php echo $type; ?>">
-                        <?php foreach ($items as $section): ?>
-                            <tr data-id="<?php echo $section['id']; ?>">
-                                <td class="item-drag-handle" style="width: 30px; cursor: move; color: #ddd;">☰</td>
-                                <td>
-                                    <div class="preview-trigger"
-                                        data-preview-content="<?php echo htmlspecialchars($section['content'] ?? ''); ?>">
-                                        <input type="checkbox" class="export-toggle" data-type="section"
-                                            data-id="<?php echo $section['id']; ?>" <?php echo ($section['is_exported'] ?? 1) ? 'checked' : ''; ?> title="Inclure dans l'export">
-                                        <?php echo htmlspecialchars($section['title'] ?: $sectionTypeName); ?>
-                                    </div>
-                                </td>
-                                <td style="width: 100px;"><?php echo str_word_count($section['content'] ?? ''); ?> mots</td>
-                                <td style="width: 220px; text-align: right; white-space: nowrap;">
-                                    <a class="button small"
-                                        href="<?php echo $base; ?>/project/<?php echo $project['id']; ?>/section/<?php echo $type; ?>?id=<?php echo $section['id']; ?>">Modifier</a>
-                                    <a class="button small delete"
-                                        href="<?php echo $base; ?>/section/<?php echo $section['id']; ?>/delete"
-                                        onclick="return confirm('Supprimer cette section ?');">Supprimer</a>
-                                </td>
-                            </tr>
-                        <?php endforeach; ?>
-                    </tbody>
-                </table>
+        <details class="panel" <?php echo $afterCount > 0 ? 'open' : ''; ?>>
+            <summary>Sections après les chapitres <span class="panel-count"><?php echo $afterCount; ?></span></summary>
+            <p class="panel-subtitle">Postface, Annexes, Notes, Dos du livre.</p>
+            <div class="sortable-groups" id="afterChaptersGroups">
+                <?php
+                $afterSectionTypes = ['postface', 'appendices', 'notes', 'back_cover'];
+                $sectionsByType = [];
+                foreach ($sectionsAfterChapters as $section) {
+                    $sectionsByType[$section['type']][] = $section;
+                }
+
+                // Determine the order of types based on the first occurrence in sectionsAfterChapters
+                // or the default order if not present.
+                $orderedTypes = [];
+                $seenTypes = [];
+                foreach ($sectionsAfterChapters as $section) {
+                    if (!in_array($section['type'], $seenTypes)) {
+                        $orderedTypes[] = $section['type'];
+                        $seenTypes[] = $section['type'];
+                    }
+                }
+                foreach ($afterSectionTypes as $type) {
+                    if (!in_array($type, $seenTypes)) {
+                        $orderedTypes[] = $type;
+                    }
+                }
+
+                foreach ($orderedTypes as $type):
+                    $isMulti = ($type === 'notes' || $type === 'appendices');
+                    $items = $sectionsByType[$type] ?? [];
+                    $sectionTypeName = \Section::getTypeName($type);
+
+                    // Skip display of single-entry types if not created yet (they will be handled below or shown as empty)
+                    // Actually, let's always show the block header if it's a multi type or if it has items.
+                    if (!$isMulti && empty($items) && $type !== 'postface' && $type !== 'back_cover')
+                        continue;
+                    ?>
+                    <div class="section-group-block" data-type="<?php echo $type; ?>">
+                        <div class="section-group-heading">
+                            <h4>
+                                <span class="group-drag-handle">⠿</span>
+                                <?php echo htmlspecialchars($sectionTypeName); ?>
+                            </h4>
+                            <?php if ($isMulti): ?>
+                                <a class="button small"
+                                    href="<?php echo $base; ?>/project/<?php echo $project['id']; ?>/section/<?php echo $type; ?>">+
+                                    <?php echo ($type === 'notes' ? 'Ajouter une note' : 'Ajouter une annexe'); ?></a>
+                            <?php elseif (empty($items)): ?>
+                                <a class="button small"
+                                    href="<?php echo $base; ?>/project/<?php echo $project['id']; ?>/section/<?php echo $type; ?>">Créer</a>
+                            <?php endif; ?>
+                        </div>
+
+                        <?php if (!empty($items)): ?>
+                            <table class="compact-table">
+                                <tbody class="sortable-items" data-type="<?php echo $type; ?>">
+                                    <?php foreach ($items as $section): ?>
+                                        <tr data-id="<?php echo $section['id']; ?>">
+                                            <td class="item-drag-handle">☰</td>
+                                            <td>
+                                                <div class="preview-trigger"
+                                                    data-preview-content="<?php echo htmlspecialchars($section['content'] ?? ''); ?>">
+                                                    <input type="checkbox" class="export-toggle" data-type="section"
+                                                        data-id="<?php echo $section['id']; ?>" <?php echo ($section['is_exported'] ?? 1) ? 'checked' : ''; ?> title="Inclure dans l'export">
+                                                    <?php echo htmlspecialchars($section['title'] ?: $sectionTypeName); ?>
+                                                </div>
+                                            </td>
+                                            <td class="compact-meta"><?php echo str_word_count($section['content'] ?? ''); ?> mots</td>
+                                            <td class="compact-actions">
+                                                <a class="button small"
+                                                    href="<?php echo $base; ?>/project/<?php echo $project['id']; ?>/section/<?php echo $type; ?>?id=<?php echo $section['id']; ?>">Modifier</a>
+                                                <a class="button small delete"
+                                                    href="<?php echo $base; ?>/section/<?php echo $section['id']; ?>/delete"
+                                                    onclick="return confirm('Supprimer cette section ?');">Supprimer</a>
+                                            </td>
+                                        </tr>
+                                    <?php endforeach; ?>
+                                </tbody>
+                            </table>
+                        <?php else: ?>
+                            <p class="panel-empty">Aucun contenu créé.</p>
+                        <?php endif; ?>
+                    </div>
+                <?php endforeach; ?>
+            </div>
+        </details>
+
+        <details class="panel" <?php echo $characterCount > 0 ? 'open' : ''; ?>>
+            <summary>Personnages <span class="panel-count"><?php echo $characterCount; ?></span></summary>
+            <div class="panel-actions panel-actions-row">
+                <a class="button small" href="<?php echo $base; ?>/project/<?php echo $project['id']; ?>/characters">Gérer les personnages</a>
+            </div>
+            <?php if (empty($characters)): ?>
+                <p class="panel-empty">Aucun personnage défini.</p>
             <?php else: ?>
-                <p style="margin: 0; padding: 10px; font-style: italic; color: #999; font-size: 0.9em;">Aucun contenu créé.</p>
+                <ul class="character-list">
+                    <?php foreach ($characters as $char): ?>
+                        <li><?php echo htmlspecialchars($char['name']); ?></li>
+                    <?php endforeach; ?>
+                </ul>
             <?php endif; ?>
-        </div>
-    <?php endforeach; ?>
+        </details>
+    </aside>
 </div>
-
-<h3>Personnages</h3>
-<p><a class="button" href="<?php echo $base; ?>/project/<?php echo $project['id']; ?>/characters">Gérer les
-        personnages</a></p>
-<?php if (empty($characters)): ?>
-    <p>Aucun personnage défini.</p>
-<?php else: ?>
-    <ul>
-        <?php foreach ($characters as $char): ?>
-            <li><?php echo htmlspecialchars($char['name']); ?></li>
-        <?php endforeach; ?>
-    </ul>
-<?php endif; ?>
 
 <script src="https://cdn.jsdelivr.net/npm/sortablejs@1.15.0/Sortable.min.js"></script>
 <style>
+    .project-page {
+        margin-bottom: 20px;
+    }
+
+    .project-header {
+        display: flex;
+        gap: 24px;
+        align-items: flex-start;
+        justify-content: space-between;
+        background: #f8f9fc;
+        padding: 20px;
+        border-radius: 14px;
+        border: 1px solid #eef0f4;
+        box-shadow: 0 10px 25px rgba(15, 23, 42, 0.05);
+    }
+
+    .project-header__content {
+        flex: 1;
+        min-width: 0;
+    }
+
+    .project-title-row {
+        display: flex;
+        flex-wrap: wrap;
+        align-items: center;
+        justify-content: space-between;
+        gap: 12px;
+    }
+
+    .project-title-row h2 {
+        margin: 0;
+    }
+
+    .project-actions {
+        display: flex;
+        gap: 8px;
+        flex-wrap: wrap;
+    }
+
+    .project-description {
+        margin: 10px 0 16px;
+        color: #555;
+    }
+
+    .project-meta {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+        gap: 12px;
+    }
+
+    .meta-card {
+        background: #fff;
+        border: 1px solid #eef0f4;
+        border-radius: 12px;
+        padding: 12px 14px;
+        display: flex;
+        flex-direction: column;
+        gap: 4px;
+        box-shadow: 0 6px 16px rgba(15, 23, 42, 0.06);
+    }
+
+    .meta-label {
+        font-size: 0.75rem;
+        text-transform: uppercase;
+        letter-spacing: 0.04em;
+        color: #8a94a6;
+    }
+
+    .meta-sub {
+        font-size: 0.85rem;
+        color: #6b7280;
+    }
+
+    .progress-track {
+        background: #eef1f6;
+        height: 8px;
+        border-radius: 999px;
+        margin-top: 6px;
+        overflow: hidden;
+    }
+
+    .progress-bar {
+        height: 100%;
+        background: linear-gradient(90deg, #3f51b5, #6c7ff2);
+    }
+
+    .project-cover img {
+        max-height: 190px;
+        border-radius: 12px;
+        box-shadow: 0 10px 25px rgba(0, 0, 0, 0.12);
+    }
+
+    .progress-container {
+        background: #f6f7fb;
+        padding: 16px 20px;
+        border-radius: 12px;
+        margin-bottom: 20px;
+        border: 1px solid #eef0f4;
+    }
+
+    .progress-shell {
+        background: #e2e8f0;
+        height: 10px;
+        border-radius: 999px;
+        margin-top: 10px;
+        overflow: hidden;
+    }
+
+    .progress-fill {
+        background: linear-gradient(90deg, #3f51b5, #6c7ff2);
+        height: 100%;
+    }
+
+    .project-grid {
+        display: grid;
+        grid-template-columns: minmax(0, 2fr) minmax(280px, 1fr);
+        gap: 24px;
+        align-items: start;
+    }
+
+    .panel {
+        background: #fff;
+        border: 1px solid #eef0f4;
+        border-radius: 14px;
+        padding: 16px;
+        box-shadow: 0 10px 30px rgba(15, 23, 42, 0.06);
+        margin-bottom: 16px;
+    }
+
+    .panel summary {
+        font-weight: 600;
+        cursor: pointer;
+        list-style: none;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 8px;
+    }
+
+    .panel summary::-webkit-details-marker {
+        display: none;
+    }
+
+    .panel summary::after {
+        content: '▾';
+        color: #94a3b8;
+        transition: transform 0.2s ease;
+    }
+
+    details[open] summary::after {
+        transform: rotate(180deg);
+    }
+
+    .panel-count {
+        background: #eef2ff;
+        color: #3f51b5;
+        border-radius: 999px;
+        padding: 2px 8px;
+        font-size: 0.75rem;
+        font-weight: 600;
+    }
+
+    .panel-heading {
+        display: flex;
+        align-items: flex-start;
+        justify-content: space-between;
+        gap: 16px;
+        margin-bottom: 12px;
+    }
+
+    .panel-subtitle {
+        margin: 4px 0 0;
+        font-size: 0.9rem;
+        color: #7a8194;
+    }
+
+    .panel-actions {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px;
+    }
+
+    .panel-actions-row {
+        margin: 12px 0;
+    }
+
+    .panel-empty {
+        margin: 10px 0 0;
+        padding: 10px 12px;
+        font-style: italic;
+        color: #9aa0ab;
+        background: #f8f9fb;
+        border-radius: 10px;
+    }
+
+    .section-group-block {
+        margin-top: 12px;
+        border: 1px solid #eef0f4;
+        padding: 10px 12px;
+        border-radius: 12px;
+        background: #fbfcff;
+    }
+
+    .section-group-heading {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 8px;
+        border-bottom: 1px solid #eef0f4;
+        padding-bottom: 6px;
+    }
+
+    .section-group-heading h4 {
+        margin: 0;
+        font-size: 0.95rem;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+    }
+
+    .group-drag-handle {
+        cursor: move;
+        color: #c4cad6;
+        margin-right: 4px;
+    }
+
+    .item-drag-handle {
+        width: 24px;
+        cursor: move;
+        color: #c4cad6;
+    }
+
+    .compact-table {
+        margin-bottom: 0;
+    }
+
+    .compact-meta {
+        width: 70px;
+        text-align: right;
+        font-size: 0.8rem;
+        color: #7a8194;
+        white-space: nowrap;
+    }
+
+    .compact-actions {
+        width: 160px;
+        text-align: right;
+        white-space: nowrap;
+    }
+
+    .character-list {
+        list-style: none;
+        padding-left: 0;
+        column-count: 2;
+        column-gap: 12px;
+        margin: 0;
+    }
+
+    .character-list li {
+        padding: 6px 0;
+        break-inside: avoid;
+    }
+
+    @media (max-width: 1024px) {
+        .project-grid {
+            grid-template-columns: 1fr;
+        }
+    }
+
+    @media (max-width: 768px) {
+        .project-header {
+            flex-direction: column;
+        }
+
+        .character-list {
+            column-count: 1;
+        }
+    }
+
     .sortable-handle {
         cursor: move;
         color: #999;
