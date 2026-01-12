@@ -291,6 +291,8 @@
         var formData = new FormData();
         formData.append('title', title);
         formData.append('content', content);
+        formData.append('act_id', actId);
+        formData.append('parent_id', parentId);
 
         fetch('<?php echo $base; ?>/chapter/' + chapterId + '/save', {
             method: 'POST',
