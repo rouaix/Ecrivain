@@ -1,0 +1,33 @@
+<h2>Personnages du projet « {{ @project.title }} »</h2>
+<p><a class="button" href="{{ @base }}/project/{{ @project.id }}">Retour au projet</a></p>
+<p><a class="button" href="{{ @base }}/project/{{ @project.id }}/character/create">Ajouter un
+        personnage</a></p>
+<check if="{{ empty(@characters) }}">
+    <true>
+        <p>Aucun personnage pour ce projet.</p>
+    </true>
+    <false>
+        <table>
+            <thead>
+                <tr>
+                    <th>Nom</th>
+                    <th>Description</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                <repeat group="{{ @characters }}" value="{{ @char }}">
+                    <tr>
+                        <td>{{ @char.name }}</td>
+                        <td>{{ nl2br(@char.description) }}</td>
+                        <td>
+                            <a class="button" href="{{ @base }}/character/{{ @char.id }}/edit">Modifier</a>
+                            <a class="button delete" href="{{ @base }}/character/{{ @char.id }}/delete"
+                                onclick="return confirm('Supprimer ce personnage ?');">Supprimer</a>
+                        </td>
+                    </tr>
+                </repeat>
+            </tbody>
+        </table>
+    </false>
+</check>

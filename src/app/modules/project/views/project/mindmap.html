@@ -1,0 +1,583 @@
+<h2>Carte mentale : {{ @project.title }}</h2>
+<p><a class="button" href="{{ @base }}/project/{{ @project.id }}">Retour au projet</a></p>
+<div id="mindmap"
+    style="width:100%; height:800px; background: #f8f9fa; cursor: grab; border-radius: 16px; border: 1px solid #e0e0e0; overflow: hidden;">
+</div>
+<p
+    style="color: #5f6368; font-family: 'Roboto', sans-serif; font-size: 14px; margin-top: 15px; background: #fff; padding: 12px 20px; border-radius: 24px; border: 1px solid #e0e0e0; display: inline-block;">
+    <strong style="color: #202124;">Guide :</strong>
+    Projet (Noir) • Actes (Orange) • Chapitres (Rose) • Personnages (Bleu) — <span style="opacity:0.7">Zoom & Pan
+        disponibles</span>
+</p>
+
+<!-- Content Popup -->
+<div id="node-popup" class="popup-overlay" style="display:none;">
+    <div class="popup-content">
+        <span class="popup-close" onclick="closePopup()">&times;</span>
+        <h3 id="popup-title"></h3>
+        <div id="popup-body"></div>
+    </div>
+</div>
+
+<style>
+    @import url('https://fonts.googleapis.com/css2?family=Google+Sans:wght@400;500;700&family=Roboto:wght@400;500&display=swap');
+
+    #mindmap {
+        font-family: 'Google Sans', 'Roboto', sans-serif;
+    }
+
+    .popup-overlay {
+        position: fixed;
+        z-index: 1000;
+        left: 0;
+        top: 0;
+        width: 100%;
+        height: 100%;
+        overflow: auto;
+        background-color: rgba(32, 33, 36, 0.6);
+        /* Google Grey Overlay */
+        backdrop-filter: blur(2px);
+        display: flex;
+        justify-content: center;
+        align-items: center;
+    }
+
+    .popup-content {
+        background-color: #ffffff;
+        margin: auto;
+        padding: 30px;
+        border: none;
+        width: 80%;
+        max-width: 700px;
+        max-height: 80vh;
+        overflow-y: auto;
+        border-radius: 24px;
+        /* Large radius */
+        box-shadow: 0 1px 3px rgba(60, 64, 67, 0.3), 0 4px 8px 3px rgba(60, 64, 67, 0.15);
+        position: relative;
+    }
+
+    .popup-close {
+        color: #5f6368;
+        float: right;
+        font-size: 24px;
+        font-weight: bold;
+        cursor: pointer;
+        transition: color 0.2s;
+    }
+
+    .popup-close:hover {
+        color: #202124;
+    }
+
+    #popup-title {
+        margin-top: 0;
+        font-family: 'Google Sans', sans-serif;
+        color: #202124;
+    }
+
+    #popup-body {
+        font-family: 'Roboto', sans-serif;
+        line-height: 1.6;
+        color: #3c4043;
+    }
+</style>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/d3/7.8.5/d3.min.js"></script>
+<script>
+    var rawData = {{ @mindmapData | raw }};
+
+    // Safety Check
+    if (!rawData || !rawData.nodes || !rawData.links) {
+        d3.select('#mindmap').html('<p style="padding:20px; color:red;">Erreur de chargement des données.</p>');
+    }
+
+    // --- 1. Data Transformation: Flat -> Hierarchy ---
+    var nodesMap = {};
+    rawData.nodes.forEach(n => {
+        n.children = [];
+        n._children = []; // For collapse state storage
+        nodesMap[n.id] = n;
+    });
+
+    // Identify Root (Project)
+    var rootNode = rawData.nodes.find(n => n.type === 'project');
+    if (!rootNode) rootNode = rawData.nodes[0]; // Fallback
+
+    // Build Hierarchy
+    rawData.links.forEach(l => {
+        var parentId = (typeof l.source === 'object') ? l.source.id : l.source;
+        var childId = (typeof l.target === 'object') ? l.target.id : l.target;
+
+        // In flat D3 links, direction might be ambiguous, but usually Source -> Target
+        // Our controller sends: Project -> Act, Act -> Chapter
+        // Exception: Project -> Character.
+
+        // We need to enforce correct parent-child relationship for the Tree
+        var parent = nodesMap[parentId];
+        var child = nodesMap[childId];
+
+        if (parent && child) {
+            parent.children.push(child);
+            child.parent = parent; // Link back for reference
+        }
+    });
+
+    // Separation: Characters vs Content
+    // We will artificially split the root's children into "Left" (Characters) and "Right" (Acts/Others)
+    var rightChildren = [];
+    var leftChildren = [];
+
+    if (rootNode.children) {
+        rootNode.children.forEach(child => {
+            if (child.type === 'character') {
+                leftChildren.push(child);
+            } else {
+                rightChildren.push(child);
+            }
+        });
+        // Clear main children so `d3.hierarchy` doesn't double count if we treat them separately
+        // actually we will construct a single hierarchy but manually position the first level
+    }
+
+    // --- 2. Setup D3 Tree ---
+    var containerDiv = document.getElementById('mindmap');
+    var width = containerDiv.clientWidth || 1000;
+    var height = containerDiv.clientHeight || 800;
+
+    var svg = d3.select('#mindmap').html('').append('svg')
+        .attr('width', '100%')
+        .attr('height', '100%')
+        .attr('viewBox', [-width / 2, -height / 2, width, height]);
+
+    var gContainer = svg.append('g');
+
+    // Create Layers to ensure Links are always behind Nodes
+    var gLinksLayer = gContainer.append('g').attr('class', 'links-layer');
+    var gNodesLayer = gContainer.append('g').attr('class', 'nodes-layer');
+
+    // Zoom
+    svg.call(d3.zoom().scaleExtent([0.1, 3]).on('zoom', e => {
+        gContainer.attr('transform', e.transform);
+    }));
+
+    // Tree Layout
+    // nodeSize: [Height (vertical spacing), Width (horizontal depth)]
+    var treeLayout = d3.tree().nodeSize([70, 200]);
+
+    // Convert to D3 Hierarchy
+    var root = d3.hierarchy(rootNode, d => d.children);
+
+    // Styling
+    const COLORS = {
+        project: '#202124',
+        act: '#EF6C00',
+        chapter: '#E91E63',
+        character: '#1976D2',
+        default: '#5f6368',
+        background: '#ffffff',
+        text: '#3c4043',
+        link: '#e0e0e0'
+    };
+
+    // Collapse logic initialization
+    // Function to recursively collapse nodes
+    function collapse(d) {
+        if (d.children) {
+            d._children = d.children;
+            d._children.forEach(collapse);
+            d.children = null;
+        }
+    }
+
+    // Collapse all descendants of root initially
+    if (root.children) {
+        root.children.forEach(collapse);
+    }
+
+    var i = 0;
+    update(root);
+
+    function update(source) {
+
+        treeLayout(root);
+
+        // --- 1. Measure Widths & Assign Sides ---
+        var canvas = document.createElement('canvas');
+        var context = canvas.getContext('2d');
+        context.font = "500 14px 'Google Sans', Roboto, sans-serif";
+
+        var leftDepths = {};
+        var rightDepths = {};
+
+        root.descendants().forEach(d => {
+            context.font = "500 14px 'Google Sans', Roboto, sans-serif";
+            var textWidth = context.measureText(d.data.name).width;
+
+            if ((d.data.type === 'act' || d.data.type === 'chapter') && d.data.description) {
+                context.font = "italic 11px 'Google Sans', Roboto, sans-serif";
+                var descWidth = context.measureText(d.data.description).width;
+                textWidth = Math.max(textWidth, descWidth);
+            }
+
+            // Calculate raw width required
+            var requiredWidth = textWidth + 80;
+            d.rawWidth = requiredWidth;
+
+            var ancestor = d;
+            while (ancestor.parent && ancestor.parent !== root) {
+                ancestor = ancestor.parent;
+            }
+
+            if (d.depth === 0) {
+                d.side = 'root';
+                // Root keeps its size, but we track for spacing
+                rightDepths[0] = Math.max(rightDepths[0] || 0, requiredWidth / 2);
+                leftDepths[0] = Math.max(leftDepths[0] || 0, requiredWidth / 2);
+            } else if (['character', 'note', 'character_group', 'note_group'].includes(ancestor.data.type)) {
+                // LEFT SIDE
+                d.side = 'left';
+                leftDepths[d.depth] = Math.max(leftDepths[d.depth] || 0, requiredWidth);
+            } else {
+                // RIGHT SIDE (Acts, Sections)
+                d.side = 'right';
+                rightDepths[d.depth] = Math.max(rightDepths[d.depth] || 0, requiredWidth);
+            }
+        });
+
+        // --- 1.5. Standardize Widths per Column ---
+        root.descendants().forEach(d => {
+            if (d.depth > 0) {
+                if (d.side === 'left') {
+                    d.width = leftDepths[d.depth];
+                } else {
+                    d.width = rightDepths[d.depth];
+                }
+            } else {
+                d.width = d.rawWidth; // Root keeps its own size
+            }
+        });
+
+        // --- 2. Calculate Horizontal Positions (Y) per Depth ---
+        var rightY = {};
+        var leftY = {};
+
+        rightY[0] = 0;
+        leftY[0] = 0;
+
+        var maxDepth = 0;
+        root.descendants().forEach(d => maxDepth = Math.max(maxDepth, d.depth));
+
+        for (var i = 1; i <= maxDepth; i++) {
+            // Right Side
+            var prevWR = (i === 1) ? rightDepths[0] : rightDepths[i - 1];
+            rightY[i] = rightY[i - 1] + prevWR + 60;
+
+            // Left Side
+            var prevWL = (i === 1) ? leftDepths[0] : leftDepths[i - 1];
+            leftY[i] = leftY[i - 1] + prevWL + 60;
+        }
+
+        // --- 3. Apply Positions ---
+        root.descendants().forEach(d => {
+            if (d.side === 'left') {
+                d.y = -leftY[d.depth];
+            } else if (d.side === 'right') {
+                d.y = rightY[d.depth];
+            } else {
+                d.y = 0;
+            }
+        });
+
+        var nodes = root.descendants();
+        var links = root.links();
+
+        // --- LINKS ---
+        var link = gLinksLayer.selectAll('path.link')
+            .data(links, d => d.target.id);
+
+        var linkEnter = link.enter().append('path')
+            .attr('class', 'link')
+            .attr('fill', 'none')
+            .attr('stroke', COLORS.link)
+            .attr('stroke-width', 1.5);
+
+        // Custom Link Path Logic to handle different anchors
+        function getLinkPath(d) {
+            var s = d.source;
+            var t = d.target;
+
+            // Source Output Point
+            var sx = s.x;
+            var sy = s.y;
+
+            if (s.side === 'root') {
+                // If target is left, output left edge (-width/2)
+                // If target is right, output right edge (+width/2)
+                if (t.side === 'left') sy -= s.width / 2;
+                else sy += s.width / 2;
+            } else if (s.side === 'right') {
+                sy += s.width; // Output from right edge
+            } else if (s.side === 'left') {
+                sy -= s.width; // Output from left edge
+            }
+
+            // Target Input is just t.y because we anchored t.y to the input edge
+            var tx = t.x;
+            var ty = t.y;
+
+            // Orthogonal
+            var midY = (sy + ty) / 2;
+            return `M ${sy} ${sx} L ${midY} ${sx} L ${midY} ${tx} L ${ty} ${tx}`;
+        }
+
+        var linkUpdate = linkEnter.merge(link);
+        linkUpdate.transition().duration(200).attr('d', getLinkPath);
+
+        link.exit().transition().duration(200).remove();
+
+        // --- NODES ---
+        var node = gNodesLayer.selectAll('g.node')
+            .data(nodes, d => d.data.id || (d.data.id = ++i));
+
+        var nodeEnter = node.enter().append('g')
+            .attr('class', 'node')
+            .attr('transform', d => `translate(${source.y0 || root.y},${source.x0 || root.x})`)
+            .on('click', click);
+
+        // Rect
+        nodeEnter.append('rect')
+            .attr('rx', 20)
+            .attr('ry', 20)
+            .attr('stroke', '#dadce0')
+            .attr('stroke-width', 1)
+            .attr('fill', '#fff')
+            .style('filter', 'drop-shadow(0 1px 2px rgba(60,64,67,0.3))');
+
+        nodeEnter.append('circle')
+            .attr('r', 5)
+            .attr('class', 'indicator')
+            .attr('fill', d => COLORS[d.data.type] || COLORS.default);
+
+        nodeEnter.append('text')
+            .attr('dy', '.35em')
+            .attr('class', 'label')
+            .style('font-family', 'Google Sans, Roboto, sans-serif')
+            .style('font-size', '14px')
+            .style('font-weight', '500')
+            .style('fill', COLORS.text)
+            .style('pointer-events', 'none')
+            .each(function (d) {
+                // For Project Root, we might have multiple lines later
+            });
+
+        nodeEnter.append('text')
+            .attr('class', 'collapse-icon')
+            .attr('dy', '.35em')
+            .style('font-size', '10px')
+            .style('fill', '#5f6368')
+            .style('cursor', 'pointer');
+
+        var nodeUpdate = nodeEnter.merge(node);
+        nodeUpdate.transition().duration(200)
+            .attr('transform', d => `translate(${d.y},${d.x})`);
+
+        nodeUpdate.each(function (d) {
+            var g = d3.select(this);
+            var isRoot = d.data.type === 'project';
+            var hasDesc = (d.data.type === 'act' || d.data.type === 'chapter') && d.data.description;
+
+            var w = d.width;
+            var h = 56; // Standard Height for consistent spacing (was 36 or 56)
+
+            // Special Sizing for Root
+            if (isRoot) {
+                h = 80; // Taller for 3 lines
+                w = d.width + 40; // bit wider
+            }
+
+            var xPos = 0;
+            if (d.side === 'root') xPos = -w / 2;
+            else if (d.side === 'left') xPos = -w;
+
+            g.select('rect')
+                .attr('x', xPos)
+                .attr('y', -h / 2)
+                .attr('width', w)
+                .attr('height', h)
+                .attr('rx', isRoot ? 10 : 20)
+                .attr('ry', isRoot ? 10 : 20)
+                .attr('stroke', (d._children) ? (COLORS[d.data.type] || COLORS.default) : '#dadce0')
+                .attr('stroke-width', (d._children || isRoot) ? 2 : 1);
+
+            // Text Rendering
+            var label = g.select('.label');
+            label.exit().remove();
+            label.text(null); // Clear previous text
+
+            if (isRoot) {
+                // Title
+                label.append('tspan')
+                    .attr('x', xPos + w / 2)
+                    .attr('dy', '-1.2em')
+                    .style('font-weight', 'bold')
+                    .style('font-size', '16px')
+                    .text(d.data.name);
+
+                // Description (Truncated)
+                var desc = d.data.description || '';
+                if (desc.length > 50) desc = desc.substring(0, 50) + '...';
+
+                label.append('tspan')
+                    .attr('x', xPos + w / 2)
+                    .attr('dy', '1.4em')
+                    .style('font-style', 'italic')
+                    .style('font-size', '12px')
+                    .style('fill', '#5f6368')
+                    .text(desc);
+
+                // Author
+                var auth = d.data.author || '';
+                if (auth) {
+                    label.append('tspan')
+                        .attr('x', xPos + w / 2)
+                        .attr('dy', '1.4em')
+                        .style('font-weight', 'normal')
+                        .style('font-size', '12px')
+                        .style('fill', '#3c4043')
+                        .text('par ' + auth);
+                } else {
+                    // Placeholder or empty if no author
+                }
+
+                label.attr('text-anchor', 'middle');
+            } else if ((d.data.type === 'act' || d.data.type === 'chapter') && d.data.description) {
+                // Act/Chapter with Description
+                label.append('tspan')
+                    .attr('x', xPos + w / 2)
+                    .attr('dy', '-0.4em')
+                    .style('font-weight', '500')
+                    .style('font-size', '14px')
+                    .text(d.data.name);
+
+                label.append('tspan')
+                    .attr('x', xPos + w / 2)
+                    .attr('dy', '1.3em')
+                    .style('font-style', 'italic')
+                    .style('font-size', '11px')
+                    .style('fill', '#5f6368')
+                    .text(d.data.description);
+
+                label.attr('text-anchor', 'middle');
+            } else {
+                // Standard Node
+                label.text(d.data.name)
+                    .attr('x', xPos + w / 2)
+                    .attr('dy', '.35em')
+                    .attr('text-anchor', 'middle')
+                    .style('font-weight', '500')
+                    .style('font-size', '14px');
+            }
+
+            // Indicator (Left side of pill) - Hide for root
+            g.select('.indicator')
+                .attr('cx', xPos + 12)
+                .attr('cy', 0)
+                .style('display', isRoot ? 'none' : 'block');
+
+            // Collapse Icon (Right side of pill)
+            var icon = g.select('.collapse-icon');
+            if ((d.children || d._children) && !isRoot) {
+                icon.attr('x', xPos + w - 12)
+                    .text(d._children ? '+' : '−')
+                    .style('opacity', 1);
+            } else {
+                icon.style('opacity', 0);
+            }
+        });
+
+        // Hover
+        nodeUpdate.on('mouseenter', function (e, d) {
+            d3.select(this).select('rect').attr('stroke', COLORS[d.data.type]);
+
+        }).on('mouseleave', function (e, d) {
+            if (!d._children)
+                d3.select(this).select('rect').attr('stroke', '#dadce0');
+        });
+
+        var nodeExit = node.exit().transition().duration(200)
+            .attr('transform', d => `translate(${source.y},${source.x})`)
+            .remove();
+
+        nodeExit.select('rect').attr('fill-opacity', 0);
+        nodeExit.select('text').style('fill-opacity', 0);
+
+        nodes.forEach(d => {
+            d.x0 = d.x;
+            d.y0 = d.y;
+        });
+    }
+
+    // Toggle children on click
+    function click(event, d) {
+        if (event.defaultPrevented) return;
+
+        // Popup logic
+        var hasContent = d.data.content && d.data.content.trim() !== '';
+        // Show popup for content-heavy types
+        if (
+            (d.data.type === 'character' || d.data.type === 'note' || d.data.type === 'section' || (d.data.type === 'chapter' && d.data.is_subchapter))
+            && hasContent
+        ) {
+            showPopup(d.data);
+            // If resizing on click is needed or toggling children:
+            if (d.children || d._children) {
+                // continue to toggle
+            } else {
+                return;
+            }
+        }
+
+        // Collapse Logic
+        if (d.children) {
+            d._children = d.children;
+            d.children = null;
+        } else {
+            d.children = d._children;
+            d._children = null;
+        }
+        update(d);
+    }
+
+    function diagonal(s, d) {
+        // Orthogonal Link Path (Straight lines with right angles)
+        // M y0 x0 -> L (y0+y1)/2 x0 -> L (y0+y1)/2 x1 -> L y1 x1
+
+        // Horizontal midpoint
+        var midY = (s.y + d.y) / 2;
+
+        // Simple Orthogonal (Manhattan)
+        return `M ${s.y} ${s.x}
+                L ${midY} ${s.x}
+                L ${midY} ${d.x}
+                L ${d.y} ${d.x}`;
+    }
+
+    function showPopup(d) {
+        document.getElementById('popup-title').innerText = d.name;
+        document.getElementById('popup-body').innerHTML = d.content ? d.content : '<em>Pas de contenu.</em>';
+        document.getElementById('node-popup').style.display = 'flex';
+    }
+
+    function closePopup() {
+        document.getElementById('node-popup').style.display = 'none';
+    }
+
+    window.onclick = function (event) {
+        var modal = document.getElementById('node-popup');
+        if (event.target == modal) {
+            modal.style.display = "none";
+        }
+    }
+
+</script>

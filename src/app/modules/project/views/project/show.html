@@ -1,0 +1,801 @@
+<div class="project-page">
+    <div class="project-header">
+        <check if="{{ @coverImage }}">
+            <div class="project-cover">
+                <img src="{{ @base . @coverImage }}" alt="Couverture">
+            </div>
+        </check>
+        <div class="project-header__content">
+            <div class="project-title-row">
+                <h2>{{ @project.title }}</h2>
+                <div class="project-actions">
+                    <a class="button" href="{{ @base }}/project/{{ @project.id }}/mindmap">Carte mentale</a>
+                    <a class="button" href="{{ @base }}/project/{{ @project.id }}/export">Exporter Texte</a>
+                    <a class="button" href="{{ @base }}/project/{{ @project.id }}/export/vector"
+                        title="Pour vectorisation IA">Exporter JSON</a>
+                    <a class="button" href="{{ @base }}/project/{{ @project.id }}/export/clean"
+                        title="Texte brut minuscule">Exporter Texte Brut</a>
+                    <a class="button" href="{{ @base }}/project/{{ @project.id }}/export/summaries"
+                        title="Exporter uniquement les résumés">Exporter Résumés</a>
+                    <a class="button" href="{{ @base }}/project/{{ @project.id }}/export/html">Exporter HTML</a>
+                    <a class="button" href="{{ @base }}/project/{{ @project.id }}/export/epub">Exporter Epub</a>
+                </div>
+            </div>
+            <check if="{{ !empty(@project.description) }}">
+                <div class="project-description">{{ nl2br(@project.description) }}</pdiv>
+            </check>
+            <div class="project-meta">
+                <div class="meta-card">
+                    <span class="meta-label">Objectif</span>
+                    <strong>{{ @stats.pages_target }} pages</strong>
+                    <span class="meta-sub">{{ @stats.target_words }} mots</span>
+                </div>
+                <div class="meta-card">
+                    <span class="meta-label">Progression</span>
+                    <strong>{{ @stats.progress_percent }}% - {{ @stats.pages_current }} Pages</strong>
+                    <span class="meta-sub">({{ @stats.total_words }} mots) ou ({{ @stats.wpp }} mots par page - {{
+                        @stats.lpp }} lignes par page)</span>
+                </div>
+            </div>
+            <div class="progress-track">
+                <div class="progress-bar" style="width: {{ @stats.progress_percent }}%;"></div>
+            </div>
+        </div>
+
+    </div>
+
+</div>
+
+<div class="project-split-layout">
+    <!-- LEFT COLUMN (40%) -->
+    <div class="project-col-left">
+
+        <!-- Notes Panel -->
+        <details class="panel" id="panel-notes" data-persist="true">
+            <summary>Notes <span class="panel-count">{{ @stats.note_count }}</span></summary>
+            <div class="section-group-block" data-type="notes">
+                <div class="section-group-heading">
+                    <h4>Notes du projet</h4>
+                    <a class="button small" href="{{ @base }}/project/{{ @project.id }}/note/edit">+ Ajouter une
+                        note</a>
+                </div>
+                <check if="{{ !empty(@notes) }}">
+                    <true>
+                        <table class="compact-table data-table">
+                            <tbody class="sortable-items" data-type="notes">
+                                <repeat group="{{ @notes }}" value="{{ @note }}">
+                                    <tr data-id="{{ @note.id }}">
+                                        <td>
+                                            <div class="notes-actions">
+                                                <input type="checkbox" class="export-toggle" data-type="note"
+                                                    data-id="{{ @note.id }}" {{ @note.is_exported_attr }}
+                                                    title="Inclure dans l'export">
+                                                <input type="number" class="order-input" data-type="note"
+                                                    data-id="{{ @note.id }}" value="{{ @note.order_index + 1 }}">
+                                                {{ @note.title ?: 'Note sans titre' }}
+                                            </div>
+                                        </td>
+                                        <td class="compact-meta" style="width: 80px;">{{ @note.wc }} mots</td>
+                                        <td class="compact-actions" style="width: 200px;">
+                                            <button class="button small preview-btn" data-type="note"
+                                                data-id="{{ @note.id }}" title="Aperçu rapide">Voir</button>
+                                            <a class="button small"
+                                                href="{{ @base }}/project/{{ @project.id }}/note/edit?id={{ @note.id }}">Modifier</a>
+                                            <a class="button small delete" href="{{ @base }}/note/{{ @note.id }}/delete"
+                                                onclick="return confirm('Supprimer cette note ?');">Supprimer</a>
+                                        </td>
+                                    </tr>
+                                </repeat>
+                            </tbody>
+                        </table>
+                    </true>
+                    <false>
+                        <p class="panel-empty">Aucune note créée.</p>
+                    </false>
+                </check>
+            </div>
+        </details>
+
+        <details class="panel" id="panel-characters" data-persist="true">
+            <summary>Personnages <span class="panel-count">{{ @stats.character_count }}</span></summary>
+            <check if="{{ empty(@characters) }}">
+                <true>
+                    <p class="panel-empty">Aucun personnage défini.</p>
+                </true>
+                <false>
+                    <ul class="character-list">
+                        <repeat group="{{ @characters }}" value="{{ @char }}">
+                            <li>{{ @char.name }}</li>
+                        </repeat>
+                    </ul>
+                </false>
+            </check>
+            <div class="panel-actions panel-actions-row">
+                <a class="button small" href="{{ @base }}/project/{{ @project.id }}/characters">Gérer les
+                    personnages</a>
+            </div>
+        </details>
+    </div>
+
+    <!-- RIGHT COLUMN (60%) -->
+    <div class="project-col-right">
+
+        <!-- Before Groups -->
+        <details class="panel" id="panel-before" data-persist="true">
+            <summary>Sections avant les chapitres <span class="panel-count">{{ @stats.before_count }}</span></summary>
+            <div class="sortable-groups" id="beforeChaptersGroups">
+                <repeat group="{{ @beforeGroups }}" value="{{ @group }}">
+                    <div class="section-group-block" data-type="{{ @group.type }}">
+                        <div class="section-group-heading">
+                            <h4>
+                                {{ @group.name }}
+                            </h4>
+                            <check if="{{ @group.show_create }}">
+                                <a class="button small"
+                                    href="{{ @base }}/project/{{ @project.id }}/section/{{ @group.type }}">Créer</a>
+                            </check>
+                        </div>
+
+                        <check if="{{ !empty(@group.items) }}">
+                            <true>
+                                <table class="compact-table data-table">
+                                    <tbody class="sortable-items" data-type="{{ @group.type }}">
+                                        <repeat group="{{ @group.items }}" value="{{ @section }}">
+                                            <tr data-id="{{ @section.id }}">
+                                                <td>
+                                                    <div class="section-actions">
+                                                        <input type="checkbox" class="export-toggle" data-type="section"
+                                                            data-id="{{ @section.id }}" {{ @section.is_exported_attr }}
+                                                            title="Inclure dans l'export">
+                                                        <input type="number" class="order-input" data-type="section"
+                                                            data-id="{{ @section.id }}"
+                                                            value="{{ @section.order_index + 1 }}">
+                                                        {{ @section.title ?: @group.name }}
+                                                    </div>
+                                                </td>
+                                                <td class="compact-meta stats">{{ @section.wc }} mots
+                                                </td>
+                                                <td class="compact-actions actions">
+                                                    <button class="button small preview-btn" data-type="section"
+                                                        data-id="{{ @section.id }}" title="Aperçu rapide">Voir</button>
+                                                    <a class="button small"
+                                                        href="{{ @base }}/project/{{ @project.id }}/section/{{ @group.type }}?id={{ @section.id }}">Modifier</a>
+                                                    <a class="button small delete"
+                                                        href="{{ @base }}/section/{{ @section.id }}/delete"
+                                                        onclick="return confirm('Supprimer cette section ?');">Supprimer</a>
+                                                </td>
+                                            </tr>
+                                        </repeat>
+                                    </tbody>
+                                </table>
+                            </true>
+                            <false>
+                                <p class="panel-empty">Aucun contenu créé.</p>
+                            </false>
+                        </check>
+                    </div>
+                </repeat>
+            </div>
+        </details>
+
+        <!-- Chapters -->
+        <section class="panel panel-open">
+            <div class="panel-heading">
+                <div>
+                    <h3>Actes et Chapitres</h3>
+                    <p class="panel-subtitle">Structure principale du récit.</p>
+                </div>
+                <div class="panel-actions">
+                    <a class="button" href="{{ @base }}/project/{{ @project.id }}/act/create">Ajouter un acte</a>
+                    <a class="button" href="{{ @base }}/project/{{ @project.id }}/chapter/create">Ajouter un
+                        chapitre</a>
+                </div>
+            </div>
+
+            <check if="{{ empty(@acts) && empty(@chaptersWithoutAct) }}">
+                <true>
+                    <p>Aucun chapitre ou acte pour ce projet.</p>
+                </true>
+                <false>
+                    <repeat group="{{ @acts }}" value="{{ @act }}">
+                        <details class="act-container" id="act-{{ @act.id }}" data-persist="true">
+                            <summary class="act-summary">
+                                <h4>
+                                    <input type="number" class="order-input" data-type="act" data-id="{{ @act.id }}"
+                                        value="{{ @act.order_index + 1 }}" onclick="event.stopPropagation();">
+                                    {{ @act.title }}
+                                    <span
+                                        style="font-weight: normal; font-size: 0.75rem; color: #777; margin-left: 0.5rem;">
+                                        ({{ @act.stats_chapters }} chapitres / {{ @act.stats_pages }} pages)
+                                    </span>
+                                </h4>
+                                <div class="act-actions">
+                                    <button class="button small ai-act-summary-btn" data-id="{{ @act.id }}"
+                                        onclick="event.stopPropagation();"
+                                        title="Générer un résumé de l'acte via IA">Résumé
+                                        IA</button>
+                                    <a class="button small" href="{{ @base }}/act/{{ @act.id }}/edit"
+                                        onclick="event.stopPropagation();">Modifier l'acte</a>
+                                    <a class="button small delete" href="{{ @base }}/act/{{ @act.id }}/delete"
+                                        onclick="event.stopPropagation(); return confirm('Supprimer cet acte et tous ses chapitres ?');">Supprimer</a>
+                                </div>
+                            </summary>
+                            <check if="{{ !empty(@act.content) }}">
+                                <div class="act-description">
+                                    {{ @act.content | raw }}
+                                </div>
+                            </check>
+                            <check if="{{ !empty(@act.resume) }}">
+                                <div class="act-resume">
+                                    <strong>Résumé :</strong><br />
+                                    {{ @act.resume | raw }}
+                                </div>
+                            </check>
+
+                            <check if="{{ !isset(@chaptersByAct[@act.id]) }}">
+                                <true>
+                                    <p>Aucun chapitre dans cet acte.</p>
+                                </true>
+                                <false>
+                                    <details class="act-chapters" id="act-chapters-{{ @act.id }}" data-persist="true">
+                                        <summary>Chapitres de l'acte <span class="panel-count">{{
+                                                count(@chaptersByAct[@act.id]) }}</span></summary>
+                                        <table class="data-table">
+                                            <thead>
+                                                <tr>
+                                                    <th>Titre</th>
+                                                    <th class="stats">Stats</th>
+                                                    <th class="actions">Actions</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody class="sortable-chapters">
+                                                <repeat group="{{ @chaptersByAct[@act.id] }}" value="{{ @ch }}">
+                                                    <tr data-id="{{ @ch.id }}">
+                                                        <td class="chapter-actions">
+                                                            <input type="checkbox" class="export-toggle"
+                                                                data-type="chapter" data-id="{{ @ch.id }}" {{
+                                                                @ch.is_exported_attr }} title="Inclure dans l'export">
+                                                            <input type="number" class="order-input" data-type="chapter"
+                                                                data-id="{{ @ch.id }}"
+                                                                value="{{ @ch.order_index + 1 }}">
+                                                            <check if="{{ count(@ch.subs) > 0 }}">
+                                                                <span class="collapse-toggle" data-target="{{ @ch.id }}"
+                                                                    style="cursor:pointer; margin-right:5px; user-select:none;">▼</span>
+                                                            </check>
+                                                            <strong>
+                                                                {{ @ch.title }}
+                                                            </strong>
+                                                            <check if="{{ !empty(@ch.content) }}">
+                                                                <div class="act-description">
+                                                                    {{ @ch.content | raw }}
+                                                                </div>
+                                                            </check>
+                                                            <check if="{{ !empty(@ch.resume) }}">
+                                                                <div class="chapter-resume">
+                                                                    <strong>Résumé :</strong><br>
+                                                                    {{ @ch.resume | raw }}
+                                                                </div>
+                                                            </check>
+                                                        </td>
+                                                        <td class="stats">
+                                                            {{ @ch.total_wc }} mots<br>{{ @ch.total_lines }}
+                                                            lignes
+                                                            <br>{{
+                                                            @ch.total_pages }}
+                                                            pages
+                                                        </td>
+                                                        <td class="actions">
+                                                            <a class="button small"
+                                                                href="{{ @base }}/project/{{ @project.id }}/chapter/create?parent_id={{ @ch.id }}&act_id={{ @ch.act_id }}">
+                                                                + Sous-chapitre</a>
+                                                            <button class="button small ai-summary-btn"
+                                                                data-id="{{ @ch.id }}"
+                                                                title="Générer un résumé via IA">Résumé
+                                                                IA</button><br />
+                                                            <button class="button small preview-btn" data-type="chapter"
+                                                                data-id="{{ @ch.id }}"
+                                                                title="Aperçu rapide">Voir</button>
+                                                            <a class="button small"
+                                                                href="{{ @base }}/chapter/{{ @ch.id }}">Éditer</a>
+                                                            <a class="button small delete"
+                                                                href="{{ @base }}/chapter/{{ @ch.id }}/delete"
+                                                                onclick="return confirm('Supprimer ce chapitre ?');">Supprimer</a>
+                                                        </td>
+                                                    </tr>
+                                                    <repeat group="{{ @ch.subs }}" value="{{ @sub }}">
+                                                        <tr data-id="{{ @sub.id }}"
+                                                            class="sub-chapter sub-of-{{ @ch.id }}">
+                                                            <td class="sous-chapitre">
+                                                                <input type="checkbox" class="export-toggle"
+                                                                    data-type="chapter" data-id="{{ @sub.id }}" {{
+                                                                    @sub.is_exported_attr }}
+                                                                    title="Inclure dans l'export">
+                                                                <input type="number" class="order-input"
+                                                                    data-type="chapter" data-id="{{ @sub.id }}"
+                                                                    value="{{ @sub.order_index + 1 }}">
+                                                                <span>
+                                                                    └─ {{ @sub.title }}
+                                                                </span>
+                                                            </td>
+                                                            <td class="stats">
+                                                                {{ @sub.wc }} mots<br>{{
+                                                                @sub.lines }} lignes
+                                                                <br>{{ @sub.pages }}
+                                                                pages
+                                                            </td>
+                                                            <td class="actions">
+                                                                <button class="button small preview-btn"
+                                                                    data-type="chapter" data-id="{{ @sub.id }}"
+                                                                    title="Aperçu rapide">Voir</button>
+                                                                <a class="button small"
+                                                                    href="{{ @base }}/chapter/{{ @sub.id }}">Éditer</a>
+                                                                <a class="button small delete"
+                                                                    href="{{ @base }}/chapter/{{ @sub.id }}/delete"
+                                                                    onclick="return confirm('Supprimer ce sous-chapitre ?');">Supprimer</a>
+                                                            </td>
+                                                        </tr>
+                                                    </repeat>
+                                                </repeat>
+                                            </tbody>
+                                        </table>
+                                    </details>
+                                </false>
+                            </check>
+                        </details>
+                    </repeat>
+
+                    <check if="{{ !empty(@chaptersWithoutAct) }}">
+                        <details class="act-container" id="act-orphan" data-persist="true">
+                            <summary class="act-summary">
+                                <h4>
+                                    Acte ?
+                                    <span
+                                        style="font-weight: normal; font-size: 0.75rem; color: #777; margin-left: 0.5rem;">
+                                        ({{ @orphanStats.chapters }} chapitres / {{ @orphanStats.pages }} pages)
+                                    </span>
+                                </h4>
+                            </summary>
+                            <div class="act-description">
+                                Chapitres hors actes
+                            </div>
+
+                            <details class="act-chapters" id="act-orphan-chapters" data-persist="true" open>
+                                <summary>Chapitres de l'acte <span class="panel-count">{{ count(@chaptersWithoutAct)
+                                        }}</span></summary>
+                                <table class="data-table">
+                                    <thead>
+                                        <tr>
+                                            <th>Titre</th>
+                                            <th class="stats">Stats</th>
+                                            <th class="actions">Actions</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody class="sortable-chapters">
+                                        <repeat group="{{ @chaptersWithoutAct }}" value="{{ @ch }}">
+                                            <tr data-id="{{ @ch.id }}">
+                                                <td class="chapter-actions">
+                                                    <input type="checkbox" class="export-toggle" data-type="chapter"
+                                                        data-id="{{ @ch.id }}" {{ @ch.is_exported_attr }}
+                                                        title="Inclure dans l'export">
+                                                    <input type="number" class="order-input" data-type="chapter"
+                                                        data-id="{{ @ch.id }}" value="{{ @ch.order_index + 1 }}">
+
+                                                    <check if="{{ count(@ch.subs) > 0 }}">
+                                                        <span class="collapse-toggle" data-target="{{ @ch.id }}"
+                                                            style="cursor:pointer; margin-right:5px; user-select:none;">▼</span>
+                                                    </check>
+                                                    {{ @ch.title }}
+                                                    <check if="{{ !empty(@ch.content) }}">
+                                                        <div class="act-description">
+                                                            {{ @ch.content | raw }}
+                                                        </div>
+                                                    </check>
+                                                    <check if="{{ !empty(@ch.resume) }}">
+                                                        <div class="chapter-resume">
+                                                            <strong>Résumé :</strong><br>
+                                                            {{ @ch.resume | raw }}
+                                                        </div>
+                                                    </check>
+
+                                                </td>
+                                                <td>
+                                                    {{ @ch.total_wc }} mots<br>{{ @ch.total_lines }}
+                                                    lignes<br>{{@ch.total_pages }} pages
+                                                    <check if="{{ @ch.wc_subs_only > 0 }}">
+                                                        <br>({{ @ch.wc }} + {{
+                                                        @ch.wc_subs_only
+                                                        }})
+                                                    </check>
+                                                </td>
+                                                <td class="actions">
+                                                    <a class="button small"
+                                                        href="{{ @base }}/project/{{ @project.id }}/chapter/create?parent_id={{ @ch.id }}&act_id={{ @ch.act_id }}">
+                                                        + Sous-chapitre</a>
+                                                    <button class="button small ai-summary-btn" data-id="{{ @ch.id }}"
+                                                        title="Générer un résumé via IA">Résumé IA</button><br />
+                                                    <button class="button small preview-btn" data-type="chapter"
+                                                        data-id="{{ @ch.id }}" title="Aperçu rapide">Voir</button>
+                                                    <a class="button small"
+                                                        href="{{ @base }}/chapter/{{ @ch.id }}">Éditer</a>
+                                                    <a class="button small delete"
+                                                        href="{{ @base }}/chapter/{{ @ch.id }}/delete"
+                                                        onclick="return confirm('Supprimer ce chapitre ?');">Supprimer</a>
+                                                </td>
+                                            </tr>
+                                            <repeat group="{{ @ch.subs }}" value="{{ @sub }}">
+                                                <tr data-id="{{ @sub.id }}" class="sub-chapter sub-of-{{ @ch.id }}">
+                                                    <td class="sous-chapitre">
+                                                        <input type="checkbox" class="export-toggle" data-type="chapter"
+                                                            data-id="{{ @sub.id }}" {{ @sub.is_exported_attr }}
+                                                            title="Inclure dans l'export">
+                                                        <input type="number" class="order-input" data-type="chapter"
+                                                            data-id="{{ @sub.id }}" value="{{ @sub.order_index + 1 }}">
+                                                        <span>
+                                                            └─ {{ @sub.title }}
+                                                        </span>
+                                                    </td>
+                                                    <td class="stats">
+                                                        {{ @sub.wc }} mots<br>{{ @sub.lines }} lignes
+                                                        <br>{{ @sub.pages }} pages
+                                                    </td>
+                                                    <td class="actions">
+                                                        <button class="button small preview-btn" data-type="chapter"
+                                                            data-id="{{ @sub.id }}" title="Aperçu rapide">Voir</button>
+                                                        <a class="button small"
+                                                            href="{{ @base }}/chapter/{{ @sub.id }}">Éditer</a>
+                                                        <a class="button small delete"
+                                                            href="{{ @base }}/chapter/{{ @sub.id }}/delete"
+                                                            onclick="return confirm('Supprimer ce sous-chapitre ?');">Supprimer</a>
+                                                    </td>
+                                                </tr>
+                                            </repeat>
+                                        </repeat>
+                                    </tbody>
+                                </table>
+                            </details>
+                        </details>
+                    </check>
+                </false>
+            </check>
+        </section>
+
+        <!-- After Chapters -->
+        <details class="panel" id="panel-after" data-persist="true">
+            <summary>Sections après les chapitres <span class="panel-count">{{ @stats.after_count }}</span></summary>
+            <div class="sortable-groups" id="afterChaptersGroups">
+                <repeat group="{{ @afterGroups }}" value="{{ @group }}">
+                    <div class="section-group-block" data-type="{{ @group.type }}">
+                        <div class="section-group-heading">
+                            <h4>
+                                {{ @group.name }}
+                            </h4>
+                            <check if="{{ @group.show_add }}">
+                                <a class="button small"
+                                    href="{{ @base }}/project/{{ @project.id }}/section/{{ @group.type }}">+
+                                    Ajouter une annexe</a>
+                            </check>
+                            <check if="{{ @group.show_create }}">
+                                <a class="button small"
+                                    href="{{ @base }}/project/{{ @project.id }}/section/{{ @group.type }}">Créer</a>
+                            </check>
+                        </div>
+
+                        <check if="{{ !empty(@group.items) }}">
+                            <true>
+                                <table class="compact-table data-table">
+                                    <tbody class="sortable-items" data-type="{{ @group.type }}">
+                                        <repeat group="{{ @group.items }}" value="{{ @section }}">
+                                            <tr data-id="{{ @section.id }}">
+                                                <td>
+                                                    <div class="section-actions">
+                                                        <input type="checkbox" class="export-toggle" data-type="section"
+                                                            data-id="{{ @section.id }}" {{ @section.is_exported_attr }}
+                                                            title="Inclure dans l'export">
+                                                        <input type="number" class="order-input" data-type="section"
+                                                            data-id="{{ @section.id }}"
+                                                            value="{{ @section.order_index + 1 }}">
+                                                        {{ @section.title ?: @group.name }}
+                                                    </div>
+                                                </td>
+                                                <td class="compact-meta" style="width: 80px;">{{ @section.wc }} mots
+                                                </td>
+                                                <td class="compact-actions" style="width: 200px;">
+                                                    <button class="button small preview-btn" data-type="section"
+                                                        data-id="{{ @section.id }}" title="Aperçu rapide">Voir</button>
+                                                    <a class="button small"
+                                                        href="{{ @base }}/project/{{ @project.id }}/section/{{ @group.type }}?id={{ @section.id }}">Modifier</a>
+                                                    <a class="button small delete"
+                                                        href="{{ @base }}/section/{{ @section.id }}/delete"
+                                                        onclick="return confirm('Supprimer cette section ?');">Supprimer</a>
+                                                </td>
+                                            </tr>
+                                        </repeat>
+                                    </tbody>
+                                </table>
+                            </true>
+                            <false>
+                                <p class="panel-empty">Aucun contenu créé.</p>
+                            </false>
+                        </check>
+                    </div>
+                </repeat>
+            </div>
+        </details>
+
+    </div>
+
+</div>
+
+
+<div id="saveStatus" class="save-status">Ordre enregistré !</div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+
+        // Export Toggle Logic
+        document.querySelectorAll('.export-toggle').forEach(function (checkbox) {
+            checkbox.addEventListener('change', function () {
+                const type = this.getAttribute('data-type');
+                const id = this.getAttribute('data-id');
+                const isExported = this.checked ? 1 : 0;
+                const projectId = "{{ @project.id }}";
+
+                fetch('{{ @base }}/project/' + projectId + '/export-toggle', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRF-Token': window.CSRF_TOKEN
+                    },
+                    body: JSON.stringify({
+                        type: type,
+                        id: id,
+                        is_exported: isExported
+                    })
+                })
+                    .then(function (resp) {
+                        if (resp.ok) {
+                            showStatus('Choix d\'export enregistré !');
+                        } else {
+                            alert('Erreur lors de l\'enregistrement du choix d\'export.');
+                            this.checked = !this.checked; // Revert
+                        }
+                    }.bind(this));
+            });
+        });
+
+        // Order Index Logic
+        document.querySelectorAll('.order-input').forEach(function (input) {
+            input.addEventListener('change', function () {
+                const type = this.getAttribute('data-type');
+                const id = this.getAttribute('data-id');
+                const newIndex = this.value;
+                const projectId = "{{ @project.id }}";
+
+                fetch('{{ @base }}/project/' + projectId + '/reorder-item', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRF-Token': window.CSRF_TOKEN
+                    },
+                    body: JSON.stringify({
+                        type: type,
+                        id: id,
+                        new_index: newIndex
+                    })
+                })
+                    .then(function (resp) {
+                        if (resp.ok) {
+                            window.location.reload(); // Reload to reflect re-indexing
+                        } else {
+                            alert('Erreur lors de la réorganisation.');
+                        }
+                    });
+            });
+        });
+
+        // Modal Logic
+        const modal = document.getElementById('previewModal');
+        const modalTitle = document.getElementById('modalTitle');
+        const modalBody = document.getElementById('modalBody');
+        const closeModal = document.querySelector('.modal-close');
+
+        if (modal) {
+            document.querySelectorAll('.preview-btn').forEach(btn => {
+                btn.addEventListener('click', function (e) {
+                    e.preventDefault();
+                    const type = this.dataset.type;
+                    const id = this.dataset.id;
+                    const projectId = "{{ @project.id }}";
+
+                    modalTitle.innerText = "Chargement...";
+                    modalBody.innerHTML = '<div style="text-align:center; padding: 50px;">Chargement du contenu...</div>';
+                    modal.style.display = 'flex';
+
+                    fetch(`{{ @base }}/project/${projectId}/preview/${type}/${id}`)
+                        .then(response => response.json())
+                        .then(data => {
+                            modalTitle.innerText = data.title;
+                            modalBody.innerHTML = data.content;
+                        })
+                        .catch(err => {
+                            modalTitle.innerText = "Erreur";
+                            modalBody.innerHTML = "Impossible de charger le contenu.";
+                            console.error(err);
+                        });
+                });
+            });
+
+            closeModal.onclick = () => modal.style.display = 'none';
+            window.onclick = (event) => {
+                if (event.target == modal) modal.style.display = 'none';
+            };
+        }
+
+        // --- Persistence Logic ---
+        document.querySelectorAll('details[data-persist="true"]').forEach(details => {
+            const id = details.id;
+            if (!id) return;
+
+            const savedState = localStorage.getItem('details-state-' + id);
+            if (savedState === 'open') {
+                details.setAttribute('open', '');
+            } else if (savedState === 'closed') {
+                details.removeAttribute('open');
+            }
+
+            // Save state on toggle
+            details.addEventListener('toggle', function () {
+                const state = this.open ? 'open' : 'closed';
+                localStorage.setItem('details-state-' + id, state);
+            });
+        });
+
+        // AI Summary Logic
+        document.querySelectorAll('.ai-summary-btn').forEach(btn => {
+            btn.addEventListener('click', function (e) {
+                e.preventDefault();
+                const chapterId = this.dataset.id;
+                const originalText = this.innerText;
+
+                if (!confirm('Voulez-vous générer un résumé de ce chapitre basé sur ses sous-chapitres ? Cela remplacera la description actuelle.')) {
+                    return;
+                }
+
+                this.innerText = 'Génération...';
+                this.disabled = true;
+
+                fetch('{{ @base }}/ai/summarize-chapter', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRF-Token': window.CSRF_TOKEN
+                    },
+                    body: JSON.stringify({
+                        chapter_id: chapterId
+                    })
+                })
+                    .then(response => response.json())
+                    .then(data => {
+                        this.innerText = originalText;
+                        this.disabled = false;
+
+                        if (data.success) {
+                            alert('Résumé généré et enregistré avec succès !');
+                            window.location.reload(); // Reload to show updated description if visible or just refresh state
+                        } else {
+                            alert('Erreur : ' + (data.error || 'Erreur inconnue'));
+                        }
+                    })
+                    .catch(err => {
+                        this.innerText = originalText;
+                        this.disabled = false;
+                        console.error(err);
+                        alert('Erreur de communication avec le serveur.');
+                    });
+            });
+        });
+
+        // AI Act Summary Logic
+        document.querySelectorAll('.ai-act-summary-btn').forEach(btn => {
+            btn.addEventListener('click', function (e) {
+                e.preventDefault();
+                e.stopPropagation(); // Prevent detail toggle
+                const actId = this.dataset.id;
+                const originalText = this.innerText;
+
+                if (!confirm('Voulez-vous générer un résumé pour cet acte basé sur ses chapitres ? Cela remplacera le résumé actuel.')) {
+                    return;
+                }
+
+                this.innerText = 'Génération...';
+                this.disabled = true;
+
+                fetch('{{ @base }}/ai/summarize-act', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRF-Token': window.CSRF_TOKEN
+                    },
+                    body: JSON.stringify({
+                        act_id: actId
+                    })
+                })
+                    .then(response => response.json())
+                    .then(data => {
+                        this.innerText = originalText;
+                        this.disabled = false;
+
+                        if (data.success) {
+                            alert('Résumé de l\'acte généré et enregistré avec succès !');
+                            window.location.reload();
+                        } else {
+                            alert('Erreur : ' + (data.error || 'Erreur inconnue'));
+                        }
+                    })
+                    .catch(err => {
+                        this.innerText = originalText;
+                        this.disabled = false;
+                        console.error(err);
+                        alert('Erreur de communication avec le serveur.');
+                    });
+            });
+        });
+
+    }); // DOMContentLoaded
+</script>
+
+<!-- Preview Modal -->
+<div id="previewModal" class="modal-overlay">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h3 id="modalTitle">Titre</h3>
+            <button class="modal-close">&times;</button>
+        </div>
+        <div id="modalBody" class="modal-body typography">
+            <!-- Content loaded via AJAX -->
+        </div>
+    </div>
+</div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        // --- Collapsible Chapters Logic ---
+        const toggles = document.querySelectorAll('.collapse-toggle');
+
+        function setToggleState(id, isCollapsed) {
+            const rows = document.querySelectorAll('.sub-of-' + id);
+            const toggle = document.querySelector('.collapse-toggle[data-target=\"' + id + '\"]');
+
+            if (!toggle) return;
+
+            if (isCollapsed) {
+                rows.forEach(r => r.style.display = 'none');
+                toggle.textContent = '▶';
+            } else {
+                rows.forEach(r => r.style.display = '');
+                toggle.textContent = '▼';
+            }
+        }
+
+        toggles.forEach(toggle => {
+            const id = toggle.getAttribute('data-target');
+            const storageKey = 'chapter_collapsed_' + id;
+
+            // Init state from local storage
+            const isCollapsed = localStorage.getItem(storageKey) === 'true';
+            setToggleState(id, isCollapsed);
+
+            toggle.addEventListener('click', function (e) {
+                e.preventDefault();
+                e.stopPropagation(); // Prevent detail/summary toggle if inside one
+
+                // Toggle state
+                const currentlyCollapsed = localStorage.getItem(storageKey) === 'true';
+                const newState = !currentlyCollapsed;
+
+                localStorage.setItem(storageKey, newState);
+                setToggleState(id, newState);
+            });
+        });
+    });
+</script>

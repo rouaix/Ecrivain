@@ -1,0 +1,10 @@
+Options -MultiViews
+RewriteEngine On
+
+# Protect sensitive directories
+RewriteRule ^(src|etc|vendor|\.git)/.*$ - [F,L]
+
+# RewriteBase /edsa-Ecrivain/
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteCond %{REQUEST_FILENAME} !-d
+RewriteRule .* index.php [QSA,L]

@@ -1,0 +1,309 @@
+<?php
+
+class ChapterController extends Controller
+{
+    public function beforeRoute(Base $f3)
+    {
+        parent::beforeRoute($f3);
+        if (!$this->currentUser()) {
+            $f3->reroute('/login');
+        }
+    }
+
+    public function create()
+    {
+        $pid = (int) $this->f3->get('PARAMS.pid');
+        $projectModel = new Project();
+        if (!$projectModel->count(['id=? AND user_id=?', $pid, $this->currentUser()['id']])) {
+            $this->f3->error(404);
+            return;
+        }
+        $project = $projectModel->findAndCast(['id=?', $pid])[0];
+
+        $actModel = new Act();
+        $acts = $actModel->getAllByProject($pid);
+
+        $chapterModel = new Chapter();
+        $chapters = $chapterModel->getTopLevelByProject($pid);
+
+        $parentId = !empty($_GET['parent_id']) ? (int) $_GET['parent_id'] : null;
+        $actId = !empty($_GET['act_id']) ? (int) $_GET['act_id'] : null;
+
+        $this->render('chapter/create.html', [
+            'title' => 'Nouveau chapitre',
+            'project' => $project,
+            'acts' => $acts,
+            'chapters' => $chapters,
+            'old' => ['parent_id' => $parentId, 'act_id' => $actId, 'title' => ''],
+            'errors' => []
+        ]);
+    }
+
+    public function store()
+    {
+        $pid = (int) $this->f3->get('PARAMS.pid');
+        $projectModel = new Project();
+        if (!$projectModel->count(['id=? AND user_id=?', $pid, $this->currentUser()['id']])) {
+            $this->f3->error(404);
+            return;
+        }
+
+        $title = trim($_POST['title'] ?? '');
+        $actId = !empty($_POST['act_id']) ? (int) $_POST['act_id'] : null;
+        $parentId = !empty($_POST['parent_id']) ? (int) $_POST['parent_id'] : null;
+
+        $errors = [];
+        if ($title === '') {
+            $errors[] = 'Le titre du chapitre est obligatoire.';
+        }
+
+        if (empty($errors)) {
+            $chapterModel = new Chapter();
+            // Inherit act from parent if not set
+            if ($parentId && $actId === null) {
+                // We need to load parent to check its act_id
+                $parent = $chapterModel->findAndCast(['id=?', $parentId]);
+                if ($parent) {
+                    $actId = (int) $parent[0]['act_id'] ?: null;
+                }
+            }
+
+            $cid = $chapterModel->create($pid, $title, $actId, $parentId);
+            if ($cid) {
+                $this->f3->set('SESSION.success', 'Chapitre créé avec succès.');
+                $this->f3->reroute('/chapter/' . $cid);
+            } else {
+                $errors[] = 'Impossible de créer le chapitre.';
+            }
+        }
+
+        // Need to reload data for view
+        $project = $projectModel->findAndCast(['id=?', $pid])[0];
+        $actModel = new Act();
+        $acts = $actModel->getAllByProject($pid);
+        $chapterModel = new Chapter();
+        $chapters = $chapterModel->getTopLevelByProject($pid);
+
+        $this->render('chapter/create.html', [
+            'title' => 'Nouveau chapitre',
+            'project' => $project,
+            'acts' => $acts,
+            'chapters' => $chapters,
+            'errors' => $errors,
+            'old' => ['parent_id' => $parentId, 'act_id' => $actId, 'title' => $title],
+        ]);
+    }
+
+    public function show()
+    {
+        $cid = (int) $this->f3->get('PARAMS.id');
+        $chapterModel = new Chapter();
+        $chapterModel->load(['id=?', $cid]);
+        if ($chapterModel->dry()) {
+            $this->f3->error(404);
+            return;
+        }
+
+        $user = $this->currentUser();
+        // Ownership check & Get Project
+        $projectModel = new Project();
+        $project = $projectModel->findAndCast(['id=? AND user_id=?', $chapterModel->project_id, $user['id']]);
+        if (!$project) {
+            $this->f3->error(403);
+            return;
+        }
+        $project = $project[0];
+
+        // Additional data for the view
+        $actModel = new Act();
+        $acts = $actModel->getAllByProject($project['id']);
+
+        // Context: Current Act
+        $currentAct = null;
+        if ($chapterModel->act_id) {
+            foreach ($acts as $a) {
+                if ($a['id'] == $chapterModel->act_id) {
+                    $currentAct = $a;
+                    break;
+                }
+            }
+        }
+
+        // Context: Parent Chapter (for subchapters)
+        $parentChapter = null;
+        if ($chapterModel->parent_id) {
+            $parent = new Chapter();
+            $parent->load(['id=?', $chapterModel->parent_id]);
+            if (!$parent->dry()) {
+                $parentChapter = $parent->cast();
+            }
+        }
+
+        // Top level chapters for "Parent" dropdown
+        $topChapters = $chapterModel->getTopLevelByProject($project['id']);
+
+        // Comments
+        $commentModel = new Comment();
+        $comments = $commentModel->getByChapter($cid);
+
+        // Check for session success msg
+        $success = $this->f3->get('SESSION.success');
+        $this->f3->clear('SESSION.success');
+
+        $this->render('editor/edit.html', [
+            'title' => $chapterModel->title,
+            'chapter' => $chapterModel->cast(),
+            'project' => $project,
+            'acts' => $acts,
+            'currentAct' => $currentAct,
+            'parentChapter' => $parentChapter,
+            'topChapters' => $topChapters,
+            'comments' => $comments,
+            'errors' => [],
+            'success' => $success
+        ]);
+    }
+
+    public function update()
+    {
+        $cid = (int) $this->f3->get('PARAMS.id');
+
+        $chapterModel = new Chapter();
+        $chapterModel->load(['id=?', $cid]);
+
+        if ($chapterModel->dry()) {
+            $this->f3->error(404);
+            return;
+        }
+
+        // Verify ownership
+        $projectModel = new Project();
+        if (!$projectModel->count(['id=? AND user_id=?', $chapterModel->project_id, $this->currentUser()['id']])) {
+            $this->f3->error(403);
+            return;
+        }
+
+        $title = trim($_POST['title'] ?? '');
+        $content = $_POST['content'] ?? '';
+        $content = html_entity_decode($content);
+        $actId = !empty($_POST['act_id']) ? (int) $_POST['act_id'] : null;
+        $parentId = !empty($_POST['parent_id']) ? (int) $_POST['parent_id'] : null;
+
+        $chapterModel->title = $title;
+        $chapterModel->content = $content;
+        $chapterModel->resume = $_POST['resume'] ?? '';
+
+        // Check if context (parent or act) changed
+        if ($chapterModel->act_id != $actId || $chapterModel->parent_id != $parentId) {
+            $oldParentVal = (int) ($chapterModel->parent_id ?: 0);
+            $newParentVal = (int) ($parentId ?: 0);
+
+            // Inherit act from new parent if parent is changed and act is not explicitly correct/set?
+            // Actually, we should force the act_id to be consistent with the parent chapter.
+            if ($parentId) {
+                // Determine act_id of the new parent
+                $params = ['id=?', $parentId];
+                // Since specific mapper not available here easily without new query, let's query.
+                // Or simplified: Just don't rely on POST act_id if parent_id is set. Use parent's act.
+                $parentCheck = $chapterModel->findAndCast($params);
+                if ($parentCheck) {
+                    $actId = (int) ($parentCheck[0]['act_id'] ?? null) ?: null;
+                }
+            }
+
+            // If new parent ID > old parent ID (moving "forward"), prepend to start.
+            // Otherwise append to end.
+            if ($newParentVal > $oldParentVal) {
+                $chapterModel->shiftOrderDown($chapterModel->project_id, $actId, $parentId);
+                $chapterModel->order_index = 1;
+            } else {
+                $chapterModel->order_index = $chapterModel->getNextOrder(
+                    $chapterModel->project_id,
+                    $actId,
+                    $parentId
+                );
+            }
+        }
+
+        $chapterModel->act_id = $actId;
+        $chapterModel->parent_id = $parentId;
+        $chapterModel->save();
+
+        if ($this->f3->get('AJAX')) {
+            echo json_encode(['status' => 'ok']);
+            exit;
+        }
+
+        $this->f3->set('SESSION.success', 'Chapitre enregistré.');
+        $this->f3->reroute('/chapter/' . $cid);
+    }
+
+    public function comment()
+    {
+        $cid = (int) $this->f3->get('PARAMS.id');
+        // Handle JSON input
+        $json = json_decode($this->f3->get('BODY'), true);
+
+        $content = $json['content'] ?? '';
+        $start = (int) ($json['start'] ?? 0);
+        $end = (int) ($json['end'] ?? 0);
+
+        if (!$content) {
+            http_response_code(400);
+            return;
+        }
+
+        $commentModel = new Comment();
+        $commentModel->chapter_id = $cid;
+        $commentModel->content = $content;
+        $commentModel->start_pos = $start;
+        $commentModel->end_pos = $end;
+        $commentModel->created_at = date('Y-m-d H:i:s');
+        $commentModel->save();
+
+        echo json_encode(['status' => 'ok']);
+    }
+
+    public function getComments()
+    {
+        $cid = (int) $this->f3->get('PARAMS.id');
+        $commentModel = new Comment();
+        $comments = $commentModel->getByChapter($cid);
+        // We need to pass back the comment objects.
+        // If Mapper returns objects, we need to cast them or iterate.
+        // Assuming getByChapter returns array (casted).
+        // Let's verify Comment model. If it returns mapper objects, we should cast.
+        // Usually custom methods return array of arrays.
+        echo json_encode($comments);
+    }
+
+    public function synonyms()
+    {
+        $word = $this->f3->get('PARAMS.word');
+        $results = \Synonyms::get($word);
+        echo json_encode($results);
+    }
+
+    public function delete()
+    {
+        $cid = (int) $this->f3->get('PARAMS.id');
+        $chapterModel = new Chapter();
+        $chapterModel->load(['id=?', $cid]);
+
+        if ($chapterModel->dry()) {
+            $this->f3->error(404);
+            return;
+        }
+
+        // Verify ownership
+        $projectModel = new Project();
+        if (!$projectModel->count(['id=? AND user_id=?', $chapterModel->project_id, $this->currentUser()['id']])) {
+            $this->f3->error(403);
+            return;
+        }
+
+        $pid = $chapterModel->project_id;
+        $chapterModel->erase();
+        $this->f3->reroute('/project/' . $pid);
+    }
+}

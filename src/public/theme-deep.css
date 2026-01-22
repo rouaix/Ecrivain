@@ -1,0 +1,35 @@
+/* Deep theme: Pure black high contrast mode. */
+body.theme-deep {
+    --body-bg: #000000;
+    --card-bg: #0a0a0a;
+    --text-main: #ffffff;
+    --text-muted: #b0b0b0;
+    --link-color: #80d8ff;
+
+    --header-bg: #111111;
+    --header-text: #ffffff;
+    --footer-bg: #000000;
+    --footer-text: #888888;
+
+    --button-bg: #212121;
+    --button-text: #ffffff;
+    --button-delete-bg: #d50000;
+    --button-primary-bg: #424242;
+    --button-secondary-bg: #333333;
+
+    --border-color: #333333;
+    --border-light: #222222;
+
+    --table-header-bg: #111111;
+    --table-row-bg: #000000;
+    --table-row-hover-bg: #222222;
+
+    --input-bg: #111111;
+    --input-text: #ffffff;
+    --input-border: #555555;
+
+    --panel-hover-shadow: rgba(255, 255, 255, 0.1);
+
+    --button-black-bg: #333333;
+    /* Inversed for deep theme button */
+}

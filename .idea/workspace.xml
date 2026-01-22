@@ -5,7 +5,809 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="17de52e9-e946-4570-8a81-f6c966b2052b" name="Changes" comment="">
-      <change beforePath="$PROJECT_DIR$/app/views/editor/edit.php" beforeDir="false" afterPath="$PROJECT_DIR$/app/views/editor/edit.php" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/ecrivain.sql" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/get_schema.php" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/index.html.old" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/migrate_notes.php" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/public" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/.htaccess" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/app/ai_prompts.json" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/app/config.ini" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/app/controllers/Controller.php" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/app/modules/acts/controllers/ActController.php" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/app/modules/acts/models/Act.php" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/app/modules/acts/views/acts/create.html" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/app/modules/acts/views/acts/edit.html" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/app/modules/ai/controllers/AiController.php" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/app/modules/ai/models/AiService.php" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/app/modules/ai/models/AiUsage.php" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/app/modules/ai/models/OpenAIService.php" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/app/modules/ai/views/ai/config.html" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/app/modules/ai/views/ai/usage.html" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/app/modules/auth/controllers/AuthController.php" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/app/modules/auth/controllers/ProfileController.php" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/app/modules/auth/models/User.php" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/app/modules/auth/views/auth/login.html" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/app/modules/auth/views/auth/profile.html" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/app/modules/auth/views/auth/register.html" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/app/modules/chapter/controllers/ChapterController.php" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/app/modules/chapter/models/Chapter.php" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/app/modules/chapter/models/Comment.php" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/app/modules/chapter/views/chapter/create.html" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/app/modules/chapter/views/editor/edit.html" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/app/modules/characters/controllers/CharacterController.php" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/app/modules/characters/models/Character.php" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/app/modules/characters/views/characters/create.html" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/app/modules/characters/views/characters/edit.html" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/app/modules/characters/views/characters/index.html" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/app/modules/note/controllers/NoteController.php" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/app/modules/note/models/Note.php" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/app/modules/note/views/note/edit.html" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/app/modules/project/controllers/ProjectController.php" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/app/modules/project/models/Project.php" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/app/modules/project/views/home.html" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/app/modules/project/views/layouts/main.html" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/app/modules/project/views/project/dashboard.html" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/app/modules/project/views/project/list.html" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/app/modules/project/views/project/mindmap.html" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/app/modules/project/views/project/show.html" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/app/modules/section/controllers/SectionController.php" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/app/modules/section/models/Section.php" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/app/modules/section/views/section/edit.html" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/check_col.php" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/composer.json" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/composer.lock" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/data/.htaccess" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/data/ai_debug.log" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/data/auth_daniel.rouaix@gmail.com_tokens.json" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/data/auth_daniel@rouaix.com_tokens.json" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/data/auth_debug.log" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/data/context.json" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/data/controller_debug.log" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/data/daniel.rouaix@gmail.com/ai_config.json" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/data/daniel@rouaix.com/ai_config.json" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/data/daniel@rouaix.com/profile.json" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/data/global_debug.log" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/data/login_debug.log" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/data/token_gen_debug.log" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/migrate_lines.php" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/public/js/editor-tools.js" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/public/js/quill-adapter.js" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/public/style.css" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/public/theme-dark.css" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/public/theme-deep.css" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/public/theme-midnight.css" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/public/theme-modern.css" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/public/theme-paper.css" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/public/uploads/section_695f689bebe21.jpg" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/scripts/generate_token.php" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/tmp/e9erdwref00s.1ztumwsorlpco.php" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/tmp/e9erdwref00s.yoyirx1tv5cs.php" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/vendor/bcosca/fatfree-core/base.php" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/vendor/composer/autoload_files.php" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/vendor/composer/autoload_psr4.php" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/vendor/composer/installed.json" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/vendor/composer/installed.php" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/vendor/kalao/libs/.gitignore" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/vendor/kalao/libs/composer.json" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/vendor/kalao/libs/libs/Colors.php" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/vendor/kalao/libs/libs/Currency.php" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/vendor/kalao/libs/libs/Date.php" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/vendor/kalao/libs/libs/Export/CSV.php" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/vendor/kalao/libs/libs/Export/WKHTMLTOPDF.php" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/vendor/kalao/libs/libs/Export/XLSX.php" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/vendor/kalao/libs/libs/Fields.php" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/vendor/kalao/libs/libs/Fields/Field.php" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/vendor/kalao/libs/libs/Fields/File.php" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/vendor/kalao/libs/libs/Fields/Password.php" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/vendor/kalao/libs/libs/Fields/Select.php" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/vendor/kalao/libs/libs/Fields/Text.php" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/vendor/kalao/libs/libs/Fields/Textarea.php" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/vendor/kalao/libs/libs/Folder.php" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/vendor/kalao/libs/libs/Format.php" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/vendor/kalao/libs/libs/Geocoder.php" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/vendor/kalao/libs/libs/Hookable.php" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/vendor/kalao/libs/libs/Import/XLSX.php" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/vendor/kalao/libs/libs/Inliner.php" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/vendor/kalao/libs/libs/Layout.php" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/vendor/kalao/libs/libs/Mail.php" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/vendor/kalao/libs/libs/Mapper.php" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/vendor/kalao/libs/libs/Mapper/LanguageHooks.php" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/vendor/kalao/libs/libs/Media.php" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/vendor/kalao/libs/libs/Msg.php" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/vendor/kalao/libs/libs/Report.php" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/vendor/kalao/libs/libs/Seize.php" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/vendor/kalao/libs/libs/Seize/GD.php" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/vendor/kalao/libs/libs/Seize/ImageInterface.php" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/vendor/kalao/libs/libs/Seize/Magick.php" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/vendor/kalao/libs/libs/Time.php" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/vendor/kalao/libs/libs/Validator.php" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/vendor/kalao/libs/libs/Video.php" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/vendor/league/csv/LICENSE" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/vendor/league/csv/autoload.php" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/vendor/league/csv/composer.json" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/vendor/league/csv/phpstan-build.neon" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/vendor/league/csv/src/AbstractCsv.php" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/vendor/league/csv/src/Bom.php" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/vendor/league/csv/src/Buffer.php" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/vendor/league/csv/src/ByteSequence.php" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/vendor/league/csv/src/CallbackStreamFilter.php" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/vendor/league/csv/src/CannotInsertRecord.php" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/vendor/league/csv/src/CharsetConverter.php" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/vendor/league/csv/src/ColumnConsistency.php" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/vendor/league/csv/src/EncloseField.php" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/vendor/league/csv/src/EnumFormatter.php" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/vendor/league/csv/src/EscapeFormula.php" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/vendor/league/csv/src/Exception.php" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/vendor/league/csv/src/FragmentFinder.php" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/vendor/league/csv/src/FragmentNotFound.php" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/vendor/league/csv/src/HTMLConverter.php" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/vendor/league/csv/src/HttpHeaders.php" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/vendor/league/csv/src/Info.php" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/vendor/league/csv/src/InvalidArgument.php" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/vendor/league/csv/src/JsonConverter.php" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/vendor/league/csv/src/JsonFormat.php" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/vendor/league/csv/src/MapIterator.php" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/vendor/league/csv/src/Query/Constraint/Column.php" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/vendor/league/csv/src/Query/Constraint/Comparison.php" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/vendor/league/csv/src/Query/Constraint/Criteria.php" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/vendor/league/csv/src/Query/Constraint/Offset.php" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/vendor/league/csv/src/Query/Constraint/TwoColumns.php" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/vendor/league/csv/src/Query/Limit.php" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/vendor/league/csv/src/Query/Ordering/Column.php" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/vendor/league/csv/src/Query/Ordering/MultiSort.php" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/vendor/league/csv/src/Query/Predicate.php" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/vendor/league/csv/src/Query/PredicateCombinator.php" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/vendor/league/csv/src/Query/QueryException.php" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/vendor/league/csv/src/Query/Row.php" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/vendor/league/csv/src/Query/Sort.php" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/vendor/league/csv/src/Query/SortCombinator.php" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/vendor/league/csv/src/RFC4180Field.php" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/vendor/league/csv/src/RdbmsResult.php" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/vendor/league/csv/src/Reader.php" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/vendor/league/csv/src/ResultSet.php" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/vendor/league/csv/src/Serializer/AfterMapping.php" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/vendor/league/csv/src/Serializer/ArrayShape.php" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/vendor/league/csv/src/Serializer/CallbackCasting.php" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/vendor/league/csv/src/Serializer/CastToArray.php" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/vendor/league/csv/src/Serializer/CastToBool.php" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/vendor/league/csv/src/Serializer/CastToDate.php" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/vendor/league/csv/src/Serializer/CastToEnum.php" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/vendor/league/csv/src/Serializer/CastToFloat.php" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/vendor/league/csv/src/Serializer/CastToInt.php" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/vendor/league/csv/src/Serializer/CastToString.php" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/vendor/league/csv/src/Serializer/DenormalizationFailed.php" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/vendor/league/csv/src/Serializer/Denormalizer.php" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/vendor/league/csv/src/Serializer/MapCell.php" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/vendor/league/csv/src/Serializer/MapRecord.php" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/vendor/league/csv/src/Serializer/MappingFailed.php" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/vendor/league/csv/src/Serializer/PropertySetter.php" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/vendor/league/csv/src/Serializer/SerializationFailed.php" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/vendor/league/csv/src/Serializer/Type.php" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/vendor/league/csv/src/Serializer/TypeCasting.php" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/vendor/league/csv/src/Serializer/TypeCastingFailed.php" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/vendor/league/csv/src/Serializer/TypeCastingInfo.php" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/vendor/league/csv/src/Serializer/TypeCastingTargetType.php" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/vendor/league/csv/src/Statement.php" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/vendor/league/csv/src/Stream.php" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/vendor/league/csv/src/StreamFilter.php" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/vendor/league/csv/src/SwapDelimiter.php" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/vendor/league/csv/src/SyntaxError.php" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/vendor/league/csv/src/TabularData.php" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/vendor/league/csv/src/TabularDataProvider.php" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/vendor/league/csv/src/TabularDataReader.php" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/vendor/league/csv/src/TabularDataWriter.php" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/vendor/league/csv/src/UnableToProcessCsv.php" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/vendor/league/csv/src/UnavailableFeature.php" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/vendor/league/csv/src/UnavailableStream.php" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/vendor/league/csv/src/Warning.php" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/vendor/league/csv/src/Writer.php" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/vendor/league/csv/src/XMLConverter.php" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/vendor/league/csv/src/functions.php" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/vendor/league/csv/src/functions_include.php" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/vendor/spipu/html2pdf/.github/workflows/ci.yaml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/vendor/spipu/html2pdf/.gitignore" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/vendor/spipu/html2pdf/CHANGELOG.md" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/vendor/spipu/html2pdf/LICENSE.md" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/vendor/spipu/html2pdf/README.md" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/vendor/spipu/html2pdf/Tests/AbstractTest.php" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/vendor/spipu/html2pdf/Tests/CrossVersionCompatibility/AbstractTestCase.php" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/vendor/spipu/html2pdf/Tests/CrossVersionCompatibility/CssConverterTestCase.php" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/vendor/spipu/html2pdf/Tests/CrossVersionCompatibility/ExceptionFormatterTestCase.php" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/vendor/spipu/html2pdf/Tests/CrossVersionCompatibility/HtmlTestCase.php" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/vendor/spipu/html2pdf/Tests/CrossVersionCompatibility/PhpUnit5/AbstractTestCase.php" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/vendor/spipu/html2pdf/Tests/CrossVersionCompatibility/PhpUnit5/CssConverterTestCase.php" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/vendor/spipu/html2pdf/Tests/CrossVersionCompatibility/PhpUnit5/ExceptionFormatterTestCase.php" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/vendor/spipu/html2pdf/Tests/CrossVersionCompatibility/PhpUnit5/HtmlTestCase.php" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/vendor/spipu/html2pdf/Tests/CrossVersionCompatibility/PhpUnit5/SvgDrawerTestCase.php" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/vendor/spipu/html2pdf/Tests/CrossVersionCompatibility/PhpUnit5/TagParserTestCase.php" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/vendor/spipu/html2pdf/Tests/CrossVersionCompatibility/PhpUnit5/TextParserTestCase.php" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/vendor/spipu/html2pdf/Tests/CrossVersionCompatibility/PhpUnit9/AbstractTestCase.php" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/vendor/spipu/html2pdf/Tests/CrossVersionCompatibility/PhpUnit9/AssertContains.php" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/vendor/spipu/html2pdf/Tests/CrossVersionCompatibility/PhpUnit9/CssConverterTestCase.php" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/vendor/spipu/html2pdf/Tests/CrossVersionCompatibility/PhpUnit9/ExceptionFormatterTestCase.php" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/vendor/spipu/html2pdf/Tests/CrossVersionCompatibility/PhpUnit9/HtmlTestCase.php" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/vendor/spipu/html2pdf/Tests/CrossVersionCompatibility/PhpUnit9/SvgDrawerTestCase.php" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/vendor/spipu/html2pdf/Tests/CrossVersionCompatibility/PhpUnit9/TagParserTestCase.php" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/vendor/spipu/html2pdf/Tests/CrossVersionCompatibility/PhpUnit9/TextParserTestCase.php" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/vendor/spipu/html2pdf/Tests/CrossVersionCompatibility/SvgDrawerTestCase.php" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/vendor/spipu/html2pdf/Tests/CrossVersionCompatibility/TagParserTestCase.php" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/vendor/spipu/html2pdf/Tests/CrossVersionCompatibility/TextParserTestCase.php" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/vendor/spipu/html2pdf/Tests/CrossVersionCompatibility/bootstrap.php" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/vendor/spipu/html2pdf/Tests/CssConverterTest.php" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/vendor/spipu/html2pdf/Tests/Debug/DebugTest.php" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/vendor/spipu/html2pdf/Tests/ExamplesTest.php" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/vendor/spipu/html2pdf/Tests/Exception/ExceptionFormatterTest.php" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/vendor/spipu/html2pdf/Tests/Exception/LongSentenceExceptionTest.php" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/vendor/spipu/html2pdf/Tests/Html2PdfTest.php" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/vendor/spipu/html2pdf/Tests/Image/BackgroundErrorTest.php" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/vendor/spipu/html2pdf/Tests/Image/BackgroundOkTest.php" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/vendor/spipu/html2pdf/Tests/Image/SrcErrorTest.php" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/vendor/spipu/html2pdf/Tests/Image/SrcOkTest.php" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/vendor/spipu/html2pdf/Tests/Image/res/logo.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/vendor/spipu/html2pdf/Tests/LocaleTest.php" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/vendor/spipu/html2pdf/Tests/Output/FileNameOkTest.php" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/vendor/spipu/html2pdf/Tests/Parsing/HtmlLexerTest.php" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/vendor/spipu/html2pdf/Tests/Parsing/HtmlTest.php" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/vendor/spipu/html2pdf/Tests/Parsing/ParsingTest.php" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/vendor/spipu/html2pdf/Tests/Parsing/TagParserTest.php" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/vendor/spipu/html2pdf/Tests/Parsing/TextParserTest.php" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/vendor/spipu/html2pdf/Tests/Parsing/TokenTest.php" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/vendor/spipu/html2pdf/Tests/Security/SecurityTest.php" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/vendor/spipu/html2pdf/Tests/SvgDrawerTest.php" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/vendor/spipu/html2pdf/Tests/Tag/DivTest.php" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/vendor/spipu/html2pdf/Tests/Tag/MustHaveTagsTest.php" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/vendor/spipu/html2pdf/Tests/Tag/Svg/CircleErrorTest.php" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/vendor/spipu/html2pdf/Tests/Tag/Svg/EllipseErrorTest.php" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/vendor/spipu/html2pdf/Tests/Tag/Svg/GErrorTest.php" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/vendor/spipu/html2pdf/Tests/Tag/Svg/LineErrorTest.php" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/vendor/spipu/html2pdf/Tests/Tag/Svg/PathErrorTest.php" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/vendor/spipu/html2pdf/Tests/Tag/Svg/PathInvalidTest.php" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/vendor/spipu/html2pdf/Tests/Tag/Svg/PolygonErrorTest.php" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/vendor/spipu/html2pdf/Tests/Tag/Svg/PolylineErrorTest.php" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/vendor/spipu/html2pdf/Tests/Tag/Svg/RectErrorTest.php" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/vendor/spipu/html2pdf/Tests/Tag/TdTooLongTest.php" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/vendor/spipu/html2pdf/composer.json" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/vendor/spipu/html2pdf/doc/README.md" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/vendor/spipu/html2pdf/doc/barcode.md" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/vendor/spipu/html2pdf/doc/basic.md" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/vendor/spipu/html2pdf/doc/bookmark.md" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/vendor/spipu/html2pdf/doc/cert.md" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/vendor/spipu/html2pdf/doc/exception.md" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/vendor/spipu/html2pdf/doc/extension.md" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/vendor/spipu/html2pdf/doc/font.md" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/vendor/spipu/html2pdf/doc/install.md" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/vendor/spipu/html2pdf/doc/methods.md" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/vendor/spipu/html2pdf/doc/output.md" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/vendor/spipu/html2pdf/doc/page.md" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/vendor/spipu/html2pdf/doc/res/margins.jpg" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/vendor/spipu/html2pdf/doc/security.md" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/vendor/spipu/html2pdf/doc/svg.md" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/vendor/spipu/html2pdf/doc/tcpdf_methods.md" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/vendor/spipu/html2pdf/examples/about.php" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/vendor/spipu/html2pdf/examples/balloon.php" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/vendor/spipu/html2pdf/examples/bookmark.php" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/vendor/spipu/html2pdf/examples/example00.php" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/vendor/spipu/html2pdf/examples/example01.php" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/vendor/spipu/html2pdf/examples/example02.php" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/vendor/spipu/html2pdf/examples/example03.php" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/vendor/spipu/html2pdf/examples/example04.php" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/vendor/spipu/html2pdf/examples/example05.php" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/vendor/spipu/html2pdf/examples/example06.php" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/vendor/spipu/html2pdf/examples/example07.php" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/vendor/spipu/html2pdf/examples/example08.php" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/vendor/spipu/html2pdf/examples/example09.php" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/vendor/spipu/html2pdf/examples/example10.php" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/vendor/spipu/html2pdf/examples/example11.php" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/vendor/spipu/html2pdf/examples/example12.php" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/vendor/spipu/html2pdf/examples/example13.php" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/vendor/spipu/html2pdf/examples/example14.php" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/vendor/spipu/html2pdf/examples/example15.php" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/vendor/spipu/html2pdf/examples/forms.php" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/vendor/spipu/html2pdf/examples/groups.php" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/vendor/spipu/html2pdf/examples/measure.php" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/vendor/spipu/html2pdf/examples/qrcode.php" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/vendor/spipu/html2pdf/examples/radius.php" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/vendor/spipu/html2pdf/examples/res/about.php" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/vendor/spipu/html2pdf/examples/res/balloon.php" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/vendor/spipu/html2pdf/examples/res/bas_page.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/vendor/spipu/html2pdf/examples/res/bookmark.php" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/vendor/spipu/html2pdf/examples/res/check.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/vendor/spipu/html2pdf/examples/res/example00.php" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/vendor/spipu/html2pdf/examples/res/example01.php" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/vendor/spipu/html2pdf/examples/res/example02.php" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/vendor/spipu/html2pdf/examples/res/example03.php" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/vendor/spipu/html2pdf/examples/res/example04.php" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/vendor/spipu/html2pdf/examples/res/example05.php" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/vendor/spipu/html2pdf/examples/res/example06.css" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/vendor/spipu/html2pdf/examples/res/example06.php" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/vendor/spipu/html2pdf/examples/res/example07a.php" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/vendor/spipu/html2pdf/examples/res/example07b.php" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/vendor/spipu/html2pdf/examples/res/example08.php" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/vendor/spipu/html2pdf/examples/res/example09.php" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/vendor/spipu/html2pdf/examples/res/example09.png.php" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/vendor/spipu/html2pdf/examples/res/example10.php" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/vendor/spipu/html2pdf/examples/res/example10a.gif" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/vendor/spipu/html2pdf/examples/res/example10b.jpg" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/vendor/spipu/html2pdf/examples/res/example10c.gif" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/vendor/spipu/html2pdf/examples/res/example11.php" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/vendor/spipu/html2pdf/examples/res/example12.php" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/vendor/spipu/html2pdf/examples/res/example13.php" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/vendor/spipu/html2pdf/examples/res/example14.php" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/vendor/spipu/html2pdf/examples/res/example15.php" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/vendor/spipu/html2pdf/examples/res/forms.php" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/vendor/spipu/html2pdf/examples/res/groups.php" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/vendor/spipu/html2pdf/examples/res/logo.gif" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/vendor/spipu/html2pdf/examples/res/logo.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/vendor/spipu/html2pdf/examples/res/measure.php" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/vendor/spipu/html2pdf/examples/res/measure.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/vendor/spipu/html2pdf/examples/res/off.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/vendor/spipu/html2pdf/examples/res/puce.gif" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/vendor/spipu/html2pdf/examples/res/puce2.gif" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/vendor/spipu/html2pdf/examples/res/qrcode.php" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/vendor/spipu/html2pdf/examples/res/radius.php" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/vendor/spipu/html2pdf/examples/res/svg.php" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/vendor/spipu/html2pdf/examples/res/svg_tiger.php" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/vendor/spipu/html2pdf/examples/res/svg_tree.php" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/vendor/spipu/html2pdf/examples/res/tcpdf_logo.jpg" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/vendor/spipu/html2pdf/examples/res/ticket.php" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/vendor/spipu/html2pdf/examples/res/utf8.txt" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/vendor/spipu/html2pdf/examples/svg.php" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/vendor/spipu/html2pdf/examples/svg_tiger.php" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/vendor/spipu/html2pdf/examples/svg_tree.php" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/vendor/spipu/html2pdf/examples/ticket.php" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/vendor/spipu/html2pdf/examples/utf8.php" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/vendor/spipu/html2pdf/phpunit.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/vendor/spipu/html2pdf/src/CssConverter.php" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/vendor/spipu/html2pdf/src/Debug/Debug.php" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/vendor/spipu/html2pdf/src/Debug/DebugInterface.php" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/vendor/spipu/html2pdf/src/Exception/ExceptionFormatter.php" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/vendor/spipu/html2pdf/src/Exception/Html2PdfException.php" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/vendor/spipu/html2pdf/src/Exception/HtmlParsingException.php" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/vendor/spipu/html2pdf/src/Exception/ImageException.php" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/vendor/spipu/html2pdf/src/Exception/LocaleException.php" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/vendor/spipu/html2pdf/src/Exception/LongSentenceException.php" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/vendor/spipu/html2pdf/src/Exception/TableException.php" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/vendor/spipu/html2pdf/src/Extension/AbstractExtension.php" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/vendor/spipu/html2pdf/src/Extension/Core/HtmlExtension.php" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/vendor/spipu/html2pdf/src/Extension/Core/SvgExtension.php" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/vendor/spipu/html2pdf/src/Extension/ExtensionInterface.php" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/vendor/spipu/html2pdf/src/Html2Pdf.php" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/vendor/spipu/html2pdf/src/Locale.php" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/vendor/spipu/html2pdf/src/MyPdf.php" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/vendor/spipu/html2pdf/src/Parsing/Css.php" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/vendor/spipu/html2pdf/src/Parsing/Html.php" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/vendor/spipu/html2pdf/src/Parsing/HtmlLexer.php" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/vendor/spipu/html2pdf/src/Parsing/Node.php" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/vendor/spipu/html2pdf/src/Parsing/TagParser.php" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/vendor/spipu/html2pdf/src/Parsing/TextParser.php" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/vendor/spipu/html2pdf/src/Parsing/Token.php" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/vendor/spipu/html2pdf/src/Security/Security.php" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/vendor/spipu/html2pdf/src/Security/SecurityInterface.php" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/vendor/spipu/html2pdf/src/SvgDrawer.php" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/vendor/spipu/html2pdf/src/Tag/AbstractHtmlTag.php" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/vendor/spipu/html2pdf/src/Tag/AbstractSvgTag.php" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/vendor/spipu/html2pdf/src/Tag/AbstractTag.php" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/vendor/spipu/html2pdf/src/Tag/Html/Address.php" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/vendor/spipu/html2pdf/src/Tag/Html/B.php" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/vendor/spipu/html2pdf/src/Tag/Html/Big.php" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/vendor/spipu/html2pdf/src/Tag/Html/Bookmark.php" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/vendor/spipu/html2pdf/src/Tag/Html/Cite.php" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/vendor/spipu/html2pdf/src/Tag/Html/Del.php" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/vendor/spipu/html2pdf/src/Tag/Html/Em.php" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/vendor/spipu/html2pdf/src/Tag/Html/Figure.php" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/vendor/spipu/html2pdf/src/Tag/Html/Font.php" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/vendor/spipu/html2pdf/src/Tag/Html/I.php" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/vendor/spipu/html2pdf/src/Tag/Html/Ins.php" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/vendor/spipu/html2pdf/src/Tag/Html/Label.php" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/vendor/spipu/html2pdf/src/Tag/Html/S.php" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/vendor/spipu/html2pdf/src/Tag/Html/Samp.php" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/vendor/spipu/html2pdf/src/Tag/Html/Small.php" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/vendor/spipu/html2pdf/src/Tag/Html/Span.php" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/vendor/spipu/html2pdf/src/Tag/Html/Strike.php" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/vendor/spipu/html2pdf/src/Tag/Html/Strong.php" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/vendor/spipu/html2pdf/src/Tag/Html/Sub.php" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/vendor/spipu/html2pdf/src/Tag/Html/Sup.php" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/vendor/spipu/html2pdf/src/Tag/Html/U.php" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/vendor/spipu/html2pdf/src/Tag/Svg/Circle.php" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/vendor/spipu/html2pdf/src/Tag/Svg/Ellipse.php" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/vendor/spipu/html2pdf/src/Tag/Svg/G.php" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/vendor/spipu/html2pdf/src/Tag/Svg/Line.php" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/vendor/spipu/html2pdf/src/Tag/Svg/Path.php" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/vendor/spipu/html2pdf/src/Tag/Svg/Polygon.php" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/vendor/spipu/html2pdf/src/Tag/Svg/Polyline.php" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/vendor/spipu/html2pdf/src/Tag/Svg/Rect.php" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/vendor/spipu/html2pdf/src/Tag/TagInterface.php" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/vendor/spipu/html2pdf/src/config/tcpdf.config.php" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/vendor/spipu/html2pdf/src/locale/ca.csv" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/vendor/spipu/html2pdf/src/locale/cn.csv" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/vendor/spipu/html2pdf/src/locale/cs.csv" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/vendor/spipu/html2pdf/src/locale/da.csv" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/vendor/spipu/html2pdf/src/locale/de.csv" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/vendor/spipu/html2pdf/src/locale/en.csv" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/vendor/spipu/html2pdf/src/locale/es.csv" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/vendor/spipu/html2pdf/src/locale/fi.csv" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/vendor/spipu/html2pdf/src/locale/fr.csv" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/vendor/spipu/html2pdf/src/locale/it.csv" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/vendor/spipu/html2pdf/src/locale/ja.csv" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/vendor/spipu/html2pdf/src/locale/lt.csv" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/vendor/spipu/html2pdf/src/locale/nl.csv" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/vendor/spipu/html2pdf/src/locale/no.csv" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/vendor/spipu/html2pdf/src/locale/pl.csv" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/vendor/spipu/html2pdf/src/locale/pt.csv" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/vendor/spipu/html2pdf/src/locale/ru.csv" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/vendor/spipu/html2pdf/src/locale/tr.csv" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/vendor/tecnickcom/tcpdf/CHANGELOG.TXT" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/vendor/tecnickcom/tcpdf/LICENSE.TXT" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/vendor/tecnickcom/tcpdf/README.md" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/vendor/tecnickcom/tcpdf/VERSION" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/vendor/tecnickcom/tcpdf/composer.json" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/vendor/tecnickcom/tcpdf/config/tcpdf_config.php" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/vendor/tecnickcom/tcpdf/fonts/ae_fonts_2.0/COPYING" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/vendor/tecnickcom/tcpdf/fonts/ae_fonts_2.0/ChangeLog" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/vendor/tecnickcom/tcpdf/fonts/ae_fonts_2.0/README" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/vendor/tecnickcom/tcpdf/fonts/aealarabiya.ctg.z" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/vendor/tecnickcom/tcpdf/fonts/aealarabiya.php" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/vendor/tecnickcom/tcpdf/fonts/aealarabiya.z" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/vendor/tecnickcom/tcpdf/fonts/aefurat.ctg.z" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/vendor/tecnickcom/tcpdf/fonts/aefurat.php" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/vendor/tecnickcom/tcpdf/fonts/aefurat.z" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/vendor/tecnickcom/tcpdf/fonts/cid0cs.php" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/vendor/tecnickcom/tcpdf/fonts/cid0ct.php" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/vendor/tecnickcom/tcpdf/fonts/cid0jp.php" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/vendor/tecnickcom/tcpdf/fonts/cid0kr.php" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/vendor/tecnickcom/tcpdf/fonts/courier.php" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/vendor/tecnickcom/tcpdf/fonts/courierb.php" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/vendor/tecnickcom/tcpdf/fonts/courierbi.php" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/vendor/tecnickcom/tcpdf/fonts/courieri.php" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/vendor/tecnickcom/tcpdf/fonts/dejavu-fonts-ttf-2.33/AUTHORS" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/vendor/tecnickcom/tcpdf/fonts/dejavu-fonts-ttf-2.33/BUGS" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/vendor/tecnickcom/tcpdf/fonts/dejavu-fonts-ttf-2.33/LICENSE" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/vendor/tecnickcom/tcpdf/fonts/dejavu-fonts-ttf-2.33/NEWS" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/vendor/tecnickcom/tcpdf/fonts/dejavu-fonts-ttf-2.33/README" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/vendor/tecnickcom/tcpdf/fonts/dejavu-fonts-ttf-2.33/langcover.txt" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/vendor/tecnickcom/tcpdf/fonts/dejavu-fonts-ttf-2.33/unicover.txt" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/vendor/tecnickcom/tcpdf/fonts/dejavu-fonts-ttf-2.34/AUTHORS" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/vendor/tecnickcom/tcpdf/fonts/dejavu-fonts-ttf-2.34/BUGS" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/vendor/tecnickcom/tcpdf/fonts/dejavu-fonts-ttf-2.34/LICENSE" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/vendor/tecnickcom/tcpdf/fonts/dejavu-fonts-ttf-2.34/NEWS" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/vendor/tecnickcom/tcpdf/fonts/dejavu-fonts-ttf-2.34/README" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/vendor/tecnickcom/tcpdf/fonts/dejavu-fonts-ttf-2.34/langcover.txt" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/vendor/tecnickcom/tcpdf/fonts/dejavu-fonts-ttf-2.34/unicover.txt" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/vendor/tecnickcom/tcpdf/fonts/dejavusans.ctg.z" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/vendor/tecnickcom/tcpdf/fonts/dejavusans.php" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/vendor/tecnickcom/tcpdf/fonts/dejavusans.z" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/vendor/tecnickcom/tcpdf/fonts/dejavusansb.ctg.z" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/vendor/tecnickcom/tcpdf/fonts/dejavusansb.php" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/vendor/tecnickcom/tcpdf/fonts/dejavusansb.z" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/vendor/tecnickcom/tcpdf/fonts/dejavusansbi.ctg.z" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/vendor/tecnickcom/tcpdf/fonts/dejavusansbi.php" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/vendor/tecnickcom/tcpdf/fonts/dejavusansbi.z" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/vendor/tecnickcom/tcpdf/fonts/dejavusanscondensed.ctg.z" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/vendor/tecnickcom/tcpdf/fonts/dejavusanscondensed.php" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/vendor/tecnickcom/tcpdf/fonts/dejavusanscondensed.z" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/vendor/tecnickcom/tcpdf/fonts/dejavusanscondensedb.ctg.z" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/vendor/tecnickcom/tcpdf/fonts/dejavusanscondensedb.php" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/vendor/tecnickcom/tcpdf/fonts/dejavusanscondensedb.z" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/vendor/tecnickcom/tcpdf/fonts/dejavusanscondensedbi.ctg.z" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/vendor/tecnickcom/tcpdf/fonts/dejavusanscondensedbi.php" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/vendor/tecnickcom/tcpdf/fonts/dejavusanscondensedbi.z" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/vendor/tecnickcom/tcpdf/fonts/dejavusanscondensedi.ctg.z" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/vendor/tecnickcom/tcpdf/fonts/dejavusanscondensedi.php" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/vendor/tecnickcom/tcpdf/fonts/dejavusanscondensedi.z" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/vendor/tecnickcom/tcpdf/fonts/dejavusansextralight.ctg.z" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/vendor/tecnickcom/tcpdf/fonts/dejavusansextralight.php" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/vendor/tecnickcom/tcpdf/fonts/dejavusansextralight.z" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/vendor/tecnickcom/tcpdf/fonts/dejavusansi.ctg.z" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/vendor/tecnickcom/tcpdf/fonts/dejavusansi.php" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/vendor/tecnickcom/tcpdf/fonts/dejavusansi.z" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/vendor/tecnickcom/tcpdf/fonts/dejavusansmono.ctg.z" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/vendor/tecnickcom/tcpdf/fonts/dejavusansmono.php" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/vendor/tecnickcom/tcpdf/fonts/dejavusansmono.z" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/vendor/tecnickcom/tcpdf/fonts/dejavusansmonob.ctg.z" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/vendor/tecnickcom/tcpdf/fonts/dejavusansmonob.php" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/vendor/tecnickcom/tcpdf/fonts/dejavusansmonob.z" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/vendor/tecnickcom/tcpdf/fonts/dejavusansmonobi.ctg.z" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/vendor/tecnickcom/tcpdf/fonts/dejavusansmonobi.php" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/vendor/tecnickcom/tcpdf/fonts/dejavusansmonobi.z" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/vendor/tecnickcom/tcpdf/fonts/dejavusansmonoi.ctg.z" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/vendor/tecnickcom/tcpdf/fonts/dejavusansmonoi.php" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/vendor/tecnickcom/tcpdf/fonts/dejavusansmonoi.z" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/vendor/tecnickcom/tcpdf/fonts/dejavuserif.ctg.z" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/vendor/tecnickcom/tcpdf/fonts/dejavuserif.php" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/vendor/tecnickcom/tcpdf/fonts/dejavuserif.z" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/vendor/tecnickcom/tcpdf/fonts/dejavuserifb.ctg.z" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/vendor/tecnickcom/tcpdf/fonts/dejavuserifb.php" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/vendor/tecnickcom/tcpdf/fonts/dejavuserifb.z" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/vendor/tecnickcom/tcpdf/fonts/dejavuserifbi.ctg.z" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/vendor/tecnickcom/tcpdf/fonts/dejavuserifbi.php" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/vendor/tecnickcom/tcpdf/fonts/dejavuserifbi.z" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/vendor/tecnickcom/tcpdf/fonts/dejavuserifcondensed.ctg.z" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/vendor/tecnickcom/tcpdf/fonts/dejavuserifcondensed.php" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/vendor/tecnickcom/tcpdf/fonts/dejavuserifcondensed.z" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/vendor/tecnickcom/tcpdf/fonts/dejavuserifcondensedb.ctg.z" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/vendor/tecnickcom/tcpdf/fonts/dejavuserifcondensedb.php" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/vendor/tecnickcom/tcpdf/fonts/dejavuserifcondensedb.z" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/vendor/tecnickcom/tcpdf/fonts/dejavuserifcondensedbi.ctg.z" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/vendor/tecnickcom/tcpdf/fonts/dejavuserifcondensedbi.php" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/vendor/tecnickcom/tcpdf/fonts/dejavuserifcondensedbi.z" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/vendor/tecnickcom/tcpdf/fonts/dejavuserifcondensedi.ctg.z" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/vendor/tecnickcom/tcpdf/fonts/dejavuserifcondensedi.php" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/vendor/tecnickcom/tcpdf/fonts/dejavuserifcondensedi.z" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/vendor/tecnickcom/tcpdf/fonts/dejavuserifi.ctg.z" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/vendor/tecnickcom/tcpdf/fonts/dejavuserifi.php" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/vendor/tecnickcom/tcpdf/fonts/dejavuserifi.z" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/vendor/tecnickcom/tcpdf/fonts/freefont-20100919/AUTHORS" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/vendor/tecnickcom/tcpdf/fonts/freefont-20100919/COPYING" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/vendor/tecnickcom/tcpdf/fonts/freefont-20100919/CREDITS" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/vendor/tecnickcom/tcpdf/fonts/freefont-20100919/ChangeLog" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/vendor/tecnickcom/tcpdf/fonts/freefont-20100919/INSTALL" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/vendor/tecnickcom/tcpdf/fonts/freefont-20100919/README" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/vendor/tecnickcom/tcpdf/fonts/freefont-20120503/AUTHORS" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/vendor/tecnickcom/tcpdf/fonts/freefont-20120503/COPYING" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/vendor/tecnickcom/tcpdf/fonts/freefont-20120503/CREDITS" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/vendor/tecnickcom/tcpdf/fonts/freefont-20120503/ChangeLog" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/vendor/tecnickcom/tcpdf/fonts/freefont-20120503/INSTALL" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/vendor/tecnickcom/tcpdf/fonts/freefont-20120503/README" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/vendor/tecnickcom/tcpdf/fonts/freefont-20120503/TROUBLESHOOTING" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/vendor/tecnickcom/tcpdf/fonts/freefont-20120503/USAGE" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/vendor/tecnickcom/tcpdf/fonts/freemono.ctg.z" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/vendor/tecnickcom/tcpdf/fonts/freemono.php" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/vendor/tecnickcom/tcpdf/fonts/freemono.z" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/vendor/tecnickcom/tcpdf/fonts/freemonob.ctg.z" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/vendor/tecnickcom/tcpdf/fonts/freemonob.php" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/vendor/tecnickcom/tcpdf/fonts/freemonob.z" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/vendor/tecnickcom/tcpdf/fonts/freemonobi.ctg.z" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/vendor/tecnickcom/tcpdf/fonts/freemonobi.php" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/vendor/tecnickcom/tcpdf/fonts/freemonobi.z" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/vendor/tecnickcom/tcpdf/fonts/freemonoi.ctg.z" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/vendor/tecnickcom/tcpdf/fonts/freemonoi.php" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/vendor/tecnickcom/tcpdf/fonts/freemonoi.z" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/vendor/tecnickcom/tcpdf/fonts/freesans.ctg.z" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/vendor/tecnickcom/tcpdf/fonts/freesans.php" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/vendor/tecnickcom/tcpdf/fonts/freesans.z" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/vendor/tecnickcom/tcpdf/fonts/freesansb.ctg.z" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/vendor/tecnickcom/tcpdf/fonts/freesansb.php" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/vendor/tecnickcom/tcpdf/fonts/freesansb.z" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/vendor/tecnickcom/tcpdf/fonts/freesansbi.ctg.z" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/vendor/tecnickcom/tcpdf/fonts/freesansbi.php" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/vendor/tecnickcom/tcpdf/fonts/freesansbi.z" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/vendor/tecnickcom/tcpdf/fonts/freesansi.ctg.z" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/vendor/tecnickcom/tcpdf/fonts/freesansi.php" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/vendor/tecnickcom/tcpdf/fonts/freesansi.z" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/vendor/tecnickcom/tcpdf/fonts/freeserif.ctg.z" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/vendor/tecnickcom/tcpdf/fonts/freeserif.php" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/vendor/tecnickcom/tcpdf/fonts/freeserif.z" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/vendor/tecnickcom/tcpdf/fonts/freeserifb.ctg.z" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/vendor/tecnickcom/tcpdf/fonts/freeserifb.php" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/vendor/tecnickcom/tcpdf/fonts/freeserifb.z" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/vendor/tecnickcom/tcpdf/fonts/freeserifbi.ctg.z" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/vendor/tecnickcom/tcpdf/fonts/freeserifbi.php" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/vendor/tecnickcom/tcpdf/fonts/freeserifbi.z" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/vendor/tecnickcom/tcpdf/fonts/freeserifi.ctg.z" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/vendor/tecnickcom/tcpdf/fonts/freeserifi.php" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/vendor/tecnickcom/tcpdf/fonts/freeserifi.z" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/vendor/tecnickcom/tcpdf/fonts/helvetica.php" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/vendor/tecnickcom/tcpdf/fonts/helveticab.php" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/vendor/tecnickcom/tcpdf/fonts/helveticabi.php" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/vendor/tecnickcom/tcpdf/fonts/helveticai.php" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/vendor/tecnickcom/tcpdf/fonts/hysmyeongjostdmedium.php" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/vendor/tecnickcom/tcpdf/fonts/kozgopromedium.php" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/vendor/tecnickcom/tcpdf/fonts/kozminproregular.php" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/vendor/tecnickcom/tcpdf/fonts/msungstdlight.php" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/vendor/tecnickcom/tcpdf/fonts/pdfacourier.php" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/vendor/tecnickcom/tcpdf/fonts/pdfacourier.z" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/vendor/tecnickcom/tcpdf/fonts/pdfacourierb.php" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/vendor/tecnickcom/tcpdf/fonts/pdfacourierb.z" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/vendor/tecnickcom/tcpdf/fonts/pdfacourierbi.php" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/vendor/tecnickcom/tcpdf/fonts/pdfacourierbi.z" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/vendor/tecnickcom/tcpdf/fonts/pdfacourieri.php" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/vendor/tecnickcom/tcpdf/fonts/pdfacourieri.z" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/vendor/tecnickcom/tcpdf/fonts/pdfahelvetica.php" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/vendor/tecnickcom/tcpdf/fonts/pdfahelvetica.z" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/vendor/tecnickcom/tcpdf/fonts/pdfahelveticab.php" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/vendor/tecnickcom/tcpdf/fonts/pdfahelveticab.z" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/vendor/tecnickcom/tcpdf/fonts/pdfahelveticabi.php" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/vendor/tecnickcom/tcpdf/fonts/pdfahelveticabi.z" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/vendor/tecnickcom/tcpdf/fonts/pdfahelveticai.php" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/vendor/tecnickcom/tcpdf/fonts/pdfahelveticai.z" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/vendor/tecnickcom/tcpdf/fonts/pdfasymbol.php" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/vendor/tecnickcom/tcpdf/fonts/pdfasymbol.z" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/vendor/tecnickcom/tcpdf/fonts/pdfatimes.php" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/vendor/tecnickcom/tcpdf/fonts/pdfatimes.z" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/vendor/tecnickcom/tcpdf/fonts/pdfatimesb.php" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/vendor/tecnickcom/tcpdf/fonts/pdfatimesb.z" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/vendor/tecnickcom/tcpdf/fonts/pdfatimesbi.php" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/vendor/tecnickcom/tcpdf/fonts/pdfatimesbi.z" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/vendor/tecnickcom/tcpdf/fonts/pdfatimesi.php" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/vendor/tecnickcom/tcpdf/fonts/pdfatimesi.z" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/vendor/tecnickcom/tcpdf/fonts/pdfazapfdingbats.php" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/vendor/tecnickcom/tcpdf/fonts/pdfazapfdingbats.z" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/vendor/tecnickcom/tcpdf/fonts/stsongstdlight.php" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/vendor/tecnickcom/tcpdf/fonts/symbol.php" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/vendor/tecnickcom/tcpdf/fonts/times.php" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/vendor/tecnickcom/tcpdf/fonts/timesb.php" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/vendor/tecnickcom/tcpdf/fonts/timesbi.php" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/vendor/tecnickcom/tcpdf/fonts/timesi.php" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/vendor/tecnickcom/tcpdf/fonts/uni2cid_ac15.php" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/vendor/tecnickcom/tcpdf/fonts/uni2cid_ag15.php" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/vendor/tecnickcom/tcpdf/fonts/uni2cid_aj16.php" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/vendor/tecnickcom/tcpdf/fonts/uni2cid_ak12.php" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/vendor/tecnickcom/tcpdf/fonts/zapfdingbats.php" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/vendor/tecnickcom/tcpdf/include/barcodes/datamatrix.php" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/vendor/tecnickcom/tcpdf/include/barcodes/pdf417.php" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/vendor/tecnickcom/tcpdf/include/barcodes/qrcode.php" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/vendor/tecnickcom/tcpdf/include/sRGB.icc" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/vendor/tecnickcom/tcpdf/include/tcpdf_colors.php" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/vendor/tecnickcom/tcpdf/include/tcpdf_filters.php" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/vendor/tecnickcom/tcpdf/include/tcpdf_font_data.php" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/vendor/tecnickcom/tcpdf/include/tcpdf_fonts.php" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/vendor/tecnickcom/tcpdf/include/tcpdf_images.php" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/vendor/tecnickcom/tcpdf/include/tcpdf_static.php" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/vendor/tecnickcom/tcpdf/tcpdf.php" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/vendor/tecnickcom/tcpdf/tcpdf_autoconfig.php" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/vendor/tecnickcom/tcpdf/tcpdf_barcodes_1d.php" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/vendor/tecnickcom/tcpdf/tcpdf_barcodes_2d.php" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/vendor/tecnickcom/tcpdf/tools/.htaccess" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/vendor/tecnickcom/tcpdf/tools/convert_fonts_examples.txt" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/vendor/tecnickcom/tcpdf/tools/tcpdf_addfont.php" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/vendor/xfra35/f3-access/.htaccess" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/vendor/xfra35/f3-access/LICENSE" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/vendor/xfra35/f3-access/README.md" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/vendor/xfra35/f3-access/composer.json" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/vendor/xfra35/f3-access/index.php" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/vendor/xfra35/f3-access/lib/access.php" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/vendor/xfra35/f3-access/tests/tests.css" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/vendor/xfra35/f3-access/tests/tests.htm" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/vendor/xfra35/f3-access/tests/tests.php" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/vendor/xfra35/f3-cron/.htaccess" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/vendor/xfra35/f3-cron/LICENSE" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/vendor/xfra35/f3-cron/README.md" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/vendor/xfra35/f3-cron/composer.json" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/vendor/xfra35/f3-cron/index.php" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/vendor/xfra35/f3-cron/lib/cron.php" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/vendor/xfra35/f3-cron/tests/jobs.ini" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/vendor/xfra35/f3-cron/tests/jobs.php" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/vendor/xfra35/f3-cron/tests/tests.css" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/vendor/xfra35/f3-cron/tests/tests.htm" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/vendor/xfra35/f3-cron/tests/tests.php" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/vendor/xfra35/f3-multilang/LICENSE" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/vendor/xfra35/f3-multilang/README.md" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/vendor/xfra35/f3-multilang/composer.json" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/vendor/xfra35/f3-multilang/index.php" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/vendor/xfra35/f3-multilang/lib/multilang.php" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/vendor/xfra35/f3-multilang/tests/app/dict/en.ini" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/vendor/xfra35/f3-multilang/tests/app/dict/fr.ini" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/vendor/xfra35/f3-multilang/tests/app/dict/it-IT.ini" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/vendor/xfra35/f3-multilang/tests/app/dict/it.ini" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/vendor/xfra35/f3-multilang/tests/app/faq.php" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/vendor/xfra35/f3-multilang/tests/app/home.php" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/vendor/xfra35/f3-multilang/tests/app/legal.php" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/vendor/xfra35/f3-multilang/tests/app/resize.php" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/vendor/xfra35/f3-multilang/tests/cfg/app.ini" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/vendor/xfra35/f3-multilang/tests/tests.css" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/vendor/xfra35/f3-multilang/tests/tests.htm" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/vendor/xfra35/f3-multilang/tests/tests.php" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/www/.htaccess" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/www/entry_log.txt" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/www/index.html" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/www/index.php" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/www/test_config.php" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.htaccess" beforeDir="false" afterPath="$PROJECT_DIR$/.htaccess" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/README.md" beforeDir="false" afterPath="$PROJECT_DIR$/src/README.md" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/SECTIONS_DOCUMENTATION.md" beforeDir="false" afterPath="$PROJECT_DIR$/src/SECTIONS_DOCUMENTATION.md" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/models/Act.php" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/models/Chapter.php" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/models/Character.php" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/models/Comment.php" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/models/Project.php" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/models/Section.php" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/models/Synonyms.php" beforeDir="false" afterPath="$PROJECT_DIR$/src/app/modules/chapter/models/Synonyms.php" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/models/User.php" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/views/auth/login.php" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/views/auth/register.php" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/views/character/create.php" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/views/character/edit.php" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/views/character/list.php" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/views/editor/edit.php" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/views/home.php" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/views/layouts/main.php" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/views/project/create.php" beforeDir="false" afterPath="$PROJECT_DIR$/src/app/modules/project/views/project/create.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/views/project/create_act.php" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/views/project/create_chapter.php" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/views/project/dashboard.php" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/views/project/edit.php" beforeDir="false" afterPath="$PROJECT_DIR$/src/app/modules/project/views/project/edit.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/views/project/edit_act.php" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/views/project/mindmap.php" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/views/project/show.php" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/views/section/edit.php" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/composer.json" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/composer.lock" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/data/.keep" beforeDir="false" afterPath="$PROJECT_DIR$/src/data/.keep" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/index.php" beforeDir="false" afterPath="$PROJECT_DIR$/index.php" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/php.ini" beforeDir="false" afterPath="$PROJECT_DIR$/src/php.ini" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/public/icons/icon-192.png" beforeDir="false" afterPath="$PROJECT_DIR$/src/public/icons/icon-192.png" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/public/icons/icon-512.png" beforeDir="false" afterPath="$PROJECT_DIR$/src/public/icons/icon-512.png" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/public/manifest.json" beforeDir="false" afterPath="$PROJECT_DIR$/src/public/manifest.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/public/service-worker.js" beforeDir="false" afterPath="$PROJECT_DIR$/src/public/service-worker.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/public/style.css" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/public/theme-dark.css" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/public/theme-default.css" beforeDir="false" afterPath="$PROJECT_DIR$/src/public/theme-default.css" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/public/theme-modern.css" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/public/uploads/section_695d37b118cfc.jpg" beforeDir="false" afterPath="$PROJECT_DIR$/src/public/uploads/section_695d37b118cfc.jpg" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/public/uploads/section_695f689bebe21.jpg" beforeDir="false" afterPath="$PROJECT_DIR$/src/data/daniel@rouaix.com/photo_Daniel.jpg" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/router.php" beforeDir="false" afterPath="$PROJECT_DIR$/src/router.php" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/test.epub" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/test.txt" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/vendor/autoload.php" beforeDir="false" afterPath="$PROJECT_DIR$/src/vendor/autoload.php" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/vendor/bcosca/fatfree-core/.github/FUNDING.yml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/vendor/bcosca/fatfree-core/CHANGELOG.md" beforeDir="false" afterPath="$PROJECT_DIR$/src/vendor/bcosca/fatfree-core/CHANGELOG.md" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/vendor/bcosca/fatfree-core/COPYING" beforeDir="false" afterPath="$PROJECT_DIR$/src/vendor/bcosca/fatfree-core/COPYING" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/vendor/bcosca/fatfree-core/README.md" beforeDir="false" afterPath="$PROJECT_DIR$/src/vendor/bcosca/fatfree-core/README.md" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/vendor/bcosca/fatfree-core/audit.php" beforeDir="false" afterPath="$PROJECT_DIR$/src/vendor/bcosca/fatfree-core/audit.php" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/vendor/bcosca/fatfree-core/auth.php" beforeDir="false" afterPath="$PROJECT_DIR$/src/vendor/bcosca/fatfree-core/auth.php" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/vendor/bcosca/fatfree-core/base.php" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/vendor/bcosca/fatfree-core/basket.php" beforeDir="false" afterPath="$PROJECT_DIR$/src/vendor/bcosca/fatfree-core/basket.php" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/vendor/bcosca/fatfree-core/bcrypt.php" beforeDir="false" afterPath="$PROJECT_DIR$/src/vendor/bcosca/fatfree-core/bcrypt.php" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/vendor/bcosca/fatfree-core/cli/ws.php" beforeDir="false" afterPath="$PROJECT_DIR$/src/vendor/bcosca/fatfree-core/cli/ws.php" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/vendor/bcosca/fatfree-core/code.css" beforeDir="false" afterPath="$PROJECT_DIR$/src/vendor/bcosca/fatfree-core/code.css" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/vendor/bcosca/fatfree-core/composer.json" beforeDir="false" afterPath="$PROJECT_DIR$/src/vendor/bcosca/fatfree-core/composer.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/vendor/bcosca/fatfree-core/db/cursor.php" beforeDir="false" afterPath="$PROJECT_DIR$/src/vendor/bcosca/fatfree-core/db/cursor.php" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/vendor/bcosca/fatfree-core/db/jig.php" beforeDir="false" afterPath="$PROJECT_DIR$/src/vendor/bcosca/fatfree-core/db/jig.php" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/vendor/bcosca/fatfree-core/db/jig/mapper.php" beforeDir="false" afterPath="$PROJECT_DIR$/src/vendor/bcosca/fatfree-core/db/jig/mapper.php" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/vendor/bcosca/fatfree-core/db/jig/session.php" beforeDir="false" afterPath="$PROJECT_DIR$/src/vendor/bcosca/fatfree-core/db/jig/session.php" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/vendor/bcosca/fatfree-core/db/mongo.php" beforeDir="false" afterPath="$PROJECT_DIR$/src/vendor/bcosca/fatfree-core/db/mongo.php" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/vendor/bcosca/fatfree-core/db/mongo/mapper.php" beforeDir="false" afterPath="$PROJECT_DIR$/src/vendor/bcosca/fatfree-core/db/mongo/mapper.php" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/vendor/bcosca/fatfree-core/db/mongo/session.php" beforeDir="false" afterPath="$PROJECT_DIR$/src/vendor/bcosca/fatfree-core/db/mongo/session.php" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/vendor/bcosca/fatfree-core/db/sql.php" beforeDir="false" afterPath="$PROJECT_DIR$/src/vendor/bcosca/fatfree-core/db/sql.php" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/vendor/bcosca/fatfree-core/db/sql/mapper.php" beforeDir="false" afterPath="$PROJECT_DIR$/src/vendor/bcosca/fatfree-core/db/sql/mapper.php" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/vendor/bcosca/fatfree-core/db/sql/session.php" beforeDir="false" afterPath="$PROJECT_DIR$/src/vendor/bcosca/fatfree-core/db/sql/session.php" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/vendor/bcosca/fatfree-core/f3.php" beforeDir="false" afterPath="$PROJECT_DIR$/src/vendor/bcosca/fatfree-core/f3.php" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/vendor/bcosca/fatfree-core/image.php" beforeDir="false" afterPath="$PROJECT_DIR$/src/vendor/bcosca/fatfree-core/image.php" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/vendor/bcosca/fatfree-core/log.php" beforeDir="false" afterPath="$PROJECT_DIR$/src/vendor/bcosca/fatfree-core/log.php" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/vendor/bcosca/fatfree-core/magic.php" beforeDir="false" afterPath="$PROJECT_DIR$/src/vendor/bcosca/fatfree-core/magic.php" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/vendor/bcosca/fatfree-core/markdown.php" beforeDir="false" afterPath="$PROJECT_DIR$/src/vendor/bcosca/fatfree-core/markdown.php" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/vendor/bcosca/fatfree-core/matrix.php" beforeDir="false" afterPath="$PROJECT_DIR$/src/vendor/bcosca/fatfree-core/matrix.php" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/vendor/bcosca/fatfree-core/session.php" beforeDir="false" afterPath="$PROJECT_DIR$/src/vendor/bcosca/fatfree-core/session.php" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/vendor/bcosca/fatfree-core/sessionadapter.php" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/vendor/bcosca/fatfree-core/smtp.php" beforeDir="false" afterPath="$PROJECT_DIR$/src/vendor/bcosca/fatfree-core/smtp.php" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/vendor/bcosca/fatfree-core/template.php" beforeDir="false" afterPath="$PROJECT_DIR$/src/vendor/bcosca/fatfree-core/template.php" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/vendor/bcosca/fatfree-core/test.php" beforeDir="false" afterPath="$PROJECT_DIR$/src/vendor/bcosca/fatfree-core/test.php" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/vendor/bcosca/fatfree-core/utf.php" beforeDir="false" afterPath="$PROJECT_DIR$/src/vendor/bcosca/fatfree-core/utf.php" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/vendor/bcosca/fatfree-core/web.php" beforeDir="false" afterPath="$PROJECT_DIR$/src/vendor/bcosca/fatfree-core/web.php" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/vendor/bcosca/fatfree-core/web/geo.php" beforeDir="false" afterPath="$PROJECT_DIR$/src/vendor/bcosca/fatfree-core/web/geo.php" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/vendor/bcosca/fatfree-core/web/google/recaptcha.php" beforeDir="false" afterPath="$PROJECT_DIR$/src/vendor/bcosca/fatfree-core/web/google/recaptcha.php" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/vendor/bcosca/fatfree-core/web/google/staticmap.php" beforeDir="false" afterPath="$PROJECT_DIR$/src/vendor/bcosca/fatfree-core/web/google/staticmap.php" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/vendor/bcosca/fatfree-core/web/oauth2.php" beforeDir="false" afterPath="$PROJECT_DIR$/src/vendor/bcosca/fatfree-core/web/oauth2.php" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/vendor/bcosca/fatfree-core/web/openid.php" beforeDir="false" afterPath="$PROJECT_DIR$/src/vendor/bcosca/fatfree-core/web/openid.php" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/vendor/bcosca/fatfree-core/web/pingback.php" beforeDir="false" afterPath="$PROJECT_DIR$/src/vendor/bcosca/fatfree-core/web/pingback.php" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/vendor/bcosca/fatfree/.gitignore" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/vendor/bcosca/fatfree/.gitmodules" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/vendor/bcosca/fatfree/.htaccess" beforeDir="false" afterPath="$PROJECT_DIR$/src/vendor/xfra35/f3-multilang/.htaccess" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/vendor/bcosca/fatfree/SECURITY.md" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/vendor/bcosca/fatfree/composer.json" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/vendor/bcosca/fatfree/config.ini" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/vendor/bcosca/fatfree/index.php" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/vendor/bcosca/fatfree/readme.md" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/vendor/bcosca/fatfree/ui/css/base.css" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/vendor/bcosca/fatfree/ui/css/theme.css" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/vendor/bcosca/fatfree/ui/images/logo.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/vendor/bcosca/fatfree/ui/layout.htm" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/vendor/bcosca/fatfree/ui/userref.htm" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/vendor/bcosca/fatfree/ui/welcome.htm" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/vendor/composer/ClassLoader.php" beforeDir="false" afterPath="$PROJECT_DIR$/src/vendor/composer/ClassLoader.php" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/vendor/composer/InstalledVersions.php" beforeDir="false" afterPath="$PROJECT_DIR$/src/vendor/composer/InstalledVersions.php" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/vendor/composer/LICENSE" beforeDir="false" afterPath="$PROJECT_DIR$/src/vendor/composer/LICENSE" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/vendor/composer/autoload_classmap.php" beforeDir="false" afterPath="$PROJECT_DIR$/src/vendor/composer/autoload_classmap.php" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/vendor/composer/autoload_namespaces.php" beforeDir="false" afterPath="$PROJECT_DIR$/src/vendor/composer/autoload_namespaces.php" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/vendor/composer/autoload_psr4.php" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/vendor/composer/autoload_real.php" beforeDir="false" afterPath="$PROJECT_DIR$/src/vendor/composer/autoload_real.php" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/vendor/composer/autoload_static.php" beforeDir="false" afterPath="$PROJECT_DIR$/src/vendor/composer/autoload_static.php" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/vendor/composer/installed.json" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/vendor/composer/installed.php" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/vendor/composer/platform_check.php" beforeDir="false" afterPath="$PROJECT_DIR$/src/vendor/composer/platform_check.php" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/web.config" beforeDir="false" afterPath="$PROJECT_DIR$/src/web.config" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -17,7 +819,7 @@
     <execution />
   </component>
   <component name="EmbeddingIndexingInfo">
-    <option name="cachedIndexableFilesCount" value="60" />
+    <option name="cachedIndexableFilesCount" value="58" />
     <option name="fileBasedEmbeddingIndicesEnabled" value="true" />
   </component>
   <component name="Git.Settings">
@@ -32,6 +834,15 @@
       <path value="$PROJECT_DIR$/vendor/composer" />
       <path value="$PROJECT_DIR$/vendor/bcosca/fatfree-core" />
       <path value="$PROJECT_DIR$/vendor/bcosca/fatfree" />
+      <path value="$PROJECT_DIR$/src/vendor/xfra35/f3-access" />
+      <path value="$PROJECT_DIR$/src/vendor/xfra35/f3-cron" />
+      <path value="$PROJECT_DIR$/src/vendor/composer" />
+      <path value="$PROJECT_DIR$/src/vendor/xfra35/f3-multilang" />
+      <path value="$PROJECT_DIR$/src/vendor/kalao/libs" />
+      <path value="$PROJECT_DIR$/src/vendor/spipu/html2pdf" />
+      <path value="$PROJECT_DIR$/src/vendor/bcosca/fatfree-core" />
+      <path value="$PROJECT_DIR$/src/vendor/league/csv" />
+      <path value="$PROJECT_DIR$/src/vendor/tecnickcom/tcpdf" />
     </include_path>
   </component>
   <component name="ProjectColorInfo">{
@@ -43,23 +854,23 @@
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent"><![CDATA[{
-  "keyToString": {
-    "ModuleVcsDetector.initialDetectionPerformed": "true",
-    "RunOnceActivity.MCP Project settings loaded": "true",
-    "RunOnceActivity.ShowReadmeOnStart": "true",
-    "RunOnceActivity.TerminalTabsStorage.copyFrom.TerminalArrangementManager.252": "true",
-    "RunOnceActivity.git.unshallow": "true",
-    "RunOnceActivity.typescript.service.memoryLimit.init": "true",
-    "git-widget-placeholder": "main",
-    "ignore.virus.scanning.warn.message": "true",
-    "last_opened_file_path": "P:/Projets/Ecrivain",
-    "node.js.detected.package.eslint": "true",
-    "node.js.selected.package.eslint": "(autodetect)",
-    "nodejs_package_manager_path": "npm",
-    "settings.editor.selected.configurable": "reference.webide.settings.project.settings.php"
+  <component name="PropertiesComponent">{
+  &quot;keyToString&quot;: {
+    &quot;ModuleVcsDetector.initialDetectionPerformed&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.MCP Project settings loaded&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.TerminalTabsStorage.copyFrom.TerminalArrangementManager.252&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.git.unshallow&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.typescript.service.memoryLimit.init&quot;: &quot;true&quot;,
+    &quot;git-widget-placeholder&quot;: &quot;main&quot;,
+    &quot;ignore.virus.scanning.warn.message&quot;: &quot;true&quot;,
+    &quot;last_opened_file_path&quot;: &quot;P:/Projets/Ecrivain&quot;,
+    &quot;node.js.detected.package.eslint&quot;: &quot;true&quot;,
+    &quot;node.js.selected.package.eslint&quot;: &quot;(autodetect)&quot;,
+    &quot;nodejs_package_manager_path&quot;: &quot;npm&quot;,
+    &quot;settings.editor.selected.configurable&quot;: &quot;reference.webide.settings.project.settings.php&quot;
   }
-}]]></component>
+}</component>
   <component name="SharedIndexes">
     <attachedChunks>
       <set>

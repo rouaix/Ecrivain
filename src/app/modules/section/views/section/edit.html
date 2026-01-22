@@ -1,0 +1,102 @@
+<h2>
+    <check if="@section.id">
+        <true>Modifier</true>
+        <false>Créer</false>
+    </check> -
+    {{ @sectionTypeName }}
+</h2>
+<p>Projet : <a href="{{ @base }}/project/{{ @project.id }}">
+        {{ @project.title }}
+    </a></p>
+
+<check if="!empty(@errors)">
+    <div class="error">
+        <ul>
+            <repeat group="@errors" value="@err">
+                <li>
+                    {{ @err }}
+                </li>
+            </repeat>
+        </ul>
+    </div>
+</check>
+
+<form method="post"
+    action="{{ @base }}/project/{{ @project.id }}/section/{{ @sectionType }}{{ @section.id ? '?id=' . @section.id : '' }}"
+    enctype="multipart/form-data">
+    <input type="hidden" name="csrf_token" value="{{ @csrfToken }}">
+    <div class="form-group">
+        <label for="title">Titre (optionnel)</label>
+        <input type="text" id="title" name="title" value="{{ @section.title }}">
+        <small>Laissez vide pour utiliser le nom par défaut :
+            {{ @sectionTypeName }}
+        </small>
+    </div>
+
+    <check if="@sectionType === 'cover' || @sectionType === 'back_cover'">
+        <div class="form-group">
+            <label for="image">Image</label>
+            <check if="!empty(@section.image_path)">
+                <div style="margin-bottom: 10px;">
+                    <img src="{{ @section.image_path }}" alt="Image actuelle"
+                        style="max-width: 300px; max-height: 400px;">
+                    <p><small>Image actuelle</small></p>
+                </div>
+            </check>
+            <input type="file" id="image" name="image" accept="image/*">
+            <small>Formats acceptés : JPG, PNG, WEBP. Taille recommandée : 600x800 pixels</small>
+        </div>
+    </check>
+
+    <div id="editor-wrapper" style="display: flex; gap: 20px; align-items: flex-start;">
+        <div class="form-group" style="flex: 1;">
+            <label for="content">Contenu</label>
+            <div id="editor" style="height: 500px; background: white; color: black;">
+                {{ @section.content | raw }}
+            </div>
+            <input type="hidden" name="content" value="{{ @section.content | esc }}">
+
+            <check if="@sectionType === 'cover' || @sectionType === 'back_cover'">
+                <small>Le contenu textuel sera affiché sous l'image de couverture.</small>
+            </check>
+
+            <p style="margin-top: 10px;">Compteur de mots : <span id="wordCount">0</span></p>
+
+            <div class="editor-tools-wrapper">
+                <div id="status" style="display:inline-block; margin-left:10px; color:green;"></div>
+                <div id="synonymsBox" class="ai-box"></div>
+                <div id="analysisBox" class="ai-box"></div>
+            </div>
+        </div>
+
+    </div>
+    </div>
+
+    <input type="submit" value="Enregistrer">
+    <a href="{{ @base }}/project/{{ @project.id }}" class="button secondary">Annuler</a>
+</form>
+
+<!-- AI Modal Structure -->
+<div id="aiModal" class="ai-modal">
+    <h3>Proposition IA</h3>
+    <textarea id="aiModalText"
+        style="width:100%; height:300px; margin-bottom:10px; background:var(--input-bg); color:var(--input-text); border:1px solid var(--input-border);"></textarea>
+    <div class="ai-modal-actions">
+        <button id="aiBtnInsert" class="button-ai-green">Insérer au curseur</button>
+        <button id="aiBtnReplace" class="button-ai-orange">Remplacer la sélection</button>
+        <button id="aiBtnCopy">Copier</button>
+        <button id="aiBtnClose">Fermer</button>
+    </div>
+</div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        QuillTools.init('#editor', {
+            inputSelector: 'input[name="content"]',
+            baseUrl: '{{ @base }}',
+            csrfToken: '{{ @csrfToken }}',
+            contextId: '{{ @section.id }}',
+            contextType: 'section'
+        });
+    });
+</script>

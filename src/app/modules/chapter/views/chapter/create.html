@@ -1,0 +1,114 @@
+<h2>Ajouter un chapitre au projet « {{ @project.title }} »</h2>
+<check if="!empty(@errors)">
+    <div class="error">
+        <ul>
+            <repeat group="@errors" value="@err">
+                <li>{{ @err }}</li>
+            </repeat>
+        </ul>
+    </div>
+</check>
+<form method="post" action="{{ @base }}/project/{{ @project.id }}/chapter/create">
+    <input type="hidden" name="csrf_token" value="{{ @csrfToken }}">
+    <div class="form-group">
+        <label for="title">Titre du chapitre *</label>
+        <input type="text" id="title" name="title" value="{{ @old.title }}" required>
+    </div>
+    <div class="form-group">
+        <label for="act_id">Appartient à l'acte</label>
+        <select id="act_id" name="act_id">
+            <option value="">-- Aucun (hors actes) --</option>
+            <repeat group="@acts" value="@act">
+                <option value="{{ @act.id }}" {{ (isset(@old.act_id) && @old.act_id==@act.id) ? 'selected' : '' }}>
+                    {{ @act.title }}
+                </option>
+            </repeat>
+        </select>
+    </div>
+    <div class="form-group">
+        <label for="parent_id">Est un sous-chapitre de</label>
+        <select id="parent_id" name="parent_id">
+            <option value="">-- Aucun (chapitre principal) --</option>
+            <repeat group="@chapters" value="@ch">
+                <option value="{{ @ch.id }}" data-act-id="{{ @ch.act_id }}" {{ (isset(@old.parent_id) &&
+                    @old.parent_id==@ch.id) ? 'selected' : '' }}>
+                    {{ @ch.title }}
+                </option>
+            </repeat>
+        </select>
+    </div>
+    <input type="submit" value="Créer le chapitre">
+    <a href="{{ @base }}/project/{{ @project.id }}" class="button secondary">Annuler</a>
+</form>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        const actSelect = document.getElementById('act_id');
+        const parentSelect = document.getElementById('parent_id');
+
+        // Cache original options functionality
+        const originalOptions = Array.from(parentSelect.options).map(opt => {
+            return {
+                value: opt.value,
+                text: opt.text,
+                actId: opt.getAttribute('data-act-id'),
+                selected: opt.selected
+            };
+        });
+
+        function filterChapters() {
+            const selectedActId = actSelect.value;
+            const currentParentValue = parentSelect.value;
+
+            // Clear current options
+            parentSelect.innerHTML = '';
+
+            originalOptions.forEach(data => {
+                // Always show the placeholder/default option (empty value)
+                if (data.value === "") {
+                    addOption(data);
+                    return;
+                }
+
+                // Filter Logic
+                // If Act selected -> Show chapters from that Act
+                // If ID is empty (Aucun) -> Show chapters with no Act
+                const show = (selectedActId === "" && !data.actId) || (selectedActId !== "" && data.actId == selectedActId);
+
+                if (show) {
+                    addOption(data, currentParentValue);
+                }
+            });
+
+            // If the previously selected value is valid in new list, it remains selected (handled by addOption/browser behavior if appended). 
+            // If it's gone, it defaults to first (None).
+            // We try to re-select if possible.
+            if (currentParentValue) {
+                parentSelect.value = currentParentValue;
+                // If setting value failed (not in list), reset to ""
+                if (parentSelect.value !== currentParentValue) {
+                    parentSelect.value = "";
+                }
+            }
+        }
+
+        function addOption(data, preserveValue) {
+            const opt = document.createElement('option');
+            opt.value = data.value;
+            opt.text = data.text;
+            if (data.actId) opt.setAttribute('data-act-id', data.actId);
+
+            // Restore selection state from init if valid, or preserve current user selection logic
+            // Actually, we should respect 'selected' from data only on first run?
+            // The browser manages 'value' of select. 
+            // We just append.
+
+            parentSelect.appendChild(opt);
+        }
+
+        actSelect.addEventListener('change', filterChapters);
+
+        // Initial run
+        filterChapters();
+    });
+</script>

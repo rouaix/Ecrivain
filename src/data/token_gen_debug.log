@@ -1,0 +1,10 @@
+[2026-01-15 16:46:50] generateToken called.
+[2026-01-15 16:52:53] generateToken called.
+[2026-01-20 14:28:27] generateToken called.
+[2026-01-20 14:29:35] generateToken called.
+[2026-01-20 14:32:03] generateToken called.
+[2026-01-20 14:32:03] Error: Auth failed. User: {"id":2,"username":"Test","password":"$2y$10$wicXSHGqlj721Goi4Mh95eaYFsUOn3XS\/rTm76mWPYPBgjBSbS4GC","email":"daniel.rouaix@gmail.com","created_at":"2026-01-20 14:31:53"}
+[2026-01-20 14:32:36] generateToken called.
+[2026-01-20 14:32:36] Error: Auth failed. User: {"id":2,"username":"Test","password":"$2y$10$wicXSHGqlj721Goi4Mh95eaYFsUOn3XS\/rTm76mWPYPBgjBSbS4GC","email":"daniel.rouaix@gmail.com","created_at":"2026-01-20 14:31:53"}
+[2026-01-20 14:35:31] generateToken called.
+[2026-01-20 14:35:37] generateToken called.

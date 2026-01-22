@@ -1,0 +1,42 @@
+[2026-01-20 15:14:54] generate() called. Task: rephrase
+[2026-01-20 15:14:54] Config file path: data/daniel@rouaix.com/ai_config.json
+[2026-01-20 15:14:54] Config file not found. Checking legacy...
+[2026-01-20 15:14:54] Provider: openai | Model: gpt-4o | API Key present: NO
+[2026-01-20 15:15:02] generate() called. Task: continue
+[2026-01-20 15:15:02] Config file path: data/daniel@rouaix.com/ai_config.json
+[2026-01-20 15:15:02] Config file not found. Checking legacy...
+[2026-01-20 15:15:02] Provider: openai | Model: gpt-4o | API Key present: NO
+[2026-01-20 15:15:11] generate() called. Task: continue
+[2026-01-20 15:15:11] Config file path: data/daniel@rouaix.com/ai_config.json
+[2026-01-20 15:15:11] Config file not found. Checking legacy...
+[2026-01-20 15:15:11] Provider: openai | Model: gpt-4o | API Key present: NO
+[2026-01-20 15:17:14] generate() called. Task: continue
+[2026-01-20 15:17:14] Config file path: data/daniel@rouaix.com/ai_config.json
+[2026-01-20 15:17:14] Config file exists. Loading...
+[2026-01-20 15:17:14] Config loaded successfully.
+[2026-01-20 15:17:14] Provider: openai | Model: gpt-4.1-mini | API Key present: YES
+[2026-01-20 15:17:24] Generation success. Tokens: 2542
+[2026-01-20 16:58:28] generate() called. Task: custom
+[2026-01-20 16:58:28] Config file path: data/daniel@rouaix.com/ai_config.json
+[2026-01-20 16:58:28] Config file exists. Loading...
+[2026-01-20 16:58:28] Config loaded successfully.
+[2026-01-20 16:58:28] Provider: openai | Model: gpt-4.1-mini | API Key present: YES
+[2026-01-20 16:58:32] Generation success. Tokens: 630
+[2026-01-20 16:58:56] generate() called. Task: custom
+[2026-01-20 16:58:56] Config file path: data/daniel@rouaix.com/ai_config.json
+[2026-01-20 16:58:56] Config file exists. Loading...
+[2026-01-20 16:58:56] Config loaded successfully.
+[2026-01-20 16:58:56] Provider: openai | Model: gpt-4.1-mini | API Key present: YES
+[2026-01-20 16:59:14] Generation success. Tokens: 2020
+[2026-01-21 09:45:50] generate() called. Task: custom
+[2026-01-21 09:45:50] Config file path: data/daniel@rouaix.com/ai_config.json
+[2026-01-21 09:45:50] Config file exists. Loading...
+[2026-01-21 09:45:50] Config loaded successfully.
+[2026-01-21 09:45:50] Provider: openai | Model: gpt-4.1-mini | API Key present: YES
+[2026-01-21 09:45:52] Generation success. Tokens: 122
+[2026-01-22 18:18:41] generate() called. Task: custom
+[2026-01-22 18:18:41] Config file path: data/daniel@rouaix.com/ai_config.json
+[2026-01-22 18:18:41] Config file exists. Loading...
+[2026-01-22 18:18:41] Config loaded successfully.
+[2026-01-22 18:18:41] Provider: openai | Model: gpt-4.1-mini | API Key present: YES
+[2026-01-22 18:18:50] Generation success. Tokens: 1770

@@ -1,0 +1,34 @@
+/* Paper theme: Warm sepia tones for reading comfort. */
+body.theme-paper {
+    --body-bg: #f5f1e6;
+    --card-bg: #fffbf0;
+    --text-main: #5d4037;
+    --text-muted: #8d6e63;
+    --link-color: #795548;
+
+    --header-bg: #6d4c41;
+    --header-text: #efebe9;
+    --footer-bg: #d7ccc8;
+    --footer-text: #4e342e;
+
+    --button-bg: #8d6e63;
+    --button-text: #ffffff;
+    --button-delete-bg: #bf360c;
+    --button-primary-bg: #5d4037;
+    --button-secondary-bg: #a1887f;
+
+    --border-color: #d7ccc8;
+    --border-light: #efebe9;
+
+    --table-header-bg: #d7ccc8;
+    --table-row-bg: #fffbf0;
+    --table-row-hover-bg: #efebe9;
+
+    --input-bg: #fffdf7;
+    --input-text: #3e2723;
+    --input-border: #bcaaa4;
+
+    --panel-hover-shadow: rgba(93, 64, 55, 0.1);
+
+    --button-black-bg: #3e2723;
+}
