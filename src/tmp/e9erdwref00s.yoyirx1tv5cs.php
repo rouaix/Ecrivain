@@ -89,6 +89,12 @@
 
                     <div class="form-group">
                         <label for="aiUserPrompt">Prompt</label>
+                        <select id="aiUserPromptPreset" class="input-block">
+                            <option value="">Choisir un prompt enregistré...</option>
+                            <?php foreach (($aiUserPrompts?:[]) as $promptItem): ?>
+                                <option value="<?= ($this->esc($promptItem['prompt'])) ?>"><?= ($this->esc($promptItem['label'])) ?></option>
+                            <?php endforeach; ?>
+                        </select>
                         <textarea id="aiUserPrompt" class="input-block" rows="5"
                             placeholder="Votre demande..."></textarea>
                     </div>
@@ -122,6 +128,8 @@
             const responseContainer = document.getElementById('aiResponseContainer');
             const responseContent = document.getElementById('aiResponseContent');
             const systemPromptInput = document.getElementById('aiSystemPrompt');
+            const userPromptInput = document.getElementById('aiUserPrompt');
+            const userPromptPreset = document.getElementById('aiUserPromptPreset');
 
             if (aiBtn) {
                 aiBtn.addEventListener('click', function (e) {
@@ -146,7 +154,7 @@
             if (sendBtn) {
                 sendBtn.addEventListener('click', function () {
                     const systemPrompt = systemPromptInput.value;
-                    const userPrompt = document.getElementById('aiUserPrompt').value;
+                    const userPrompt = userPromptInput.value;
                     const file = fileInput.files[0];
 
                     if (!userPrompt) {
@@ -203,6 +211,17 @@
                     } else {
                         processRequest();
                     }
+                });
+            }
+
+            if (userPromptPreset && userPromptInput) {
+                userPromptPreset.addEventListener('change', function () {
+                    const selected = userPromptPreset.value;
+                    if (!selected) {
+                        return;
+                    }
+                    userPromptInput.value = selected;
+                    userPromptInput.focus();
                 });
             }
         });

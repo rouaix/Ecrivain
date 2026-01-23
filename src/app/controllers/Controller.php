@@ -201,6 +201,7 @@ abstract class Controller
         $this->f3->set('currentUser', $currentUser);
         $this->f3->set('base', $this->f3->get('BASE'));
         $this->f3->set('aiSystemPrompt', $this->resolveAiSystemPrompt($currentUser));
+        $this->f3->set('aiUserPrompts', $this->resolveAiUserPrompts($currentUser));
         // $view is now expected to be an F3 template path, usually.
         // But legacy calls might pass 'project/show' (without extension).
         // If we are strictly refactoring to .html, we should ensure the view has .html or add it.
@@ -291,5 +292,41 @@ abstract class Controller
 
         $system = trim($config['system'] ?? '');
         return $system !== '' ? $system : $defaultPrompt;
+    }
+
+    /**
+     * Resolve the current user's AI user prompts (excluding system).
+     */
+    protected function resolveAiUserPrompts(?array $user): array
+    {
+        $defaults = [
+            'continue' => "Continue le texte suivant de manière cohérente, dans le même style. N'ajoute pas de guillemets autour de tout le texte généré sauf si nécessaire.",
+            'rephrase' => "Reformule le texte suivant pour améliorer le style, la clarté et l'élégance, sans changer le sens.",
+            'summarize_chapter' => "Fais un résumé d'une dizaine de lignes du contenu suivant qui est une agrégation de sous-chapitres. Le résumé doit être captivant et bien écrit.",
+            'summarize_act' => "Fais un résumé d'une dizaine de lignes pour cet Acte, basé sur les résumés de ses chapitres ci-dessous. Le résumé doit donner une bonne vue d'ensemble de l'arc narratif de l'acte."
+        ];
+
+        $prompts = $defaults;
+        if ($user && !empty($user['email'])) {
+            $configFile = 'data/' . $user['email'] . '/ai_config.json';
+            if (file_exists($configFile)) {
+                $config = json_decode(file_get_contents($configFile), true);
+                if (is_array($config)) {
+                    foreach (array_keys($defaults) as $key) {
+                        $value = trim($config[$key] ?? '');
+                        if ($value !== '') {
+                            $prompts[$key] = $value;
+                        }
+                    }
+                }
+            }
+        }
+
+        return [
+            ['key' => 'continue', 'label' => 'Continuer', 'prompt' => $prompts['continue']],
+            ['key' => 'rephrase', 'label' => 'Reformuler', 'prompt' => $prompts['rephrase']],
+            ['key' => 'summarize_chapter', 'label' => 'Résumé chapitre', 'prompt' => $prompts['summarize_chapter']],
+            ['key' => 'summarize_act', 'label' => 'Résumé acte', 'prompt' => $prompts['summarize_act']]
+        ];
     }
 }

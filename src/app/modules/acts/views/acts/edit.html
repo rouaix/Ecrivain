@@ -35,9 +35,6 @@
         </div>
         <input type="hidden" name="comment" value="{{ @act.comment | esc }}">
     </div>
-    <div class="form-group editor-tools-wrapper">
-        <div id="status" class="status-label status--ok"></div>
-    </div>
     <input type="submit" value="Enregistrer">
     <a href="{{ @base }}/project/{{ @act.project_id }}" class="button secondary">Annuler</a>
 </form>

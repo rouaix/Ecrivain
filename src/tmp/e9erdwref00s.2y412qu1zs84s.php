@@ -1,0 +1,106 @@
+<h2>Modifier le projet</h2>
+<?php if (!empty($errors)): ?>
+    <div class="error">
+        <ul>
+            <?php foreach (($errors?:[]) as $err): ?>
+                <li><?= ($err) ?></li>
+            <?php endforeach; ?>
+        </ul>
+    </div>
+<?php endif; ?>
+<form method="post" action="<?= ($base) ?>/project/<?= ($project['id']) ?>/edit">
+    <input type="hidden" name="csrf_token" value="<?= ($csrfToken) ?>">
+    <div class="form-group">
+        <label for="title">Titre *</label>
+        <input type="text" id="title" name="title" value="<?= ($project['title']) ?>" required>
+    </div>
+    <div class="form-group">
+        <label for="author">Auteur</label>
+        <input type="text" id="author" name="author" value="<?= ($project['author']) ?>" placeholder="Nom de l'auteur">
+    </div>
+    <div class="form-group">
+        <label for="description">Description</label>
+        <textarea id="description" name="description" rows="4"><?= ($project['description']) ?></textarea>
+    </div>
+    <div class="form-group form-row">
+        <div class="form-row__col">
+            <label for="words_per_page">Mots par page (moyenne)</label>
+            <input type="number" id="words_per_page" name="words_per_page" value="<?= ($project['words_per_page'] ?: 350) ?>"
+                min="1">
+        </div>
+        <div class="form-row__col">
+            <label for="target_pages">Nombre de pages total</label>
+            <input type="number" id="target_pages" name="target_pages" value="<?= ($project['target_pages'] ?: 0) ?>" min="0">
+        </div>
+        <div class="form-row__col">
+            <label for="lines_per_page">Lignes par page</label>
+            <input type="number" id="lines_per_page" name="lines_per_page" value="<?= ($project['lines_per_page'] ?: 38) ?>"
+                min="1">
+        </div>
+    </div>
+    <div class="form-group">
+        <label for="target_words">Objectif de mots total</label>
+        <input type="number" id="target_words" name="target_words" value="<?= ($project['target_words']) ?>" min="0">
+        <small class="text-muted">Ce champ est calculé automatiquement mais peut être modifié manuellement.</small>
+    </div>
+    <div class="form-group">
+        <label for="comment">Commentaire</label>
+        <div id="comment-editor" class="editor-surface editor-height-200">
+            <?= ($this->raw($project['comment']))."
+" ?>
+        </div>
+        <input type="hidden" name="comment" value="<?= ($this->esc($project['comment'])) ?>">
+    </div>
+    <input type="submit" value="Enregistrer">
+</form>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        const wppInput = document.getElementById('words_per_page');
+        const tpInput = document.getElementById('target_pages');
+        const twInput = document.getElementById('target_words');
+
+        function calculateWords() {
+            const wpp = parseInt(wppInput.value) || 0;
+            const tp = parseInt(tpInput.value) || 0;
+            if (tp > 0) {
+                twInput.value = wpp * tp;
+            }
+        }
+
+        wppInput.addEventListener('input', calculateWords);
+        tpInput.addEventListener('input', calculateWords);
+
+        function decodeHtml(html) {
+            var txt = document.createElement('textarea');
+            txt.innerHTML = html;
+            return txt.value;
+        }
+        function decodeHtmlDeep(html, depth) {
+            var current = html;
+            for (var i = 0; i < depth; i++) {
+                var decoded = decodeHtml(current);
+                if (decoded === current) break;
+                current = decoded;
+            }
+            return current;
+        }
+
+        var commentEl = document.getElementById('comment-editor');
+        if (commentEl) {
+            var initialCommentHtml = commentEl.innerHTML || '';
+            QuillTools.init('#comment-editor', {
+                inputSelector: 'input[name="comment"]',
+                baseUrl: '<?= ($base) ?>',
+                csrfToken: '<?= ($csrfToken) ?>',
+                contextId: '<?= ($project['id']) ?>',
+                contextType: 'project'
+            });
+
+            var decodedComment = decodeHtmlDeep(initialCommentHtml, 2);
+            if (decodedComment) {
+                QuillTools.quill.clipboard.dangerouslyPasteHTML(decodedComment);
+            }
+        }
+    });
+</script>

@@ -71,22 +71,10 @@
 " ?>
             </div>
             <input type="hidden" name="content" value="<?= ($this->esc($chapter['content'])) ?>">
-            <p>Compteur de mots : <span id="wordCount">0</span></p>
+            <p class="word-count">Compteur de mots : <span id="wordCount">0</span></p>
         </div>
+    </div>
 
-    </div>
-    </div>
-    <div class="form-group editor-tools-wrapper">
-        <div id="status" class="status-label status--ok"></div>
-        <div id="synonymsBox" class="ai-box"></div>
-        <div id="analysisBox" class="ai-box"></div>
-    </div>
-    <input type="submit" value="Enregistrer">
-    <?php if (!empty($chapter['parent_id'])): ?>
-        <a href="<?= ($base) ?>/chapter/<?= ($chapter['parent_id']) ?>" class="button secondary">Retour à « <?= ($parentChapter['title']) ?> »</a>
-    <?php endif; ?>
-    <a href="<?= ($base) ?>/project/<?= ($project['id']) ?>" class="button secondary">Retour au projet</a>
-    <div><br /><br /></div>
     <?php if (!$chapter['parent_id']): ?>
         <div class="form-group">
             <label for="resume">Résumé (IA ou Manuel)</label>
@@ -97,6 +85,7 @@
             <input type="hidden" name="resume" value="<?= ($this->esc($chapter['resume'])) ?>">
         </div>
     <?php endif; ?>
+
     <div class="form-group">
         <label for="comment">Commentaire</label>
         <div id="comment-editor" class="editor-surface editor-height-200">
@@ -106,6 +95,11 @@
         <input type="hidden" name="comment" value="<?= ($this->esc($chapter['comment'])) ?>">
     </div>
 
+    <input type="submit" value="Enregistrer">
+    <?php if (!empty($chapter['parent_id'])): ?>
+        <a href="<?= ($base) ?>/chapter/<?= ($chapter['parent_id']) ?>" class="button secondary">Retour à « <?= ($parentChapter['title']) ?> »</a>
+    <?php endif; ?>
+    <a href="<?= ($base) ?>/project/<?= ($project['id']) ?>" class="button secondary">Retour au projet</a>
 </form>
 
 <script>

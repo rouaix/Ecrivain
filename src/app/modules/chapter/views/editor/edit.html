@@ -65,23 +65,10 @@
                 {{ @chapter.content | raw }}
             </div>
             <input type="hidden" name="content" value="{{ @chapter.content | esc }}">
-            <p>Compteur de mots : <span id="wordCount">0</span></p>
+            <p class="word-count">Compteur de mots : <span id="wordCount">0</span></p>
         </div>
+    </div>
 
-    </div>
-    </div>
-    <div class="form-group editor-tools-wrapper">
-        <div id="status" class="status-label status--ok"></div>
-        <div id="synonymsBox" class="ai-box"></div>
-        <div id="analysisBox" class="ai-box"></div>
-    </div>
-    <input type="submit" value="Enregistrer">
-    <check if="{{ !empty(@chapter.parent_id) }}">
-        <a href="{{ @base }}/chapter/{{ @chapter.parent_id }}" class="button secondary">Retour à « {{
-            @parentChapter.title }} »</a>
-    </check>
-    <a href="{{ @base }}/project/{{ @project.id }}" class="button secondary">Retour au projet</a>
-    <div><br /><br /></div>
     <check if="{{ !@chapter.parent_id }}">
         <div class="form-group">
             <label for="resume">Résumé (IA ou Manuel)</label>
@@ -91,6 +78,7 @@
             <input type="hidden" name="resume" value="{{ @chapter.resume | esc }}">
         </div>
     </check>
+
     <div class="form-group">
         <label for="comment">Commentaire</label>
         <div id="comment-editor" class="editor-surface editor-height-200">
@@ -99,6 +87,12 @@
         <input type="hidden" name="comment" value="{{ @chapter.comment | esc }}">
     </div>
 
+    <input type="submit" value="Enregistrer">
+    <check if="{{ !empty(@chapter.parent_id) }}">
+        <a href="{{ @base }}/chapter/{{ @chapter.parent_id }}" class="button secondary">Retour à « {{
+            @parentChapter.title }} »</a>
+    </check>
+    <a href="{{ @base }}/project/{{ @project.id }}" class="button secondary">Retour au projet</a>
 </form>
 
 <script>

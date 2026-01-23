@@ -38,15 +38,18 @@
         </div>
         <input type="hidden" name="comment" value="<?= ($this->esc($act['comment'])) ?>">
     </div>
-    <div class="form-group editor-tools-wrapper">
-        <div id="status" class="status-label status--ok"></div>
-    </div>
+<!--    <div class="form-group editor-tools-wrapper">-->
+<!--        <div id="status" class="status-label status&#45;&#45;ok"></div>-->
+<!--    </div>-->
     <input type="submit" value="Enregistrer">
     <a href="<?= ($base) ?>/project/<?= ($act['project_id']) ?>" class="button secondary">Annuler</a>
 </form>
 
 <script>
     document.addEventListener('DOMContentLoaded', function () {
+        var editorEl = document.getElementById('editor');
+        var initialContentHtml = editorEl ? (editorEl.innerHTML || '') : '';
+
         // Init Main Editor with Tools
         QuillTools.init('#editor', {
             inputSelector: 'input[name="content"]',
@@ -54,20 +57,6 @@
             csrfToken: '<?= ($csrfToken) ?>',
             contextId: '<?= ($act['id']) ?>',
             contextType: 'act'
-        });
-
-        var actId = '<?= ($act['id']) ?>';
-        var storageKey = 'act_' + (actId || 'new') + '_draft';
-
-        // Load Draft Logic for Main Content
-        var savedContent = localStorage.getItem(storageKey);
-        if (savedContent && savedContent !== QuillTools.quill.root.innerHTML) {
-            QuillTools.quill.clipboard.dangerouslyPasteHTML(savedContent);
-        }
-
-        // Save Draft Logic for Main Content
-        QuillTools.quill.on('text-change', function () {
-            localStorage.setItem(storageKey, QuillTools.quill.root.innerHTML);
         });
 
         function decodeHtml(html) {
@@ -83,6 +72,11 @@
                 current = decoded;
             }
             return current;
+        }
+
+        var decodedContent = decodeHtmlDeep(initialContentHtml, 2);
+        if (decodedContent && decodedContent !== QuillTools.quill.root.innerHTML) {
+            QuillTools.quill.clipboard.dangerouslyPasteHTML(decodedContent);
         }
 
         var resumeEl = document.getElementById('resume-editor');
@@ -118,18 +112,11 @@
         resumeQuill.on('text-change', function () {
             var html = resumeQuill.root.innerHTML;
             document.querySelector('input[name="resume"]').value = html;
-            localStorage.setItem(storageKey + '_resume', html);
         });
 
-        // Load Draft Resume
-        var savedResume = localStorage.getItem(storageKey + '_resume');
-        if (savedResume && savedResume !== resumeQuill.root.innerHTML) {
-            resumeQuill.clipboard.dangerouslyPasteHTML(savedResume);
-        } else {
-            var decodedResume = decodeHtmlDeep(initialResumeHtml, 2);
-            if (decodedResume) {
-                resumeQuill.clipboard.dangerouslyPasteHTML(decodedResume);
-            }
+        var decodedResume = decodeHtmlDeep(initialResumeHtml, 2);
+        if (decodedResume) {
+            resumeQuill.clipboard.dangerouslyPasteHTML(decodedResume);
         }
 
         // Init Comment Editor (Full)
@@ -164,65 +151,12 @@
             commentQuill.on('text-change', function () {
                 var html = commentQuill.root.innerHTML;
                 document.querySelector('input[name="comment"]').value = html;
-                localStorage.setItem(storageKey + '_comment', html);
             });
 
-            var savedComment = localStorage.getItem(storageKey + '_comment');
-            if (savedComment) {
-                commentQuill.clipboard.dangerouslyPasteHTML(savedComment);
-            } else {
-                var decodedComment = decodeHtmlDeep(initialCommentHtml, 2);
-                if (decodedComment) {
-                    commentQuill.clipboard.dangerouslyPasteHTML(decodedComment);
-                }
+            var decodedComment = decodeHtmlDeep(initialCommentHtml, 2);
+            if (decodedComment) {
+                commentQuill.clipboard.dangerouslyPasteHTML(decodedComment);
             }
         }
-
-        // Offline auto‑save and draft handling
-        var statusLabel = document.getElementById('status');
-        function updateStatus(text, stateClass) {
-            if (!statusLabel) return;
-            statusLabel.textContent = text;
-            statusLabel.classList.remove('status--ok', 'status--warn', 'status--error');
-            if (stateClass) statusLabel.classList.add(stateClass);
-        }
-
-        function autoSave() {
-            if (!actId) return;
-            if (!navigator.onLine) {
-                updateStatus('Mode hors ligne', 'status--warn');
-                return;
-            }
-            var title = document.getElementById('title').value;
-            var content = document.querySelector('input[name="content"]').value;
-            var resume = document.querySelector('input[name="resume"]').value;
-            var comment = document.querySelector('input[name="comment"]').value;
-
-            var formData = new FormData();
-            formData.append('title', title);
-            formData.append('content', content);
-            formData.append('resume', resume);
-            formData.append('comment', comment);
-
-            fetch('<?= ($base) ?>/act/' + actId + '/edit', {
-                method: 'POST',
-                headers: {
-                    'X-CSRF-Token': window.CSRF_TOKEN
-                },
-                body: formData
-            }).then(function (resp) {
-                if (resp.ok) {
-                    updateStatus('Enregistré', 'status--ok');
-                    localStorage.removeItem(storageKey);
-                    localStorage.removeItem(storageKey + '_resume');
-                    localStorage.removeItem(storageKey + '_comment');
-                } else {
-                    updateStatus('Erreur de sauvegarde', 'status--error');
-                }
-            }).catch(function () {
-                updateStatus('Erreur réseau', 'status--error');
-            });
-        }
-        setInterval(autoSave, 15000);
     });
 </script>
