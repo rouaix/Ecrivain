@@ -2021,3 +2021,23 @@ input[type="number"].order-input{
 .section-comment>span{
     font-weight: bold;
 }
+
+.project-header__content>h2{
+    padding: 0;
+    margin: 0;
+}
+
+.project-description{
+    font-style: normal;
+    font-weight: bold;
+    font-size: 1.1em;
+    padding: 0;
+    margin: 0;
+}
+.project-author{
+    font-style: normal;
+    font-weight: bold;
+    font-size: 0.8em;
+    padding: 0;
+    margin: 0;
+}

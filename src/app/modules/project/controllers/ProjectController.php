@@ -115,6 +115,7 @@ class ProjectController extends Controller
             return;
         }
         $project = $project[0];
+        $authorName = $this->getUserFullName($this->currentUser());
         $wpp = $project['words_per_page'] ?: 350;
         $lpp = $project['lines_per_page'] ?: 38;
 
@@ -405,6 +406,7 @@ class ProjectController extends Controller
             'beforeGroups' => $beforeGroups,
             'afterGroups' => $afterGroups,
             'notes' => $notes,
+            'authorName' => $authorName,
         ]);
     }
 
@@ -1779,6 +1781,36 @@ class ProjectController extends Controller
 
         // int, float, bool, null, objets: on laisse
         return $data;
+    }
+
+    private function getUserFullName(?array $user): string
+    {
+        if (!$user || empty($user['email'])) {
+            return '';
+        }
+
+        $file = $this->getUserDataDir($user['email']) . '/profile.json';
+        if (!file_exists($file)) {
+            return '';
+        }
+
+        $profile = json_decode(file_get_contents($file), true);
+        if (!is_array($profile)) {
+            return '';
+        }
+
+        $first = trim($profile['firstname'] ?? '');
+        $last = trim($profile['lastname'] ?? '');
+        return trim($first . ' ' . $last);
+    }
+
+    private function getUserDataDir(string $email): string
+    {
+        $dir = __DIR__;
+        while (!file_exists($dir . '/vendor') && dirname($dir) !== $dir) {
+            $dir = dirname($dir);
+        }
+        return $dir . '/data/' . $email;
     }
 
 }

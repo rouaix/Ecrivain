@@ -1,29 +1,29 @@
 <h2>Mon Profil</h2>
 
-<check if="!empty(@errors)">
+<?php if (!empty($errors)): ?>
     <div class="error">
         <ul>
-            <repeat group="@errors" value="@err">
-                <li>{{ @err }}</li>
-            </repeat>
+            <?php foreach (($errors?:[]) as $err): ?>
+                <li><?= ($err) ?></li>
+            <?php endforeach; ?>
         </ul>
     </div>
-</check>
+<?php endif; ?>
 
-<check if="!empty(@success)">
+<?php if (!empty($success)): ?>
     <div class="success alert-success alert-success--wide">
         Profil mis à jour avec succès.
     </div>
-</check>
+<?php endif; ?>
 
-<form method="post" action="{{ @base }}/profile" enctype="multipart/form-data">
-    <input type="hidden" name="csrf_token" value="{{ @csrfToken }}">
+<form method="post" action="<?= ($base) ?>/profile" enctype="multipart/form-data">
+    <input type="hidden" name="csrf_token" value="<?= ($csrfToken) ?>">
 
     <div class="profile-header">
         <div class="profile-photo-container">
             <!-- Image source points to the controller route that serves the file from data/ -->
-            <img src="{{ @base }}/profile/photo/{{ @user.username }}" alt="Photo" class="profile-photo"
-                onerror="this.src='https://ui-avatars.com/api/?name={{ urlencode(@user.username) }}&size=150'">
+            <img src="<?= ($base) ?>/profile/photo/<?= ($user['username']) ?>" alt="Photo" class="profile-photo"
+                onerror="this.src='https://ui-avatars.com/api/?name=<?= (urlencode($user['username'])) ?>&size=150'">
             <div class="photo-actions">
                 <label for="photo" class="button secondary small cursor-pointer">Changer la photo</label>
                 <input type="file" id="photo" name="photo" accept="image/*" class="is-hidden"
@@ -38,17 +38,17 @@
             <div class="form-row">
                 <div class="form-group">
                     <label for="lastname">Nom</label>
-                    <input type="text" id="lastname" name="lastname" value="{{ @user.lastname }}">
+                    <input type="text" id="lastname" name="lastname" value="<?= ($user['lastname']) ?>">
                 </div>
                 <div class="form-group">
                     <label for="firstname">Prénom</label>
-                    <input type="text" id="firstname" name="firstname" value="{{ @user.firstname }}">
+                    <input type="text" id="firstname" name="firstname" value="<?= ($user['firstname']) ?>">
                 </div>
             </div>
 
             <div class="form-group">
                 <label for="dob">Date de naissance</label>
-                <input type="date" id="dob" name="dob" value="{{ @user.dob }}" class="input-max-200">
+                <input type="date" id="dob" name="dob" value="<?= ($user['dob']) ?>" class="input-max-200">
             </div>
         </div>
     </div>
@@ -56,9 +56,10 @@
     <div class="form-group">
         <label for="bio">Biographie</label>
         <div id="bio-editor" class="editor-surface editor-height-300">
-            {{ @user.bio | raw }}
+            <?= ($this->raw($user['bio']))."
+" ?>
         </div>
-        <input type="hidden" name="bio" value="{{ @user.bio | esc }}">
+        <input type="hidden" name="bio" value="<?= ($this->esc($user['bio'])) ?>">
     </div>
 
     <div class="section-title">Paramètres du Compte</div>
@@ -66,7 +67,7 @@
     <div class="form-row">
         <div class="form-group">
             <label for="username">Nom d'utilisateur</label>
-            <input type="text" id="username" name="username" value="{{ @user.username }}" required>
+            <input type="text" id="username" name="username" value="<?= ($user['username']) ?>" required>
             <small>Changer votre nom d'utilisateur vous déconnectera peut-être.</small>
         </div>
         <div class="form-group">
@@ -85,9 +86,9 @@
         // Initialize Quill via QuillTools
         QuillTools.init('#bio-editor', {
             inputSelector: 'input[name="bio"]',
-            baseUrl: '{{ @base }}',
-            csrfToken: '{{ @csrfToken }}',
-            contextId: '{{ @user.id }}',
+            baseUrl: '<?= ($base) ?>',
+            csrfToken: '<?= ($csrfToken) ?>',
+            contextId: '<?= ($user['id']) ?>',
             contextType: 'profile'
         });
     });

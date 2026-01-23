@@ -24,6 +24,9 @@
             <?php if (!empty($project['description'])): ?>
                 <div class="project-description"><?= (nl2br($project['description'])) ?></pdiv>
             <?php endif; ?>
+            <?php if (!empty($authorName)): ?>
+                <div class="project-author"><?= ($authorName) ?></div>
+            <?php endif; ?>
             <div class="project-meta">
                 <div class="meta-card">
                     <span class="meta-label">Objectif</span>
