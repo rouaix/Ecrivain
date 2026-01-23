@@ -43,6 +43,13 @@
         <input type="number" id="target_words" name="target_words" value="{{ @project.target_words }}" min="0">
         <small class="text-muted">Ce champ est calculé automatiquement mais peut être modifié manuellement.</small>
     </div>
+    <div class="form-group">
+        <label for="comment">Commentaire</label>
+        <div id="comment-editor" class="editor-surface editor-height-200">
+            {{ @project.comment | raw }}
+        </div>
+        <input type="hidden" name="comment" value="{{ @project.comment | esc }}">
+    </div>
     <input type="submit" value="Enregistrer">
 </form>
 
@@ -62,5 +69,37 @@
 
         wppInput.addEventListener('input', calculateWords);
         tpInput.addEventListener('input', calculateWords);
+
+        function decodeHtml(html) {
+            var txt = document.createElement('textarea');
+            txt.innerHTML = html;
+            return txt.value;
+        }
+        function decodeHtmlDeep(html, depth) {
+            var current = html;
+            for (var i = 0; i < depth; i++) {
+                var decoded = decodeHtml(current);
+                if (decoded === current) break;
+                current = decoded;
+            }
+            return current;
+        }
+
+        var commentEl = document.getElementById('comment-editor');
+        if (commentEl) {
+            var initialCommentHtml = commentEl.innerHTML || '';
+            QuillTools.init('#comment-editor', {
+                inputSelector: 'input[name="comment"]',
+                baseUrl: '{{ @base }}',
+                csrfToken: '{{ @csrfToken }}',
+                contextId: '{{ @project.id }}',
+                contextType: 'project'
+            });
+
+            var decodedComment = decodeHtmlDeep(initialCommentHtml, 2);
+            if (decodedComment) {
+                QuillTools.quill.clipboard.dangerouslyPasteHTML(decodedComment);
+            }
+        }
     });
 </script>

@@ -448,6 +448,7 @@ class ProjectController extends Controller
         $title = trim($_POST['title'] ?? '');
         $description = trim($_POST['description'] ?? '');
         $author = trim($_POST['author'] ?? ''); // New Author Field
+        $comment = $_POST['comment'] ?? '';
         $target = intval($_POST['target_words'] ?? 0);
         $wordsPerPage = intval($_POST['words_per_page'] ?? 350);
         $linesPerPage = intval($_POST['lines_per_page'] ?? 38);
@@ -472,6 +473,7 @@ class ProjectController extends Controller
 
             $projectModel->title = $title;
             $projectModel->description = $description;
+            $projectModel->comment = $comment;
             $projectModel->target_words = $target;
             $projectModel->words_per_page = $wordsPerPage;
             $projectModel->lines_per_page = $linesPerPage;

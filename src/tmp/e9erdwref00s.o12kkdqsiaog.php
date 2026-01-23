@@ -1,35 +1,72 @@
-<h2>Modifier le personnage « {{ @character.name }}»</h2>
-<p><a class="button" href="{{ @base }}/project/{{ @project.id }}/characters">Retour à la liste des
-        personnages</a></p>
-<check if="{{ !empty(@errors) }}">
+<h2>
+    <?php if ($section['id']): ?>
+        Modifier
+        <?php else: ?>Créer
+    <?php endif; ?> -
+    <?= ($sectionTypeName)."
+" ?>
+</h2>
+<p>Projet : <a href="<?= ($base) ?>/project/<?= ($project['id']) ?>">
+        <?= ($project['title'])."
+" ?>
+    </a></p>
+
+<?php if (!empty($errors)): ?>
     <div class="error">
         <ul>
-            <repeat group="{{ @errors }}" value="{{ @err }}">
-                <li>{{ @err }}</li>
-            </repeat>
+            <?php foreach (($errors?:[]) as $err): ?>
+                <li>
+                    <?= ($err)."
+" ?>
+                </li>
+            <?php endforeach; ?>
         </ul>
     </div>
-</check>
+<?php endif; ?>
+
 <form method="post"
-    action="{{ @character.id ? (@base . '/character/' . @character.id . '/edit') : (@base . '/project/' . @project.id . '/character/create') }}">
-    <input type="hidden" name="csrf_token" value="{{ @csrfToken }}">
+    action="<?= ($base) ?>/project/<?= ($project['id']) ?>/section/<?= ($sectionType) ?><?= ($section['id'] ? '?id=' . $section['id'] : '') ?>"
+    enctype="multipart/form-data">
+    <input type="hidden" name="csrf_token" value="<?= ($csrfToken) ?>">
     <div class="form-group">
-        <label for="name">Nom *</label>
-        <input type="text" id="name" name="name" value="{{ @character.name }}" required>
+        <label for="title">Titre (optionnel)</label>
+        <input type="text" id="title" name="title" value="<?= ($section['title']) ?>">
+        <small>Laissez vide pour utiliser le nom par défaut :
+            <?= ($sectionTypeName)."
+" ?>
+        </small>
     </div>
+
+    <?php if ($sectionType === 'cover' || $sectionType === 'back_cover'): ?>
+        <div class="form-group">
+            <label for="image">Image</label>
+            <?php if (!empty($section['image_path'])): ?>
+                <div class="image-preview">
+                    <img src="<?= ($section['image_path']) ?>" alt="Image actuelle" class="image-preview__img">
+                    <p><small>Image actuelle</small></p>
+                </div>
+            <?php endif; ?>
+            <input type="file" id="image" name="image" accept="image/*">
+            <small>Formats acceptés : JPG, PNG, WEBP. Taille recommandée : 600x800 pixels</small>
+        </div>
+    <?php endif; ?>
+
     <div id="editor-wrapper" class="editor-wrapper">
         <div class="form-group editor-column">
-            <label for="description">Description (enrichie)</label>
-            <div id="editor" class="editor-surface editor-height-300">
-                {{ @character.description | raw }}
+            <label for="content">Contenu</label>
+            <div id="editor" class="editor-surface editor-height-500">
+                <?= ($this->raw($section['content']))."
+" ?>
             </div>
-            <input type="hidden" name="description" value="{{ @character.description | esc }}">
+            <input type="hidden" name="content" value="<?= ($this->esc($section['content'])) ?>">
+
+            <?php if ($sectionType === 'cover' || $sectionType === 'back_cover'): ?>
+                <small>Le contenu textuel sera affiché sous l'image de couverture.</small>
+            <?php endif; ?>
+
             <p class="word-count">Compteur de mots : <span id="wordCount">0</span></p>
+
             <div class="editor-tools-wrapper">
-                <button type="button" id="synButton">Synonymes (IA)</button>
-                <button type="button" id="continueButton" class="button-ai-purple">Continuer (IA)</button>
-                <button type="button" id="rephraseButton" class="button-ai-purple">Reformuler (IA)</button>
-                <button type="button" id="analysisButton">Analyse du texte</button>
                 <div id="status" class="status-label status--ok"></div>
                 <div id="synonymsBox" class="ai-box"></div>
                 <div id="analysisBox" class="ai-box"></div>
@@ -41,24 +78,18 @@
     <div class="form-group">
         <label for="comment">Commentaire</label>
         <div id="comment-editor" class="editor-surface editor-height-200">
-            {{ @character.comment | raw }}
+            <?= ($this->raw($section['comment']))."
+" ?>
         </div>
-        <input type="hidden" name="comment" value="{{ @character.comment | esc }}">
+        <input type="hidden" name="comment" value="<?= ($this->esc($section['comment'])) ?>">
     </div>
 
     <input type="submit" value="Enregistrer">
+    <a href="<?= ($base) ?>/project/<?= ($project['id']) ?>" class="button secondary">Annuler</a>
 </form>
 
 <script>
     document.addEventListener('DOMContentLoaded', function () {
-        QuillTools.init('#editor', {
-            inputSelector: 'input[name="description"]',
-            baseUrl: '{{ @base }}',
-            csrfToken: '{{ @csrfToken }}',
-            contextId: '{{ @character.id }}',
-            contextType: 'character'
-        });
-
         function decodeHtml(html) {
             var txt = document.createElement('textarea');
             txt.innerHTML = html;
@@ -73,6 +104,17 @@
             }
             return current;
         }
+
+        var editorEl = document.getElementById('editor');
+        var initialContentHtml = editorEl ? (editorEl.innerHTML || '') : '';
+
+        QuillTools.init('#editor', {
+            inputSelector: 'input[name="content"]',
+            baseUrl: '<?= ($base) ?>',
+            csrfToken: '<?= ($csrfToken) ?>',
+            contextId: '<?= ($section['id']) ?>',
+            contextType: 'section'
+        });
 
         var commentEl = document.getElementById('comment-editor');
         if (commentEl) {
@@ -111,6 +153,11 @@
             if (decodedComment) {
                 commentQuill.clipboard.dangerouslyPasteHTML(decodedComment);
             }
+        }
+
+        var decodedContent = decodeHtmlDeep(initialContentHtml, 2);
+        if (decodedContent && decodedContent !== QuillTools.quill.root.innerHTML) {
+            QuillTools.quill.clipboard.dangerouslyPasteHTML(decodedContent);
         }
     });
 </script>

@@ -17,12 +17,13 @@ class Note extends Mapper
     /**
      * Create a new note.
      */
-    public function create(int $projectId, ?string $title = null, ?string $content = null, ?string $imagePath = null, int $orderIndex = 0)
+    public function create(int $projectId, ?string $title = null, ?string $content = null, ?string $comment = null, ?string $imagePath = null, int $orderIndex = 0)
     {
         $this->reset();
         $this->project_id = $projectId;
         $this->title = $title;
         $this->content = $content;
+        $this->comment = $comment;
         $this->image_path = $imagePath;
         $this->order_index = $orderIndex;
 

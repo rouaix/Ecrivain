@@ -51,6 +51,7 @@ class ActController extends Controller
         $title = trim($_POST['title'] ?? '');
         $content = trim($_POST['content'] ?? '');
         $resume = trim($_POST['resume'] ?? '');
+        $comment = trim($_POST['comment'] ?? '');
         $errors = [];
         if ($title === '') {
             $errors[] = 'Le titre de l’acte est obligatoire.';
@@ -68,6 +69,7 @@ class ActController extends Controller
             $actModel->title = $title;
             $actModel->content = $content;
             $actModel->resume = $resume;
+            $actModel->comment = $comment;
             if ($actModel->save()) {
                 $this->f3->reroute('/project/' . $pid);
                 return;
@@ -80,7 +82,12 @@ class ActController extends Controller
             'title' => 'Nouvel acte',
             'project' => $project[0],
             'errors' => $errors,
-            'old' => ['title' => htmlspecialchars($title), 'content' => htmlspecialchars($content), 'resume' => htmlspecialchars($resume)],
+            'old' => [
+                'title' => htmlspecialchars($title),
+                'content' => htmlspecialchars($content),
+                'resume' => htmlspecialchars($resume),
+                'comment' => htmlspecialchars($comment)
+            ],
         ]);
     }
 
@@ -139,6 +146,7 @@ class ActController extends Controller
         $title = trim($_POST['title'] ?? '');
         $content = trim($_POST['content'] ?? '');
         $resume = trim($_POST['resume'] ?? '');
+        $comment = trim($_POST['comment'] ?? '');
         $errors = [];
         if ($title === '') {
             $errors[] = 'Le titre est obligatoire.';
@@ -148,6 +156,7 @@ class ActController extends Controller
             $actModel->title = $title;
             $actModel->content = $content;
             $actModel->resume = $resume;
+            $actModel->comment = $comment;
             $actModel->save();
             $this->f3->reroute('/project/' . $actModel->project_id);
             return;

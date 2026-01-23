@@ -68,6 +68,32 @@ abstract class Controller
             } catch (\Exception $e2) {
             }
         }
+
+        // COMMENT: Add comment column to core tables
+        try {
+            $this->db->exec("ALTER TABLE acts ADD COLUMN comment TEXT");
+        } catch (\Exception $e) {
+        }
+        try {
+            $this->db->exec("ALTER TABLE chapters ADD COLUMN comment TEXT");
+        } catch (\Exception $e) {
+        }
+        try {
+            $this->db->exec("ALTER TABLE characters ADD COLUMN comment TEXT");
+        } catch (\Exception $e) {
+        }
+        try {
+            $this->db->exec("ALTER TABLE notes ADD COLUMN comment TEXT");
+        } catch (\Exception $e) {
+        }
+        try {
+            $this->db->exec("ALTER TABLE projects ADD COLUMN comment TEXT");
+        } catch (\Exception $e) {
+        }
+        try {
+            $this->db->exec("ALTER TABLE sections ADD COLUMN comment TEXT");
+        } catch (\Exception $e) {
+        }
     }
 
     protected function checkAutoLogin(Base $f3)
@@ -171,8 +197,10 @@ abstract class Controller
     {
         $this->f3->mset($data);
         $this->f3->set('csrfToken', $this->csrfToken());
-        $this->f3->set('currentUser', $this->currentUser());
+        $currentUser = $this->currentUser();
+        $this->f3->set('currentUser', $currentUser);
         $this->f3->set('base', $this->f3->get('BASE'));
+        $this->f3->set('aiSystemPrompt', $this->resolveAiSystemPrompt($currentUser));
         // $view is now expected to be an F3 template path, usually.
         // But legacy calls might pass 'project/show' (without extension).
         // If we are strictly refactoring to .html, we should ensure the view has .html or add it.
@@ -239,5 +267,29 @@ abstract class Controller
         $usage->total_tokens = $promptTokens + $completionTokens;
         $usage->feature_name = $feature;
         $usage->save();
+    }
+
+    /**
+     * Resolve the current user's AI system prompt from config, with a safe default.
+     */
+    protected function resolveAiSystemPrompt(?array $user): string
+    {
+        $defaultPrompt = "Tu es un assistant d'écriture créative expert.";
+        if (!$user || empty($user['email'])) {
+            return $defaultPrompt;
+        }
+
+        $configFile = 'data/' . $user['email'] . '/ai_config.json';
+        if (!file_exists($configFile)) {
+            return $defaultPrompt;
+        }
+
+        $config = json_decode(file_get_contents($configFile), true);
+        if (!is_array($config)) {
+            return $defaultPrompt;
+        }
+
+        $system = trim($config['system'] ?? '');
+        return $system !== '' ? $system : $defaultPrompt;
     }
 }

@@ -42,7 +42,7 @@ class NoteController extends Controller
         $this->render('note/edit.html', [
             'title' => ($note ? 'Modifier' : 'Créer') . ' - Note',
             'project' => $project,
-            'note' => $note ?? ['title' => '', 'content' => '', 'image_path' => '', 'id' => null],
+            'note' => $note ?? ['title' => '', 'content' => '', 'comment' => '', 'image_path' => '', 'id' => null],
             'errors' => []
         ]);
     }
@@ -68,6 +68,7 @@ class NoteController extends Controller
 
         $title = trim($_POST['title'] ?? '');
         $content = $_POST['content'] ?? '';
+        $comment = $_POST['comment'] ?? '';
         $errors = [];
 
         if (empty($errors)) {
@@ -77,10 +78,11 @@ class NoteController extends Controller
                 if (!$noteModel->dry()) {
                     $noteModel->title = $title;
                     $noteModel->content = $content;
+                    $noteModel->comment = $comment;
                     $noteModel->save();
                 }
             } else {
-                $noteModel->create($pid, $title, $content);
+                $noteModel->create($pid, $title, $content, $comment);
             }
 
             $this->f3->reroute('/project/' . $pid);
@@ -91,7 +93,7 @@ class NoteController extends Controller
         $this->render('note/edit.html', [
             'title' => ($noteId ? 'Modifier' : 'Créer') . ' - Note',
             'project' => $project,
-            'note' => ['title' => $title, 'content' => $content, 'id' => $noteId],
+            'note' => ['title' => $title, 'content' => $content, 'comment' => $comment, 'id' => $noteId],
             'errors' => $errors
         ]);
     }

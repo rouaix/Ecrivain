@@ -70,25 +70,38 @@
 
     </div>
     </div>
+    <div class="form-group">
+        <label for="comment">Commentaire</label>
+        <div id="comment-editor" class="editor-surface editor-height-200">
+            {{ @section.comment | raw }}
+        </div>
+        <input type="hidden" name="comment" value="{{ @section.comment | esc }}">
+    </div>
 
     <input type="submit" value="Enregistrer">
     <a href="{{ @base }}/project/{{ @project.id }}" class="button secondary">Annuler</a>
 </form>
 
-<!-- AI Modal Structure -->
-<div id="aiModal" class="ai-modal">
-    <h3>Proposition IA</h3>
-    <textarea id="aiModalText" class="ai-modal-textarea ai-modal-textarea--md"></textarea>
-    <div class="ai-modal-actions">
-        <button id="aiBtnInsert" class="button-ai-green">Insérer au curseur</button>
-        <button id="aiBtnReplace" class="button-ai-orange">Remplacer la sélection</button>
-        <button id="aiBtnCopy">Copier</button>
-        <button id="aiBtnClose">Fermer</button>
-    </div>
-</div>
-
 <script>
     document.addEventListener('DOMContentLoaded', function () {
+        function decodeHtml(html) {
+            var txt = document.createElement('textarea');
+            txt.innerHTML = html;
+            return txt.value;
+        }
+        function decodeHtmlDeep(html, depth) {
+            var current = html;
+            for (var i = 0; i < depth; i++) {
+                var decoded = decodeHtml(current);
+                if (decoded === current) break;
+                current = decoded;
+            }
+            return current;
+        }
+
+        var editorEl = document.getElementById('editor');
+        var initialContentHtml = editorEl ? (editorEl.innerHTML || '') : '';
+
         QuillTools.init('#editor', {
             inputSelector: 'input[name="content"]',
             baseUrl: '{{ @base }}',
@@ -96,5 +109,49 @@
             contextId: '{{ @section.id }}',
             contextType: 'section'
         });
+
+        var commentEl = document.getElementById('comment-editor');
+        if (commentEl) {
+            var initialCommentHtml = commentEl.innerHTML || '';
+            var commentQuill = new Quill('#comment-editor', {
+                theme: 'snow',
+                modules: {
+                    toolbar: {
+                        container: QuillTools.toolbarOptions,
+                        handlers: {
+                            'undo': function () { this.quill.history.undo(); },
+                            'redo': function () { this.quill.history.redo(); },
+                            'emdash': function () { QuillTools.handleEmDash(this.quill); },
+                            'group_lines': function () { QuillTools.handleGroupLines(this.quill); },
+                            'remove_doublespaces': function () { QuillTools.handleRemoveDoubleSpaces(this.quill); }
+                        }
+                    },
+                    history: {
+                        delay: 2000,
+                        maxStack: 500,
+                        userOnly: true
+                    }
+                }
+            });
+
+            commentQuill.on('selection-change', function (range) {
+                if (range) QuillTools.activeQuill = commentQuill;
+            });
+
+            commentQuill.on('text-change', function () {
+                var html = commentQuill.root.innerHTML;
+                document.querySelector('input[name="comment"]').value = html;
+            });
+
+            var decodedComment = decodeHtmlDeep(initialCommentHtml, 2);
+            if (decodedComment) {
+                commentQuill.clipboard.dangerouslyPasteHTML(decodedComment);
+            }
+        }
+
+        var decodedContent = decodeHtmlDeep(initialContentHtml, 2);
+        if (decodedContent && decodedContent !== QuillTools.quill.root.innerHTML) {
+            QuillTools.quill.clipboard.dangerouslyPasteHTML(decodedContent);
+        }
     });
 </script>

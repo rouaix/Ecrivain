@@ -44,8 +44,13 @@ body {
     display: flex;
     flex-direction: column;
     min-height: 100vh;
+    font-size: 1em;
 }
 
+input, select, textarea{
+    font-size: 1em;
+    font-family: Arial, sans-serif;
+}
 header {
     background: var(--header-bg);
     color: var(--header-text);
@@ -98,7 +103,7 @@ footer {
 }
 
 .form-group {
-    margin-bottom: 10px;
+    margin: 10px 0;
 }
 
 label {
@@ -1977,4 +1982,19 @@ div#status {
 .ql-toolbar.ql-snow button.ql-group_lines:hover,
 .ql-toolbar.ql-snow button.ql-remove_doublespaces:hover {
     color: #06c !important;
+}
+.ql-container {
+    box-sizing: border-box;
+    font-family: Arial, sans-serif;
+    font-size: 1em;
+    height: 100%;
+    margin: 0px;
+    position: relative;
+    padding:10px;
+}
+
+input[type="number"].order-input{
+    font-size: 0.7em;
+    height:15px;
+    top: -2px
 }

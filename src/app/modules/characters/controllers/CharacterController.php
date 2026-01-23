@@ -43,7 +43,7 @@ class CharacterController extends Controller
         $this->render('characters/edit.html', [
             'title' => 'Nouveau personnage',
             'project' => $project,
-            'character' => ['name' => '', 'description' => '', 'id' => null],
+            'character' => ['name' => '', 'description' => '', 'comment' => '', 'id' => null],
             'errors' => []
         ]);
     }
@@ -59,12 +59,13 @@ class CharacterController extends Controller
 
         $name = trim($_POST['name'] ?? '');
         $description = trim($_POST['description'] ?? '');
+        $comment = trim($_POST['comment'] ?? '');
 
         if (!$name) {
             $this->render('characters/edit.html', [
                 'title' => 'Nouveau personnage',
                 'project' => $projectModel->findAndCast(['id=?', $pid])[0],
-                'character' => ['name' => $name, 'description' => $description, 'id' => null],
+                'character' => ['name' => $name, 'description' => $description, 'comment' => $comment, 'id' => null],
                 'errors' => ['Le nom est obligatoire']
             ]);
             return;
@@ -74,6 +75,7 @@ class CharacterController extends Controller
         $charModel->project_id = $pid;
         $charModel->name = $name;
         $charModel->description = $description;
+        $charModel->comment = $comment;
         $charModel->save();
 
         $this->f3->reroute('/project/' . $pid . '/characters');
@@ -122,12 +124,13 @@ class CharacterController extends Controller
 
         $name = trim($_POST['name'] ?? '');
         $description = trim($_POST['description'] ?? '');
+        $comment = trim($_POST['comment'] ?? '');
 
         if (!$name) {
             $this->render('characters/edit.html', [
                 'title' => 'Modifier personnage',
                 'project' => $projectModel->findAndCast(['id=?', $charModel->project_id])[0],
-                'character' => ['id' => $id, 'name' => $name, 'description' => $description],
+                'character' => ['id' => $id, 'name' => $name, 'description' => $description, 'comment' => $comment],
                 'errors' => ['Le nom est obligatoire']
             ]);
             return;
@@ -135,6 +138,7 @@ class CharacterController extends Controller
 
         $charModel->name = $name;
         $charModel->description = $description;
+        $charModel->comment = $comment;
         $charModel->save();
 
         $this->f3->reroute('/project/' . $charModel->project_id . '/characters');

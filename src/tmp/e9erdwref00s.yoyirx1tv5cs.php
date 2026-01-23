@@ -45,16 +45,6 @@
     </main>
 
     <!-- Shared Tools UI (Hidden by default) -->
-    <!-- AI Modal -->
-    <div id="aiModal" class="ai-modal ai-modal--compact">
-        <h3>Assistant IA</h3>
-        <textarea id="aiModalText" class="ai-modal-textarea ai-modal-textarea--sm"></textarea>
-        <div class="ai-modal-actions">
-            <button id="aiBtnReplace" class="button">Remplacer</button>
-            <button id="aiBtnInsert" class="button">Insérer</button>
-            <button id="aiBtnClose" class="button secondary">Fermer</button>
-        </div>
-    </div>
     <footer>
         &copy; <?= (date('Y')) ?> Daniel ROUAIX (Ce logiciel est privé et gratuit)
     </footer>
@@ -94,7 +84,7 @@
                     <div class="form-group">
                         <label for="aiSystemPrompt">Prompt Système</label>
                         <textarea id="aiSystemPrompt" class="input-block " rows="3"
-                            placeholder="Définissez le rôle de l'IA...">Tu es un assistant d'écriture expert.</textarea>
+                            placeholder="Définissez le rôle de l'IA..."><?= ($this->esc($aiSystemPrompt)) ?></textarea>
                     </div>
 
                     <div class="form-group">

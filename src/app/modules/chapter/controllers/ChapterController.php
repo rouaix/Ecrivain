@@ -192,6 +192,7 @@ class ChapterController extends Controller
         $chapterModel->title = $title;
         $chapterModel->content = $content;
         $chapterModel->resume = $_POST['resume'] ?? '';
+        $chapterModel->comment = $_POST['comment'] ?? '';
 
         // Check if context (parent or act) changed
         if ($chapterModel->act_id != $actId || $chapterModel->parent_id != $parentId) {

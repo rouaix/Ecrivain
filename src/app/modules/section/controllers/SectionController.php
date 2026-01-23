@@ -43,7 +43,7 @@ class SectionController extends Controller
         $this->render('section/edit.html', [
             'title' => ($section ? 'Modifier' : 'Créer') . ' - ' . Section::getTypeName($type),
             'project' => $project,
-            'section' => $section ?? ['title' => '', 'content' => '', 'image_path' => '', 'id' => null],
+            'section' => $section ?? ['title' => '', 'content' => '', 'comment' => '', 'image_path' => '', 'id' => null],
             'sectionType' => $type,
             'sectionTypeName' => Section::getTypeName($type),
             'errors' => []
@@ -72,6 +72,7 @@ class SectionController extends Controller
 
         $title = trim($_POST['title'] ?? '');
         $content = $_POST['content'] ?? '';
+        $comment = $_POST['comment'] ?? '';
         $errors = [];
 
         // Handle image upload for cover/back_cover
@@ -104,7 +105,7 @@ class SectionController extends Controller
                 }
             }
 
-            $result = $sectionModel->createOrUpdate($pid, $type, $title, $content, $imagePath, $sectionId);
+            $result = $sectionModel->createOrUpdate($pid, $type, $title, $content, $comment, $imagePath, $sectionId);
 
             if ($result) {
                 $this->f3->reroute('/project/' . $pid);
@@ -127,7 +128,7 @@ class SectionController extends Controller
         $this->render('section/edit.html', [
             'title' => ($section ? 'Modifier' : 'Créer') . ' - ' . Section::getTypeName($type),
             'project' => $project,
-            'section' => $section ?: ['title' => $title, 'content' => $content],
+            'section' => $section ?: ['title' => $title, 'content' => $content, 'comment' => $comment],
             'sectionType' => $type,
             'sectionTypeName' => Section::getTypeName($type),
             'errors' => $errors

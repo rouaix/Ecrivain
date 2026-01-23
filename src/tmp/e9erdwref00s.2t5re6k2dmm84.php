@@ -30,17 +30,17 @@
         <input type="text" id="title" name="title" value="<?= ($note['title']) ?>">
     </div>
 
-    <div id="editor-wrapper" style="display: flex; gap: 20px; align-items: flex-start;">
-        <div class="form-group" style="flex: 1;">
+    <div id="editor-wrapper" class="editor-wrapper">
+        <div class="form-group editor-column">
             <label for="content">Contenu</label>
-            <div id="editor" style="height: 300px; background: white; color: black;">
+            <div id="editor" class="editor-surface editor-height-300">
                 <?= ($this->raw($note['content']))."
 " ?>
             </div>
             <input type="hidden" name="content" value="<?= ($this->esc($note['content'])) ?>">
-            <p style="margin-top: 10px;">Compteur de mots : <span id="wordCount">0</span></p>
+            <p class="word-count">Compteur de mots : <span id="wordCount">0</span></p>
             <div class="editor-tools-wrapper">
-                <div id="status" style="display:inline-block; margin-left:10px; color:green;"></div>
+                <div id="status" class="status-label status--ok"></div>
                 <div id="synonymsBox" class="ai-box"></div>
                 <div id="analysisBox" class="ai-box"></div>
             </div>
@@ -48,26 +48,39 @@
 
     </div>
     </div>
+    <div class="form-group">
+        <label for="comment">Commentaire</label>
+        <div id="comment-editor" class="editor-surface editor-height-200">
+            <?= ($this->raw($note['comment']))."
+" ?>
+        </div>
+        <input type="hidden" name="comment" value="<?= ($this->esc($note['comment'])) ?>">
+    </div>
 
     <input type="submit" value="Enregistrer">
     <a href="<?= ($base) ?>/project/<?= ($project['id']) ?>" class="button secondary">Annuler</a>
 </form>
 
-<!-- AI Modal Structure -->
-<div id="aiModal" class="ai-modal">
-    <h3>Proposition IA</h3>
-    <textarea id="aiModalText"
-        style="width:100%; height:300px; margin-bottom:10px; background:var(--input-bg); color:var(--input-text); border:1px solid var(--input-border);"></textarea>
-    <div class="ai-modal-actions">
-        <button id="aiBtnInsert" class="button-ai-green">Insérer au curseur</button>
-        <button id="aiBtnReplace" class="button-ai-orange">Remplacer la sélection</button>
-        <button id="aiBtnCopy">Copier</button>
-        <button id="aiBtnClose">Fermer</button>
-    </div>
-</div>
-
 <script>
     document.addEventListener('DOMContentLoaded', function () {
+        function decodeHtml(html) {
+            var txt = document.createElement('textarea');
+            txt.innerHTML = html;
+            return txt.value;
+        }
+        function decodeHtmlDeep(html, depth) {
+            var current = html;
+            for (var i = 0; i < depth; i++) {
+                var decoded = decodeHtml(current);
+                if (decoded === current) break;
+                current = decoded;
+            }
+            return current;
+        }
+
+        var editorEl = document.getElementById('editor');
+        var initialContentHtml = editorEl ? (editorEl.innerHTML || '') : '';
+
         QuillTools.init('#editor', {
             inputSelector: 'input[name="content"]',
             baseUrl: '<?= ($base) ?>',
@@ -77,5 +90,49 @@
             contextId: '<?= ($note['id']) ?>',
             contextType: 'note'
         });
+
+        var commentEl = document.getElementById('comment-editor');
+        if (commentEl) {
+            var initialCommentHtml = commentEl.innerHTML || '';
+            var commentQuill = new Quill('#comment-editor', {
+                theme: 'snow',
+                modules: {
+                    toolbar: {
+                        container: QuillTools.toolbarOptions,
+                        handlers: {
+                            'undo': function () { this.quill.history.undo(); },
+                            'redo': function () { this.quill.history.redo(); },
+                            'emdash': function () { QuillTools.handleEmDash(this.quill); },
+                            'group_lines': function () { QuillTools.handleGroupLines(this.quill); },
+                            'remove_doublespaces': function () { QuillTools.handleRemoveDoubleSpaces(this.quill); }
+                        }
+                    },
+                    history: {
+                        delay: 2000,
+                        maxStack: 500,
+                        userOnly: true
+                    }
+                }
+            });
+
+            commentQuill.on('selection-change', function (range) {
+                if (range) QuillTools.activeQuill = commentQuill;
+            });
+
+            commentQuill.on('text-change', function () {
+                var html = commentQuill.root.innerHTML;
+                document.querySelector('input[name="comment"]').value = html;
+            });
+
+            var decodedComment = decodeHtmlDeep(initialCommentHtml, 2);
+            if (decodedComment) {
+                commentQuill.clipboard.dangerouslyPasteHTML(decodedComment);
+            }
+        }
+
+        var decodedContent = decodeHtmlDeep(initialContentHtml, 2);
+        if (decodedContent && decodedContent !== QuillTools.quill.root.innerHTML) {
+            QuillTools.quill.clipboard.dangerouslyPasteHTML(decodedContent);
+        }
     });
 </script>

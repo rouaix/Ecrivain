@@ -91,42 +91,21 @@
             <input type="hidden" name="resume" value="{{ @chapter.resume | esc }}">
         </div>
     </check>
+    <div class="form-group">
+        <label for="comment">Commentaire</label>
+        <div id="comment-editor" class="editor-surface editor-height-200">
+            {{ @chapter.comment | raw }}
+        </div>
+        <input type="hidden" name="comment" value="{{ @chapter.comment | esc }}">
+    </div>
 
 </form>
 
-<h3>Commentaires</h3>
-<div id="commentsList">
-    <check if="{{ !empty(@comments) }}">
-        <true>
-            <ul>
-                <repeat group="{{ @comments }}" value="{{ @com }}">
-                    <li><strong>« {{ substr(@chapter.content, @com.start_pos, @com.end_pos - @com.start_pos)
-                            }} »</strong> :
-                        {{ @com.content }}
-                    </li>
-                </repeat>
-            </ul>
-        </true>
-        <false>
-            <p>Aucun commentaire pour l’instant.</p>
-        </false>
-    </check>
-</div>
-
-<!-- AI Modal Structure -->
-<div id="aiModal" class="ai-modal">
-    <h3>Proposition IA</h3>
-    <textarea id="aiModalText" class="ai-modal-textarea ai-modal-textarea--md"></textarea>
-    <div class="ai-modal-actions">
-        <button id="aiBtnInsert" class="button-ai-green">Insérer au curseur</button>
-        <button id="aiBtnReplace" class="button-ai-orange">Remplacer la sélection</button>
-        <button id="aiBtnCopy">Copier</button>
-        <button id="aiBtnClose">Fermer</button>
-    </div>
-</div>
-
 <script>
     document.addEventListener('DOMContentLoaded', function () {
+        var editorEl = document.getElementById('editor');
+        var initialContentHtml = editorEl ? (editorEl.innerHTML || '') : '';
+
         // Init Main Editor (QuillTools)
         QuillTools.init('#editor', {
             inputSelector: 'input[name="content"]',
@@ -138,96 +117,108 @@
 
         var chapterId = {{ @chapter.id
     }};
-    var storageKey = 'chapter_' + chapterId + '_draft';
-
-    // Load Draft Logic for Main Content
-    var savedContent = localStorage.getItem(storageKey);
-    if (savedContent && savedContent !== QuillTools.quill.root.innerHTML) {
-        // QuillTools.quill.root.innerHTML = savedContent; // Dangerous if not safe
-        QuillTools.quill.clipboard.dangerouslyPasteHTML(savedContent);
-    }
-
-    // Save Draft Logic for Main Content
-    QuillTools.quill.on('text-change', function () {
-        localStorage.setItem(storageKey, QuillTools.quill.root.innerHTML);
-    });
 
     // Init Resume Editor (if valid)
     var resumeEl = document.getElementById('resume-editor');
     var resumeQuill = null;
+    function decodeHtml(html) {
+        var txt = document.createElement('textarea');
+        txt.innerHTML = html;
+        return txt.value;
+    }
+    function decodeHtmlDeep(html, depth) {
+        var current = html;
+        for (var i = 0; i < depth; i++) {
+            var decoded = decodeHtml(current);
+            if (decoded === current) break;
+            current = decoded;
+        }
+        return current;
+    }
+
+    var decodedContent = decodeHtmlDeep(initialContentHtml, 2);
+    if (decodedContent && decodedContent !== QuillTools.quill.root.innerHTML) {
+        QuillTools.quill.clipboard.dangerouslyPasteHTML(decodedContent);
+    }
     if (resumeEl) {
+        var initialResumeHtml = resumeEl.innerHTML || '';
         resumeQuill = new Quill('#resume-editor', {
             theme: 'snow',
             modules: {
-                toolbar: [
-                    ['undo', 'redo'],
-                    ['bold', 'italic', 'clean']
-                ]
+                toolbar: {
+                    container: QuillTools.toolbarOptions,
+                    handlers: {
+                        'undo': function () { this.quill.history.undo(); },
+                        'redo': function () { this.quill.history.redo(); },
+                        'emdash': function () { QuillTools.handleEmDash(this.quill); },
+                        'group_lines': function () { QuillTools.handleGroupLines(this.quill); },
+                        'remove_doublespaces': function () { QuillTools.handleRemoveDoubleSpaces(this.quill); }
+                    }
+                },
+                history: {
+                    delay: 2000,
+                    maxStack: 500,
+                    userOnly: true
+                }
             }
+        });
+
+        // Track selection for tools
+        resumeQuill.on('selection-change', function (range) {
+            if (range) QuillTools.activeQuill = resumeQuill;
         });
 
         // Sync Input
         resumeQuill.on('text-change', function () {
             var html = resumeQuill.root.innerHTML;
             document.querySelector('input[name="resume"]').value = html;
-            localStorage.setItem(storageKey + '_resume', html);
         });
 
-        // Load Draft Resume
-        var savedResume = localStorage.getItem(storageKey + '_resume');
-        if (savedResume) resumeQuill.clipboard.dangerouslyPasteHTML(savedResume);
-    }
-
-    // Offline auto‑save and draft handling
-    var statusLabel = document.getElementById('status');
-
-    // Auto‑save to server every 15 seconds if online
-    function autoSave() {
-        if (!navigator.onLine) {
-            statusLabel.textContent = 'Mode hors ligne';
-            statusLabel.classList.remove('status--ok', 'status--error');
-            statusLabel.classList.add('status--warn');
-            return;
+        var decodedResume = decodeHtmlDeep(initialResumeHtml, 2);
+        if (decodedResume) {
+            resumeQuill.clipboard.dangerouslyPasteHTML(decodedResume);
         }
-        // Read from hidden inputs which are synced
-        var title = document.getElementById('title').value;
-        var actId = document.getElementById('act_id').value;
-        var parentId = document.getElementById('parent_id').value;
-        var content = document.querySelector('input[name="content"]').value;
-        var resume = document.querySelector('input[name="resume"]') ? document.querySelector('input[name="resume"]').value : '';
-
-        var formData = new FormData();
-        formData.append('title', title);
-        formData.append('content', content);
-        formData.append('resume', resume);
-        formData.append('act_id', actId);
-        formData.append('parent_id', parentId);
-
-        fetch('{{ @base }}/chapter/' + chapterId + '/save', {
-            method: 'POST',
-            headers: {
-                'X-CSRF-Token': window.CSRF_TOKEN
-            },
-            body: formData
-        }).then(function (resp) {
-            if (resp.ok) {
-                statusLabel.textContent = 'Enregistré';
-                statusLabel.classList.remove('status--warn', 'status--error');
-                statusLabel.classList.add('status--ok');
-                localStorage.removeItem(storageKey);
-                if (resumeEl) localStorage.removeItem(storageKey + '_resume');
-            } else {
-                statusLabel.textContent = 'Erreur de sauvegarde';
-                statusLabel.classList.remove('status--ok', 'status--warn');
-                statusLabel.classList.add('status--error');
-            }
-        }).catch(function () {
-            statusLabel.textContent = 'Erreur réseau';
-            statusLabel.classList.remove('status--ok', 'status--warn');
-            statusLabel.classList.add('status--error');
-        });
     }
-    setInterval(autoSave, 15000);
+
+    // Init Comment Editor (Full)
+    var commentEl = document.getElementById('comment-editor');
+    if (commentEl) {
+        var initialCommentHtml = commentEl.innerHTML || '';
+        var commentQuill = new Quill('#comment-editor', {
+            theme: 'snow',
+            modules: {
+                toolbar: {
+                    container: QuillTools.toolbarOptions,
+                    handlers: {
+                        'undo': function () { this.quill.history.undo(); },
+                        'redo': function () { this.quill.history.redo(); },
+                        'emdash': function () { QuillTools.handleEmDash(this.quill); },
+                        'group_lines': function () { QuillTools.handleGroupLines(this.quill); },
+                        'remove_doublespaces': function () { QuillTools.handleRemoveDoubleSpaces(this.quill); }
+                    }
+                },
+                history: {
+                    delay: 2000,
+                    maxStack: 500,
+                    userOnly: true
+                }
+            }
+        });
+
+        commentQuill.on('selection-change', function (range) {
+            if (range) QuillTools.activeQuill = commentQuill;
+        });
+
+        commentQuill.on('text-change', function () {
+            var html = commentQuill.root.innerHTML;
+            document.querySelector('input[name="comment"]').value = html;
+        });
+
+        var decodedComment = decodeHtmlDeep(initialCommentHtml, 2);
+        if (decodedComment) {
+            commentQuill.clipboard.dangerouslyPasteHTML(decodedComment);
+        }
+    }
 
     // Add comment functionality (Quill Adapted)
     var commentButton = document.getElementById('commentButton');
@@ -337,5 +328,6 @@
         // Initial run
         filterChapters();
     }
+
     });
 </script>

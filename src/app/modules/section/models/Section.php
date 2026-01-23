@@ -66,13 +66,14 @@ class Section extends Mapper
     /**
      * Create or update a section.
      */
-    public function create(int $projectId, string $type, ?string $title = null, ?string $content = null, ?string $imagePath = null, int $orderIndex = 0)
+    public function create(int $projectId, string $type, ?string $title = null, ?string $content = null, ?string $comment = null, ?string $imagePath = null, int $orderIndex = 0)
     {
         $this->reset();
         $this->project_id = $projectId;
         $this->type = $type;
         $this->title = $title;
         $this->content = $content;
+        $this->comment = $comment;
         $this->image_path = $imagePath;
         $this->order_index = $orderIndex;
 
@@ -87,13 +88,14 @@ class Section extends Mapper
     /**
      * Create or update a section logic.
      */
-    public function createOrUpdate(int $projectId, string $type, ?string $title = null, ?string $content = null, ?string $imagePath = null, ?int $id = null)
+    public function createOrUpdate(int $projectId, string $type, ?string $title = null, ?string $content = null, ?string $comment = null, ?string $imagePath = null, ?int $id = null)
     {
         if ($id) {
             $this->load(['id=?', $id]);
             if (!$this->dry()) {
                 $this->title = $title;
                 $this->content = $content;
+                $this->comment = $comment;
                 $this->image_path = $imagePath;
                 $this->save();
                 return $this->id;
@@ -103,7 +105,7 @@ class Section extends Mapper
 
         // Multi-entry types always create new if no ID provided
         if ($type === 'notes' || $type === 'appendices') {
-            return $this->create($projectId, $type, $title, $content, $imagePath);
+            return $this->create($projectId, $type, $title, $content, $comment, $imagePath);
         }
 
         // Single-entry types check for existing
@@ -117,12 +119,13 @@ class Section extends Mapper
             $this->load(['id=?', $existing['id']]);
             $this->title = $title;
             $this->content = $content;
+            $this->comment = $comment;
             $this->image_path = $imagePath;
             $this->save();
             return $this->id;
         }
 
-        return $this->create($projectId, $type, $title, $content, $imagePath);
+        return $this->create($projectId, $type, $title, $content, $comment, $imagePath);
     }
 
     /**
