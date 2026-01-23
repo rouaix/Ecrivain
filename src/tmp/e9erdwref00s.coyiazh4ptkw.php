@@ -349,7 +349,7 @@
                                                                     data-type="chapter" data-id="<?= ($sub['id']) ?>"
                                                                     value="<?= ($sub['order_index'] + 1) ?>">
                                                             <span>
-                                                                └─ <?= ($sub['title'])."
+                                                                 <?= ($sub['title'])."
 " ?>
                                                             </span>
                                                             <?php if (!empty($sub['comment'])): ?>
@@ -477,10 +477,7 @@
                                                             title="Inclure dans l'export">
                                                         <input type="number" class="order-input" data-type="chapter"
                                                             data-id="<?= ($sub['id']) ?>" value="<?= ($sub['order_index'] + 1) ?>">
-                                                        <span>
-                                                            └─ <?= ($sub['title'])."
-" ?>
-                                                        </span>
+                                                        <span><?= ($sub['title']) ?></span>
                                                         <?php if (!empty($sub['comment'])): ?>
                                                             <div class="sub-chapter-comment">
                                                                 <span>Remarques : </span><?= ($this->raw($sub['comment']))."

@@ -351,7 +351,7 @@ input[type="submit"]:hover {
 .project-meta {
     display: flex;
     gap: 20px;
-    margin-top: 50px;
+    margin-top: 25px;
     flex-wrap: wrap;
 }
 
@@ -1345,7 +1345,7 @@ div#status {
     height: 150px;
     border-radius: 50%;
     object-fit: cover;
-    border: 4px solid #ddd;
+    border: 1px solid #dddddd;
     margin-bottom: 10px;
     background-color: #f0f0f0;
 }

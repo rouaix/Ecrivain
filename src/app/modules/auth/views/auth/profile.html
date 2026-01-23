@@ -22,7 +22,7 @@
     <div class="profile-header">
         <div class="profile-photo-container">
             <!-- Image source points to the controller route that serves the file from data/ -->
-            <img src="{{ @base }}/profile/photo/{{ @user.username }}" alt="Photo" class="profile-photo"
+            <img src="{{ @base }}/profile/photo/{{ @user.username }}" alt="" class="profile-photo"
                 onerror="this.src='https://ui-avatars.com/api/?name={{ urlencode(@user.username) }}&size=150'">
             <div class="photo-actions">
                 <label for="photo" class="button secondary small cursor-pointer">Changer la photo</label>
