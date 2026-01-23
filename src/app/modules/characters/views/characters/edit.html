@@ -25,15 +25,6 @@
             </div>
             <input type="hidden" name="description" value="{{ @character.description | esc }}">
             <p class="word-count">Compteur de mots : <span id="wordCount">0</span></p>
-            <div class="editor-tools-wrapper">
-                <button type="button" id="synButton">Synonymes (IA)</button>
-                <button type="button" id="continueButton" class="button-ai-purple">Continuer (IA)</button>
-                <button type="button" id="rephraseButton" class="button-ai-purple">Reformuler (IA)</button>
-                <button type="button" id="analysisButton">Analyse du texte</button>
-                <div id="status" class="status-label status--ok"></div>
-                <div id="synonymsBox" class="ai-box"></div>
-                <div id="analysisBox" class="ai-box"></div>
-            </div>
         </div>
 
     </div>

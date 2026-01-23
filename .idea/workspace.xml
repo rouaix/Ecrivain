@@ -5,18 +5,8 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="17de52e9-e946-4570-8a81-f6c966b2052b" name="Changes" comment="">
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/app/controllers/Controller.php" beforeDir="false" afterPath="$PROJECT_DIR$/src/app/controllers/Controller.php" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/app/modules/ai/controllers/AiController.php" beforeDir="false" afterPath="$PROJECT_DIR$/src/app/modules/ai/controllers/AiController.php" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/app/modules/ai/models/AiService.php" beforeDir="false" afterPath="$PROJECT_DIR$/src/app/modules/ai/models/AiService.php" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/app/modules/chapter/controllers/ChapterController.php" beforeDir="false" afterPath="$PROJECT_DIR$/src/app/modules/chapter/controllers/ChapterController.php" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/app/modules/characters/views/characters/edit.html" beforeDir="false" afterPath="$PROJECT_DIR$/src/app/modules/characters/views/characters/edit.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/app/modules/project/controllers/ProjectController.php" beforeDir="false" afterPath="$PROJECT_DIR$/src/app/modules/project/controllers/ProjectController.php" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/app/modules/project/views/project/show.html" beforeDir="false" afterPath="$PROJECT_DIR$/src/app/modules/project/views/project/show.html" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/data/auth_debug.log" beforeDir="false" afterPath="$PROJECT_DIR$/src/data/auth_debug.log" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/public/style.css" beforeDir="false" afterPath="$PROJECT_DIR$/src/public/style.css" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/tmp/e9erdwref00s.coyiazh4ptkw.php" beforeDir="false" afterPath="$PROJECT_DIR$/src/tmp/e9erdwref00s.coyiazh4ptkw.php" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/tmp/e9erdwref00s.nmpidgitj00s.php" beforeDir="false" afterPath="$PROJECT_DIR$/src/tmp/e9erdwref00s.nmpidgitj00s.php" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/www/entry_log.txt" beforeDir="false" afterPath="$PROJECT_DIR$/src/www/entry_log.txt" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
