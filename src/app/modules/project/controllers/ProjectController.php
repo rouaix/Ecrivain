@@ -119,20 +119,20 @@ class ProjectController extends Controller
         $lpp = $project['lines_per_page'] ?: 38;
 
         $chapterModel = new Chapter();
-        $allChapters = $chapterModel->getAllByProject($pid);
+        $allChapters = $this->supHtml($chapterModel->getAllByProject($pid));
 
         $characterModel = new Character();
-        $characters = $characterModel->getAllByProject($pid);
+        $characters = $this->supHtml($characterModel->getAllByProject($pid));
 
         $actModel = new Act();
-        $acts = $actModel->getAllByProject($pid);
+        $acts = $this->supHtml($actModel->getAllByProject($pid));
 
         $sectionModel = new Section();
-        $sectionsBeforeChapters = $sectionModel->getBeforeChapters($pid);
-        $sectionsAfterChapters = $sectionModel->getAfterChapters($pid);
+        $sectionsBeforeChapters = $this->supHtml($sectionModel->getBeforeChapters($pid));
+        $sectionsAfterChapters = $this->supHtml($sectionModel->getAfterChapters($pid));
 
         $noteModel = new Note();
-        $notes = $noteModel->getAllByProject($pid);
+        $notes = $this->supHtml($noteModel->getAllByProject($pid));
 
         // --- Logic moved from View ---
 
@@ -703,6 +703,7 @@ class ProjectController extends Controller
             'mindmapData' => json_encode($data)
         ]);
     }
+
     public function reorderItem()
     {
         $pid = (int) $this->f3->get('PARAMS.id');
@@ -1755,4 +1756,28 @@ class ProjectController extends Controller
             'content' => $content
         ]);
     }
+
+    public function supHtml($data)
+    {
+        if (is_array($data)) {
+            foreach ($data as $k => $v) {
+                $data[$k] = $this->supHtml($v);
+            }
+            return $data;
+        }
+
+        if (is_string($data)) {
+            $data = html_entity_decode($data, ENT_QUOTES | ENT_HTML5, 'UTF-8');
+            $data = strip_tags($data);
+            $data = trim($data);
+            // optionnel: normaliser les espaces (y compris &nbsp; => U+00A0)
+            $data = preg_replace('/\x{00A0}/u', ' ', $data);
+            $data = preg_replace('/\s+/u', ' ', $data);
+            return $data;
+        }
+
+        // int, float, bool, null, objets: on laisse
+        return $data;
+    }
+
 }

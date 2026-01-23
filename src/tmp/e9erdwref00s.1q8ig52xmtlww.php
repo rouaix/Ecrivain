@@ -1,29 +1,30 @@
-<h2>Modifier le personnage « {{ @character.name }}»</h2>
-<p><a class="button" href="{{ @base }}/project/{{ @project.id }}/characters">Retour à la liste des
+<h2>Modifier le personnage « <?= ($character['name']) ?>»</h2>
+<p><a class="button" href="<?= ($base) ?>/project/<?= ($project['id']) ?>/characters">Retour à la liste des
         personnages</a></p>
-<check if="{{ !empty(@errors) }}">
+<?php if (!empty($errors)): ?>
     <div class="error">
         <ul>
-            <repeat group="{{ @errors }}" value="{{ @err }}">
-                <li>{{ @err }}</li>
-            </repeat>
+            <?php foreach (($errors?:[]) as $err): ?>
+                <li><?= ($err) ?></li>
+            <?php endforeach; ?>
         </ul>
     </div>
-</check>
+<?php endif; ?>
 <form method="post"
-    action="{{ @character.id ? (@base . '/character/' . @character.id . '/edit') : (@base . '/project/' . @project.id . '/character/create') }}">
-    <input type="hidden" name="csrf_token" value="{{ @csrfToken }}">
+    action="<?= ($character['id'] ? ($base . '/character/' . $character['id'] . '/edit') : ($base . '/project/' . $project['id'] . '/character/create')) ?>">
+    <input type="hidden" name="csrf_token" value="<?= ($csrfToken) ?>">
     <div class="form-group">
         <label for="name">Nom *</label>
-        <input type="text" id="name" name="name" value="{{ @character.name }}" required>
+        <input type="text" id="name" name="name" value="<?= ($character['name']) ?>" required>
     </div>
     <div id="editor-wrapper" class="editor-wrapper">
         <div class="form-group editor-column">
             <label for="description">Description (enrichie)</label>
             <div id="editor" class="editor-surface editor-height-300">
-                {{ @character.description | raw }}
+                <?= ($this->raw($character['description']))."
+" ?>
             </div>
-            <input type="hidden" name="description" value="{{ @character.description | esc }}">
+            <input type="hidden" name="description" value="<?= ($this->esc($character['description'])) ?>">
             <p class="word-count">Compteur de mots : <span id="wordCount">0</span></p>
             <div class="editor-tools-wrapper">
                 <button type="button" id="synButton">Synonymes (IA)</button>
@@ -41,9 +42,10 @@
     <div class="form-group">
         <label for="comment">Commentaire</label>
         <div id="comment-editor" class="editor-surface editor-height-200">
-            {{ @character.comment | raw }}
+            <?= ($this->raw($character['comment']))."
+" ?>
         </div>
-        <input type="hidden" name="comment" value="{{ @character.comment | esc }}">
+        <input type="hidden" name="comment" value="<?= ($this->esc($character['comment'])) ?>">
     </div>
 
     <input type="submit" value="Enregistrer">
@@ -56,9 +58,9 @@
 
         QuillTools.init('#editor', {
             inputSelector: 'input[name="description"]',
-            baseUrl: '{{ @base }}',
-            csrfToken: '{{ @csrfToken }}',
-            contextId: '{{ @character.id }}',
+            baseUrl: '<?= ($base) ?>',
+            csrfToken: '<?= ($csrfToken) ?>',
+            contextId: '<?= ($character['id']) ?>',
             contextType: 'character'
         });
 

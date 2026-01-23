@@ -368,7 +368,7 @@ class AiController extends Controller
 
         $service = new AiService($provider, $apiKey, $model);
 
-        $systemPrompt = $userConfig['system'] ?? "Tu es un assistant d'écriture expert.";
+        $systemPrompt = $json['system_prompt'] ?? ($userConfig['system'] ?? "Tu es un assistant d'écriture expert.");
         $taskPrompt = $userConfig['summarize_chapter'] ?? ($prompts['summarize_chapter'] ?? "Fais un résumé d'une dizaine de lignes du contenu suivant qui est une agrégation de sous-chapitres. Le résumé doit être captivant et bien écrit.");
 
         $fullPrompt = $taskPrompt . "\n\n[CONTENU]\n" . $content;
@@ -448,7 +448,7 @@ class AiController extends Controller
 
         $service = new AiService($provider, $apiKey, $model);
 
-        $systemPrompt = $userConfig['system'] ?? $defaults['system'];
+        $systemPrompt = $json['system_prompt'] ?? ($userConfig['system'] ?? $defaults['system']);
         $taskPrompt = $prompts['summarize_act'];
 
         $fullPrompt = $taskPrompt . "\n\n[RÉSUMÉS DES CHAPITRES]\n" . $content;

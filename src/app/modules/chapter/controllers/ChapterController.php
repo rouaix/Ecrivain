@@ -150,9 +150,12 @@ class ChapterController extends Controller
         $success = $this->f3->get('SESSION.success');
         $this->f3->clear('SESSION.success');
 
+        $chapterData = $chapterModel->cast();
+        $chapterData['comment'] = $this->getChapterComment($cid);
+
         $this->render('editor/edit.html', [
             'title' => $chapterModel->title,
-            'chapter' => $chapterModel->cast(),
+            'chapter' => $chapterData,
             'project' => $project,
             'acts' => $acts,
             'currentAct' => $currentAct,
@@ -230,6 +233,9 @@ class ChapterController extends Controller
         $chapterModel->parent_id = $parentId;
         $chapterModel->save();
 
+        $comment = html_entity_decode($_POST['comment'] ?? '');
+        $this->db->exec('UPDATE chapters SET `comment`=? WHERE id=?', [$comment, $cid]);
+
         if ($this->f3->get('AJAX')) {
             echo json_encode(['status' => 'ok']);
             exit;
@@ -306,5 +312,14 @@ class ChapterController extends Controller
         $pid = $chapterModel->project_id;
         $chapterModel->erase();
         $this->f3->reroute('/project/' . $pid);
+    }
+
+    private function getChapterComment(int $cid): string
+    {
+        $rows = $this->db->exec('SELECT `comment` FROM chapters WHERE id=?', [$cid]);
+        if (!$rows || !isset($rows[0]['comment'])) {
+            return '';
+        }
+        return (string) $rows[0]['comment'];
     }
 }

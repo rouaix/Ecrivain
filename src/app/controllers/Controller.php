@@ -71,27 +71,27 @@ abstract class Controller
 
         // COMMENT: Add comment column to core tables
         try {
-            $this->db->exec("ALTER TABLE acts ADD COLUMN comment TEXT");
+            $this->db->exec("ALTER TABLE acts ADD COLUMN `comment` TEXT");
         } catch (\Exception $e) {
         }
         try {
-            $this->db->exec("ALTER TABLE chapters ADD COLUMN comment TEXT");
+            $this->db->exec("ALTER TABLE chapters ADD COLUMN `comment` TEXT");
         } catch (\Exception $e) {
         }
         try {
-            $this->db->exec("ALTER TABLE characters ADD COLUMN comment TEXT");
+            $this->db->exec("ALTER TABLE characters ADD COLUMN `comment` TEXT");
         } catch (\Exception $e) {
         }
         try {
-            $this->db->exec("ALTER TABLE notes ADD COLUMN comment TEXT");
+            $this->db->exec("ALTER TABLE notes ADD COLUMN `comment` TEXT");
         } catch (\Exception $e) {
         }
         try {
-            $this->db->exec("ALTER TABLE projects ADD COLUMN comment TEXT");
+            $this->db->exec("ALTER TABLE projects ADD COLUMN `comment` TEXT");
         } catch (\Exception $e) {
         }
         try {
-            $this->db->exec("ALTER TABLE sections ADD COLUMN comment TEXT");
+            $this->db->exec("ALTER TABLE sections ADD COLUMN `comment` TEXT");
         } catch (\Exception $e) {
         }
     }

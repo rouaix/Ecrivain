@@ -7,26 +7,16 @@
     <list default="true" id="17de52e9-e946-4570-8a81-f6c966b2052b" name="Changes" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/app/controllers/Controller.php" beforeDir="false" afterPath="$PROJECT_DIR$/src/app/controllers/Controller.php" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/app/modules/acts/controllers/ActController.php" beforeDir="false" afterPath="$PROJECT_DIR$/src/app/modules/acts/controllers/ActController.php" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/app/modules/acts/views/acts/edit.html" beforeDir="false" afterPath="$PROJECT_DIR$/src/app/modules/acts/views/acts/edit.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/app/modules/ai/controllers/AiController.php" beforeDir="false" afterPath="$PROJECT_DIR$/src/app/modules/ai/controllers/AiController.php" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/app/modules/ai/models/AiService.php" beforeDir="false" afterPath="$PROJECT_DIR$/src/app/modules/ai/models/AiService.php" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/app/modules/chapter/controllers/ChapterController.php" beforeDir="false" afterPath="$PROJECT_DIR$/src/app/modules/chapter/controllers/ChapterController.php" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/app/modules/chapter/views/editor/edit.html" beforeDir="false" afterPath="$PROJECT_DIR$/src/app/modules/chapter/views/editor/edit.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/app/modules/characters/controllers/CharacterController.php" beforeDir="false" afterPath="$PROJECT_DIR$/src/app/modules/characters/controllers/CharacterController.php" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/app/modules/characters/views/characters/edit.html" beforeDir="false" afterPath="$PROJECT_DIR$/src/app/modules/characters/views/characters/edit.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/app/modules/note/controllers/NoteController.php" beforeDir="false" afterPath="$PROJECT_DIR$/src/app/modules/note/controllers/NoteController.php" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/app/modules/note/models/Note.php" beforeDir="false" afterPath="$PROJECT_DIR$/src/app/modules/note/models/Note.php" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/app/modules/note/views/note/edit.html" beforeDir="false" afterPath="$PROJECT_DIR$/src/app/modules/note/views/note/edit.html" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/app/modules/project/controllers/ProjectController.php" beforeDir="false" afterPath="$PROJECT_DIR$/src/app/modules/project/controllers/ProjectController.php" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/app/modules/project/views/layouts/main.html" beforeDir="false" afterPath="$PROJECT_DIR$/src/app/modules/project/views/layouts/main.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/app/modules/project/views/project/edit.html" beforeDir="false" afterPath="$PROJECT_DIR$/src/app/modules/project/views/project/edit.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/app/modules/section/controllers/SectionController.php" beforeDir="false" afterPath="$PROJECT_DIR$/src/app/modules/section/controllers/SectionController.php" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/app/modules/section/models/Section.php" beforeDir="false" afterPath="$PROJECT_DIR$/src/app/modules/section/models/Section.php" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/app/modules/section/views/section/edit.html" beforeDir="false" afterPath="$PROJECT_DIR$/src/app/modules/section/views/section/edit.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/app/modules/project/views/project/show.html" beforeDir="false" afterPath="$PROJECT_DIR$/src/app/modules/project/views/project/show.html" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/data/auth_debug.log" beforeDir="false" afterPath="$PROJECT_DIR$/src/data/auth_debug.log" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/public/style.css" beforeDir="false" afterPath="$PROJECT_DIR$/src/public/style.css" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/tmp/e9erdwref00s.2t5re6k2dmm84.php" beforeDir="false" afterPath="$PROJECT_DIR$/src/tmp/e9erdwref00s.2t5re6k2dmm84.php" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/tmp/e9erdwref00s.2x05ni5x6ww0g.php" beforeDir="false" afterPath="$PROJECT_DIR$/src/tmp/e9erdwref00s.2x05ni5x6ww0g.php" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/tmp/e9erdwref00s.furnrzcj0ug4.php" beforeDir="false" afterPath="$PROJECT_DIR$/src/tmp/e9erdwref00s.furnrzcj0ug4.php" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/tmp/e9erdwref00s.coyiazh4ptkw.php" beforeDir="false" afterPath="$PROJECT_DIR$/src/tmp/e9erdwref00s.coyiazh4ptkw.php" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/tmp/e9erdwref00s.nmpidgitj00s.php" beforeDir="false" afterPath="$PROJECT_DIR$/src/tmp/e9erdwref00s.nmpidgitj00s.php" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/www/entry_log.txt" beforeDir="false" afterPath="$PROJECT_DIR$/src/www/entry_log.txt" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />

@@ -48,7 +48,6 @@
 <div class="project-split-layout">
     <!-- LEFT COLUMN (40%) -->
     <div class="project-col-left">
-
         <!-- Notes Panel -->
         <details class="panel" id="panel-notes" data-persist="true">
             <summary>Notes <span class="panel-count"><?= ($stats['note_count']) ?></span></summary>
@@ -75,6 +74,13 @@
                                                 <?= ($note['title'] ?: 'Note sans titre')."
 " ?>
                                             </div>
+                                            <?php if ($note['comment']): ?>
+                                                <div class="note-comment">
+                                                    <span>Remarques : </span><?= ($note['comment'])."
+" ?>
+                                                </div>
+                                            <?php endif; ?>
+
                                         </td>
                                         <td class="compact-meta compact-meta--narrow"><?= ($note['wc']) ?> mots</td>
                                         <td class="compact-actions compact-actions--wide">
@@ -96,7 +102,6 @@
                 <?php endif; ?>
             </div>
         </details>
-
         <details class="panel" id="panel-characters" data-persist="true">
             <summary>Personnages <span class="panel-count"><?= ($stats['character_count']) ?></span></summary>
             <?php if (empty($characters)): ?>
@@ -106,7 +111,15 @@
                 <?php else: ?>
                     <ul class="character-list">
                         <?php foreach (($characters?:[]) as $char): ?>
-                            <li><?= ($char['name']) ?></li>
+                            <li><?= ($char['name'])."
+" ?>
+                                <?php if ($char['comment']): ?>
+                                    <div class="char-comment">
+                                        <span>Remarques : </span><?= ($char['comment'])."
+" ?>
+                                    </div>
+                                <?php endif; ?>
+                            </li>
                         <?php endforeach; ?>
                     </ul>
                 
@@ -117,10 +130,8 @@
             </div>
         </details>
     </div>
-
     <!-- RIGHT COLUMN (60%) -->
     <div class="project-col-right">
-
         <!-- Before Groups -->
         <details class="panel" id="panel-before" data-persist="true">
             <summary>Sections avant les chapitres <span class="panel-count"><?= ($stats['before_count']) ?></span></summary>
@@ -137,7 +148,6 @@
                                     href="<?= ($base) ?>/project/<?= ($project['id']) ?>/section/<?= ($group['type']) ?>">Créer</a>
                             <?php endif; ?>
                         </div>
-
                         <?php if (!empty($group['items'])): ?>
                             
                                 <table class="compact-table data-table">
@@ -156,6 +166,12 @@
                                                         <?= ($section['title'] ?: $group['name'])."
 " ?>
                                                     </div>
+                                                    <?php if (!empty($section['comment'])): ?>
+                                                        <div class="section-comment">
+                                                            <span>Remarques : </span><?= ($section['comment'])."
+" ?>
+                                                        </div>
+                                                    <?php endif; ?>
                                                 </td>
                                                 <td class="compact-meta stats"><?= ($section['wc']) ?> mots
                                                 </td>
@@ -181,7 +197,6 @@
                 <?php endforeach; ?>
             </div>
         </details>
-
         <!-- Chapters -->
         <section class="panel panel-open">
             <div class="panel-heading">
@@ -195,7 +210,6 @@
                         chapitre</a>
                 </div>
             </div>
-
             <?php if (empty($acts) && empty($chaptersWithoutAct)): ?>
                 
                     <p>Aucun chapitre ou acte pour ce projet.</p>
@@ -237,7 +251,12 @@
 " ?>
                                 </div>
                             <?php endif; ?>
-
+                            <?php if (!empty($act['comment'])): ?>
+                                <div class="act-comment">
+                                    <span>Remarques : </span><?= ($act['comment'])."
+" ?>
+                                </div>
+                            <?php endif; ?>
                             <?php if (!isset($chaptersByAct[$act['id']])): ?>
                                 
                                     <p>Aucun chapitre dans cet acte.</p>
@@ -282,6 +301,12 @@
 " ?>
                                                                 </div>
                                                             <?php endif; ?>
+                                                            <?php if (!empty($ch['comment'])): ?>
+                                                                <div class="chapter-comment">
+                                                                    <span>Remarques : </span><?= ($this->raw($ch['comment']))."
+" ?>
+                                                                </div>
+                                                            <?php endif; ?>
                                                         </td>
                                                         <td class="stats">
                                                             <?= ($ch['total_wc']) ?> mots<br><?= ($ch['total_lines'])."
@@ -320,11 +345,17 @@
                                                                 <input type="number" class="order-input"
                                                                     data-type="chapter" data-id="<?= ($sub['id']) ?>"
                                                                     value="<?= ($sub['order_index'] + 1) ?>">
-                                                                <span>
-                                                                    └─ <?= ($sub['title'])."
+                                                            <span>
+                                                                └─ <?= ($sub['title'])."
 " ?>
-                                                                </span>
-                                                            </td>
+                                                            </span>
+                                                            <?php if (!empty($sub['comment'])): ?>
+                                                                <div class="sub-chapter-comment">
+                                                                    <span>Remarques : </span><?= ($this->raw($sub['comment']))."
+" ?>
+                                                                </div>
+                                                            <?php endif; ?>
+                                                        </td>
                                                             <td class="stats">
                                                                 <?= ($sub['wc']) ?> mots<br><?= ($sub['lines']) ?> lignes
                                                                 <br><?= ($sub['pages'])."
@@ -351,7 +382,6 @@
                             <?php endif; ?>
                         </details>
                     <?php endforeach; ?>
-
                     <?php if (!empty($chaptersWithoutAct)): ?>
                         <details class="act-container" id="act-orphan" data-persist="true">
                             <summary class="act-summary">
@@ -405,7 +435,12 @@
 " ?>
                                                         </div>
                                                     <?php endif; ?>
-
+                                                    <?php if (!empty($ch['comment'])): ?>
+                                                        <div class="chapter-comment">
+                                                            <span>Remarques : </span><?= ($this->raw($ch['comment']))."
+" ?>
+                                                        </div>
+                                                    <?php endif; ?>
                                                 </td>
                                                 <td>
                                                     <?= ($ch['total_wc']) ?> mots<br><?= ($ch['total_lines'])."
@@ -443,6 +478,12 @@
                                                             └─ <?= ($sub['title'])."
 " ?>
                                                         </span>
+                                                        <?php if (!empty($sub['comment'])): ?>
+                                                            <div class="sub-chapter-comment">
+                                                                <span>Remarques : </span><?= ($this->raw($sub['comment']))."
+" ?>
+                                                            </div>
+                                                        <?php endif; ?>
                                                     </td>
                                                     <td class="stats">
                                                         <?= ($sub['wc']) ?> mots<br><?= ($sub['lines']) ?> lignes
@@ -509,6 +550,13 @@
                                                         <?= ($section['title'] ?: $group['name'])."
 " ?>
                                                     </div>
+                                                    <?php if (!empty($section['comment'])): ?>
+                                                        <div class="section-comment">
+                                                            <span>Remarques : </span><?= ($section['comment'])."
+" ?>
+                                                        </div>
+                                                    <?php endif; ?>
+
                                                 </td>
                                                 <td class="compact-meta compact-meta--narrow"><?= ($section['wc']) ?> mots
                                                 </td>
@@ -544,6 +592,7 @@
 
 <script>
     document.addEventListener('DOMContentLoaded', function () {
+        const aiSystemPrompt = <?= (json_encode($aiSystemPrompt)) ?>;
         document.querySelectorAll('.progress-bar[data-progress]').forEach(function (bar) {
             var value = parseFloat(bar.getAttribute('data-progress')) || 0;
             bar.style.width = value + '%';
@@ -688,7 +737,8 @@
                         'X-CSRF-Token': window.CSRF_TOKEN
                     },
                     body: JSON.stringify({
-                        chapter_id: chapterId
+                        chapter_id: chapterId,
+                        system_prompt: aiSystemPrompt
                     })
                 })
                     .then(response => response.json())
@@ -734,7 +784,8 @@
                         'X-CSRF-Token': window.CSRF_TOKEN
                     },
                     body: JSON.stringify({
-                        act_id: actId
+                        act_id: actId,
+                        system_prompt: aiSystemPrompt
                     })
                 })
                     .then(response => response.json())

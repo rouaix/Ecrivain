@@ -1010,7 +1010,7 @@ tr:last-child td {
     background: var(--input-bg);
     border: 1px solid var(--border-color);
     display: flex;
-    align-items: center;
+    align-items: unset;
     justify-content: space-between;
     border-radius: 4px;
 }
@@ -1997,4 +1997,27 @@ input[type="number"].order-input{
     font-size: 0.7em;
     height:15px;
     top: -2px
+}
+
+
+.sub-chapter-comment,
+.chapter-comment,
+.act-comment,
+.char-comment,
+.note-comment,
+.section-comment{
+    font-size: 0.7em;
+    font-style: italic;
+    margin:0;
+    padding: 5px 10px;
+    color: var(--button-delete-bg);
+}
+
+.sub-chapter-comment>span,
+.chapter-comment>span,
+.act-comment>span,
+.char-comment>span,
+.note-comment>span,
+.section-comment>span{
+    font-weight: bold;
 }

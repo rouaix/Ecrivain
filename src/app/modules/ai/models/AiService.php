@@ -127,11 +127,19 @@ class AiService extends Prefab
 
     private function makeRequest($url, $data, $headers, $callback)
     {
+        $payload = json_encode($data, JSON_UNESCAPED_UNICODE | JSON_INVALID_UTF8_SUBSTITUTE);
+        if ($payload === false) {
+            return [
+                'success' => false,
+                'error' => 'Invalid JSON payload: ' . json_last_error_msg()
+            ];
+        }
+
         $options = [
             'http' => [
                 'header' => $headers,
                 'method' => 'POST',
-                'content' => json_encode($data),
+                'content' => $payload,
                 'ignore_errors' => true,
                 'timeout' => 60
             ],

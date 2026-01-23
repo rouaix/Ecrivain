@@ -1,6 +1,6 @@
 <h2>Consommation IA</h2>
 
-<div style="display: flex; gap: 20px; margin-bottom: 30px;">
+<div class="stats-row">
     <?php foreach (($stats?:[]) as $item): ?>
         <div class="stat-card">
             <h3><?= ($item['model_name']) ?></h3>
@@ -13,7 +13,7 @@
                 <div>Requêtes : <?= ($item['request_count']) ?></div>
                 <div>Prompt : <?= (number_format($item['total_prompt'], 0, ',', ' ')) ?></div>
                 <div>Réponse : <?= (number_format($item['total_completion'], 0, ',', ' ')) ?></div>
-                <div style="margin-top:5px; font-weight:bold; color: #2196F3;">Coût estimé : ~ <?= (number_format($item['estimated_cost'], 4, ',', ' ')) ?> $</div>
+                <div class="stat-cost">Coût estimé : ~ <?= (number_format($item['estimated_cost'], 4, ',', ' ')) ?> $</div>
             </div>
         </div>
     <?php endforeach; ?>
@@ -26,9 +26,9 @@
             <th>Date</th>
             <th>Modèle</th>
             <th>Fonctionnalité</th>
-            <th style="text-align: right;">Prompt</th>
-            <th style="text-align: right;">Réponse</th>
-            <th style="text-align: right;">Total</th>
+            <th class="text-right">Prompt</th>
+            <th class="text-right">Réponse</th>
+            <th class="text-right">Total</th>
         </tr>
     </thead>
     <tbody>
@@ -37,19 +37,19 @@
                 <td><?= (date('d/m/Y H:i', strtotime($entry['created_at']))) ?></td>
                 <td><?= ($entry['model_name']) ?></td>
                 <td><?= ($entry['feature_name']) ?></td>
-                <td style="text-align: right;"><?= (number_format($entry['prompt_tokens'], 0, ',', ' '))."
+                <td class="text-right"><?= (number_format($entry['prompt_tokens'], 0, ',', ' '))."
 " ?>
                 </td>
-                <td style="text-align: right;"><?= (number_format($entry['completion_tokens'], 0, ',', ' '))."
+                <td class="text-right"><?= (number_format($entry['completion_tokens'], 0, ',', ' '))."
 " ?>
                 </td>
-                <td style="text-align: right; font-weight: bold;"><?= (number_format($entry['total_tokens'],
+                <td class="text-right text-bold"><?= (number_format($entry['total_tokens'],
                     0, ',', ' ')) ?></td>
             </tr>
         <?php endforeach; ?>
         <?php if (empty($recent)): ?>
             <tr>
-                <td colspan="6" style="padding: 20px; text-align: center; color: var(--text-muted);">Aucun usage
+                <td colspan="6" class="table-empty">Aucun usage
                     enregistré pour le
                     moment.</td>
             </tr>
@@ -57,6 +57,6 @@
     </tbody>
 </table>
 
-<div style="margin-top: 20px;">
+<div class="mt-20">
     <a href="<?= ($base) ?>/dashboard" class="button secondary">Retour au tableau de bord</a>
 </div>
