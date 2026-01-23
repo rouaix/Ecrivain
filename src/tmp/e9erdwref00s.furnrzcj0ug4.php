@@ -1,35 +1,37 @@
-<h2>Ajouter un acte au projet « {{ @project.title }} »</h2>
-<check if="!empty(@errors)">
+<h2>Modifier l'acte</h2>
+<?php if (!empty($errors)): ?>
     <div class="error">
         <ul>
-            <repeat group="@errors" value="@err">
-                <li>{{ @err }}</li>
-            </repeat>
+            <?php foreach (($errors?:[]) as $err): ?>
+                <li><?= ($err) ?></li>
+            <?php endforeach; ?>
         </ul>
     </div>
-</check>
-<form method="post" action="{{ @base }}/project/{{ @project.id }}/act/create">
-    <input type="hidden" name="csrf_token" value="{{ @csrfToken }}">
+<?php endif; ?>
+<form method="post" action="<?= ($base) ?>/act/<?= ($act['id']) ?>/edit">
+    <input type="hidden" name="csrf_token" value="<?= ($csrfToken) ?>">
     <div class="form-group">
         <label for="title">Titre de l'acte *</label>
-        <input type="text" id="title" name="title" value="{{ @old.title }}" required>
+        <input type="text" id="title" name="title" value="<?= ($act['title']) ?>" required>
     </div>
     <div class="form-group">
         <label for="content">Contenu (Introduction)</label>
-        <div id="editor" class="editor-surface editor-height-400">
-            {{ @old.content | raw }}
+        <div id="editor" style="height: 400px; background: white; color: black;">
+            <?= ($this->raw($act['content']))."
+" ?>
         </div>
-        <input type="hidden" name="content" value="{{ @old.content | esc }}">
+        <input type="hidden" name="content" value="<?= ($this->esc($act['content'])) ?>">
     </div>
     <div class="form-group">
         <label for="resume">Résumé (Bref)</label>
-        <div id="resume-editor" class="editor-surface editor-height-150">
-            {{ @old.resume | raw }}
+        <div id="resume-editor" style="height: 150px; background: white; color: black;">
+            <?= ($this->raw($act['resume']))."
+" ?>
         </div>
-        <input type="hidden" name="resume" value="{{ @old.resume | esc }}">
+        <input type="hidden" name="resume" value="<?= ($this->esc($act['resume'])) ?>">
     </div>
-    <input type="submit" value="Créer l'acte">
-    <a href="{{ @base }}/project/{{ @project.id }}" class="button secondary">Annuler</a>
+    <input type="submit" value="Enregistrer">
+    <a href="<?= ($base) ?>/project/<?= ($act['project_id']) ?>" class="button secondary">Annuler</a>
 </form>
 
 <script>
@@ -37,9 +39,9 @@
         // Init Main Editor with Tools
         QuillTools.init('#editor', {
             inputSelector: 'input[name="content"]',
-            baseUrl: '{{ @base }}',
-            csrfToken: '{{ @csrfToken }}',
-            contextId: 'new', // New Act
+            baseUrl: '<?= ($base) ?>',
+            csrfToken: '<?= ($csrfToken) ?>',
+            contextId: '<?= ($act['id']) ?>',
             contextType: 'act'
         });
 

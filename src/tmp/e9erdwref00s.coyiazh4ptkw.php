@@ -1,44 +1,43 @@
 <div class="project-page">
     <div class="project-header">
-        <check if="{{ @coverImage }}">
+        <?php if ($coverImage): ?>
             <div class="project-cover">
-                <img src="{{ @base . @coverImage }}" alt="Couverture">
+                <img src="<?= ($base . $coverImage) ?>" alt="Couverture">
             </div>
-        </check>
+        <?php endif; ?>
         <div class="project-header__content">
             <div class="project-title-row">
-                <h2>{{ @project.title }}</h2>
+                <h2><?= ($project['title']) ?></h2>
                 <div class="project-actions">
-                    <a class="button" href="{{ @base }}/project/{{ @project.id }}/mindmap">Carte mentale</a>
-                    <a class="button" href="{{ @base }}/project/{{ @project.id }}/export">Exporter Texte</a>
-                    <a class="button" href="{{ @base }}/project/{{ @project.id }}/export/vector"
+                    <a class="button" href="<?= ($base) ?>/project/<?= ($project['id']) ?>/mindmap">Carte mentale</a>
+                    <a class="button" href="<?= ($base) ?>/project/<?= ($project['id']) ?>/export">Exporter Texte</a>
+                    <a class="button" href="<?= ($base) ?>/project/<?= ($project['id']) ?>/export/vector"
                         title="Pour vectorisation IA">Exporter JSON</a>
-                    <a class="button" href="{{ @base }}/project/{{ @project.id }}/export/clean"
+                    <a class="button" href="<?= ($base) ?>/project/<?= ($project['id']) ?>/export/clean"
                         title="Texte brut minuscule">Exporter Texte Brut</a>
-                    <a class="button" href="{{ @base }}/project/{{ @project.id }}/export/summaries"
+                    <a class="button" href="<?= ($base) ?>/project/<?= ($project['id']) ?>/export/summaries"
                         title="Exporter uniquement les résumés">Exporter Résumés</a>
-                    <a class="button" href="{{ @base }}/project/{{ @project.id }}/export/html">Exporter HTML</a>
-                    <a class="button" href="{{ @base }}/project/{{ @project.id }}/export/epub">Exporter Epub</a>
+                    <a class="button" href="<?= ($base) ?>/project/<?= ($project['id']) ?>/export/html">Exporter HTML</a>
+                    <a class="button" href="<?= ($base) ?>/project/<?= ($project['id']) ?>/export/epub">Exporter Epub</a>
                 </div>
             </div>
-            <check if="{{ !empty(@project.description) }}">
-                <div class="project-description">{{ nl2br(@project.description) }}</pdiv>
-            </check>
+            <?php if (!empty($project['description'])): ?>
+                <div class="project-description"><?= (nl2br($project['description'])) ?></pdiv>
+            <?php endif; ?>
             <div class="project-meta">
                 <div class="meta-card">
                     <span class="meta-label">Objectif</span>
-                    <strong>{{ @stats.pages_target }} pages</strong>
-                    <span class="meta-sub">{{ @stats.target_words }} mots</span>
+                    <strong><?= ($stats['pages_target']) ?> pages</strong>
+                    <span class="meta-sub"><?= ($stats['target_words']) ?> mots</span>
                 </div>
                 <div class="meta-card">
                     <span class="meta-label">Progression</span>
-                    <strong>{{ @stats.progress_percent }}% - {{ @stats.pages_current }} Pages</strong>
-                    <span class="meta-sub">({{ @stats.total_words }} mots) ou ({{ @stats.wpp }} mots par page - {{
-                        @stats.lpp }} lignes par page)</span>
+                    <strong><?= ($stats['progress_percent']) ?>% - <?= ($stats['pages_current']) ?> Pages</strong>
+                    <span class="meta-sub">(<?= ($stats['total_words']) ?> mots) ou (<?= ($stats['wpp']) ?> mots par page - <?= ($stats['lpp']) ?> lignes par page)</span>
                 </div>
             </div>
             <div class="progress-track">
-                <div class="progress-bar" data-progress="{{ @stats.progress_percent }}"></div>
+                <div class="progress-bar" data-progress="<?= ($stats['progress_percent']) ?>"></div>
             </div>
         </div>
 
@@ -52,66 +51,68 @@
 
         <!-- Notes Panel -->
         <details class="panel" id="panel-notes" data-persist="true">
-            <summary>Notes <span class="panel-count">{{ @stats.note_count }}</span></summary>
+            <summary>Notes <span class="panel-count"><?= ($stats['note_count']) ?></span></summary>
             <div class="section-group-block" data-type="notes">
                 <div class="section-group-heading">
                     <h4>Notes du projet</h4>
-                    <a class="button small" href="{{ @base }}/project/{{ @project.id }}/note/edit">+ Ajouter une
+                    <a class="button small" href="<?= ($base) ?>/project/<?= ($project['id']) ?>/note/edit">+ Ajouter une
                         note</a>
                 </div>
-                <check if="{{ !empty(@notes) }}">
-                    <true>
+                <?php if (!empty($notes)): ?>
+                    
                         <table class="compact-table data-table">
                             <tbody class="sortable-items" data-type="notes">
-                                <repeat group="{{ @notes }}" value="{{ @note }}">
-                                    <tr data-id="{{ @note.id }}">
+                                <?php foreach (($notes?:[]) as $note): ?>
+                                    <tr data-id="<?= ($note['id']) ?>">
                                         <td>
                                             <div class="notes-actions">
                                                 <input type="checkbox" class="export-toggle" data-type="note"
-                                                    data-id="{{ @note.id }}" {{ @note.is_exported_attr }}
+                                                    data-id="<?= ($note['id']) ?>" <?= ($note['is_exported_attr'])."
+" ?>
                                                     title="Inclure dans l'export">
                                                 <input type="number" class="order-input" data-type="note"
-                                                    data-id="{{ @note.id }}" value="{{ @note.order_index + 1 }}">
-                                                {{ @note.title ?: 'Note sans titre' }}
+                                                    data-id="<?= ($note['id']) ?>" value="<?= ($note['order_index'] + 1) ?>">
+                                                <?= ($note['title'] ?: 'Note sans titre')."
+" ?>
                                             </div>
                                         </td>
-                                        <td class="compact-meta compact-meta--narrow">{{ @note.wc }} mots</td>
+                                        <td class="compact-meta compact-meta--narrow"><?= ($note['wc']) ?> mots</td>
                                         <td class="compact-actions compact-actions--wide">
                                             <button class="button small preview-btn" data-type="note"
-                                                data-id="{{ @note.id }}" title="Aperçu rapide">Voir</button>
+                                                data-id="<?= ($note['id']) ?>" title="Aperçu rapide">Voir</button>
                                             <a class="button small"
-                                                href="{{ @base }}/project/{{ @project.id }}/note/edit?id={{ @note.id }}">Modifier</a>
-                                            <a class="button small delete" href="{{ @base }}/note/{{ @note.id }}/delete"
+                                                href="<?= ($base) ?>/project/<?= ($project['id']) ?>/note/edit?id=<?= ($note['id']) ?>">Modifier</a>
+                                            <a class="button small delete" href="<?= ($base) ?>/note/<?= ($note['id']) ?>/delete"
                                                 onclick="return confirm('Supprimer cette note ?');">Supprimer</a>
                                         </td>
                                     </tr>
-                                </repeat>
+                                <?php endforeach; ?>
                             </tbody>
                         </table>
-                    </true>
-                    <false>
+                    
+                    <?php else: ?>
                         <p class="panel-empty">Aucune note créée.</p>
-                    </false>
-                </check>
+                    
+                <?php endif; ?>
             </div>
         </details>
 
         <details class="panel" id="panel-characters" data-persist="true">
-            <summary>Personnages <span class="panel-count">{{ @stats.character_count }}</span></summary>
-            <check if="{{ empty(@characters) }}">
-                <true>
+            <summary>Personnages <span class="panel-count"><?= ($stats['character_count']) ?></span></summary>
+            <?php if (empty($characters)): ?>
+                
                     <p class="panel-empty">Aucun personnage défini.</p>
-                </true>
-                <false>
+                
+                <?php else: ?>
                     <ul class="character-list">
-                        <repeat group="{{ @characters }}" value="{{ @char }}">
-                            <li>{{ @char.name }}</li>
-                        </repeat>
+                        <?php foreach (($characters?:[]) as $char): ?>
+                            <li><?= ($char['name']) ?></li>
+                        <?php endforeach; ?>
                     </ul>
-                </false>
-            </check>
+                
+            <?php endif; ?>
             <div class="panel-actions panel-actions-row">
-                <a class="button small" href="{{ @base }}/project/{{ @project.id }}/characters">Gérer les
+                <a class="button small" href="<?= ($base) ?>/project/<?= ($project['id']) ?>/characters">Gérer les
                     personnages</a>
             </div>
         </details>
@@ -122,59 +123,62 @@
 
         <!-- Before Groups -->
         <details class="panel" id="panel-before" data-persist="true">
-            <summary>Sections avant les chapitres <span class="panel-count">{{ @stats.before_count }}</span></summary>
+            <summary>Sections avant les chapitres <span class="panel-count"><?= ($stats['before_count']) ?></span></summary>
             <div class="sortable-groups" id="beforeChaptersGroups">
-                <repeat group="{{ @beforeGroups }}" value="{{ @group }}">
-                    <div class="section-group-block" data-type="{{ @group.type }}">
+                <?php foreach (($beforeGroups?:[]) as $group): ?>
+                    <div class="section-group-block" data-type="<?= ($group['type']) ?>">
                         <div class="section-group-heading">
                             <h4>
-                                {{ @group.name }}
+                                <?= ($group['name'])."
+" ?>
                             </h4>
-                            <check if="{{ @group.show_create }}">
+                            <?php if ($group['show_create']): ?>
                                 <a class="button small"
-                                    href="{{ @base }}/project/{{ @project.id }}/section/{{ @group.type }}">Créer</a>
-                            </check>
+                                    href="<?= ($base) ?>/project/<?= ($project['id']) ?>/section/<?= ($group['type']) ?>">Créer</a>
+                            <?php endif; ?>
                         </div>
 
-                        <check if="{{ !empty(@group.items) }}">
-                            <true>
+                        <?php if (!empty($group['items'])): ?>
+                            
                                 <table class="compact-table data-table">
-                                    <tbody class="sortable-items" data-type="{{ @group.type }}">
-                                        <repeat group="{{ @group.items }}" value="{{ @section }}">
-                                            <tr data-id="{{ @section.id }}">
+                                    <tbody class="sortable-items" data-type="<?= ($group['type']) ?>">
+                                        <?php foreach (($group['items']?:[]) as $section): ?>
+                                            <tr data-id="<?= ($section['id']) ?>">
                                                 <td>
                                                     <div class="section-actions">
                                                         <input type="checkbox" class="export-toggle" data-type="section"
-                                                            data-id="{{ @section.id }}" {{ @section.is_exported_attr }}
+                                                            data-id="<?= ($section['id']) ?>" <?= ($section['is_exported_attr'])."
+" ?>
                                                             title="Inclure dans l'export">
                                                         <input type="number" class="order-input" data-type="section"
-                                                            data-id="{{ @section.id }}"
-                                                            value="{{ @section.order_index + 1 }}">
-                                                        {{ @section.title ?: @group.name }}
+                                                            data-id="<?= ($section['id']) ?>"
+                                                            value="<?= ($section['order_index'] + 1) ?>">
+                                                        <?= ($section['title'] ?: $group['name'])."
+" ?>
                                                     </div>
                                                 </td>
-                                                <td class="compact-meta stats">{{ @section.wc }} mots
+                                                <td class="compact-meta stats"><?= ($section['wc']) ?> mots
                                                 </td>
                                                 <td class="compact-actions actions">
                                                     <button class="button small preview-btn" data-type="section"
-                                                        data-id="{{ @section.id }}" title="Aperçu rapide">Voir</button>
+                                                        data-id="<?= ($section['id']) ?>" title="Aperçu rapide">Voir</button>
                                                     <a class="button small"
-                                                        href="{{ @base }}/project/{{ @project.id }}/section/{{ @group.type }}?id={{ @section.id }}">Modifier</a>
+                                                        href="<?= ($base) ?>/project/<?= ($project['id']) ?>/section/<?= ($group['type']) ?>?id=<?= ($section['id']) ?>">Modifier</a>
                                                     <a class="button small delete"
-                                                        href="{{ @base }}/section/{{ @section.id }}/delete"
+                                                        href="<?= ($base) ?>/section/<?= ($section['id']) ?>/delete"
                                                         onclick="return confirm('Supprimer cette section ?');">Supprimer</a>
                                                 </td>
                                             </tr>
-                                        </repeat>
+                                        <?php endforeach; ?>
                                     </tbody>
                                 </table>
-                            </true>
-                            <false>
+                            
+                            <?php else: ?>
                                 <p class="panel-empty">Aucun contenu créé.</p>
-                            </false>
-                        </check>
+                            
+                        <?php endif; ?>
                     </div>
-                </repeat>
+                <?php endforeach; ?>
             </div>
         </details>
 
@@ -186,59 +190,61 @@
                     <p class="panel-subtitle">Structure principale du récit.</p>
                 </div>
                 <div class="panel-actions">
-                    <a class="button" href="{{ @base }}/project/{{ @project.id }}/act/create">Ajouter un acte</a>
-                    <a class="button" href="{{ @base }}/project/{{ @project.id }}/chapter/create">Ajouter un
+                    <a class="button" href="<?= ($base) ?>/project/<?= ($project['id']) ?>/act/create">Ajouter un acte</a>
+                    <a class="button" href="<?= ($base) ?>/project/<?= ($project['id']) ?>/chapter/create">Ajouter un
                         chapitre</a>
                 </div>
             </div>
 
-            <check if="{{ empty(@acts) && empty(@chaptersWithoutAct) }}">
-                <true>
+            <?php if (empty($acts) && empty($chaptersWithoutAct)): ?>
+                
                     <p>Aucun chapitre ou acte pour ce projet.</p>
-                </true>
-                <false>
-                    <repeat group="{{ @acts }}" value="{{ @act }}">
-                        <details class="act-container" id="act-{{ @act.id }}" data-persist="true">
+                
+                <?php else: ?>
+                    <?php foreach (($acts?:[]) as $act): ?>
+                        <details class="act-container" id="act-<?= ($act['id']) ?>" data-persist="true">
                             <summary class="act-summary">
                                 <h4>
-                                    <input type="number" class="order-input" data-type="act" data-id="{{ @act.id }}"
-                                        value="{{ @act.order_index + 1 }}" onclick="event.stopPropagation();">
-                                    {{ @act.title }}
+                                    <input type="number" class="order-input" data-type="act" data-id="<?= ($act['id']) ?>"
+                                        value="<?= ($act['order_index'] + 1) ?>" onclick="event.stopPropagation();">
+                                    <?= ($act['title'])."
+" ?>
                                     <span class="act-meta">
-                                        ({{ @act.stats_chapters }} chapitres / {{ @act.stats_pages }} pages)
+                                        (<?= ($act['stats_chapters']) ?> chapitres / <?= ($act['stats_pages']) ?> pages)
                                     </span>
                                 </h4>
                                 <div class="act-actions">
-                                    <button class="button small ai-act-summary-btn" data-id="{{ @act.id }}"
+                                    <button class="button small ai-act-summary-btn" data-id="<?= ($act['id']) ?>"
                                         onclick="event.stopPropagation();"
                                         title="Générer un résumé de l'acte via IA">Résumé
                                         IA</button>
-                                    <a class="button small" href="{{ @base }}/act/{{ @act.id }}/edit"
+                                    <a class="button small" href="<?= ($base) ?>/act/<?= ($act['id']) ?>/edit"
                                         onclick="event.stopPropagation();">Modifier l'acte</a>
-                                    <a class="button small delete" href="{{ @base }}/act/{{ @act.id }}/delete"
+                                    <a class="button small delete" href="<?= ($base) ?>/act/<?= ($act['id']) ?>/delete"
                                         onclick="event.stopPropagation(); return confirm('Supprimer cet acte et tous ses chapitres ?');">Supprimer</a>
                                 </div>
                             </summary>
-                            <check if="{{ !empty(@act.content) }}">
+                            <?php if (!empty($act['content'])): ?>
                                 <div class="act-description">
-                                    {{ @act.content | raw }}
+                                    <?= ($this->raw($act['content']))."
+" ?>
                                 </div>
-                            </check>
-                            <check if="{{ !empty(@act.resume) }}">
+                            <?php endif; ?>
+                            <?php if (!empty($act['resume'])): ?>
                                 <div class="act-resume">
                                     <strong>Résumé :</strong><br />
-                                    {{ @act.resume | raw }}
+                                    <?= ($this->raw($act['resume']))."
+" ?>
                                 </div>
-                            </check>
+                            <?php endif; ?>
 
-                            <check if="{{ !isset(@chaptersByAct[@act.id]) }}">
-                                <true>
+                            <?php if (!isset($chaptersByAct[$act['id']])): ?>
+                                
                                     <p>Aucun chapitre dans cet acte.</p>
-                                </true>
-                                <false>
-                                    <details class="act-chapters" id="act-chapters-{{ @act.id }}" data-persist="true">
-                                        <summary>Chapitres de l'acte <span class="panel-count">{{
-                                                count(@chaptersByAct[@act.id]) }}</span></summary>
+                                
+                                <?php else: ?>
+                                    <details class="act-chapters" id="act-chapters-<?= ($act['id']) ?>" data-persist="true">
+                                        <summary>Chapitres de l'acte <span class="panel-count"><?= (count($chaptersByAct[$act['id']])) ?></span></summary>
                                         <table class="data-table">
                                             <thead>
                                                 <tr>
@@ -248,107 +254,111 @@
                                                 </tr>
                                             </thead>
                                             <tbody class="sortable-chapters">
-                                                <repeat group="{{ @chaptersByAct[@act.id] }}" value="{{ @ch }}">
-                                                    <tr data-id="{{ @ch.id }}">
+                                                <?php foreach (($chaptersByAct[$act['id']]?:[]) as $ch): ?>
+                                                    <tr data-id="<?= ($ch['id']) ?>">
                                                         <td class="chapter-actions">
                                                             <input type="checkbox" class="export-toggle"
-                                                                data-type="chapter" data-id="{{ @ch.id }}" {{
-                                                                @ch.is_exported_attr }} title="Inclure dans l'export">
+                                                                data-type="chapter" data-id="<?= ($ch['id']) ?>" <?= ($ch['is_exported_attr']) ?> title="Inclure dans l'export">
                                                             <input type="number" class="order-input" data-type="chapter"
-                                                                data-id="{{ @ch.id }}"
-                                                                value="{{ @ch.order_index + 1 }}">
-                                                            <check if="{{ count(@ch.subs) > 0 }}">
-                                                                <span class="collapse-toggle" data-target="{{ @ch.id }}">▼</span>
-                                                            </check>
+                                                                data-id="<?= ($ch['id']) ?>"
+                                                                value="<?= ($ch['order_index'] + 1) ?>">
+                                                            <?php if (count($ch['subs']) > 0): ?>
+                                                                <span class="collapse-toggle" data-target="<?= ($ch['id']) ?>">▼</span>
+                                                            <?php endif; ?>
                                                             <strong>
-                                                                {{ @ch.title }}
+                                                                <?= ($ch['title'])."
+" ?>
                                                             </strong>
-                                                            <check if="{{ !empty(@ch.content) }}">
+                                                            <?php if (!empty($ch['content'])): ?>
                                                                 <div class="act-description">
-                                                                    {{ @ch.content | raw }}
+                                                                    <?= ($this->raw($ch['content']))."
+" ?>
                                                                 </div>
-                                                            </check>
-                                                            <check if="{{ !empty(@ch.resume) }}">
+                                                            <?php endif; ?>
+                                                            <?php if (!empty($ch['resume'])): ?>
                                                                 <div class="chapter-resume">
                                                                     <strong>Résumé :</strong><br>
-                                                                    {{ @ch.resume | raw }}
+                                                                    <?= ($this->raw($ch['resume']))."
+" ?>
                                                                 </div>
-                                                            </check>
+                                                            <?php endif; ?>
                                                         </td>
                                                         <td class="stats">
-                                                            {{ @ch.total_wc }} mots<br>{{ @ch.total_lines }}
+                                                            <?= ($ch['total_wc']) ?> mots<br><?= ($ch['total_lines'])."
+" ?>
                                                             lignes
-                                                            <br>{{
-                                                            @ch.total_pages }}
+                                                            <br><?= ($ch['total_pages'])."
+" ?>
                                                             pages
                                                         </td>
                                                         <td class="actions">
                                                             <a class="button small"
-                                                                href="{{ @base }}/project/{{ @project.id }}/chapter/create?parent_id={{ @ch.id }}&act_id={{ @ch.act_id }}">
+                                                                href="<?= ($base) ?>/project/<?= ($project['id']) ?>/chapter/create?parent_id=<?= ($ch['id']) ?>&act_id=<?= ($ch['act_id']) ?>">
                                                                 + Sous-chapitre</a>
                                                             <button class="button small ai-summary-btn"
-                                                                data-id="{{ @ch.id }}"
+                                                                data-id="<?= ($ch['id']) ?>"
                                                                 title="Générer un résumé via IA">Résumé
                                                                 IA</button><br />
                                                             <button class="button small preview-btn" data-type="chapter"
-                                                                data-id="{{ @ch.id }}"
+                                                                data-id="<?= ($ch['id']) ?>"
                                                                 title="Aperçu rapide">Voir</button>
                                                             <a class="button small"
-                                                                href="{{ @base }}/chapter/{{ @ch.id }}">Éditer</a>
+                                                                href="<?= ($base) ?>/chapter/<?= ($ch['id']) ?>">Éditer</a>
                                                             <a class="button small delete"
-                                                                href="{{ @base }}/chapter/{{ @ch.id }}/delete"
+                                                                href="<?= ($base) ?>/chapter/<?= ($ch['id']) ?>/delete"
                                                                 onclick="return confirm('Supprimer ce chapitre ?');">Supprimer</a>
                                                         </td>
                                                     </tr>
-                                                    <repeat group="{{ @ch.subs }}" value="{{ @sub }}">
-                                                        <tr data-id="{{ @sub.id }}"
-                                                            class="sub-chapter sub-of-{{ @ch.id }}">
+                                                    <?php foreach (($ch['subs']?:[]) as $sub): ?>
+                                                        <tr data-id="<?= ($sub['id']) ?>"
+                                                            class="sub-chapter sub-of-<?= ($ch['id']) ?>">
                                                             <td class="sous-chapitre">
                                                                 <input type="checkbox" class="export-toggle"
-                                                                    data-type="chapter" data-id="{{ @sub.id }}" {{
-                                                                    @sub.is_exported_attr }}
+                                                                    data-type="chapter" data-id="<?= ($sub['id']) ?>" <?= ($sub['is_exported_attr'])."
+" ?>
                                                                     title="Inclure dans l'export">
                                                                 <input type="number" class="order-input"
-                                                                    data-type="chapter" data-id="{{ @sub.id }}"
-                                                                    value="{{ @sub.order_index + 1 }}">
+                                                                    data-type="chapter" data-id="<?= ($sub['id']) ?>"
+                                                                    value="<?= ($sub['order_index'] + 1) ?>">
                                                                 <span>
-                                                                    └─ {{ @sub.title }}
+                                                                    └─ <?= ($sub['title'])."
+" ?>
                                                                 </span>
                                                             </td>
                                                             <td class="stats">
-                                                                {{ @sub.wc }} mots<br>{{
-                                                                @sub.lines }} lignes
-                                                                <br>{{ @sub.pages }}
+                                                                <?= ($sub['wc']) ?> mots<br><?= ($sub['lines']) ?> lignes
+                                                                <br><?= ($sub['pages'])."
+" ?>
                                                                 pages
                                                             </td>
                                                             <td class="actions">
                                                                 <button class="button small preview-btn"
-                                                                    data-type="chapter" data-id="{{ @sub.id }}"
+                                                                    data-type="chapter" data-id="<?= ($sub['id']) ?>"
                                                                     title="Aperçu rapide">Voir</button>
                                                                 <a class="button small"
-                                                                    href="{{ @base }}/chapter/{{ @sub.id }}">Éditer</a>
+                                                                    href="<?= ($base) ?>/chapter/<?= ($sub['id']) ?>">Éditer</a>
                                                                 <a class="button small delete"
-                                                                    href="{{ @base }}/chapter/{{ @sub.id }}/delete"
+                                                                    href="<?= ($base) ?>/chapter/<?= ($sub['id']) ?>/delete"
                                                                     onclick="return confirm('Supprimer ce sous-chapitre ?');">Supprimer</a>
                                                             </td>
                                                         </tr>
-                                                    </repeat>
-                                                </repeat>
+                                                    <?php endforeach; ?>
+                                                <?php endforeach; ?>
                                             </tbody>
                                         </table>
                                     </details>
-                                </false>
-                            </check>
+                                
+                            <?php endif; ?>
                         </details>
-                    </repeat>
+                    <?php endforeach; ?>
 
-                    <check if="{{ !empty(@chaptersWithoutAct) }}">
+                    <?php if (!empty($chaptersWithoutAct)): ?>
                         <details class="act-container" id="act-orphan" data-persist="true">
                             <summary class="act-summary">
                                 <h4>
                                     Acte ?
                                     <span class="act-meta">
-                                        ({{ @orphanStats.chapters }} chapitres / {{ @orphanStats.pages }} pages)
+                                        (<?= ($orphanStats['chapters']) ?> chapitres / <?= ($orphanStats['pages']) ?> pages)
                                     </span>
                                 </h4>
                             </summary>
@@ -357,8 +367,7 @@
                             </div>
 
                             <details class="act-chapters" id="act-orphan-chapters" data-persist="true" open>
-                                <summary>Chapitres de l'acte <span class="panel-count">{{ count(@chaptersWithoutAct)
-                                        }}</span></summary>
+                                <summary>Chapitres de l'acte <span class="panel-count"><?= (count($chaptersWithoutAct)) ?></span></summary>
                                 <table class="data-table">
                                     <thead>
                                         <tr>
@@ -368,153 +377,161 @@
                                         </tr>
                                     </thead>
                                     <tbody class="sortable-chapters">
-                                        <repeat group="{{ @chaptersWithoutAct }}" value="{{ @ch }}">
-                                            <tr data-id="{{ @ch.id }}">
+                                        <?php foreach (($chaptersWithoutAct?:[]) as $ch): ?>
+                                            <tr data-id="<?= ($ch['id']) ?>">
                                                 <td class="chapter-actions">
                                                     <input type="checkbox" class="export-toggle" data-type="chapter"
-                                                        data-id="{{ @ch.id }}" {{ @ch.is_exported_attr }}
+                                                        data-id="<?= ($ch['id']) ?>" <?= ($ch['is_exported_attr'])."
+" ?>
                                                         title="Inclure dans l'export">
                                                     <input type="number" class="order-input" data-type="chapter"
-                                                        data-id="{{ @ch.id }}" value="{{ @ch.order_index + 1 }}">
+                                                        data-id="<?= ($ch['id']) ?>" value="<?= ($ch['order_index'] + 1) ?>">
 
-                                                    <check if="{{ count(@ch.subs) > 0 }}">
-                                                        <span class="collapse-toggle" data-target="{{ @ch.id }}">▼</span>
-                                                    </check>
-                                                    {{ @ch.title }}
-                                                    <check if="{{ !empty(@ch.content) }}">
+                                                    <?php if (count($ch['subs']) > 0): ?>
+                                                        <span class="collapse-toggle" data-target="<?= ($ch['id']) ?>">▼</span>
+                                                    <?php endif; ?>
+                                                    <?= ($ch['title'])."
+" ?>
+                                                    <?php if (!empty($ch['content'])): ?>
                                                         <div class="act-description">
-                                                            {{ @ch.content | raw }}
+                                                            <?= ($this->raw($ch['content']))."
+" ?>
                                                         </div>
-                                                    </check>
-                                                    <check if="{{ !empty(@ch.resume) }}">
+                                                    <?php endif; ?>
+                                                    <?php if (!empty($ch['resume'])): ?>
                                                         <div class="chapter-resume">
                                                             <strong>Résumé :</strong><br>
-                                                            {{ @ch.resume | raw }}
+                                                            <?= ($this->raw($ch['resume']))."
+" ?>
                                                         </div>
-                                                    </check>
+                                                    <?php endif; ?>
 
                                                 </td>
                                                 <td>
-                                                    {{ @ch.total_wc }} mots<br>{{ @ch.total_lines }}
-                                                    lignes<br>{{@ch.total_pages }} pages
-                                                    <check if="{{ @ch.wc_subs_only > 0 }}">
-                                                        <br>({{ @ch.wc }} + {{
-                                                        @ch.wc_subs_only
-                                                        }})
-                                                    </check>
+                                                    <?= ($ch['total_wc']) ?> mots<br><?= ($ch['total_lines'])."
+" ?>
+                                                    lignes<br><?= ($ch['total_pages']) ?> pages
+                                                    <?php if ($ch['wc_subs_only'] > 0): ?>
+                                                        <br>(<?= ($ch['wc']) ?> + <?= ($ch['wc_subs_only']) ?>)
+                                                    <?php endif; ?>
                                                 </td>
                                                 <td class="actions">
                                                     <a class="button small"
-                                                        href="{{ @base }}/project/{{ @project.id }}/chapter/create?parent_id={{ @ch.id }}&act_id={{ @ch.act_id }}">
+                                                        href="<?= ($base) ?>/project/<?= ($project['id']) ?>/chapter/create?parent_id=<?= ($ch['id']) ?>&act_id=<?= ($ch['act_id']) ?>">
                                                         + Sous-chapitre</a>
-                                                    <button class="button small ai-summary-btn" data-id="{{ @ch.id }}"
+                                                    <button class="button small ai-summary-btn" data-id="<?= ($ch['id']) ?>"
                                                         title="Générer un résumé via IA">Résumé IA</button><br />
                                                     <button class="button small preview-btn" data-type="chapter"
-                                                        data-id="{{ @ch.id }}" title="Aperçu rapide">Voir</button>
+                                                        data-id="<?= ($ch['id']) ?>" title="Aperçu rapide">Voir</button>
                                                     <a class="button small"
-                                                        href="{{ @base }}/chapter/{{ @ch.id }}">Éditer</a>
+                                                        href="<?= ($base) ?>/chapter/<?= ($ch['id']) ?>">Éditer</a>
                                                     <a class="button small delete"
-                                                        href="{{ @base }}/chapter/{{ @ch.id }}/delete"
+                                                        href="<?= ($base) ?>/chapter/<?= ($ch['id']) ?>/delete"
                                                         onclick="return confirm('Supprimer ce chapitre ?');">Supprimer</a>
                                                 </td>
                                             </tr>
-                                            <repeat group="{{ @ch.subs }}" value="{{ @sub }}">
-                                                <tr data-id="{{ @sub.id }}" class="sub-chapter sub-of-{{ @ch.id }}">
+                                            <?php foreach (($ch['subs']?:[]) as $sub): ?>
+                                                <tr data-id="<?= ($sub['id']) ?>" class="sub-chapter sub-of-<?= ($ch['id']) ?>">
                                                     <td class="sous-chapitre">
                                                         <input type="checkbox" class="export-toggle" data-type="chapter"
-                                                            data-id="{{ @sub.id }}" {{ @sub.is_exported_attr }}
+                                                            data-id="<?= ($sub['id']) ?>" <?= ($sub['is_exported_attr'])."
+" ?>
                                                             title="Inclure dans l'export">
                                                         <input type="number" class="order-input" data-type="chapter"
-                                                            data-id="{{ @sub.id }}" value="{{ @sub.order_index + 1 }}">
+                                                            data-id="<?= ($sub['id']) ?>" value="<?= ($sub['order_index'] + 1) ?>">
                                                         <span>
-                                                            └─ {{ @sub.title }}
+                                                            └─ <?= ($sub['title'])."
+" ?>
                                                         </span>
                                                     </td>
                                                     <td class="stats">
-                                                        {{ @sub.wc }} mots<br>{{ @sub.lines }} lignes
-                                                        <br>{{ @sub.pages }} pages
+                                                        <?= ($sub['wc']) ?> mots<br><?= ($sub['lines']) ?> lignes
+                                                        <br><?= ($sub['pages']) ?> pages
                                                     </td>
                                                     <td class="actions">
                                                         <button class="button small preview-btn" data-type="chapter"
-                                                            data-id="{{ @sub.id }}" title="Aperçu rapide">Voir</button>
+                                                            data-id="<?= ($sub['id']) ?>" title="Aperçu rapide">Voir</button>
                                                         <a class="button small"
-                                                            href="{{ @base }}/chapter/{{ @sub.id }}">Éditer</a>
+                                                            href="<?= ($base) ?>/chapter/<?= ($sub['id']) ?>">Éditer</a>
                                                         <a class="button small delete"
-                                                            href="{{ @base }}/chapter/{{ @sub.id }}/delete"
+                                                            href="<?= ($base) ?>/chapter/<?= ($sub['id']) ?>/delete"
                                                             onclick="return confirm('Supprimer ce sous-chapitre ?');">Supprimer</a>
                                                     </td>
                                                 </tr>
-                                            </repeat>
-                                        </repeat>
+                                            <?php endforeach; ?>
+                                        <?php endforeach; ?>
                                     </tbody>
                                 </table>
                             </details>
                         </details>
-                    </check>
-                </false>
-            </check>
+                    <?php endif; ?>
+                
+            <?php endif; ?>
         </section>
 
         <!-- After Chapters -->
         <details class="panel" id="panel-after" data-persist="true">
-            <summary>Sections après les chapitres <span class="panel-count">{{ @stats.after_count }}</span></summary>
+            <summary>Sections après les chapitres <span class="panel-count"><?= ($stats['after_count']) ?></span></summary>
             <div class="sortable-groups" id="afterChaptersGroups">
-                <repeat group="{{ @afterGroups }}" value="{{ @group }}">
-                    <div class="section-group-block" data-type="{{ @group.type }}">
+                <?php foreach (($afterGroups?:[]) as $group): ?>
+                    <div class="section-group-block" data-type="<?= ($group['type']) ?>">
                         <div class="section-group-heading">
                             <h4>
-                                {{ @group.name }}
+                                <?= ($group['name'])."
+" ?>
                             </h4>
-                            <check if="{{ @group.show_add }}">
+                            <?php if ($group['show_add']): ?>
                                 <a class="button small"
-                                    href="{{ @base }}/project/{{ @project.id }}/section/{{ @group.type }}">+
+                                    href="<?= ($base) ?>/project/<?= ($project['id']) ?>/section/<?= ($group['type']) ?>">+
                                     Ajouter une annexe</a>
-                            </check>
-                            <check if="{{ @group.show_create }}">
+                            <?php endif; ?>
+                            <?php if ($group['show_create']): ?>
                                 <a class="button small"
-                                    href="{{ @base }}/project/{{ @project.id }}/section/{{ @group.type }}">Créer</a>
-                            </check>
+                                    href="<?= ($base) ?>/project/<?= ($project['id']) ?>/section/<?= ($group['type']) ?>">Créer</a>
+                            <?php endif; ?>
                         </div>
 
-                        <check if="{{ !empty(@group.items) }}">
-                            <true>
+                        <?php if (!empty($group['items'])): ?>
+                            
                                 <table class="compact-table data-table">
-                                    <tbody class="sortable-items" data-type="{{ @group.type }}">
-                                        <repeat group="{{ @group.items }}" value="{{ @section }}">
-                                            <tr data-id="{{ @section.id }}">
+                                    <tbody class="sortable-items" data-type="<?= ($group['type']) ?>">
+                                        <?php foreach (($group['items']?:[]) as $section): ?>
+                                            <tr data-id="<?= ($section['id']) ?>">
                                                 <td>
                                                     <div class="section-actions">
                                                         <input type="checkbox" class="export-toggle" data-type="section"
-                                                            data-id="{{ @section.id }}" {{ @section.is_exported_attr }}
+                                                            data-id="<?= ($section['id']) ?>" <?= ($section['is_exported_attr'])."
+" ?>
                                                             title="Inclure dans l'export">
                                                         <input type="number" class="order-input" data-type="section"
-                                                            data-id="{{ @section.id }}"
-                                                            value="{{ @section.order_index + 1 }}">
-                                                        {{ @section.title ?: @group.name }}
+                                                            data-id="<?= ($section['id']) ?>"
+                                                            value="<?= ($section['order_index'] + 1) ?>">
+                                                        <?= ($section['title'] ?: $group['name'])."
+" ?>
                                                     </div>
                                                 </td>
-                                                <td class="compact-meta compact-meta--narrow">{{ @section.wc }} mots
+                                                <td class="compact-meta compact-meta--narrow"><?= ($section['wc']) ?> mots
                                                 </td>
                                                 <td class="compact-actions compact-actions--wide">
                                                     <button class="button small preview-btn" data-type="section"
-                                                        data-id="{{ @section.id }}" title="Aperçu rapide">Voir</button>
+                                                        data-id="<?= ($section['id']) ?>" title="Aperçu rapide">Voir</button>
                                                     <a class="button small"
-                                                        href="{{ @base }}/project/{{ @project.id }}/section/{{ @group.type }}?id={{ @section.id }}">Modifier</a>
+                                                        href="<?= ($base) ?>/project/<?= ($project['id']) ?>/section/<?= ($group['type']) ?>?id=<?= ($section['id']) ?>">Modifier</a>
                                                     <a class="button small delete"
-                                                        href="{{ @base }}/section/{{ @section.id }}/delete"
+                                                        href="<?= ($base) ?>/section/<?= ($section['id']) ?>/delete"
                                                         onclick="return confirm('Supprimer cette section ?');">Supprimer</a>
                                                 </td>
                                             </tr>
-                                        </repeat>
+                                        <?php endforeach; ?>
                                     </tbody>
                                 </table>
-                            </true>
-                            <false>
+                            
+                            <?php else: ?>
                                 <p class="panel-empty">Aucun contenu créé.</p>
-                            </false>
-                        </check>
+                            
+                        <?php endif; ?>
                     </div>
-                </repeat>
+                <?php endforeach; ?>
             </div>
         </details>
 
@@ -538,9 +555,9 @@
                 const type = this.getAttribute('data-type');
                 const id = this.getAttribute('data-id');
                 const isExported = this.checked ? 1 : 0;
-                const projectId = "{{ @project.id }}";
+                const projectId = "<?= ($project['id']) ?>";
 
-                fetch('{{ @base }}/project/' + projectId + '/export-toggle', {
+                fetch('<?= ($base) ?>/project/' + projectId + '/export-toggle', {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
@@ -569,9 +586,9 @@
                 const type = this.getAttribute('data-type');
                 const id = this.getAttribute('data-id');
                 const newIndex = this.value;
-                const projectId = "{{ @project.id }}";
+                const projectId = "<?= ($project['id']) ?>";
 
-                fetch('{{ @base }}/project/' + projectId + '/reorder-item', {
+                fetch('<?= ($base) ?>/project/' + projectId + '/reorder-item', {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
@@ -605,13 +622,13 @@
                     e.preventDefault();
                     const type = this.dataset.type;
                     const id = this.dataset.id;
-                    const projectId = "{{ @project.id }}";
+                    const projectId = "<?= ($project['id']) ?>";
 
                     modalTitle.innerText = "Chargement...";
                     modalBody.innerHTML = '<div class="modal-loading">Chargement du contenu...</div>';
                     modal.classList.add('is-visible');
 
-                    fetch(`{{ @base }}/project/${projectId}/preview/${type}/${id}`)
+                    fetch(`<?= ($base) ?>/project/${projectId}/preview/${type}/${id}`)
                         .then(response => response.json())
                         .then(data => {
                             modalTitle.innerText = data.title;
@@ -664,7 +681,7 @@
                 this.innerText = 'Génération...';
                 this.disabled = true;
 
-                fetch('{{ @base }}/ai/summarize-chapter', {
+                fetch('<?= ($base) ?>/ai/summarize-chapter', {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
@@ -710,7 +727,7 @@
                 this.innerText = 'Génération...';
                 this.disabled = true;
 
-                fetch('{{ @base }}/ai/summarize-act', {
+                fetch('<?= ($base) ?>/ai/summarize-act', {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',

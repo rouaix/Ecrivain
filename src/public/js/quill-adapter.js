@@ -27,9 +27,9 @@ var QuillTools = {
         // Register Custom Icons (Must be done before Quill init)
         // Register Custom Icons (Must be done before Quill init)
         var icons = Quill.import('ui/icons');
-        icons['emdash'] = '<span style="font-weight:bold; font-size:16px;">—</span>';
-        icons['group_lines'] = '<span style="font-size:12px; font-weight:bold;">Grouper</span>';
-        icons['remove_doublespaces'] = '<span style="font-size:12px; font-weight:bold;">NoDblSp</span>';
+        icons['emdash'] = '<span class="ql-icon ql-icon-emdash">—</span>';
+        icons['group_lines'] = '<span class="ql-icon ql-icon-group-lines">Grouper</span>';
+        icons['remove_doublespaces'] = '<span class="ql-icon ql-icon-remove-doublespaces">NoDblSp</span>';
 
         // Fix for missing Undo/Redo icons in Snow theme
         icons['undo'] = '<svg viewbox="0 0 18 18"><polygon class="ql-fill ql-stroke" points="6 10 4 12 2 10 6 10"></polygon><path class="ql-stroke" d="M8.09,13.91A4.6,4.6,0,0,0,9,14,5,5,0,1,0,4,9"></path></svg>';
@@ -219,7 +219,11 @@ var QuillTools = {
         var s = document.getElementById('status');
         if (s) {
             s.textContent = msg;
-            s.style.color = color || 'black';
+            s.classList.remove('status--ok', 'status--muted', 'status--info', 'status--error', 'status--warn');
+            if (color === 'green') s.classList.add('status--ok');
+            if (color === 'gray') s.classList.add('status--muted');
+            if (color === 'blue') s.classList.add('status--info');
+            if (color === 'red') s.classList.add('status--error');
             setTimeout(() => s.textContent = '', 3000);
         }
     },
@@ -265,7 +269,7 @@ var QuillTools = {
             .then(r => r.json())
             .then(data => {
                 if (box) {
-                    box.style.display = 'block';
+                    box.classList.add('is-visible');
                     if (!data || data.length === 0) {
                         box.innerHTML = '<em>Pas de synonyme.</em>';
                         return;
@@ -281,7 +285,7 @@ var QuillTools = {
         if (range) {
             this.quill.deleteText(range.index, range.length);
             this.quill.insertText(range.index, text);
-            document.getElementById('synonymsBox').style.display = 'none';
+            document.getElementById('synonymsBox').classList.remove('is-visible');
         }
     },
 
@@ -312,7 +316,7 @@ var QuillTools = {
 
         var box = document.getElementById('analysisBox');
         if (box) {
-            box.style.display = 'block';
+            box.classList.add('is-visible');
             box.innerHTML = repeated.length ? 'Répétitions: ' + repeated.join(', ') : 'Aucune répétition majeure.';
         }
     },
@@ -324,17 +328,17 @@ var QuillTools = {
         var btn = document.getElementById('aiBtnReplace');
         if (m && t) {
             t.value = text;
-            m.style.display = 'block';
+            m.classList.add('is-visible');
             if (btn) {
                 btn.disabled = !isReplace;
-                btn.style.opacity = isReplace ? 1 : 0.5;
+                btn.classList.toggle('is-dimmed', !isReplace);
             }
         }
     },
 
     closeAiModal: function () {
         var m = document.getElementById('aiModal');
-        if (m) m.style.display = 'none';
+        if (m) m.classList.remove('is-visible');
     },
 
     aiInsert: function () {

@@ -931,84 +931,8 @@ class ProjectController extends Controller
             $content .= "<!DOCTYPE html><html><head>";
             $content .= "<meta charset='utf-8'>";
             $content .= "<title>{$project['title']}</title>";
-            $content .= "<style>
-                body {
-                    font-family: 'Georgia', 'Times New Roman', serif;
-                    line-height: 1.6;
-                    color: #333;
-                    max-width: 800px;
-                    margin: 0 auto;
-                    padding: 40px;
-                    background: #f9f9f9;
-                }
-                .book-header {
-                    text-align: center;
-                    margin-bottom: 60px;
-                    border-bottom: 2px solid #ddd;
-                    padding-bottom: 40px;
-                }
-                .book-cover {
-                    max-width: 300px;
-                    height: auto;
-                    margin-bottom: 10px;
-                    box-shadow: 0 4px 10px rgba(0,0,0,0.1);
-                }
-                h1.book-title {
-                    font-size: 3em;
-                    margin-bottom: 5px;
-                    color: #111;
-                }
-                .book-author {
-                    font-size: 1.2em;
-                    color: #555;
-                    font-style: italic;
-                    margin-bottom: 10px;
-                }
-                .book-description {
-                    font-size: 1.4em;
-                    color: #777;
-                    max-width: 600px;
-                    margin-left: auto;
-                    margin-right: auto;
-                    line-height: 1.5;
-                    margin-bottom: 10px;
-                }
-                h2 {
-                    margin-top: 40px;
-                    border-bottom: 1px solid #eee;
-                    padding-bottom: 10px;
-                    color: #444;
-                }
-                h3 {
-                    /* For sections acting as headers */
-                    margin-top: 30px;
-                    font-size: 1.3em;
-                    color: #666;
-                }
-                .chapter-content, .section-content {
-                    font-size: 1.1em;
-                    text-align: justify;
-                    margin-bottom: 20px;
-                }
-                p {
-                    margin-bottom: 1em;
-                }
-                .page-break {
-                    page-break-before: always;
-                    margin-top: 50px;
-                }
-                .act-title {
-                    page-break-before: always;
-                    text-align: center;
-                    font-size: 2em;
-                    margin-top: 100px;
-                    margin-bottom: 50px;
-                    color: #222;
-                    text-transform: uppercase;
-                    letter-spacing: 2px;
-                }
-            </style>";
-            $content .= "</head><body>";
+            $content .= "<link rel='stylesheet' href='" . $this->f3->get('BASE') . "/public/style.css'>";
+            $content .= "</head><body class='export-document'>";
 
             $content .= "<div class='book-header'>";
             if ($coverImage) {
@@ -1572,7 +1496,7 @@ class ProjectController extends Controller
         $zip->addFromString('META-INF/container.xml', '<?xml version="1.0"?><container version="1.0" xmlns="urn:oasis:names:tc:opendocument:xmlns:container"><rootfiles><rootfile full-path="OEBPS/content.opf" media-type="application/oebps-package+xml"/></rootfiles></container>');
 
         // Styles
-        $css = "body{font-family:serif; line-height:1.6;} h1{text-align:center; page-break-before:always;} img{max-width:100%;} .act-title{font-size:2em; margin-top:20%; text-transform:uppercase;}";
+        $css = "body{font-family:serif; line-height:1.6;} h1{text-align:center; page-break-before:always;} img{max-width:100%;} .act-title{font-size:2em; margin-top:20%; text-transform:uppercase;} .title-page{text-align:center; margin-top:10%;} .title-page__cover{max-height:500px;}";
         $zip->addFromString('OEBPS/style.css', $css);
 
         // --- Build Manifest & Spine ---
@@ -1584,12 +1508,12 @@ class ProjectController extends Controller
 
         // 1. Cover/Title Page
         $titlePageHtml = "<html xmlns='http://www.w3.org/1999/xhtml'><head><title>Title Page</title><link rel='stylesheet' type='text/css' href='style.css'/></head><body>";
-        $titlePageHtml .= "<div style='text-align:center; margin-top:10%;'>";
+        $titlePageHtml .= "<div class='title-page'>";
 
         if ($coverImage && file_exists('.' . $coverImage)) {
             $zip->addFile('.' . $coverImage, 'OEBPS/cover.jpg');
             $manifestItems[] = "<item id='cover-img' href='cover.jpg' media-type='image/jpeg'/>";
-            $titlePageHtml .= "<img src='cover.jpg' alt='Cover' style='max-height:500px;' /><br/>";
+            $titlePageHtml .= "<img src='cover.jpg' alt='Cover' class='title-page__cover' /><br/>";
         }
 
         $titlePageHtml .= "<h1>" . htmlspecialchars($project['title']) . "</h1>";

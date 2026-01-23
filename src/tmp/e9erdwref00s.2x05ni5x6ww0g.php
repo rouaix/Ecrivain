@@ -1,60 +1,65 @@
-<h2>Édition du chapitre «{{ @chapter.title }}»</h2>
-<p>Projet : <a href="{{ @base }}/project/{{ @project.id }}">{{ @project.title }}</a>
-    <check if="{{ @currentAct }}">
+<h2>Édition du chapitre «<?= ($chapter['title']) ?>»</h2>
+<p>Projet : <a href="<?= ($base) ?>/project/<?= ($project['id']) ?>"><?= ($project['title']) ?></a>
+    <?php if ($currentAct): ?>
         &nbsp;&raquo;&nbsp; Acte : <strong>
-            {{ @currentAct.title }}
+            <?= ($currentAct['title'])."
+" ?>
         </strong>
-    </check>
-    <check if="{{ @parentChapter }}">
+    <?php endif; ?>
+    <?php if ($parentChapter): ?>
         &nbsp;&raquo;&nbsp; Chapitre : <strong>
-            {{ @parentChapter.title }}
+            <?= ($parentChapter['title'])."
+" ?>
         </strong>
-    </check>
+    <?php endif; ?>
 </p>
-<check if="{{ !empty(@errors) }}">
+<?php if (!empty($errors)): ?>
     <div class="error">
         <ul>
-            <repeat group="{{ @errors }}" value="{{ @err }}">
-                <li>{{ @err }}</li>
-            </repeat>
+            <?php foreach (($errors?:[]) as $err): ?>
+                <li><?= ($err) ?></li>
+            <?php endforeach; ?>
         </ul>
     </div>
-</check>
-<check if="{{ !empty(@success) }}">
+<?php endif; ?>
+<?php if (!empty($success)): ?>
     <div class="alert-success">
-        {{ @success }}
+        <?= ($success)."
+" ?>
     </div>
-    <a href="{{ @base }}/project/{{ @project.id }}/chapter/create" class="button">Nouveau chapitre</a>
-</check>
-<form method="post" action="{{ @base }}/chapter/{{ @chapter.id }}/save" id="editorForm">
-    <input type="hidden" name="csrf_token" value="{{ @csrfToken }}">
+    <a href="<?= ($base) ?>/project/<?= ($project['id']) ?>/chapter/create" class="button">Nouveau chapitre</a>
+<?php endif; ?>
+<form method="post" action="<?= ($base) ?>/chapter/<?= ($chapter['id']) ?>/save" id="editorForm">
+    <input type="hidden" name="csrf_token" value="<?= ($csrfToken) ?>">
     <div class="form-group">
         <label for="title">Titre</label>
-        <input type="text" id="title" name="title" value="{{ @chapter.title }}" required>
+        <input type="text" id="title" name="title" value="<?= ($chapter['title']) ?>" required>
     </div>
     <div class="form-group">
         <label for="act_id">Appartient à l'acte</label>
         <select id="act_id" name="act_id">
             <option value="">-- Aucun (hors actes) --</option>
-            <repeat group="{{ @acts }}" value="{{ @act }}">
-                <option value="{{ @act.id }}" {{ (@chapter.act_id==@act.id) ? 'selected' : '' }}>
-                    {{ @act.title }}
+            <?php foreach (($acts?:[]) as $act): ?>
+                <option value="<?= ($act['id']) ?>" <?= (($chapter['act_id']==$act['id']) ? 'selected' : '') ?>>
+                    <?= ($act['title'])."
+" ?>
                 </option>
-            </repeat>
+            <?php endforeach; ?>
         </select>
     </div>
     <div class="form-group">
         <label for="parent_id">Est un sous-chapitre de</label>
         <select id="parent_id" name="parent_id">
             <option value="">-- Aucun (chapitre principal) --</option>
-            <repeat group="{{ @topChapters }}" value="{{ @top }}">
-                <check if="{{ @top.id != @chapter.id }}">
-                    <option value="{{ @top.id }}" data-act-id="{{ @top.act_id }}" {{ (@chapter.parent_id==@top.id)
-                        ? 'selected' : '' }}>
-                        {{ @top.title }}
+            <?php foreach (($topChapters?:[]) as $top): ?>
+                <?php if ($top['id'] != $chapter['id']): ?>
+                    <option value="<?= ($top['id']) ?>" data-act-id="<?= ($top['act_id']) ?>" <?= (($chapter['parent_id']==$top['id'])
+                        ? 'selected' : '') ?>>
+                        <?= ($top['title'])."
+" ?>
                     </option>
-                </check>
-            </repeat>
+                <?php endif; ?>
+            <?php endforeach; ?>
         </select>
     </div>
 
@@ -62,9 +67,10 @@
         <div class="form-group editor-column">
             <label for="content">Contenu</label>
             <div id="editor" class="editor-surface editor-height-600">
-                {{ @chapter.content | raw }}
+                <?= ($this->raw($chapter['content']))."
+" ?>
             </div>
-            <input type="hidden" name="content" value="{{ @chapter.content | esc }}">
+            <input type="hidden" name="content" value="<?= ($this->esc($chapter['content'])) ?>">
             <p>Compteur de mots : <span id="wordCount">0</span></p>
         </div>
 
@@ -76,41 +82,41 @@
         <div id="analysisBox" class="ai-box"></div>
     </div>
     <input type="submit" value="Enregistrer">
-    <check if="{{ !empty(@chapter.parent_id) }}">
-        <a href="{{ @base }}/chapter/{{ @chapter.parent_id }}" class="button secondary">Retour à « {{
-            @parentChapter.title }} »</a>
-    </check>
-    <a href="{{ @base }}/project/{{ @project.id }}" class="button secondary">Retour au projet</a>
+    <?php if (!empty($chapter['parent_id'])): ?>
+        <a href="<?= ($base) ?>/chapter/<?= ($chapter['parent_id']) ?>" class="button secondary">Retour à « <?= ($parentChapter['title']) ?> »</a>
+    <?php endif; ?>
+    <a href="<?= ($base) ?>/project/<?= ($project['id']) ?>" class="button secondary">Retour au projet</a>
     <div><br /><br /></div>
-    <check if="{{ !@chapter.parent_id }}">
+    <?php if (!$chapter['parent_id']): ?>
         <div class="form-group">
             <label for="resume">Résumé (IA ou Manuel)</label>
             <div id="resume-editor" class="editor-surface editor-height-200">
-                {{ @chapter.resume | raw }}
+                <?= ($this->raw($chapter['resume']))."
+" ?>
             </div>
-            <input type="hidden" name="resume" value="{{ @chapter.resume | esc }}">
+            <input type="hidden" name="resume" value="<?= ($this->esc($chapter['resume'])) ?>">
         </div>
-    </check>
+    <?php endif; ?>
 
 </form>
 
 <h3>Commentaires</h3>
 <div id="commentsList">
-    <check if="{{ !empty(@comments) }}">
-        <true>
+    <?php if (!empty($comments)): ?>
+        
             <ul>
-                <repeat group="{{ @comments }}" value="{{ @com }}">
-                    <li><strong>« {{ substr(@chapter.content, @com.start_pos, @com.end_pos - @com.start_pos)
-                            }} »</strong> :
-                        {{ @com.content }}
+                <?php foreach (($comments?:[]) as $com): ?>
+                    <li><strong>« <?= (substr($chapter['content'], $com['start_pos'], $com['end_pos'] - $com['start_pos'])) ?> »</strong> :
+                        <?= ($com['content'])."
+" ?>
                     </li>
-                </repeat>
+                <?php endforeach; ?>
             </ul>
-        </true>
-        <false>
+        
+        <?php else: ?>
             <p>Aucun commentaire pour l’instant.</p>
-        </false>
-    </check>
+        
+    <?php endif; ?>
 </div>
 
 <!-- AI Modal Structure -->
@@ -130,14 +136,13 @@
         // Init Main Editor (QuillTools)
         QuillTools.init('#editor', {
             inputSelector: 'input[name="content"]',
-            baseUrl: '{{ @base }}',
-            csrfToken: '{{ @csrfToken }}',
-            contextId: '{{ @chapter.id }}',
+            baseUrl: '<?= ($base) ?>',
+            csrfToken: '<?= ($csrfToken) ?>',
+            contextId: '<?= ($chapter['id']) ?>',
             contextType: 'chapter'
         });
 
-        var chapterId = {{ @chapter.id
-    }};
+        var chapterId = <?= ($chapter['id']) ?>;
     var storageKey = 'chapter_' + chapterId + '_draft';
 
     // Load Draft Logic for Main Content
@@ -203,7 +208,7 @@
         formData.append('act_id', actId);
         formData.append('parent_id', parentId);
 
-        fetch('{{ @base }}/chapter/' + chapterId + '/save', {
+        fetch('<?= ($base) ?>/chapter/' + chapterId + '/save', {
             method: 'POST',
             headers: {
                 'X-CSRF-Token': window.CSRF_TOKEN
@@ -245,7 +250,7 @@
         var start = range.index;
         var end = range.index + range.length;
 
-        fetch('{{ @base }}/chapter/' + chapterId + '/comment', {
+        fetch('<?= ($base) ?>/chapter/' + chapterId + '/comment', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
@@ -254,7 +259,7 @@
             body: JSON.stringify({ start: start, end: end, content: userContent })
         }).then(function (resp) { return resp.json().catch(function () { return null; }); }).then(function (data) {
             // Reload comments list
-            fetch('{{ @base }}/chapter/' + chapterId + '/comments')
+            fetch('<?= ($base) ?>/chapter/' + chapterId + '/comments')
                 .then(function (resp) { return resp.json(); })
                 .then(function (comments) {
                     var listDiv = document.getElementById('commentsList');

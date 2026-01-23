@@ -1,14 +1,17 @@
-<h2>Carte mentale : {{ @project.title }}</h2>
-<p><a class="button" href="{{ @base }}/project/{{ @project.id }}">Retour au projet</a></p>
-<div id="mindmap" class="mindmap-canvas"></div>
-<p class="mindmap-guide">
-    <strong class="mindmap-guide__title">Guide :</strong>
-    Projet (Noir) • Actes (Orange) • Chapitres (Rose) • Personnages (Bleu) — <span class="mindmap-guide__muted">Zoom & Pan
+<h2>Carte mentale : <?= ($project['title']) ?></h2>
+<p><a class="button" href="<?= ($base) ?>/project/<?= ($project['id']) ?>">Retour au projet</a></p>
+<div id="mindmap"
+    style="width:100%; height:800px; background: #f8f9fa; cursor: grab; border-radius: 16px; border: 1px solid #e0e0e0; overflow: hidden;">
+</div>
+<p
+    style="color: #5f6368; font-family: 'Roboto', sans-serif; font-size: 14px; margin-top: 15px; background: #fff; padding: 12px 20px; border-radius: 24px; border: 1px solid #e0e0e0; display: inline-block;">
+    <strong style="color: #202124;">Guide :</strong>
+    Projet (Noir) • Actes (Orange) • Chapitres (Rose) • Personnages (Bleu) — <span style="opacity:0.7">Zoom & Pan
         disponibles</span>
 </p>
 
 <!-- Content Popup -->
-<div id="node-popup" class="popup-overlay">
+<div id="node-popup" class="popup-overlay" style="display:none;">
     <div class="popup-content">
         <span class="popup-close" onclick="closePopup()">&times;</span>
         <h3 id="popup-title"></h3>
@@ -16,13 +19,77 @@
     </div>
 </div>
 
+<style>
+    @import url('https://fonts.googleapis.com/css2?family=Google+Sans:wght@400;500;700&family=Roboto:wght@400;500&display=swap');
+
+    #mindmap {
+        font-family: 'Google Sans', 'Roboto', sans-serif;
+    }
+
+    .popup-overlay {
+        position: fixed;
+        z-index: 1000;
+        left: 0;
+        top: 0;
+        width: 100%;
+        height: 100%;
+        overflow: auto;
+        background-color: rgba(32, 33, 36, 0.6);
+        /* Google Grey Overlay */
+        backdrop-filter: blur(2px);
+        display: flex;
+        justify-content: center;
+        align-items: center;
+    }
+
+    .popup-content {
+        background-color: #ffffff;
+        margin: auto;
+        padding: 30px;
+        border: none;
+        width: 80%;
+        max-width: 700px;
+        max-height: 80vh;
+        overflow-y: auto;
+        border-radius: 24px;
+        /* Large radius */
+        box-shadow: 0 1px 3px rgba(60, 64, 67, 0.3), 0 4px 8px 3px rgba(60, 64, 67, 0.15);
+        position: relative;
+    }
+
+    .popup-close {
+        color: #5f6368;
+        float: right;
+        font-size: 24px;
+        font-weight: bold;
+        cursor: pointer;
+        transition: color 0.2s;
+    }
+
+    .popup-close:hover {
+        color: #202124;
+    }
+
+    #popup-title {
+        margin-top: 0;
+        font-family: 'Google Sans', sans-serif;
+        color: #202124;
+    }
+
+    #popup-body {
+        font-family: 'Roboto', sans-serif;
+        line-height: 1.6;
+        color: #3c4043;
+    }
+</style>
+
 <script src="https://cdnjs.cloudflare.com/ajax/libs/d3/7.8.5/d3.min.js"></script>
 <script>
-    var rawData = {{ @mindmapData | raw }};
+    var rawData = <?= ($this->raw($mindmapData)) ?>;
 
     // Safety Check
     if (!rawData || !rawData.nodes || !rawData.links) {
-        d3.select('#mindmap').html('<p class="mindmap-error">Erreur de chargement des données.</p>');
+        d3.select('#mindmap').html('<p style="padding:20px; color:red;">Erreur de chargement des données.</p>');
     }
 
     // --- 1. Data Transformation: Flat -> Hierarchy ---
@@ -499,17 +566,17 @@
     function showPopup(d) {
         document.getElementById('popup-title').innerText = d.name;
         document.getElementById('popup-body').innerHTML = d.content ? d.content : '<em>Pas de contenu.</em>';
-        document.getElementById('node-popup').classList.add('is-visible');
+        document.getElementById('node-popup').style.display = 'flex';
     }
 
     function closePopup() {
-        document.getElementById('node-popup').classList.remove('is-visible');
+        document.getElementById('node-popup').style.display = 'none';
     }
 
     window.onclick = function (event) {
         var modal = document.getElementById('node-popup');
         if (event.target == modal) {
-            modal.classList.remove('is-visible');
+            modal.style.display = "none";
         }
     }
 

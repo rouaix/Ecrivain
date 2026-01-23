@@ -98,14 +98,16 @@ var EditorTools = {
                         var status = document.getElementById(EditorTools.config.selectors.statusId);
                         if (status) {
                             status.textContent = count + ' corrections d\'espaces effectuées.';
-                            status.style.color = 'green';
+                            status.classList.remove('status--muted', 'status--error', 'status--info', 'status--warn');
+                            status.classList.add('status--ok');
                             setTimeout(function () { status.textContent = ''; }, 3000);
                         }
                     } else {
                         var status = document.getElementById(EditorTools.config.selectors.statusId);
                         if (status) {
                             status.textContent = 'Aucun espace multiple trouvé.';
-                            status.style.color = '#666';
+                            status.classList.remove('status--ok', 'status--error', 'status--info', 'status--warn');
+                            status.classList.add('status--muted');
                             setTimeout(function () { status.textContent = ''; }, 3000);
                         }
                     }
@@ -207,8 +209,8 @@ var EditorTools = {
         var resultsDiv = document.getElementById(this.config.selectors.grammarResultsId);
         var panel = document.getElementById(this.config.selectors.grammarPanelId);
 
-        if (panel) panel.style.display = 'block';
-        if (resultsDiv) resultsDiv.innerHTML = '<p style="font-style: italic; color: #666;">Analyse en cours...</p>';
+        if (panel) panel.classList.add('is-visible');
+        if (resultsDiv) resultsDiv.innerHTML = '<p class="text-muted text-italic">Analyse en cours...</p>';
 
         var self = this;
         fetch(this.config.endpoints.grammarCheck, {
@@ -224,7 +226,7 @@ var EditorTools = {
 
                 if (resultsDiv) {
                     if (data.matches.length === 0) {
-                        resultsDiv.innerHTML = '<p style="color: green; font-weight: bold;">Aucune faute détectée ! Félicitations.</p>';
+                        resultsDiv.innerHTML = '<p class="text-success text-bold">Aucune faute détectée ! Félicitations.</p>';
                         return;
                     }
 
@@ -232,18 +234,17 @@ var EditorTools = {
                     data.matches.forEach(function (match) {
                         var errorCard = document.createElement('div');
                         errorCard.className = 'grammar-error-card';
-                        errorCard.style = 'background: white; border: 1px solid #eee; border-radius: 6px; padding: 10px; margin-bottom: 10px; box-shadow: 0 2px 4px rgba(0,0,0,0.05);';
 
                         var suggestionsHtml = '';
                         match.replacements.slice(0, 3).forEach(function (rep) {
                             var val = rep.value.replace(/'/g, "\\'");
-                            suggestionsHtml += '<button type="button" class="button small" style="margin-right: 5px; margin-top: 5px;" onclick="applyCorrection(' + match.offset + ', ' + match.length + ', \'' + val + '\')">' + rep.value + '</button>';
+                            suggestionsHtml += '<button type="button" class="button small suggestion-button" onclick="applyCorrection(' + match.offset + ', ' + match.length + ', \'' + val + '\')">' + rep.value + '</button>';
                         });
 
                         errorCard.innerHTML =
-                            '<div style="font-weight: bold; color: #d32f2f; margin-bottom: 5px; font-size: 0.9em;">' + match.rule.description + '</div>' +
-                            '<div style="background: #fff8f8; padding: 5px; border-radius: 4px; margin-bottom: 8px; font-style: italic; font-size: 0.9em;">"...' + text.substring(Math.max(0, match.offset - 10), match.offset) + '<span style="background: #ffcccc; color: #b71c1c;">' + text.substring(match.offset, match.offset + match.length) + '</span>' + text.substring(match.offset + match.length, Math.min(text.length, match.offset + match.length + 10)) + '..."</div>' +
-                            '<div style="font-size: 0.85em; color: #333; margin-bottom: 8px;">' + match.message + '</div>' +
+                            '<div class="grammar-error-title">' + match.rule.description + '</div>' +
+                            '<div class="grammar-error-snippet">"...' + text.substring(Math.max(0, match.offset - 10), match.offset) + '<span class="grammar-error-highlight">' + text.substring(match.offset, match.offset + match.length) + '</span>' + text.substring(match.offset + match.length, Math.min(text.length, match.offset + match.length + 10)) + '..."</div>' +
+                            '<div class="grammar-error-message">' + match.message + '</div>' +
                             '<div class="suggestions">' + suggestionsHtml + '</div>';
 
                         resultsDiv.appendChild(errorCard);
@@ -252,7 +253,7 @@ var EditorTools = {
             })
             .catch(function (err) {
                 console.error(err);
-                if (resultsDiv) resultsDiv.innerHTML = '<p style="color: red;">Erreur lors de l\'analyse (' + err.message + ').</p>';
+                if (resultsDiv) resultsDiv.innerHTML = '<p class="text-error">Erreur lors de l\'analyse (' + err.message + ').</p>';
             });
     },
 
@@ -292,7 +293,7 @@ var EditorTools = {
 
     closeGrammarPanel: function () {
         var panel = document.getElementById(this.config.selectors.grammarPanelId);
-        if (panel) panel.style.display = 'none';
+        if (panel) panel.classList.remove('is-visible');
     },
 
     // --- AI Features ---
@@ -313,7 +314,7 @@ var EditorTools = {
             .then(function (data) {
                 if (!Array.isArray(data) || data.length === 0) {
                     if (synBox) {
-                        synBox.style.display = 'block';
+                        synBox.classList.add('is-visible');
                         synBox.innerHTML = '<em>Aucun synonyme trouvé.</em>';
                     }
                     return;
@@ -321,12 +322,12 @@ var EditorTools = {
                 var list = data.map(function (word) { return '<a href="#" class="synonym" data-word="' + word + '">' + word + '</a>'; }).join(', ');
                 if (synBox) {
                     synBox.innerHTML = 'Synonymes pour "' + selected + '" : ' + list;
-                    synBox.style.display = 'block';
+                    synBox.classList.add('is-visible');
                     synBox.querySelectorAll('a.synonym').forEach(function (el) {
                         el.addEventListener('click', function (e) {
                             e.preventDefault();
                             editor.selection.setContent(e.target.getAttribute('data-word'));
-                            synBox.style.display = 'none';
+                            synBox.classList.remove('is-visible');
                             self.updateWordCount();
                         });
                     });
@@ -339,7 +340,8 @@ var EditorTools = {
         var statusLabel = document.getElementById(this.config.selectors.statusId);
         if (statusLabel) {
             statusLabel.textContent = 'IA en cours...';
-            statusLabel.style.color = 'blue';
+            statusLabel.classList.remove('status--ok', 'status--muted', 'status--error', 'status--warn');
+            statusLabel.classList.add('status--info');
         }
 
         return fetch(this.config.baseUrl + this.config.endpoints.generate, {
@@ -375,8 +377,7 @@ var EditorTools = {
                     if (!debugContainer) {
                         debugContainer = document.createElement('div');
                         debugContainer.id = 'ai-debug-container';
-                        // Hidden by default
-                        debugContainer.style = 'display: none; margin-top: 20px; padding: 20px; background: #f5f5f5; border-top: 2px solid #ccc; font-family: monospace; font-size: 12px; white-space: pre-wrap; word-wrap: break-word;';
+                        debugContainer.className = 'ai-debug-container';
 
                         if (footer) {
                             footer.parentNode.insertBefore(debugContainer, footer);
@@ -389,14 +390,14 @@ var EditorTools = {
                         debugToggle = document.createElement('button');
                         debugToggle.id = 'ai-debug-toggle';
                         debugToggle.textContent = 'Afficher les infos de debug IA';
-                        debugToggle.style = 'display: block; margin: 20px auto; padding: 10px 20px; cursor: pointer; background: #ddd; border: 1px solid #ccc; border-radius: 4px;';
+                        debugToggle.className = 'ai-debug-toggle';
                         debugToggle.onclick = function () {
-                            if (debugContainer.style.display === 'none') {
-                                debugContainer.style.display = 'block';
+                            if (!debugContainer.classList.contains('is-visible')) {
+                                debugContainer.classList.add('is-visible');
                                 debugToggle.textContent = 'Masquer les infos de debug IA';
                                 debugContainer.scrollIntoView({ behavior: 'smooth' });
                             } else {
-                                debugContainer.style.display = 'none';
+                                debugContainer.classList.remove('is-visible');
                                 debugToggle.textContent = 'Afficher les infos de debug IA';
                             }
                         };
@@ -427,7 +428,7 @@ var EditorTools = {
                     debugContainer.innerHTML = debugContent;
 
                     // Do not auto-scroll if hidden
-                    if (debugContainer.style.display !== 'none') {
+                    if (debugContainer.classList.contains('is-visible')) {
                         debugContainer.scrollIntoView({ behavior: 'smooth' });
                     }
                 }
@@ -438,7 +439,8 @@ var EditorTools = {
                 console.error(err);
                 if (statusLabel) {
                     statusLabel.textContent = 'Erreur';
-                    statusLabel.style.color = 'red';
+                    statusLabel.classList.remove('status--ok', 'status--muted', 'status--info', 'status--warn');
+                    statusLabel.classList.add('status--error');
                 }
                 return null;
             });
@@ -475,17 +477,17 @@ var EditorTools = {
         var replaceBtn = document.getElementById('aiBtnReplace');
 
         if (textarea) textarea.value = text;
-        if (modal) modal.style.display = 'block';
+        if (modal) modal.classList.add('is-visible');
 
         if (replaceBtn) {
             replaceBtn.disabled = !isReplacement;
-            replaceBtn.style.opacity = isReplacement ? '1' : '0.5';
+            replaceBtn.classList.toggle('is-dimmed', !isReplacement);
         }
     },
 
     closeAiModal: function () {
         var modal = document.getElementById(this.config.selectors.aiModalId);
-        if (modal) modal.style.display = 'none';
+        if (modal) modal.classList.remove('is-visible');
         var textarea = document.getElementById(this.config.selectors.aiModalTextId);
         if (textarea) textarea.value = '';
     },
@@ -536,7 +538,7 @@ var EditorTools = {
             html += '</ul>';
             analysisBox.innerHTML = html;
         }
-        analysisBox.style.display = 'block';
+        analysisBox.classList.add('is-visible');
     },
 
     // --- Helper ---

@@ -17,20 +17,20 @@
         <label for="name">Nom *</label>
         <input type="text" id="name" name="name" value="{{ @character.name }}" required>
     </div>
-    <div id="editor-wrapper" style="display: flex; gap: 20px; align-items: flex-start;">
-        <div class="form-group" style="flex: 1;">
+    <div id="editor-wrapper" class="editor-wrapper">
+        <div class="form-group editor-column">
             <label for="description">Description (enrichie)</label>
-            <div id="editor" style="height: 300px; background: white; color: black;">
+            <div id="editor" class="editor-surface editor-height-300">
                 {{ @character.description | raw }}
             </div>
             <input type="hidden" name="description" value="{{ @character.description | esc }}">
-            <p style="margin-top: 10px;">Compteur de mots : <span id="wordCount">0</span></p>
+            <p class="word-count">Compteur de mots : <span id="wordCount">0</span></p>
             <div class="editor-tools-wrapper">
                 <button type="button" id="synButton">Synonymes (IA)</button>
                 <button type="button" id="continueButton" class="button-ai-purple">Continuer (IA)</button>
                 <button type="button" id="rephraseButton" class="button-ai-purple">Reformuler (IA)</button>
                 <button type="button" id="analysisButton">Analyse du texte</button>
-                <div id="status" style="display:inline-block; margin-left:10px; color:green;"></div>
+                <div id="status" class="status-label status--ok"></div>
                 <div id="synonymsBox" class="ai-box"></div>
                 <div id="analysisBox" class="ai-box"></div>
             </div>
@@ -45,8 +45,7 @@
 <!-- AI Modal Structure -->
 <div id="aiModal" class="ai-modal">
     <h3>Proposition IA</h3>
-    <textarea id="aiModalText"
-        style="width:100%; height:300px; margin-bottom:10px; background:var(--input-bg); color:var(--input-text); border:1px solid var(--input-border);"></textarea>
+    <textarea id="aiModalText" class="ai-modal-textarea ai-modal-textarea--md"></textarea>
     <div class="ai-modal-actions">
         <button id="aiBtnInsert" class="button-ai-green">Insérer au curseur</button>
         <button id="aiBtnReplace" class="button-ai-orange">Remplacer la sélection</button>

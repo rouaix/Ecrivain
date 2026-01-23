@@ -37,9 +37,8 @@
         <div class="form-group">
             <label for="image">Image</label>
             <check if="!empty(@section.image_path)">
-                <div style="margin-bottom: 10px;">
-                    <img src="{{ @section.image_path }}" alt="Image actuelle"
-                        style="max-width: 300px; max-height: 400px;">
+                <div class="image-preview">
+                    <img src="{{ @section.image_path }}" alt="Image actuelle" class="image-preview__img">
                     <p><small>Image actuelle</small></p>
                 </div>
             </check>
@@ -48,10 +47,10 @@
         </div>
     </check>
 
-    <div id="editor-wrapper" style="display: flex; gap: 20px; align-items: flex-start;">
-        <div class="form-group" style="flex: 1;">
+    <div id="editor-wrapper" class="editor-wrapper">
+        <div class="form-group editor-column">
             <label for="content">Contenu</label>
-            <div id="editor" style="height: 500px; background: white; color: black;">
+            <div id="editor" class="editor-surface editor-height-500">
                 {{ @section.content | raw }}
             </div>
             <input type="hidden" name="content" value="{{ @section.content | esc }}">
@@ -60,10 +59,10 @@
                 <small>Le contenu textuel sera affiché sous l'image de couverture.</small>
             </check>
 
-            <p style="margin-top: 10px;">Compteur de mots : <span id="wordCount">0</span></p>
+            <p class="word-count">Compteur de mots : <span id="wordCount">0</span></p>
 
             <div class="editor-tools-wrapper">
-                <div id="status" style="display:inline-block; margin-left:10px; color:green;"></div>
+                <div id="status" class="status-label status--ok"></div>
                 <div id="synonymsBox" class="ai-box"></div>
                 <div id="analysisBox" class="ai-box"></div>
             </div>
@@ -79,8 +78,7 @@
 <!-- AI Modal Structure -->
 <div id="aiModal" class="ai-modal">
     <h3>Proposition IA</h3>
-    <textarea id="aiModalText"
-        style="width:100%; height:300px; margin-bottom:10px; background:var(--input-bg); color:var(--input-text); border:1px solid var(--input-border);"></textarea>
+    <textarea id="aiModalText" class="ai-modal-textarea ai-modal-textarea--md"></textarea>
     <div class="ai-modal-actions">
         <button id="aiBtnInsert" class="button-ai-green">Insérer au curseur</button>
         <button id="aiBtnReplace" class="button-ai-orange">Remplacer la sélection</button>

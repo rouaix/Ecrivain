@@ -14,90 +14,6 @@
     <script src="{{ @base }}/public/js/quill-adapter.js?v=16"></script>
     <link rel="stylesheet" href="{{ @base }}/public/style.css?v=4">
 
-    <!-- Critical Quill Overrides (Injected to bypass cache) -->
-    <style>
-        /* Force toolbar button container layout */
-        .ql-toolbar.ql-snow .ql-formats {
-            margin-right: 15px !important;
-            display: inline-flex !important;
-            align-items: center !important;
-            vertical-align: middle !important;
-        }
-
-        /* Force ALL toolbar buttons to be visible and correctly sized */
-        .ql-toolbar.ql-snow button {
-            width: auto !important;
-            height: 24px !important;
-            padding: 0 5px !important;
-            margin: 0 2px !important;
-            float: none !important;
-            display: inline-flex !important;
-            align-items: center !important;
-            justify-content: center !important;
-            background: none !important;
-            border: none !important;
-            cursor: pointer !important;
-            color: #444 !important;
-            /* Text Color */
-        }
-
-        /* Force SVG Icons colors (Stroke and Fill) */
-        .ql-toolbar.ql-snow button svg {
-            width: 18px !important;
-            height: 18px !important;
-            float: none !important;
-        }
-
-        .ql-toolbar.ql-snow button svg .ql-stroke {
-            stroke: #444 !important;
-        }
-
-        .ql-toolbar.ql-snow button svg .ql-fill {
-            fill: #444 !important;
-        }
-
-        .ql-toolbar.ql-snow button svg path {
-            stroke: #444 !important;
-        }
-
-        .ql-toolbar.ql-snow button svg polygon {
-            stroke: #444 !important;
-        }
-
-        .ql-toolbar.ql-snow button svg line {
-            stroke: #444 !important;
-        }
-
-        /* Hover States for SVGs */
-        .ql-toolbar.ql-snow button:hover svg .ql-stroke,
-        .ql-toolbar.ql-snow button.ql-active svg .ql-stroke {
-            stroke: #06c !important;
-        }
-
-        .ql-toolbar.ql-snow button:hover svg .ql-fill,
-        .ql-toolbar.ql-snow button.ql-active svg .ql-fill {
-            fill: #06c !important;
-        }
-
-        /* Specific Custom Button Styling (EmDash, Grouper, etc) */
-        .ql-toolbar.ql-snow button.ql-emdash,
-        .ql-toolbar.ql-snow button.ql-group_lines,
-        .ql-toolbar.ql-snow button.ql-remove_doublespaces {
-            font-weight: bold !important;
-            font-size: 13px !important;
-            padding: 0 8px !important;
-            min-width: 30px !important;
-            border: 1px solid transparent !important;
-            /* Spacing helper */
-        }
-
-        .ql-toolbar.ql-snow button.ql-emdash:hover,
-        .ql-toolbar.ql-snow button.ql-group_lines:hover,
-        .ql-toolbar.ql-snow button.ql-remove_doublespaces:hover {
-            color: #06c !important;
-        }
-    </style>
-
     <set selectedTheme="{{ isset(@COOKIE.theme) ? @COOKIE.theme : 'default' }}" />
     <link rel="stylesheet" href="{{ @base }}/public/theme-{{ @selectedTheme }}.css">
 </head>
@@ -105,7 +21,7 @@
 <body class="theme-{{ @selectedTheme }}">
     <header>
         <h1>Assistant</h1>
-        <nav style="display:flex; align-items:center;">
+        <nav class="main-nav">
             <check if="isset(@SESSION.user_id)">
                 <true>
                     <a href="{{ @base }}/dashboard">Tableau de bord</a>
@@ -129,11 +45,10 @@
 
     <!-- Shared Tools UI (Hidden by default) -->
     <!-- AI Modal -->
-    <div id="aiModal" class="ai-modal"
-        style="display:none; position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); background: white; border: 1px solid #ccc; z-index: 2000; padding: 20px; box-shadow: 0 0 20px rgba(0,0,0,0.3); border-radius: 8px;">
+    <div id="aiModal" class="ai-modal ai-modal--compact">
         <h3>Assistant IA</h3>
-        <textarea id="aiModalText" style="width: 100%; height: 200px; margin-bottom: 10px;"></textarea>
-        <div class="ai-modal-actions" style="text-align: right;">
+        <textarea id="aiModalText" class="ai-modal-textarea ai-modal-textarea--sm"></textarea>
+        <div class="ai-modal-actions">
             <button id="aiBtnReplace" class="button">Remplacer</button>
             <button id="aiBtnInsert" class="button">Insérer</button>
             <button id="aiBtnClose" class="button secondary">Fermer</button>
@@ -168,8 +83,8 @@
 
     <!-- AI Request Modal -->
     <check if="isset(@SESSION.user_id)">
-        <div id="aiRequestModal" class="modal-overlay" style="z-index: 9999;">
-            <div class="modal-content" style="max-width: 800px; width: 90%;">
+        <div id="aiRequestModal" class="modal-overlay modal-overlay--front">
+            <div class="modal-content modal-content--wide">
                 <div class="modal-header">
                     <h3>Demande IA</h3>
                     <button class="modal-close" id="closeAiModal">&times;</button>
@@ -192,15 +107,13 @@
                         <input type="file" id="aiContextFile" class="input-block">
                     </div>
 
-                    <div style="text-align: right; margin-top: 15px;">
+                    <div class="form-actions-right form-actions-right--sm">
                         <button class="button primary" id="sendAiRequest">Envoyer</button>
                     </div>
 
-                    <div id="aiResponseContainer"
-                        style="display: none; margin-top: 20px; border-top: 1px solid #ddd; padding-top: 15px;">
+                    <div id="aiResponseContainer" class="ai-response">
                         <h4>Réponse IA</h4>
-                        <div id="aiResponseContent" class="typography"
-                            style="background: #f9f9f9; padding: 15px; border-radius: 5px; min-height: 100px;"></div>
+                        <div id="aiResponseContent" class="typography ai-response-content"></div>
                     </div>
                 </div>
             </div>
@@ -222,20 +135,20 @@
             if (aiBtn) {
                 aiBtn.addEventListener('click', function (e) {
                     e.preventDefault();
-                    aiModal.style.display = 'flex';
+                    aiModal.classList.add('is-visible');
                 });
             }
 
             if (aiClose) {
                 aiClose.addEventListener('click', function () {
-                    aiModal.style.display = 'none';
+                    aiModal.classList.remove('is-visible');
                 });
             }
 
             // Close on click outside
             window.addEventListener('click', function (event) {
                 if (event.target == aiModal) {
-                    aiModal.style.display = 'none';
+                    aiModal.classList.remove('is-visible');
                 }
             });
 
@@ -250,7 +163,7 @@
                         return;
                     }
 
-                    responseContainer.style.display = 'block';
+                    responseContainer.classList.add('is-visible');
                     responseContent.innerHTML = '<em>Génération en cours...</em>';
                     sendBtn.disabled = true;
 
@@ -276,13 +189,13 @@
                                     // For now simple text display
                                     responseContent.innerHTML = data.text.replace(/\n/g, '<br>');
                                 } else if (data.error) {
-                                    responseContent.innerHTML = '<span style="color:red">Erreur: ' + data.error + '</span>';
+                                    responseContent.innerHTML = '<span class="text-error">Erreur: ' + data.error + '</span>';
                                 }
                             })
                             .catch(err => {
                                 sendBtn.disabled = false;
                                 console.error(err);
-                                responseContent.innerHTML = '<span style="color:red">Erreur de communication.</span>';
+                                responseContent.innerHTML = '<span class="text-error">Erreur de communication.</span>';
                             });
                     };
 
