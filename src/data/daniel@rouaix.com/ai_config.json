@@ -6,5 +6,6 @@
     "continue": "Continue le texte suivant de manière cohérente, dans le même style. N'ajoute pas de guillemets autour de tout le texte généré sauf si nécessaire.",
     "rephrase": "Reformule le texte suivant pour améliorer le style littéraire, la clarté et l'élégance, sans changer le sens. Tu peux l'allonger ou le réduire si cela le rend meilleur.",
     "summarize_chapter": "Fais un résumé d'une dizaine de lignes du contenu suivant qui est une agrégation de sous-chapitres. Le résumé doit être captivant et bien écrit.",
-    "summarize_act": "Fais un résumé d'une dizaine de lignes pour cet Acte, basé sur les résumés de ses chapitres ci-dessous. Le résumé doit donner une bonne vue d'ensemble de l'arc narratif de l'acte."
+    "summarize_act": "Fais un résumé d'une dizaine de lignes pour cet Acte, basé sur les résumés de ses chapitres ci-dessous. Le résumé doit donner une bonne vue d'ensemble de l'arc narratif de l'acte.",
+    "custom_prompts": []
 }

@@ -534,6 +534,9 @@ class AiController extends Controller
                 }
             }
         }
+        if (!isset($current['custom_prompts']) || !is_array($current['custom_prompts'])) {
+            $current['custom_prompts'] = [];
+        }
 
         $this->render('ai/config.html', [
             'title' => 'Configuration IA',
@@ -554,6 +557,23 @@ class AiController extends Controller
             return;
         }
 
+        $labels = $this->f3->get('POST.custom_prompt_label');
+        $values = $this->f3->get('POST.custom_prompt_value');
+        $customPrompts = [];
+        if (is_array($labels) && is_array($values)) {
+            $count = min(count($labels), count($values));
+            for ($i = 0; $i < $count; $i++) {
+                $label = trim((string) $labels[$i]);
+                $prompt = trim((string) $values[$i]);
+                if ($label !== '' && $prompt !== '') {
+                    $customPrompts[] = [
+                        'label' => $label,
+                        'prompt' => $prompt
+                    ];
+                }
+            }
+        }
+
         $data = [
             'provider' => $this->f3->get('POST.provider'),
             'api_key' => $this->f3->get('POST.api_key'),
@@ -562,7 +582,8 @@ class AiController extends Controller
             'continue' => $this->f3->get('POST.continue'),
             'rephrase' => $this->f3->get('POST.rephrase'),
             'summarize_chapter' => $this->f3->get('POST.summarize_chapter'),
-            'summarize_act' => $this->f3->get('POST.summarize_act')
+            'summarize_act' => $this->f3->get('POST.summarize_act'),
+            'custom_prompts' => $customPrompts
         ];
 
         file_put_contents($file, json_encode($data, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE));
@@ -579,7 +600,8 @@ class AiController extends Controller
             'continue' => "Continue le texte suivant de manière cohérente, dans le même style. N'ajoute pas de guillemets autour de tout le texte généré sauf si nécessaire.",
             'rephrase' => "Reformule le texte suivant pour améliorer le style, la clarté et l'élégance, sans changer le sens.",
             'summarize_chapter' => "Fais un résumé d'une dizaine de lignes du contenu suivant qui est une agrégation de sous-chapitres. Le résumé doit être captivant et bien écrit.",
-            'summarize_act' => "Fais un résumé d'une dizaine de lignes pour cet Acte, basé sur les résumés de ses chapitres ci-dessous. Le résumé doit donner une bonne vue d'ensemble de l'arc narratif de l'acte."
+            'summarize_act' => "Fais un résumé d'une dizaine de lignes pour cet Acte, basé sur les résumés de ses chapitres ci-dessous. Le résumé doit donner une bonne vue d'ensemble de l'arc narratif de l'acte.",
+            'custom_prompts' => []
         ];
     }
 

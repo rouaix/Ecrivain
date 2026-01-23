@@ -104,9 +104,82 @@
                 chapitres).</small>
         </div>
 
+        <div class="form-group form-group--mt-20">
+            <label class="ai-config-label">Prompts personnalisés</label>
+            <div id="customPromptsList">
+                <repeat group="{{ @config.custom_prompts }}" value="{{ @p }}">
+                    <div class="ai-custom-prompt-row">
+                        <input type="text" name="custom_prompt_label[]" class="ai-config-input"
+                            placeholder="Titre à afficher" value="{{ @p.label | esc }}">
+                        <textarea name="custom_prompt_value[]" rows="3" class="ai-config-input"
+                            placeholder="Consigne / prompt">{{ @p.prompt | esc }}</textarea>
+                        <button type="button" class="button small delete ai-custom-prompt-remove">Supprimer</button>
+                    </div>
+                </repeat>
+            </div>
+            <div class="">
+                <button type="button" class="button small" id="addCustomPrompt">+ Ajouter un prompt</button>
+            </div>
+            <small class="text-muted">Ces prompts apparaissent dans la liste de choix du prompt utilisateur.</small>
+        </div>
+
         <div class="ai-config-actions">
             <button type="submit" class="button primary ai-config-save">Enregistrer</button>
             <a href="{{ @base }}/dashboard" class="button secondary ai-config-back">Retour</a>
         </div>
     </form>
 </div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        const list = document.getElementById('customPromptsList');
+        const addBtn = document.getElementById('addCustomPrompt');
+
+        function addRow(label = '', prompt = '') {
+            const row = document.createElement('div');
+            row.className = 'ai-custom-prompt-row';
+
+            const input = document.createElement('input');
+            input.type = 'text';
+            input.name = 'custom_prompt_label[]';
+            input.className = 'ai-config-input';
+            input.placeholder = 'Titre a afficher';
+            input.value = label;
+
+            const textarea = document.createElement('textarea');
+            textarea.name = 'custom_prompt_value[]';
+            textarea.rows = 3;
+            textarea.className = 'ai-config-input';
+            textarea.placeholder = 'Consigne / prompt';
+            textarea.value = prompt;
+
+            const remove = document.createElement('button');
+            remove.type = 'button';
+            remove.className = 'button small delete ai-custom-prompt-remove';
+            remove.textContent = 'Supprimer';
+
+            row.appendChild(input);
+            row.appendChild(textarea);
+            row.appendChild(remove);
+            list.appendChild(row);
+        }
+
+        if (addBtn) {
+            addBtn.addEventListener('click', function () {
+                addRow();
+            });
+        }
+
+        if (list) {
+            list.addEventListener('click', function (e) {
+                const target = e.target;
+                if (target && target.classList.contains('ai-custom-prompt-remove')) {
+                    const row = target.closest('.ai-custom-prompt-row');
+                    if (row) {
+                        row.remove();
+                    }
+                }
+            });
+        }
+    });
+</script>

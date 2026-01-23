@@ -307,6 +307,7 @@ abstract class Controller
         ];
 
         $prompts = $defaults;
+        $custom = [];
         if ($user && !empty($user['email'])) {
             $configFile = 'data/' . $user['email'] . '/ai_config.json';
             if (file_exists($configFile)) {
@@ -318,15 +319,32 @@ abstract class Controller
                             $prompts[$key] = $value;
                         }
                     }
+                    if (isset($config['custom_prompts']) && is_array($config['custom_prompts'])) {
+                        foreach ($config['custom_prompts'] as $item) {
+                            if (!is_array($item)) {
+                                continue;
+                            }
+                            $label = trim((string) ($item['label'] ?? ''));
+                            $prompt = trim((string) ($item['prompt'] ?? ''));
+                            if ($label !== '' && $prompt !== '') {
+                                $custom[] = [
+                                    'key' => 'custom',
+                                    'label' => $label,
+                                    'prompt' => $prompt
+                                ];
+                            }
+                        }
+                    }
                 }
             }
         }
 
-        return [
+        $builtins = [
             ['key' => 'continue', 'label' => 'Continuer', 'prompt' => $prompts['continue']],
             ['key' => 'rephrase', 'label' => 'Reformuler', 'prompt' => $prompts['rephrase']],
             ['key' => 'summarize_chapter', 'label' => 'Résumé chapitre', 'prompt' => $prompts['summarize_chapter']],
             ['key' => 'summarize_act', 'label' => 'Résumé acte', 'prompt' => $prompts['summarize_act']]
         ];
+        return array_merge($builtins, $custom);
     }
 }

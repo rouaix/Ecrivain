@@ -3091,3 +3091,16 @@
 [2026-01-23 17:18:51] Controller::beforeRoute URI: /edsa-Ecrivain/dashboard | SessionID: h5p1vo9o73d8p5audm5iancova | UserID: 1
 [2026-01-23 17:18:54] Controller::beforeRoute URI: /edsa-Ecrivain/auth/tokens | SessionID: h5p1vo9o73d8p5audm5iancova | UserID: 1
 [2026-01-23 17:18:56] Controller::beforeRoute URI: /edsa-Ecrivain/project/1 | SessionID: h5p1vo9o73d8p5audm5iancova | UserID: 1
+[2026-01-23 17:26:01] Controller::beforeRoute URI: /edsa-Ecrivain/dashboard | SessionID: h5p1vo9o73d8p5audm5iancova | UserID: 1
+[2026-01-23 17:26:03] Controller::beforeRoute URI: /edsa-Ecrivain/auth/tokens | SessionID: h5p1vo9o73d8p5audm5iancova | UserID: 1
+[2026-01-23 17:26:05] Controller::beforeRoute URI: /edsa-Ecrivain/ai/config | SessionID: h5p1vo9o73d8p5audm5iancova | UserID: 1
+[2026-01-23 17:30:25] Controller::beforeRoute URI: /edsa-Ecrivain/ai/config | SessionID: h5p1vo9o73d8p5audm5iancova | UserID: 1
+[2026-01-23 17:30:50] Controller::beforeRoute URI: /edsa-Ecrivain/ai/config | SessionID: h5p1vo9o73d8p5audm5iancova | UserID: 1
+[2026-01-23 17:30:52] Controller::beforeRoute URI: /edsa-Ecrivain/ai/config?success=1 | SessionID: h5p1vo9o73d8p5audm5iancova | UserID: 1
+[2026-01-23 17:31:02] Controller::beforeRoute URI: /edsa-Ecrivain/ai/config | SessionID: h5p1vo9o73d8p5audm5iancova | UserID: 1
+[2026-01-23 17:31:04] Controller::beforeRoute URI: /edsa-Ecrivain/ai/config?success=1 | SessionID: h5p1vo9o73d8p5audm5iancova | UserID: 1
+[2026-01-23 17:32:51] Controller::beforeRoute URI: /edsa-Ecrivain/ai/config?success=1 | SessionID: h5p1vo9o73d8p5audm5iancova | UserID: 1
+[2026-01-23 17:33:08] Controller::beforeRoute URI: /edsa-Ecrivain/ai/config | SessionID: h5p1vo9o73d8p5audm5iancova | UserID: 1
+[2026-01-23 17:33:10] Controller::beforeRoute URI: /edsa-Ecrivain/ai/config?success=1 | SessionID: h5p1vo9o73d8p5audm5iancova | UserID: 1
+[2026-01-23 17:33:24] Controller::beforeRoute URI: /edsa-Ecrivain/dashboard | SessionID: h5p1vo9o73d8p5audm5iancova | UserID: 1
+[2026-01-23 17:33:26] Controller::beforeRoute URI: /edsa-Ecrivain/auth/tokens | SessionID: h5p1vo9o73d8p5audm5iancova | UserID: 1
