@@ -10054,3 +10054,87 @@
 [2026-01-24 13:03:26] Index reached inside P:\Projets\Ecrivain\src\www
 [2026-01-24 13:03:26] Index reached inside P:\Projets\Ecrivain\src\www
 [2026-01-24 13:03:28] Session Params: {"lifetime":0,"path":"\/","domain":"","secure":false,"httponly":true,"samesite":"Lax"} | HTTPS Detected: No
+[2026-01-24 13:44:13] Index reached inside P:\Projets\Ecrivain\src\www
+[2026-01-24 13:44:13] Index reached inside P:\Projets\Ecrivain\src\www
+[2026-01-24 13:44:16] Session Params: {"lifetime":0,"path":"\/","domain":"","secure":false,"httponly":true,"samesite":"Lax"} | HTTPS Detected: No
+[2026-01-24 13:44:16] Index reached inside P:\Projets\Ecrivain\src\www
+[2026-01-24 13:44:16] Index reached inside P:\Projets\Ecrivain\src\www
+[2026-01-24 13:44:18] Session Params: {"lifetime":0,"path":"\/","domain":"","secure":false,"httponly":true,"samesite":"Lax"} | HTTPS Detected: No
+[2026-01-24 13:44:35] Index reached inside P:\Projets\Ecrivain\src\www
+[2026-01-24 13:44:35] Index reached inside P:\Projets\Ecrivain\src\www
+[2026-01-24 13:44:37] Session Params: {"lifetime":0,"path":"\/","domain":"","secure":false,"httponly":true,"samesite":"Lax"} | HTTPS Detected: No
+[2026-01-24 13:44:47] Index reached inside P:\Projets\Ecrivain\src\www
+[2026-01-24 13:44:47] Index reached inside P:\Projets\Ecrivain\src\www
+[2026-01-24 13:44:49] Session Params: {"lifetime":0,"path":"\/","domain":"","secure":false,"httponly":true,"samesite":"Lax"} | HTTPS Detected: No
+[2026-01-24 13:44:53] Index reached inside P:\Projets\Ecrivain\src\www
+[2026-01-24 13:44:53] Index reached inside P:\Projets\Ecrivain\src\www
+[2026-01-24 13:44:56] Session Params: {"lifetime":0,"path":"\/","domain":"","secure":false,"httponly":true,"samesite":"Lax"} | HTTPS Detected: No
+[2026-01-24 13:44:56] Index reached inside P:\Projets\Ecrivain\src\www
+[2026-01-24 13:44:56] Index reached inside P:\Projets\Ecrivain\src\www
+[2026-01-24 13:44:58] Session Params: {"lifetime":0,"path":"\/","domain":"","secure":false,"httponly":true,"samesite":"Lax"} | HTTPS Detected: No
+[2026-01-24 13:45:05] Index reached inside P:\Projets\Ecrivain\src\www
+[2026-01-24 13:45:05] Index reached inside P:\Projets\Ecrivain\src\www
+[2026-01-24 13:45:07] Session Params: {"lifetime":0,"path":"\/","domain":"","secure":false,"httponly":true,"samesite":"Lax"} | HTTPS Detected: No
+[2026-01-24 13:45:15] Index reached inside P:\Projets\Ecrivain\src\www
+[2026-01-24 13:45:15] Index reached inside P:\Projets\Ecrivain\src\www
+[2026-01-24 13:45:17] Session Params: {"lifetime":0,"path":"\/","domain":"","secure":false,"httponly":true,"samesite":"Lax"} | HTTPS Detected: No
+[2026-01-24 13:45:17] Index reached inside P:\Projets\Ecrivain\src\www
+[2026-01-24 13:45:17] Index reached inside P:\Projets\Ecrivain\src\www
+[2026-01-24 13:45:19] Session Params: {"lifetime":0,"path":"\/","domain":"","secure":false,"httponly":true,"samesite":"Lax"} | HTTPS Detected: No
+[2026-01-24 13:45:19] Index reached inside P:\Projets\Ecrivain\src\www
+[2026-01-24 13:45:19] Index reached inside P:\Projets\Ecrivain\src\www
+[2026-01-24 13:45:22] Session Params: {"lifetime":0,"path":"\/","domain":"","secure":false,"httponly":true,"samesite":"Lax"} | HTTPS Detected: No
+[2026-01-24 13:45:23] Index reached inside P:\Projets\Ecrivain\src\www
+[2026-01-24 13:45:23] Index reached inside P:\Projets\Ecrivain\src\www
+[2026-01-24 13:45:25] Session Params: {"lifetime":0,"path":"\/","domain":"","secure":false,"httponly":true,"samesite":"Lax"} | HTTPS Detected: No
+[2026-01-24 13:45:31] Index reached inside P:\Projets\Ecrivain\src\www
+[2026-01-24 13:45:31] Index reached inside P:\Projets\Ecrivain\src\www
+[2026-01-24 13:45:33] Session Params: {"lifetime":0,"path":"\/","domain":"","secure":false,"httponly":true,"samesite":"Lax"} | HTTPS Detected: No
+[2026-01-24 13:45:33] Index reached inside P:\Projets\Ecrivain\src\www
+[2026-01-24 13:45:33] Index reached inside P:\Projets\Ecrivain\src\www
+[2026-01-24 13:45:35] Session Params: {"lifetime":0,"path":"\/","domain":"","secure":false,"httponly":true,"samesite":"Lax"} | HTTPS Detected: No
+[2026-01-24 13:45:35] Index reached inside P:\Projets\Ecrivain\src\www
+[2026-01-24 13:45:35] Index reached inside P:\Projets\Ecrivain\src\www
+[2026-01-24 13:45:37] Session Params: {"lifetime":0,"path":"\/","domain":"","secure":false,"httponly":true,"samesite":"Lax"} | HTTPS Detected: No
+[2026-01-24 13:45:44] Index reached inside P:\Projets\Ecrivain\src\www
+[2026-01-24 13:45:44] Index reached inside P:\Projets\Ecrivain\src\www
+[2026-01-24 13:45:46] Session Params: {"lifetime":0,"path":"\/","domain":"","secure":false,"httponly":true,"samesite":"Lax"} | HTTPS Detected: No
+[2026-01-24 13:45:46] Index reached inside P:\Projets\Ecrivain\src\www
+[2026-01-24 13:45:46] Index reached inside P:\Projets\Ecrivain\src\www
+[2026-01-24 13:45:48] Session Params: {"lifetime":0,"path":"\/","domain":"","secure":false,"httponly":true,"samesite":"Lax"} | HTTPS Detected: No
+[2026-01-24 13:49:01] Index reached inside P:\Projets\Ecrivain\src\www
+[2026-01-24 13:49:01] Index reached inside P:\Projets\Ecrivain\src\www
+[2026-01-24 13:49:03] Session Params: {"lifetime":0,"path":"\/","domain":"","secure":false,"httponly":true,"samesite":"Lax"} | HTTPS Detected: No
+[2026-01-24 13:49:06] Index reached inside P:\Projets\Ecrivain\src\www
+[2026-01-24 13:49:06] Index reached inside P:\Projets\Ecrivain\src\www
+[2026-01-24 13:49:08] Session Params: {"lifetime":0,"path":"\/","domain":"","secure":false,"httponly":true,"samesite":"Lax"} | HTTPS Detected: No
+[2026-01-24 13:49:08] Index reached inside P:\Projets\Ecrivain\src\www
+[2026-01-24 13:49:08] Index reached inside P:\Projets\Ecrivain\src\www
+[2026-01-24 13:49:10] Session Params: {"lifetime":0,"path":"\/","domain":"","secure":false,"httponly":true,"samesite":"Lax"} | HTTPS Detected: No
+[2026-01-24 13:49:10] Index reached inside P:\Projets\Ecrivain\src\www
+[2026-01-24 13:49:10] Index reached inside P:\Projets\Ecrivain\src\www
+[2026-01-24 13:49:12] Index reached inside P:\Projets\Ecrivain\src\www
+[2026-01-24 13:49:12] Index reached inside P:\Projets\Ecrivain\src\www
+[2026-01-24 13:49:12] Session Params: {"lifetime":0,"path":"\/","domain":"","secure":false,"httponly":true,"samesite":"Lax"} | HTTPS Detected: No
+[2026-01-24 13:49:14] Session Params: {"lifetime":0,"path":"\/","domain":"","secure":false,"httponly":true,"samesite":"Lax"} | HTTPS Detected: No
+[2026-01-24 13:49:15] Index reached inside P:\Projets\Ecrivain\src\www
+[2026-01-24 13:49:15] Index reached inside P:\Projets\Ecrivain\src\www
+[2026-01-24 13:49:17] Session Params: {"lifetime":0,"path":"\/","domain":"","secure":false,"httponly":true,"samesite":"Lax"} | HTTPS Detected: No
+[2026-01-24 13:50:12] Index reached inside P:\Projets\Ecrivain\src\www
+[2026-01-24 13:50:12] Index reached inside P:\Projets\Ecrivain\src\www
+[2026-01-24 13:50:14] Session Params: {"lifetime":0,"path":"\/","domain":"","secure":false,"httponly":true,"samesite":"Lax"} | HTTPS Detected: No
+[2026-01-24 13:50:14] Index reached inside P:\Projets\Ecrivain\src\www
+[2026-01-24 13:50:14] Index reached inside P:\Projets\Ecrivain\src\www
+[2026-01-24 13:50:16] Session Params: {"lifetime":0,"path":"\/","domain":"","secure":false,"httponly":true,"samesite":"Lax"} | HTTPS Detected: No
+[2026-01-24 13:50:43] Index reached inside P:\Projets\Ecrivain\src\www
+[2026-01-24 13:50:43] Index reached inside P:\Projets\Ecrivain\src\www
+[2026-01-24 13:50:45] Session Params: {"lifetime":0,"path":"\/","domain":"","secure":false,"httponly":true,"samesite":"Lax"} | HTTPS Detected: No
+[2026-01-24 13:50:45] Index reached inside P:\Projets\Ecrivain\src\www
+[2026-01-24 13:50:45] Index reached inside P:\Projets\Ecrivain\src\www
+[2026-01-24 13:50:46] Index reached inside P:\Projets\Ecrivain\src\www
+[2026-01-24 13:50:46] Index reached inside P:\Projets\Ecrivain\src\www
+[2026-01-24 13:50:47] Session Params: {"lifetime":0,"path":"\/","domain":"","secure":false,"httponly":true,"samesite":"Lax"} | HTTPS Detected: No
+[2026-01-24 13:50:48] Session Params: {"lifetime":0,"path":"\/","domain":"","secure":false,"httponly":true,"samesite":"Lax"} | HTTPS Detected: No
+[2026-01-24 13:50:49] Index reached inside P:\Projets\Ecrivain\src\www
+[2026-01-24 13:50:49] Index reached inside P:\Projets\Ecrivain\src\www
+[2026-01-24 13:50:51] Session Params: {"lifetime":0,"path":"\/","domain":"","secure":false,"httponly":true,"samesite":"Lax"} | HTTPS Detected: No
