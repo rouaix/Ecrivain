@@ -1,8 +1,8 @@
 <div class="project-page">
     <div class="project-header">
-        <check if="{{ @coverImage }}">
+        <check if="{{ isset(@project.cover_image) && @project.cover_image }}">
             <div class="project-cover">
-                <img src="{{ @base . @coverImage }}" alt="Couverture">
+                <img src="{{ @base }}/project/{{ @project.id }}/cover" alt="Couverture">
             </div>
         </check>
         <div class="project-header__content">
@@ -10,6 +10,7 @@
                 <h2>{{ @project.title }}</h2>
                 <div class="project-actions">
                     <a class="button" href="{{ @base }}/project/{{ @project.id }}/mindmap">Carte mentale</a>
+                    <a class="button" href="{{ @base }}/project/{{ @project.id }}/lecture">Mode Lecture</a>
                     <a class="button" href="{{ @base }}/project/{{ @project.id }}/export">Exporter Texte</a>
                     <a class="button" href="{{ @base }}/project/{{ @project.id }}/export/vector"
                         title="Pour vectorisation IA">Exporter JSON</a>
@@ -214,6 +215,9 @@
                         <details class="act-container" id="act-{{ @act.id }}" data-persist="true">
                             <summary class="act-summary">
                                 <h4>
+                                    <input type="checkbox" class="export-toggle" data-type="act" data-id="{{ @act.id }}"
+                                        {{ @act.is_exported_attr }} title="Inclure dans l'export"
+                                        onclick="event.stopPropagation();">
                                     <input type="number" class="order-input" data-type="act" data-id="{{ @act.id }}"
                                         value="{{ @act.order_index + 1 }}" onclick="event.stopPropagation();">
                                     {{ @act.title }}
@@ -275,7 +279,8 @@
                                                                 data-id="{{ @ch.id }}"
                                                                 value="{{ @ch.order_index + 1 }}">
                                                             <check if="{{ count(@ch.subs) > 0 }}">
-                                                                <span class="collapse-toggle" data-target="{{ @ch.id }}">▼</span>
+                                                                <span class="collapse-toggle"
+                                                                    data-target="{{ @ch.id }}">▼</span>
                                                             </check>
                                                             <strong>
                                                                 {{ @ch.title }}
@@ -333,15 +338,16 @@
                                                                 <input type="number" class="order-input"
                                                                     data-type="chapter" data-id="{{ @sub.id }}"
                                                                     value="{{ @sub.order_index + 1 }}">
-                                                            <span>
-                                                                 {{ @sub.title }}
-                                                            </span>
-                                                            <check if="{{ !empty(@sub.comment)}}">
-                                                                <div class="sub-chapter-comment">
-                                                                    <span>Remarques : </span>{{ @sub.comment | raw }}
-                                                                </div>
-                                                            </check>
-                                                        </td>
+                                                                <span>
+                                                                    {{ @sub.title }}
+                                                                </span>
+                                                                <check if="{{ !empty(@sub.comment)}}">
+                                                                    <div class="sub-chapter-comment">
+                                                                        <span>Remarques : </span>{{ @sub.comment | raw
+                                                                        }}
+                                                                    </div>
+                                                                </check>
+                                                            </td>
                                                             <td class="stats">
                                                                 {{ @sub.wc }} mots<br>{{
                                                                 @sub.lines }} lignes
@@ -404,7 +410,8 @@
                                                         data-id="{{ @ch.id }}" value="{{ @ch.order_index + 1 }}">
 
                                                     <check if="{{ count(@ch.subs) > 0 }}">
-                                                        <span class="collapse-toggle" data-target="{{ @ch.id }}">▼</span>
+                                                        <span class="collapse-toggle"
+                                                            data-target="{{ @ch.id }}">▼</span>
                                                     </check>
                                                     {{ @ch.title }}
                                                     <check if="{{ !empty(@ch.content) }}">
@@ -566,222 +573,223 @@
 
 <script>
     document.addEventListener('DOMContentLoaded', function () {
-        const aiSystemPrompt = {{ json_encode(@aiSystemPrompt) }};
-        document.querySelectorAll('.progress-bar[data-progress]').forEach(function (bar) {
-            var value = parseFloat(bar.getAttribute('data-progress')) || 0;
-            bar.style.width = value + '%';
-        });
+        const aiSystemPrompt = {{ json_encode(@aiSystemPrompt)
+    }};
+    document.querySelectorAll('.progress-bar[data-progress]').forEach(function (bar) {
+        var value = parseFloat(bar.getAttribute('data-progress')) || 0;
+        bar.style.width = value + '%';
+    });
 
-        // Export Toggle Logic
-        document.querySelectorAll('.export-toggle').forEach(function (checkbox) {
-            checkbox.addEventListener('change', function () {
-                const type = this.getAttribute('data-type');
-                const id = this.getAttribute('data-id');
-                const isExported = this.checked ? 1 : 0;
+    // Export Toggle Logic
+    document.querySelectorAll('.export-toggle').forEach(function (checkbox) {
+        checkbox.addEventListener('change', function () {
+            const type = this.getAttribute('data-type');
+            const id = this.getAttribute('data-id');
+            const isExported = this.checked ? 1 : 0;
+            const projectId = "{{ @project.id }}";
+
+            fetch('{{ @base }}/project/' + projectId + '/export-toggle', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRF-Token': window.CSRF_TOKEN
+                },
+                body: JSON.stringify({
+                    type: type,
+                    id: id,
+                    is_exported: isExported
+                })
+            })
+                .then(function (resp) {
+                    if (resp.ok) {
+                        showStatus('Choix d\'export enregistré !');
+                    } else {
+                        alert('Erreur lors de l\'enregistrement du choix d\'export.');
+                        this.checked = !this.checked; // Revert
+                    }
+                }.bind(this));
+        });
+    });
+
+    // Order Index Logic
+    document.querySelectorAll('.order-input').forEach(function (input) {
+        input.addEventListener('change', function () {
+            const type = this.getAttribute('data-type');
+            const id = this.getAttribute('data-id');
+            const newIndex = this.value;
+            const projectId = "{{ @project.id }}";
+
+            fetch('{{ @base }}/project/' + projectId + '/reorder-item', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRF-Token': window.CSRF_TOKEN
+                },
+                body: JSON.stringify({
+                    type: type,
+                    id: id,
+                    new_index: newIndex
+                })
+            })
+                .then(function (resp) {
+                    if (resp.ok) {
+                        window.location.reload(); // Reload to reflect re-indexing
+                    } else {
+                        alert('Erreur lors de la réorganisation.');
+                    }
+                });
+        });
+    });
+
+    // Modal Logic
+    const modal = document.getElementById('previewModal');
+    const modalTitle = document.getElementById('modalTitle');
+    const modalBody = document.getElementById('modalBody');
+    const closeModal = document.querySelector('.modal-close');
+
+    if (modal) {
+        document.querySelectorAll('.preview-btn').forEach(btn => {
+            btn.addEventListener('click', function (e) {
+                e.preventDefault();
+                const type = this.dataset.type;
+                const id = this.dataset.id;
                 const projectId = "{{ @project.id }}";
 
-                fetch('{{ @base }}/project/' + projectId + '/export-toggle', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'X-CSRF-Token': window.CSRF_TOKEN
-                    },
-                    body: JSON.stringify({
-                        type: type,
-                        id: id,
-                        is_exported: isExported
-                    })
-                })
-                    .then(function (resp) {
-                        if (resp.ok) {
-                            showStatus('Choix d\'export enregistré !');
-                        } else {
-                            alert('Erreur lors de l\'enregistrement du choix d\'export.');
-                            this.checked = !this.checked; // Revert
-                        }
-                    }.bind(this));
-            });
-        });
+                modalTitle.innerText = "Chargement...";
+                modalBody.innerHTML = '<div class="modal-loading">Chargement du contenu...</div>';
+                modal.classList.add('is-visible');
 
-        // Order Index Logic
-        document.querySelectorAll('.order-input').forEach(function (input) {
-            input.addEventListener('change', function () {
-                const type = this.getAttribute('data-type');
-                const id = this.getAttribute('data-id');
-                const newIndex = this.value;
-                const projectId = "{{ @project.id }}";
-
-                fetch('{{ @base }}/project/' + projectId + '/reorder-item', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'X-CSRF-Token': window.CSRF_TOKEN
-                    },
-                    body: JSON.stringify({
-                        type: type,
-                        id: id,
-                        new_index: newIndex
+                fetch(`{{ @base }}/project/${projectId}/preview/${type}/${id}`)
+                    .then(response => response.json())
+                    .then(data => {
+                        modalTitle.innerText = data.title;
+                        modalBody.innerHTML = data.content;
                     })
-                })
-                    .then(function (resp) {
-                        if (resp.ok) {
-                            window.location.reload(); // Reload to reflect re-indexing
-                        } else {
-                            alert('Erreur lors de la réorganisation.');
-                        }
+                    .catch(err => {
+                        modalTitle.innerText = "Erreur";
+                        modalBody.innerHTML = "Impossible de charger le contenu.";
+                        console.error(err);
                     });
             });
         });
 
-        // Modal Logic
-        const modal = document.getElementById('previewModal');
-        const modalTitle = document.getElementById('modalTitle');
-        const modalBody = document.getElementById('modalBody');
-        const closeModal = document.querySelector('.modal-close');
+        closeModal.onclick = () => modal.classList.remove('is-visible');
+        window.onclick = (event) => {
+            if (event.target == modal) modal.classList.remove('is-visible');
+        };
+    }
 
-        if (modal) {
-            document.querySelectorAll('.preview-btn').forEach(btn => {
-                btn.addEventListener('click', function (e) {
-                    e.preventDefault();
-                    const type = this.dataset.type;
-                    const id = this.dataset.id;
-                    const projectId = "{{ @project.id }}";
+    // --- Persistence Logic ---
+    document.querySelectorAll('details[data-persist="true"]').forEach(details => {
+        const id = details.id;
+        if (!id) return;
 
-                    modalTitle.innerText = "Chargement...";
-                    modalBody.innerHTML = '<div class="modal-loading">Chargement du contenu...</div>';
-                    modal.classList.add('is-visible');
-
-                    fetch(`{{ @base }}/project/${projectId}/preview/${type}/${id}`)
-                        .then(response => response.json())
-                        .then(data => {
-                            modalTitle.innerText = data.title;
-                            modalBody.innerHTML = data.content;
-                        })
-                        .catch(err => {
-                            modalTitle.innerText = "Erreur";
-                            modalBody.innerHTML = "Impossible de charger le contenu.";
-                            console.error(err);
-                        });
-                });
-            });
-
-            closeModal.onclick = () => modal.classList.remove('is-visible');
-            window.onclick = (event) => {
-                if (event.target == modal) modal.classList.remove('is-visible');
-            };
+        const savedState = localStorage.getItem('details-state-' + id);
+        if (savedState === 'open') {
+            details.setAttribute('open', '');
+        } else if (savedState === 'closed') {
+            details.removeAttribute('open');
         }
 
-        // --- Persistence Logic ---
-        document.querySelectorAll('details[data-persist="true"]').forEach(details => {
-            const id = details.id;
-            if (!id) return;
+        // Save state on toggle
+        details.addEventListener('toggle', function () {
+            const state = this.open ? 'open' : 'closed';
+            localStorage.setItem('details-state-' + id, state);
+        });
+    });
 
-            const savedState = localStorage.getItem('details-state-' + id);
-            if (savedState === 'open') {
-                details.setAttribute('open', '');
-            } else if (savedState === 'closed') {
-                details.removeAttribute('open');
+    // AI Summary Logic
+    document.querySelectorAll('.ai-summary-btn').forEach(btn => {
+        btn.addEventListener('click', function (e) {
+            e.preventDefault();
+            const chapterId = this.dataset.id;
+            const originalText = this.innerText;
+
+            if (!confirm('Voulez-vous générer un résumé de ce chapitre basé sur ses sous-chapitres ? Cela remplacera la description actuelle.')) {
+                return;
             }
 
-            // Save state on toggle
-            details.addEventListener('toggle', function () {
-                const state = this.open ? 'open' : 'closed';
-                localStorage.setItem('details-state-' + id, state);
-            });
-        });
+            this.innerText = 'Génération...';
+            this.disabled = true;
 
-        // AI Summary Logic
-        document.querySelectorAll('.ai-summary-btn').forEach(btn => {
-            btn.addEventListener('click', function (e) {
-                e.preventDefault();
-                const chapterId = this.dataset.id;
-                const originalText = this.innerText;
-
-                if (!confirm('Voulez-vous générer un résumé de ce chapitre basé sur ses sous-chapitres ? Cela remplacera la description actuelle.')) {
-                    return;
-                }
-
-                this.innerText = 'Génération...';
-                this.disabled = true;
-
-                fetch('{{ @base }}/ai/summarize-chapter', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'X-CSRF-Token': window.CSRF_TOKEN
-                    },
-                    body: JSON.stringify({
-                        chapter_id: chapterId,
-                        system_prompt: aiSystemPrompt
-                    })
+            fetch('{{ @base }}/ai/summarize-chapter', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRF-Token': window.CSRF_TOKEN
+                },
+                body: JSON.stringify({
+                    chapter_id: chapterId,
+                    system_prompt: aiSystemPrompt
                 })
-                    .then(response => response.json())
-                    .then(data => {
-                        this.innerText = originalText;
-                        this.disabled = false;
+            })
+                .then(response => response.json())
+                .then(data => {
+                    this.innerText = originalText;
+                    this.disabled = false;
 
-                        if (data.success) {
-                            alert('Résumé généré et enregistré avec succès !');
-                            window.location.reload(); // Reload to show updated description if visible or just refresh state
-                        } else {
-                            alert('Erreur : ' + (data.error || 'Erreur inconnue'));
-                        }
-                    })
-                    .catch(err => {
-                        this.innerText = originalText;
-                        this.disabled = false;
-                        console.error(err);
-                        alert('Erreur de communication avec le serveur.');
-                    });
-            });
-        });
-
-        // AI Act Summary Logic
-        document.querySelectorAll('.ai-act-summary-btn').forEach(btn => {
-            btn.addEventListener('click', function (e) {
-                e.preventDefault();
-                e.stopPropagation(); // Prevent detail toggle
-                const actId = this.dataset.id;
-                const originalText = this.innerText;
-
-                if (!confirm('Voulez-vous générer un résumé pour cet acte basé sur ses chapitres ? Cela remplacera le résumé actuel.')) {
-                    return;
-                }
-
-                this.innerText = 'Génération...';
-                this.disabled = true;
-
-                fetch('{{ @base }}/ai/summarize-act', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'X-CSRF-Token': window.CSRF_TOKEN
-                    },
-                    body: JSON.stringify({
-                        act_id: actId,
-                        system_prompt: aiSystemPrompt
-                    })
+                    if (data.success) {
+                        alert('Résumé généré et enregistré avec succès !');
+                        window.location.reload(); // Reload to show updated description if visible or just refresh state
+                    } else {
+                        alert('Erreur : ' + (data.error || 'Erreur inconnue'));
+                    }
                 })
-                    .then(response => response.json())
-                    .then(data => {
-                        this.innerText = originalText;
-                        this.disabled = false;
-
-                        if (data.success) {
-                            alert('Résumé de l\'acte généré et enregistré avec succès !');
-                            window.location.reload();
-                        } else {
-                            alert('Erreur : ' + (data.error || 'Erreur inconnue'));
-                        }
-                    })
-                    .catch(err => {
-                        this.innerText = originalText;
-                        this.disabled = false;
-                        console.error(err);
-                        alert('Erreur de communication avec le serveur.');
-                    });
-            });
+                .catch(err => {
+                    this.innerText = originalText;
+                    this.disabled = false;
+                    console.error(err);
+                    alert('Erreur de communication avec le serveur.');
+                });
         });
+    });
+
+    // AI Act Summary Logic
+    document.querySelectorAll('.ai-act-summary-btn').forEach(btn => {
+        btn.addEventListener('click', function (e) {
+            e.preventDefault();
+            e.stopPropagation(); // Prevent detail toggle
+            const actId = this.dataset.id;
+            const originalText = this.innerText;
+
+            if (!confirm('Voulez-vous générer un résumé pour cet acte basé sur ses chapitres ? Cela remplacera le résumé actuel.')) {
+                return;
+            }
+
+            this.innerText = 'Génération...';
+            this.disabled = true;
+
+            fetch('{{ @base }}/ai/summarize-act', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRF-Token': window.CSRF_TOKEN
+                },
+                body: JSON.stringify({
+                    act_id: actId,
+                    system_prompt: aiSystemPrompt
+                })
+            })
+                .then(response => response.json())
+                .then(data => {
+                    this.innerText = originalText;
+                    this.disabled = false;
+
+                    if (data.success) {
+                        alert('Résumé de l\'acte généré et enregistré avec succès !');
+                        window.location.reload();
+                    } else {
+                        alert('Erreur : ' + (data.error || 'Erreur inconnue'));
+                    }
+                })
+                .catch(err => {
+                    this.innerText = originalText;
+                    this.disabled = false;
+                    console.error(err);
+                    alert('Erreur de communication avec le serveur.');
+                });
+        });
+    });
 
     }); // DOMContentLoaded
 </script>

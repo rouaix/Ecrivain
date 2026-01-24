@@ -1,57 +1,71 @@
-<h2>Modifier le projet</h2>
-<check if="!empty(@errors)">
-    <div class="error">
-        <ul>
-            <repeat group="@errors" value="@err">
-                <li>{{ @err }}</li>
-            </repeat>
-        </ul>
-    </div>
-</check>
-<form method="post" action="{{ @base }}/project/{{ @project.id }}/edit">
-    <input type="hidden" name="csrf_token" value="{{ @csrfToken }}">
-    <div class="form-group">
-        <label for="title">Titre *</label>
-        <input type="text" id="title" name="title" value="{{ @project.title }}" required>
-    </div>
-    <div class="form-group">
-        <label for="author">Auteur</label>
-        <input type="text" id="author" name="author" value="{{ @project.author }}" placeholder="Nom de l'auteur">
-    </div>
-    <div class="form-group">
-        <label for="description">Description</label>
-        <textarea id="description" name="description" rows="4">{{ @project.description }}</textarea>
-    </div>
-    <div class="form-group form-row">
-        <div class="form-row__col">
-            <label for="words_per_page">Mots par page (moyenne)</label>
-            <input type="number" id="words_per_page" name="words_per_page" value="{{ @project.words_per_page ?: 350 }}"
-                min="1">
+ <div style="position: relative;">
+    <h2 class="project-cover">Modifier le projet</h2>
+
+    <check if="{{ isset(@project.cover_image) && @project.cover_image }}">
+        <img src="{{ @base }}/project/{{ @project.id }}/cover?v={{ mt_rand() }}"
+            alt="Couverture" class="project-cover">
+    </check>
+
+    <check if="!empty(@errors)">
+        <div class="error">
+            <ul>
+                <repeat group="@errors" value="@err">
+                    <li>{{ @err }}</li>
+                </repeat>
+            </ul>
         </div>
-        <div class="form-row__col">
-            <label for="target_pages">Nombre de pages total</label>
-            <input type="number" id="target_pages" name="target_pages" value="{{ @project.target_pages ?: 0 }}" min="0">
+    </check>
+    <form method="post" action="{{ @base }}/project/{{ @project.id }}/edit" enctype="multipart/form-data">
+        <input type="hidden" name="csrf_token" value="{{ @csrfToken }}">
+        <div class="form-group">
+            <label for="title">Titre *</label>
+            <input type="text" id="title" name="title" value="{{ @project.title }}" required>
         </div>
-        <div class="form-row__col">
-            <label for="lines_per_page">Lignes par page</label>
-            <input type="number" id="lines_per_page" name="lines_per_page" value="{{ @project.lines_per_page ?: 38 }}"
-                min="1">
+        <div class="form-group">
+            <label for="author">Auteur</label>
+            <input type="text" id="author" name="author" value="{{ @project.author }}" placeholder="Nom de l'auteur">
         </div>
-    </div>
-    <div class="form-group">
-        <label for="target_words">Objectif de mots total</label>
-        <input type="number" id="target_words" name="target_words" value="{{ @project.target_words }}" min="0">
-        <small class="text-muted">Ce champ est calculé automatiquement mais peut être modifié manuellement.</small>
-    </div>
-    <div class="form-group">
-        <label for="comment">Commentaire</label>
-        <div id="comment-editor" class="editor-surface editor-height-200">
-            {{ @project.comment | raw }}
+        <div class="form-group">
+            <label for="description">Description</label>
+            <textarea id="description" name="description" rows="4">{{ @project.description }}</textarea>
         </div>
-        <input type="hidden" name="comment" value="{{ @project.comment | esc }}">
-    </div>
-    <input type="submit" value="Enregistrer">
-</form>
+        <div class="form-group">
+            <label for="cover_image">Image de couverture</label>
+            <input type="file" id="cover_image" name="cover_image" accept="image/*">
+            <small class="text-muted">Formats acceptés : JPG, PNG, GIF. Taille maximale : 5 Mo.</small>
+        </div>
+        <div class="form-group form-row">
+            <div class="form-row__col">
+                <label for="words_per_page">Mots par page (moyenne)</label>
+                <input type="number" id="words_per_page" name="words_per_page"
+                    value="{{ @project.words_per_page ?: 350 }}" min="1">
+            </div>
+            <div class="form-row__col">
+                <label for="target_pages">Nombre de pages total</label>
+                <input type="number" id="target_pages" name="target_pages" value="{{ @project.target_pages ?: 0 }}"
+                    min="0">
+            </div>
+            <div class="form-row__col">
+                <label for="lines_per_page">Lignes par page</label>
+                <input type="number" id="lines_per_page" name="lines_per_page"
+                    value="{{ @project.lines_per_page ?: 38 }}" min="1">
+            </div>
+        </div>
+        <div class="form-group">
+            <label for="target_words">Objectif de mots total</label>
+            <input type="number" id="target_words" name="target_words" value="{{ @project.target_words }}" min="0">
+            <small class="text-muted">Ce champ est calculé automatiquement mais peut être modifié manuellement.</small>
+        </div>
+        <div class="form-group">
+            <label for="comment">Commentaire</label>
+            <div id="comment-editor" class="editor-surface editor-height-200">
+                {{ @project.comment | raw }}
+            </div>
+            <input type="hidden" name="comment" value="{{ @project.comment | esc }}">
+        </div>
+        <input type="submit" value="Enregistrer">
+    </form>
+</div>
 
 <script>
     document.addEventListener('DOMContentLoaded', function () {

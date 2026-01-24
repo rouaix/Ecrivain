@@ -94,6 +94,28 @@ abstract class Controller
             $this->db->exec("ALTER TABLE sections ADD COLUMN `comment` TEXT");
         } catch (\Exception $e) {
         }
+
+        // IS_EXPORTED: Add is_exported column to all content tables (default 1 = exported)
+        try {
+            $this->db->exec("ALTER TABLE acts ADD COLUMN `is_exported` TINYINT(1) DEFAULT 1");
+        } catch (\Exception $e) {
+        }
+        try {
+            $this->db->exec("ALTER TABLE chapters ADD COLUMN `is_exported` TINYINT(1) DEFAULT 1");
+        } catch (\Exception $e) {
+        }
+        try {
+            $this->db->exec("ALTER TABLE sections ADD COLUMN `is_exported` TINYINT(1) DEFAULT 1");
+        } catch (\Exception $e) {
+        }
+        try {
+            $this->db->exec("ALTER TABLE notes ADD COLUMN `is_exported` TINYINT(1) DEFAULT 1");
+        } catch (\Exception $e) {
+        }
+        try {
+            $this->db->exec("ALTER TABLE characters ADD COLUMN `is_exported` TINYINT(1) DEFAULT 1");
+        } catch (\Exception $e) {
+        }
     }
 
     protected function checkAutoLogin(Base $f3)

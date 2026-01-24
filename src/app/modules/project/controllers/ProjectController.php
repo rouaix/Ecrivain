@@ -379,6 +379,10 @@ class ProjectController extends Controller
                 $actTotalWc += $ch['total_wc'];
             }
             $act['stats_pages'] = ceil($actTotalWc / $wpp);
+
+            // Add export checkbox attribute
+            $isExported = ($act['is_exported'] ?? 1);
+            $act['is_exported_attr'] = $isExported ? 'checked' : '';
         }
         unset($act);
 
@@ -473,6 +477,68 @@ class ProjectController extends Controller
             } catch (\Exception $e) { /* Column likely exists */
             }
 
+            try {
+                $this->f3->get('DB')->exec("ALTER TABLE projects ADD COLUMN cover_image TEXT");
+            } catch (\Exception $e) { /* Column likely exists */
+            }
+
+            // Handle Cover Image Upload
+            if (isset($_FILES['cover_image']) && $_FILES['cover_image']['error'] === UPLOAD_ERR_OK) {
+                $file = $_FILES['cover_image'];
+                $allowedTypes = ['image/jpeg', 'image/png', 'image/gif', 'image/webp'];
+                $allowedExtensions = ['jpg', 'jpeg', 'png', 'gif', 'webp'];
+
+                // Check extension and mime type from browser
+                $extension = strtolower(pathinfo($file['name'], PATHINFO_EXTENSION));
+                $mimeType = $file['type'];
+
+                // Log upload attempt for debugging
+                error_log("Cover upload attempt - Type: {$mimeType}, Ext: {$extension}, Size: {$file['size']}");
+
+                if (in_array($mimeType, $allowedTypes) && in_array($extension, $allowedExtensions)) {
+                    // Use public/uploads/covers/ like SectionController for consistency
+                    $uploadDir = 'public/uploads/covers/';
+
+                    if (!is_dir($uploadDir)) {
+                        if (!mkdir($uploadDir, 0755, true)) {
+                            error_log("Failed to create upload directory: {$uploadDir}");
+                            $errors[] = 'Impossible de créer le répertoire d\'upload.';
+                        }
+                    }
+
+                    if (empty($errors)) {
+                        // Format: project_{pid}_couverture_{timestamp}.ext
+                        $filename = 'project_' . $pid . '_couverture_' . time() . '.' . $extension;
+                        $targetPath = $uploadDir . $filename;
+
+                        if (move_uploaded_file($file['tmp_name'], $targetPath)) {
+                            // Remove old cover image if exists
+                            if (!empty($projectModel->cover_image)) {
+                                $oldFile = $uploadDir . $projectModel->cover_image;
+                                if (file_exists($oldFile)) {
+                                    unlink($oldFile);
+                                    error_log("Deleted old cover: {$oldFile}");
+                                }
+                            }
+
+                            $projectModel->cover_image = $filename;
+                            error_log("Cover uploaded successfully: {$targetPath}");
+                        } else {
+                            error_log("Failed to move uploaded file to: {$targetPath}");
+                            $errors[] = 'Erreur lors de l\'upload de l\'image.';
+                        }
+                    }
+                } else {
+                    error_log("Invalid file type or extension - Type: {$mimeType}, Ext: {$extension}");
+                    $errors[] = 'Format de fichier non autorisé.';
+                }
+            } elseif (isset($_FILES['cover_image']) && $_FILES['cover_image']['error'] !== UPLOAD_ERR_NO_FILE) {
+                // Log upload errors
+                $errorCode = $_FILES['cover_image']['error'];
+                error_log("Cover upload error code: {$errorCode}");
+                $errors[] = 'Erreur lors de l\'upload (code: ' . $errorCode . ').';
+            }
+
             $projectModel->title = $title;
             $projectModel->description = $description;
             $projectModel->comment = $comment;
@@ -510,6 +576,47 @@ class ProjectController extends Controller
             $projectModel->erase();
         }
         $this->f3->reroute('/dashboard');
+    }
+
+    public function cover()
+    {
+        $pid = (int) $this->f3->get('PARAMS.id');
+        $projectModel = new Project();
+        $project = $projectModel->findAndCast(['id=? AND user_id=?', $pid, $this->currentUser()['id']]);
+
+        if (!$project || empty($project[0]['cover_image'])) {
+            error_log("Cover not found - Project: {$pid}, Cover: " . ($project[0]['cover_image'] ?? 'none'));
+            $this->f3->error(404);
+            return;
+        }
+
+        $projectData = $project[0];
+        $coverImage = $projectData['cover_image'];
+
+        // Use public/uploads/covers/ path (consistent with SectionController)
+        $filePath = 'public/uploads/covers/' . $coverImage;
+
+        if (!file_exists($filePath)) {
+            error_log("Cover file not found at path: {$filePath}");
+            $this->f3->error(404);
+            return;
+        }
+
+        // Determine MIME type from extension
+        $ext = strtolower(pathinfo($filePath, PATHINFO_EXTENSION));
+        $mimeTypes = [
+            'jpg' => 'image/jpeg',
+            'jpeg' => 'image/jpeg',
+            'png' => 'image/png',
+            'gif' => 'image/gif',
+            'webp' => 'image/webp'
+        ];
+        $mime = $mimeTypes[$ext] ?? 'application/octet-stream';
+
+        header('Content-Type: ' . $mime);
+        header('Cache-Control: public, max-age=31536000');
+        readfile($filePath);
+        exit;
     }
 
     public function mindmap()
@@ -1690,7 +1797,7 @@ class ProjectController extends Controller
         $pid = (int) $this->f3->get('PARAMS.pid');
         $body = json_decode($this->f3->get('BODY'), true);
         $id = $body['id'] ?? null;
-        $type = $body['type'] ?? ''; // 'chapter', 'section', or 'note'
+        $type = $body['type'] ?? ''; // 'chapter', 'section', 'note', 'act', or 'character'
         $state = $body['is_exported'] ?? 1;
 
         if (!$id || !$type) {
@@ -1709,6 +1816,10 @@ class ProjectController extends Controller
             $model = new Chapter();
         } elseif ($type === 'note') {
             $model = new Note();
+        } elseif ($type === 'act') {
+            $model = new Act();
+        } elseif ($type === 'character') {
+            $model = new Character();
         } else {
             $model = new Section();
         }
