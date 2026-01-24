@@ -3337,3 +3337,17 @@
 [2026-01-24 12:56:45] Controller::beforeRoute URI: /edsa-Ecrivain/auth/tokens | SessionID: h5p1vo9o73d8p5audm5iancova | UserID: 1
 [2026-01-24 12:56:47] Controller::beforeRoute URI: /edsa-Ecrivain/project/1/edit | SessionID: h5p1vo9o73d8p5audm5iancova | UserID: 1
 [2026-01-24 12:56:49] Controller::beforeRoute URI: /edsa-Ecrivain/project/1/cover?v=386787298 | SessionID: h5p1vo9o73d8p5audm5iancova | UserID: 1
+[2026-01-24 13:02:42] Controller::beforeRoute URI: /edsa-Ecrivain/project/1/edit | SessionID: h5p1vo9o73d8p5audm5iancova | UserID: 1
+[2026-01-24 13:02:44] Controller::beforeRoute URI: /edsa-Ecrivain/project/1/cover?v=218216147 | SessionID: h5p1vo9o73d8p5audm5iancova | UserID: 1
+[2026-01-24 13:02:49] Controller::beforeRoute URI: /edsa-Ecrivain/dashboard | SessionID: h5p1vo9o73d8p5audm5iancova | UserID: 1
+[2026-01-24 13:02:51] Controller::beforeRoute URI: /edsa-Ecrivain/auth/tokens | SessionID: h5p1vo9o73d8p5audm5iancova | UserID: 1
+[2026-01-24 13:02:53] Controller::beforeRoute URI: /edsa-Ecrivain/project/1/edit | SessionID: h5p1vo9o73d8p5audm5iancova | UserID: 1
+[2026-01-24 13:02:55] Controller::beforeRoute URI: /edsa-Ecrivain/project/1/cover?v=59076328 | SessionID: h5p1vo9o73d8p5audm5iancova | UserID: 1
+[2026-01-24 13:03:07] Controller::beforeRoute URI: /edsa-Ecrivain/dashboard | SessionID: h5p1vo9o73d8p5audm5iancova | UserID: 1
+[2026-01-24 13:03:09] Controller::beforeRoute URI: /edsa-Ecrivain/auth/tokens | SessionID: h5p1vo9o73d8p5audm5iancova | UserID: 1
+[2026-01-24 13:03:12] Controller::beforeRoute URI: /edsa-Ecrivain/project/1 | SessionID: h5p1vo9o73d8p5audm5iancova | UserID: 1
+[2026-01-24 13:03:14] Controller::beforeRoute URI: /edsa-Ecrivain/project/1/cover | SessionID: h5p1vo9o73d8p5audm5iancova | UserID: 1
+[2026-01-24 13:03:19] Controller::beforeRoute URI: /edsa-Ecrivain/project/1/lecture | SessionID: h5p1vo9o73d8p5audm5iancova | UserID: 1
+[2026-01-24 13:03:21] Controller::beforeRoute URI: /edsa-Ecrivain/project/1/cover | SessionID: h5p1vo9o73d8p5audm5iancova | UserID: 1
+[2026-01-24 13:03:26] Controller::beforeRoute URI: /edsa-Ecrivain/project/1 | SessionID: h5p1vo9o73d8p5audm5iancova | UserID: 1
+[2026-01-24 13:03:28] Controller::beforeRoute URI: /edsa-Ecrivain/project/1/cover | SessionID: h5p1vo9o73d8p5audm5iancova | UserID: 1
