@@ -1,0 +1,197 @@
+@import url('https://fonts.googleapis.com/css2?family=Lora:ital,wght@0,400;0,600;0,700;1,400&family=Inter:wght@400;500;600&display=swap');
+
+/* Forest theme: tons verts profonds, beiges chauds, ambiance forêt */
+body.theme-forest {
+    /* Core */
+    --body-bg: #f4f1ea;
+    --card-bg: #fdfbf6;
+    --text-main: #2a3828;
+    --text-muted: #7a8c6a;
+    --link-color: #4a7a59;
+    --disabled-color: #d4c9a8;
+
+    /* Header & Footer */
+    --header-bg: #2a3828;
+    --header-text: #e8e4d8;
+    --footer-bg: #3d5438;
+    --footer-text: #b0c49a;
+
+    /* Buttons */
+    --button-bg: #7a8c6a;
+    --button-text: #ffffff;
+    --button-primary-bg: #4a7a59;
+    --button-secondary-bg: #8a9e7a;
+    --button-delete-bg: #8b4a2a;
+    --button-hover-bg: #2a3828;
+    --button-delete-hover-bg: #5c2a15;
+
+    /* Borders & Inputs */
+    --border-color: #d4c9a8;
+    --border-light: #e8e0cc;
+    --input-bg: #fdfbf6;
+    --input-text: #2a3828;
+    --input-border: #c5b99a;
+
+    /* Tables */
+    --table-header-bg: #e8e2d0;
+    --table-row-bg: #fdfbf6;
+    --table-row-hover-bg: #eff0e8;
+
+    /* Accents */
+    --panel-hover-shadow: rgba(74, 122, 89, 0.12);
+
+    /* Typography */
+    font-family: 'Inter', system-ui, sans-serif;
+    font-size: 0.95rem;
+    line-height: 1.6;
+    -webkit-font-smoothing: antialiased;
+}
+
+body.theme-forest .button.disabled,
+body.theme-forest .button.small.disabled {
+    cursor: default;
+    background-color: var(--disabled-color);
+    color: #8a9e7a;
+}
+
+/* Titres */
+body.theme-forest h1,
+body.theme-forest h2,
+body.theme-forest h3,
+body.theme-forest .project-card__title {
+    font-family: 'Lora', Georgia, serif;
+    font-weight: 700;
+    letter-spacing: -0.01em;
+    color: #2a3828;
+}
+
+/* Boutons */
+body.theme-forest .button {
+    font-family: 'Inter', system-ui, sans-serif;
+    font-weight: 600;
+    letter-spacing: 0.02em;
+    border-radius: 6px;
+}
+
+body.theme-forest .button.secondary {
+    background: var(--button-secondary-bg);
+    color: var(--button-text);
+}
+
+body.theme-forest .button.delete {
+    background: var(--button-delete-bg);
+}
+
+body.theme-forest .button.secondary:hover,
+body.theme-forest .button:hover,
+body.theme-forest a.button.secondary:hover,
+body.theme-forest a.button:hover,
+body.theme-forest a.button.small.secondary:hover,
+body.theme-forest a.button.small:hover {
+    background: var(--button-hover-bg);
+}
+
+body.theme-forest .button.delete:hover {
+    background: var(--button-delete-hover-bg);
+}
+
+/* Liens */
+body.theme-forest a {
+    color: var(--link-color);
+}
+
+body.theme-forest a:hover {
+    color: #fdfbf6;
+    background: var(--button-hover-bg);
+}
+
+/* Buttons styled as links: restore text color on hover */
+body.theme-forest a.button:hover {
+    color: var(--button-text);
+}
+
+/* Header */
+body.theme-forest header {
+    border-bottom: 2px solid #4a7a59;
+}
+
+body.theme-forest header a {
+    color: var(--header-text);
+}
+
+body.theme-forest header a:hover {
+    color: #a8c49a;
+    background: transparent;
+}
+
+/* Project cards */
+body.theme-forest .project-card {
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    box-shadow: none;
+    transition: box-shadow 0.2s, border-color 0.2s;
+}
+
+body.theme-forest .project-card:hover {
+    transform: none;
+    border-color: var(--link-color);
+    box-shadow: 4px 4px 8px rgba(74, 122, 89, 0.15);
+}
+
+body.theme-forest .project-card__cover {
+    background: linear-gradient(135deg, #2a3828 0%, #4a7a59 60%, #6a9a79 100%);
+    background-size: cover;
+    background-position: center;
+    border-bottom: 1px solid var(--border-color);
+}
+
+body.theme-forest .project-card__title-overlay {
+    color: var(--header-text);
+}
+
+/* Inputs & forms */
+body.theme-forest input:focus,
+body.theme-forest textarea:focus,
+body.theme-forest select:focus {
+    border-color: var(--link-color);
+    outline: none;
+    box-shadow: 0 0 0 2px rgba(74, 122, 89, 0.3);
+}
+
+/* Badges et accents */
+body.theme-forest .badge,
+body.theme-forest .editor-badge-context {
+    background: var(--link-color);
+    color: var(--button-text);
+}
+
+/* Panneaux latéraux */
+body.theme-forest .panel-section-header {
+    border-left: 3px solid var(--link-color);
+}
+
+/* Metric / stat cards */
+body.theme-forest .metric-card strong,
+body.theme-forest .project-stat .value {
+    color: var(--link-color);
+}
+
+/* Headings colors */
+body.theme-forest h1,
+body.theme-forest h2,
+body.theme-forest h3,
+body.theme-forest h4,
+body.theme-forest h5,
+body.theme-forest h6 {
+    color: var(--text-main);
+}
+
+/* Headings in header */
+body.theme-forest header h1,
+body.theme-forest header h2,
+body.theme-forest header h3,
+body.theme-forest header h4,
+body.theme-forest header h5,
+body.theme-forest header h6 {
+    color: var(--header-text);
+}

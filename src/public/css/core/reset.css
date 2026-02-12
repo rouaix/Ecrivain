@@ -1,0 +1,40 @@
+/* Reset and base styles */
+/* ==========================================
+   RESET/BASE STYLES
+   ========================================== */
+body {
+    font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 0;
+    background: var(--body-bg);
+    color: var(--text-main);
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+    font-size: 1em;
+}
+
+a,
+a:hover,
+a:active,
+a:visited {
+    font-weight: bold;
+    color: inherit;
+    text-transform: none;
+    /*text-decoration: unset;*/
+}
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+    margin: 0;
+    padding-bottom: 10px;
+}
+
+p {
+    padding: 0;
+    margin: 0;
+}

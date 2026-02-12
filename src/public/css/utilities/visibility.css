@@ -1,0 +1,21 @@
+/* Visibility utilities */
+/* ==========================================
+   VISIBILITY UTILITIES
+   Show/hide and display helper classes
+   ========================================== */
+.is-hidden {
+    display: none !important;
+}
+
+.is-visible {
+    display: block !important;
+}
+
+.cursor-pointer {
+    cursor: pointer;
+}
+
+.cache {
+    display: none !important;
+    visibility: hidden !important;
+}

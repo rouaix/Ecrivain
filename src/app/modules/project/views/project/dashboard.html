@@ -1,0 +1,322 @@
+<div class="row">
+    <div class="col-8 dashboard-header">
+        <h2>Bonjour {{ @user.username }}!</h2>
+        <p>Gérez vos projets d'écriture.</p>
+    </div>
+    <div class="col-4 text-right">
+        <!-- Button moved to toolbar -->
+    </div>
+</div>
+
+<div class="navigation-toolbar dashboard-toolbar">
+    <a href="{{ @base }}/project/create" class="button secondary">
+        <i class="fas fa-plus"></i> Nouveau projet
+    </a>
+    <a href="{{ @base }}/profile" class="button secondary">
+        <i class="fas fa-user"></i> Mon Profil
+    </a>
+    <a href="{{ @base }}/ai/config" class="button secondary btn-purple">
+        <i class="fas fa-robot"></i> Configuration IA
+    </a>
+    <a href="{{ @base }}/ai/usage" class="button secondary">
+        <i class="fas fa-chart-line"></i> Consommation IA
+    </a>
+    <a href="{{ @base }}/templates" class="button secondary">
+        <i class="fas fa-layer-group"></i> Templates
+    </a>
+</div>
+
+<!-- Theme Switcher -->
+<form action="{{ @base }}/theme" method="POST" class="theme-selector">
+    <input type="hidden" name="csrf_token" value="{{ @csrfToken }}">
+    <span class="theme-label">Thème :</span>
+
+    <check if="{{ !isset(@COOKIE.theme) || @COOKIE.theme=='default' }}">
+        <true><button type="submit" name="theme" value="default" class="theme-btn active theme-swatch--default"
+                title="Défaut (Rouaix)"></button></true>
+        <false><button type="submit" name="theme" value="default" class="theme-btn theme-swatch--default"
+                title="Défaut (Rouaix)"></button></false>
+    </check>
+    <check if="{{ isset(@COOKIE.theme) && @COOKIE.theme=='blue' }}">
+        <true><button type="submit" name="theme" value="blue" class="theme-btn active theme-swatch--blue"
+                title="Bleu (Moderne)"></button></true>
+        <false><button type="submit" name="theme" value="blue" class="theme-btn theme-swatch--blue"
+                title="Bleu (Moderne)"></button></false>
+    </check>
+    <check if="{{ isset(@COOKIE.theme) && @COOKIE.theme=='dark' }}">
+        <true><button type="submit" name="theme" value="dark" class="theme-btn active theme-swatch--dark"
+                title="Sombre"></button></true>
+        <false><button type="submit" name="theme" value="dark" class="theme-btn theme-swatch--dark"
+                title="Sombre"></button></false>
+    </check>
+    <check if="{{ isset(@COOKIE.theme) && @COOKIE.theme=='forest' }}">
+        <true><button type="submit" name="theme" value="forest" class="theme-btn active theme-swatch--forest"
+                title="Forêt"></button></true>
+        <false><button type="submit" name="theme" value="forest" class="theme-btn theme-swatch--forest"
+                title="Forêt"></button></false>
+    </check>
+    <check if="{{ isset(@COOKIE.theme) && @COOKIE.theme=='moderne' }}">
+        <true><button type="submit" name="theme" value="moderne" class="theme-btn active theme-swatch--moderne"
+                title="Moderne"></button></true>
+        <false><button type="submit" name="theme" value="moderne" class="theme-btn theme-swatch--moderne"
+                title="Moderne"></button></false>
+    </check>
+</form>
+
+<check if="{{ count(@projects) > 0 }}">
+    <true>
+        <div class="projects-grid">
+            <repeat group="{{ @projects }}" value="{{ @proj }}">
+                <div class="project-card"> <!-- Changed from 'a' to 'div' to properly handle nested actions -->
+                    <a href="{{ @base }}/project/{{ @proj.id }}" class="project-card-link">
+                        <check if="{{ @proj.cover_image }}">
+                            <true>
+                                <div class="project-card__cover"
+                                    style="background-image: url('{{ @base }}/project/{{ @proj.id }}/cover');">
+                                </div>
+                            </true>
+                            <false>
+                                <div class="project-card__cover">
+                                    <div class="project-card__title-overlay">{{ @proj.title }}</div>
+                                </div>
+                            </false>
+                        </check>
+
+                        <div class="project-card__info">
+                            <h3 class="project-card__title">{{ @proj.title }}</h3>
+                            <div class="project-card__description">{{ @proj.description }}</div>
+                            <div class="project-card__meta">
+                                <span>Modifié: {{ date('d/m/Y', strtotime(@proj.updated_at)) }}</span>
+                            </div>
+                            <div class="project-card__stats cache">
+                                <div class="project-stat">
+                                    <span class="label">Mots</span>
+                                    <span class="value">{{ number_format(@proj.target_words, 0, ',', ' ') }}</span>
+                                </div>
+                                <div class="project-stat">
+                                    <span class="label">Pages</span>
+                                    <span class="value">{{ @proj.pages_count }}</span>
+                                </div>
+                            </div>
+                        </div>
+                    </a>
+
+                    <div class="project-card__actions">
+                        <a href="{{ @base }}/project/{{ @proj.id }}/edit" class="button small secondary"
+                            title="Modifier">
+                            <i class="fas fa-edit"></i>
+                        </a>
+                        <a href="#" class="button small delete js-delete-project" title="Supprimer"
+                            data-url="{{ @base }}/project/{{ @proj.id }}/delete">
+                            <i class="fas fa-trash"></i>
+                        </a>
+                    </div>
+                </div>
+            </repeat>
+        </div>
+    </true>
+    <false>
+        <div class="empty-state">
+            <p>Vous n'avez pas encore de projet.</p>
+            <a href="{{ @base }}/project/create" class="button">Créer mon premier roman</a>
+        </div>
+    </false>
+</check>
+
+<!-- Delete Confirmation Modal -->
+<div id="deleteModal" class="modal-overlay">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h3>Supprimer le projet</h3>
+            <button class="modal-close" id="closeDeleteModalBtn">&times;</button>
+        </div>
+        <div class="modal-body">
+            <p>Êtes-vous sûr de vouloir supprimer ce projet ?</p>
+            <p class="text-muted small-text-muted">Cette action est irréversible et effacera toutes les données
+                associées.</p>
+            <div class="form-actions-right mt-20">
+                <button class="button secondary" id="cancelDeleteBtn">Annuler</button>
+                <a id="btnConfirmDelete" href="#" class="button delete">Supprimer définitivement</a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="card-panel">
+    <h3>Accès rapide</h3>
+    <button id="btn-generate-token" class="button">Générer un lien d'auto-login pour votre
+        compte</button>
+    <div class="mt-20">
+        <h4>Vos liens actifs</h4>
+        <div id="token-list" class="mt-10">
+            <p>Chargement...</p>
+        </div>
+    </div>
+</div>
+
+<script nonce="{{ @nonce }}">
+    // Confirmer la suppression
+    function openDeleteModal(url) {
+        const modal = document.getElementById('deleteModal');
+        const btn = document.getElementById('btnConfirmDelete');
+        btn.href = url;
+        modal.classList.add('is-visible');
+    }
+
+    function closeDeleteModal() {
+        document.getElementById('deleteModal').classList.remove('is-visible');
+    }
+
+    // Attach listeners when DOM is loaded
+    document.addEventListener('DOMContentLoaded', function () {
+        // Delete buttons
+        document.querySelectorAll('.js-delete-project').forEach(btn => {
+            btn.addEventListener('click', function (e) {
+                e.preventDefault();
+                openDeleteModal(this.dataset.url);
+            });
+        });
+
+        // Close modal buttons
+        const closeBtn = document.getElementById('closeDeleteModalBtn');
+        if (closeBtn) closeBtn.addEventListener('click', closeDeleteModal);
+
+        const cancelBtn = document.getElementById('cancelDeleteBtn');
+        if (cancelBtn) cancelBtn.addEventListener('click', closeDeleteModal);
+
+        // Close modal on outside click
+        window.addEventListener('click', function (e) {
+            const modal = document.getElementById('deleteModal');
+            if (e.target == modal) {
+                closeDeleteModal();
+            }
+        });
+
+        // Generate Token Button
+        const genTokenBtn = document.getElementById('btn-generate-token');
+        if (genTokenBtn) {
+            genTokenBtn.addEventListener('click', generateToken);
+        }
+
+        // Token List Event Delegation (Copy / Select / Revoke)
+        const tokenList = document.getElementById('token-list');
+        if (tokenList) {
+            tokenList.addEventListener('click', function (e) {
+                // Select Input
+                if (e.target.matches('.token-input')) {
+                    e.target.select();
+                }
+                // Copy Button
+                if (e.target.matches('.js-copy-token')) {
+                    const link = e.target.dataset.link;
+                    navigator.clipboard.writeText(link);
+                }
+                // Revoke Button
+                if (e.target.matches('.js-revoke-token')) {
+                    const id = e.target.dataset.id;
+                    revokeToken(id);
+                }
+            });
+        }
+
+        // Initial load of tokens
+        loadTokens();
+    });
+
+    async function loadTokens() {
+        const listDiv = document.getElementById('token-list');
+        try {
+            const response = await fetch('{{ @base }}/auth/tokens');
+            const data = await response.json();
+
+            if (!data.tokens || data.tokens.length === 0) {
+                listDiv.innerHTML = '<p class="text-muted">Aucun lien actif.</p>';
+                return;
+            }
+
+            let html = '<ul class="token-list">';
+            data.tokens.forEach(t => {
+                const tokenValue = t.token ?? '';
+                const hasLink = tokenValue !== '';
+                const encoded = hasLink ? encodeURIComponent(tokenValue) : '';
+                const link = hasLink ? `${window.location.origin}{{ @base }}/?token=${encoded}` : '';
+                const createdAt = t.created_at ?? '–';
+
+                // Input (read-only)
+                const tokenInput = hasLink
+                    ? `<input type="text" value="${link}" readonly class="token-input">`
+                    : '<div class="token-input token-input--missing" aria-label="Lien indisponible" tabindex="0">Lien indisponible</div>';
+
+                // Copy Button
+                const copyButton = hasLink
+                    ? `<button type="button" data-link="${link}" class="button token-button js-copy-token">Copier</button>`
+                    : '';
+
+                // Revoke Button
+                const revokeButton = `<button type="button" data-id="${t.token_id}" class="button delete token-button js-revoke-token">Supprimer</button>`;
+
+                html += `
+                <li class="token-item">
+                    <div class="token-info">
+                        ${tokenInput}
+                        <div class="token-meta">Créé le ${createdAt}</div>
+                    </div>
+                    <div class="token-actions">
+                        ${copyButton}
+                        ${revokeButton}
+                    </div>
+                </li>
+            `;
+            });
+            html += '</ul>';
+            listDiv.innerHTML = html;
+
+        } catch (e) {
+            listDiv.innerHTML = '<p class="text-error">Erreur de chargement.</p>';
+            console.error(e);
+        }
+    }
+
+    async function generateToken() {
+        const btn = document.getElementById('btn-generate-token');
+        btn.disabled = true;
+        btn.textContent = 'Génération...';
+
+        try {
+            const response = await fetch('{{ @base }}/auth/token/generate', {
+                method: 'POST',
+                headers: { 'X-CSRF-TOKEN': '{{ @csrfToken }}' }
+            });
+            if (!response.ok) throw new Error('Erreur');
+
+            await loadTokens(); // Refresh list
+
+        } catch (e) {
+            alert('Erreur: ' + e.message);
+        } finally {
+            btn.disabled = false;
+            btn.textContent = 'Générer un lien';
+        }
+    }
+
+    async function revokeToken(tokenId) {
+        if (!confirm('Supprimer ce lien ?')) return;
+
+        try {
+            const response = await fetch('{{ @base }}/auth/token/revoke', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRF-TOKEN': '{{ @csrfToken }}'
+                },
+                body: JSON.stringify({ token_id: tokenId })
+            });
+
+            if (!response.ok) throw new Error('Erreur');
+            await loadTokens(); // Refresh list
+
+        } catch (e) {
+            alert('Impossible de supprimer: ' + e.message);
+        }
+    }
+</script>

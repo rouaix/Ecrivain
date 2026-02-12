@@ -1,0 +1,608 @@
+<!DOCTYPE html>
+<html lang="fr">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ @title | esc }}</title>
+    <!-- Use specific reading mode styles instead of global style.css to avoid header/footer bleed -->
+    <link rel="stylesheet" href="{{ @base }}/public/style.css?v=5">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <set selectedTheme="{{ isset(@COOKIE.theme) ? @COOKIE.theme : 'default' }}" />
+    <link rel="stylesheet" href="{{ @base }}/public/theme-{{ @selectedTheme }}.css?v=2">
+    <link rel="stylesheet" href="{{ @base }}/public/reading.css?v=10">
+    <style>
+        /* Critical overrides for reading mode */
+        body.reading-mode header,
+        body.reading-mode footer,
+        body.reading-mode nav:not(.reading-toolbar *) {
+            display: none !important;
+        }
+        body.reading-mode main.reading-content {
+            padding: 0 !important;
+            max-width: 100% !important;
+        }
+        body.reading-mode .container {
+            max-width: 100% !important;
+            width: 100% !important;
+            padding: 0 !important;
+        }
+        body.reading-mode .reading-container {
+            max-width: 100% !important;
+            width: 100vw !important;
+            margin: 0 !important;
+            padding: 0 !important;
+        }
+
+        /* FORCE toolbar to use theme variables, not global button styles */
+        .reading-toolbar {
+            background: var(--header-bg) !important;
+            color: var(--header-text) !important;
+            display: flex !important;
+            flex-direction: row !important;
+            align-items: center !important;
+            padding: 12px 20px !important;
+            gap: 15px !important;
+            min-height: 50px !important;
+            max-height: 100px !important;
+            box-sizing: border-box !important;
+            flex-shrink: 0 !important;
+            position: sticky !important;
+            top: 0 !important;
+            left: 0 !important;
+            right: 0 !important;
+            width: 100% !important;
+            margin: 0 !important;
+            z-index: 100 !important;
+            transform: none !important;
+            visibility: visible !important;
+            opacity: 1 !important;
+        }
+
+        .reading-toolbar .toolbar-title {
+            color: var(--header-text) !important;
+            font-size: 1.2rem !important;
+            font-weight: 600 !important;
+            flex: 1 !important;
+        }
+
+        .reading-toolbar .toolbar-btn {
+            background: rgba(255, 255, 255, 0.1) !important;
+            color: var(--header-text) !important;
+            border: 1px solid rgba(255, 255, 255, 0.2) !important;
+            padding: 8px 12px !important;
+            border-radius: 4px !important;
+            font-size: 0.85rem !important;
+            font-family: inherit !important;
+            line-height: 1.2 !important;
+            height: 36px !important;
+            max-height: 36px !important;
+            display: inline-flex !important;
+            align-items: center !important;
+            justify-content: center !important;
+            gap: 4px !important;
+            text-decoration: none !important;
+            cursor: pointer !important;
+            box-sizing: border-box !important;
+            white-space: nowrap !important;
+            overflow: hidden !important;
+            flex-shrink: 1 !important;
+        }
+
+        @media (max-width: 768px) {
+            .reading-toolbar {
+                flex-wrap: nowrap !important;
+                padding: 8px 10px !important;
+                overflow-x: auto !important;
+                overflow-y: hidden !important;
+            }
+            .reading-toolbar .toolbar-title {
+                font-size: 0.9rem !important;
+                line-height: 1.2 !important;
+                white-space: nowrap !important;
+                overflow: hidden !important;
+                text-overflow: ellipsis !important;
+                flex-shrink: 2 !important;
+                max-width: 200px !important;
+            }
+            .reading-toolbar .toolbar-btn {
+                font-size: 0.75rem !important;
+                padding: 6px 10px !important;
+                height: 32px !important;
+                max-height: 32px !important;
+                flex-shrink: 0 !important;
+            }
+            .reading-toolbar .toolbar-btn i {
+                font-size: 0.85rem !important;
+            }
+        }
+    </style>
+</head>
+
+<body class="reading-mode theme-{{ @selectedTheme }}">
+    <!-- Toolbar -->
+    <div class="reading-toolbar">
+        <div class="toolbar-title">{{ @project.title | esc }}</div>
+        <button class="toolbar-btn" id="toggleToc"><i class="fas fa-list"></i> Table des matieres</button>
+        <button class="toolbar-btn" id="toggleFullscreen"><i class="fas fa-expand"></i> Plein ecran</button>
+        <button class="toolbar-btn" id="saveBookmark" title="Enregistrer la position"><i class="fas fa-bookmark"></i>
+            Marque-page</button>
+        <a href="{{ @base }}/project/{{ @project.id }}" class="toolbar-btn button" title="Retour au projet"><i
+                class="fas fa-arrow-left"></i></a>
+    </div>
+
+    <div class="reading-container">
+        <!-- Table of Contents -->
+        <aside class="reading-toc" id="readingToc">
+            <h2>Table des matieres</h2>
+            <div class="toc-list">
+                <repeat group="{{ @tocItems }}" value="{{ @item }}">
+                    <div class="toc-item level-{{ @item.level }}" data-page="{{ @item.page }}">
+                        <span class="toc-page">p. {{ @item.page }}</span>
+                        {{ @item.title | esc }}
+                    </div>
+                </repeat>
+            </div>
+        </aside>
+
+        <!-- Reading Content -->
+        <main class="reading-content" id="readingContent">
+
+            <div class="lecture-content">
+                <!-- Cover Page -->
+                <div class="reading-cover-page">
+                    <check if="{{ @coverImage }}">
+                        <img src="{{ @coverImage }}" alt="Couverture" class="cover-image">
+                    </check>
+                    <h1 class="cover-title">{{ @project.title | esc }}</h1>
+                    <check if="{{ @project.description }}">
+                        <div class="cover-description">{{ @project.description | esc }}</div>
+                    </check>
+                    <div class="cover-author">{{ @authorName | esc }}</div>
+                </div>
+
+                <!-- Content Sections -->
+                <repeat group="{{ @readingContent }}" value="{{ @section }}">
+                    <article class="reading-section" id="page-{{ @section.page_start }}"
+                        data-page-start="{{ @section.page_start }}" data-page-end="{{ @section.page_end }}"
+                        data-content-type="{{ @section.type }}" data-content-id="{{ @section.id }}">
+                        <check if="{{ @section.type == 'act' }}">
+                            <h1>{{ @section.title | esc }}</h1>
+                        </check>
+                        <check if="{{ @section.type == 'chapter' }}">
+                            <h2>{{ @section.title | esc }}</h2>
+                        </check>
+                        <check if="{{ @section.type == 'subchapter' }}">
+                            <h3>{{ @section.title | esc }}</h3>
+                        </check>
+                        <check if="{{ @section.type == 'section' }}">
+                            <h2>{{ @section.title | esc }}</h2>
+                        </check>
+                        <check if="{{ @section.type == 'note' }}">
+                            <h2>{{ @section.title | esc }}</h2>
+                        </check>
+                        <check if="{{ @section.type == 'element' }}">
+                            <h2>{{ @section.title | esc }}</h2>
+                        </check>
+                        <check if="{{ @section.type == 'subelement' }}">
+                            <h3>{{ @section.title | esc }}</h3>
+                        </check>
+
+                        <div class="typography">
+                            {{ @section.content | raw }}
+                        </div>
+                    </article>
+                </repeat>
+
+                <!-- Page Number Footer -->
+                <div class="reading-footer">
+                    <div class="page-number">
+                        Page <span id="currentPage">1</span> / {{ @totalPages }}
+                    </div>
+                </div>
+            </div>
+
+            <!-- Selection Popup -->
+            <div id="selectionPopup" class="selection-popup">
+                <button id="copyBtn" class="popup-btn"><i class="fas fa-copy"></i> &nbsp;Copier</button>
+                <button id="commentBtn" class="popup-btn"><i class="fas fa-comment-dots"></i> &nbsp;Ajouter une
+                    remarque</button>
+            </div>
+
+            <!-- Comment Form Popup -->
+            <div id="commentFormPopup" class="comment-form-popup">
+                <div class="comment-form-content">
+                    <h3>Ajouter une remarque</h3>
+                    <p id="selectedTextPreview" class="selected-text-preview"></p>
+                    <textarea id="commentTextarea" placeholder="Votre remarque..." rows="4"></textarea>
+                    <div class="comment-form-actions">
+                        <button id="cancelCommentBtn" class="popup-btn secondary" title="Annuler">Annuler</button>
+                        <button id="submitCommentBtn" class="popup-btn primary">Valider</button>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script nonce="{{ @nonce }}">
+        window.CSRF_TOKEN = '{{ @csrfToken }}';
+
+        // DIAGNOSTIC - Log toolbar state
+        console.log('=== TOOLBAR DIAGNOSTIC ===');
+        console.log('Window width:', window.innerWidth);
+        console.log('User agent:', navigator.userAgent);
+
+        document.addEventListener('DOMContentLoaded', function () {
+            const toolbar = document.querySelector('.reading-toolbar');
+            console.log('Toolbar element:', toolbar);
+            console.log('Toolbar display:', window.getComputedStyle(toolbar).display);
+            console.log('Toolbar transform:', window.getComputedStyle(toolbar).transform);
+            console.log('Toolbar visibility:', window.getComputedStyle(toolbar).visibility);
+            console.log('Body classes:', document.body.className);
+            console.log('Fullscreen element:', document.fullscreenElement);
+
+            // Monitor body class changes
+            const observer = new MutationObserver(function(mutations) {
+                mutations.forEach(function(mutation) {
+                    if (mutation.attributeName === 'class') {
+                        console.log('Body class changed to:', document.body.className);
+                        console.log('Toolbar transform after change:', window.getComputedStyle(toolbar).transform);
+                    }
+                });
+            });
+            observer.observe(document.body, { attributes: true });
+
+            // Monitor fullscreen changes
+            document.addEventListener('fullscreenchange', function() {
+                console.log('Fullscreen changed. Element:', document.fullscreenElement);
+                console.log('Body classes:', document.body.className);
+            });
+
+            const toc = document.getElementById('readingToc');
+            const content = document.getElementById('readingContent');
+            const scrollableDiv = content;
+
+            const toggleTocBtn = document.getElementById('toggleToc');
+            const toggleFullscreenBtn = document.getElementById('toggleFullscreen');
+            const currentPageSpan = document.getElementById('currentPage');
+            const sections = document.querySelectorAll('.reading-section');
+
+            // Toggle TOC
+            toggleTocBtn.addEventListener('click', function () {
+                toc.classList.toggle('hidden');
+            });
+
+            // Toggle Fullscreen
+            toggleFullscreenBtn.addEventListener('click', function () {
+                if (!document.fullscreenElement) {
+                    document.documentElement.requestFullscreen();
+                    document.body.classList.add('fullscreen-mode');
+                    toggleFullscreenBtn.innerHTML = '<i class="fas fa-compress"></i> Quitter plein ecran';
+                } else {
+                    document.exitFullscreen();
+                    document.body.classList.remove('fullscreen-mode');
+                    toggleFullscreenBtn.innerHTML = '<i class="fas fa-expand"></i> Plein ecran';
+                }
+            });
+
+            // Handle fullscreen change
+            document.addEventListener('fullscreenchange', function () {
+                if (!document.fullscreenElement) {
+                    document.body.classList.remove('fullscreen-mode');
+                    toggleFullscreenBtn.innerHTML = '<i class="fas fa-expand"></i> Plein ecran';
+                }
+            });
+
+            // TOC Click Navigation
+            document.querySelectorAll('.toc-item').forEach(function (item) {
+                item.addEventListener('click', function () {
+                    const page = parseInt(this.dataset.page);
+                    const targetSection = document.querySelector(`[data-page-start="${page}"]`);
+                    if (targetSection) {
+                        targetSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                    }
+                });
+            });
+
+            // Update current page on scroll
+            function updateCurrentPage() {
+                if (!scrollableDiv) return;
+
+                const containerRect = scrollableDiv.getBoundingClientRect();
+                const viewportMiddle = containerRect.top + (containerRect.height / 2);
+
+                let currentPage = 1;
+                sections.forEach(function (section) {
+                    const rect = section.getBoundingClientRect();
+                    if (rect.top <= viewportMiddle && rect.bottom > viewportMiddle) {
+                        const progress = (viewportMiddle - rect.top) / rect.height;
+                        const safeProgress = Math.max(0, Math.min(1, progress));
+
+                        const pageStart = parseInt(section.dataset.pageStart);
+                        const pageEnd = parseInt(section.dataset.pageEnd);
+
+                        currentPage = Math.floor(pageStart + (pageEnd - pageStart) * safeProgress);
+                    }
+                });
+
+                currentPageSpan.textContent = currentPage;
+            }
+
+            if (scrollableDiv) {
+                scrollableDiv.addEventListener('scroll', updateCurrentPage);
+            }
+            updateCurrentPage();
+
+            // Text Selection Popup Logic
+            const selectionPopup = document.getElementById('selectionPopup');
+            const commentFormPopup = document.getElementById('commentFormPopup');
+            const copyBtn = document.getElementById('copyBtn');
+            const commentBtn = document.getElementById('commentBtn');
+            const cancelCommentBtn = document.getElementById('cancelCommentBtn');
+            const submitCommentBtn = document.getElementById('submitCommentBtn');
+            const commentTextarea = document.getElementById('commentTextarea');
+            const selectedTextPreview = document.getElementById('selectedTextPreview');
+
+            let selectedText = '';
+            let currentContentType = '';
+            let currentContentId = '';
+
+            // Show selection popup on text selection
+            document.addEventListener('mouseup', function (e) {
+                const selection = window.getSelection();
+                const text = selection.toString().trim();
+
+                if (text.length > 0) {
+                    let target = e.target;
+                    while (target && !target.classList.contains('reading-section')) {
+                        target = target.parentElement;
+                    }
+
+                    if (target) {
+                        selectedText = text;
+                        currentContentType = target.dataset.contentType;
+                        currentContentId = target.dataset.contentId;
+
+                        const range = selection.getRangeAt(0);
+                        const rect = range.getBoundingClientRect();
+
+                        selectionPopup.style.display = 'flex';
+                        selectionPopup.style.left = rect.left + 'px';
+                        selectionPopup.style.top = (rect.bottom + 5) + 'px';
+                    }
+                } else {
+                    selectionPopup.style.display = 'none';
+                }
+            });
+
+            // Hide popup when clicking outside
+            document.addEventListener('mousedown', function (e) {
+                if (!selectionPopup.contains(e.target) && !commentFormPopup.contains(e.target)) {
+                    selectionPopup.style.display = 'none';
+                }
+            });
+
+            // Copy button
+            copyBtn.addEventListener('click', function () {
+                navigator.clipboard.writeText(selectedText).then(function () {
+                    alert('Texte copie !');
+                    selectionPopup.style.display = 'none';
+                });
+            });
+
+            // Comment button
+            commentBtn.addEventListener('click', function () {
+                selectedTextPreview.textContent = '"' + selectedText + '"';
+                commentTextarea.value = '';
+                selectionPopup.style.display = 'none';
+                commentFormPopup.style.display = 'flex';
+                commentTextarea.focus();
+            });
+
+            // Cancel comment
+            cancelCommentBtn.addEventListener('click', function () {
+                commentFormPopup.style.display = 'none';
+            });
+
+            // Submit comment
+            submitCommentBtn.addEventListener('click', function () {
+                const comment = commentTextarea.value.trim();
+                if (!comment) {
+                    alert('Veuillez entrer une remarque.');
+                    return;
+                }
+
+                const remarkText = `[${new Date().toLocaleString('fr-FR')}] "${selectedText}"\n${comment}\n\n`;
+
+                fetch('{{ @base }}/lecture/add-comment', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRF-Token': window.CSRF_TOKEN
+                    },
+                    body: JSON.stringify({
+                        type: currentContentType,
+                        id: currentContentId,
+                        comment: remarkText
+                    })
+                })
+                    .then(function (resp) {
+                        if (resp.ok) {
+                            alert('Remarque ajoutee avec succes !');
+                            commentFormPopup.style.display = 'none';
+                        } else {
+                            alert('Erreur lors de l\'ajout de la remarque.');
+                        }
+                    })
+                    .catch(function (err) {
+                        console.error(err);
+                        alert('Erreur de communication.');
+                    });
+            });
+
+            // Bookmark functionality
+            const saveBookmarkBtn = document.getElementById('saveBookmark');
+            const projectId = parseInt('{{ @project.id }}');
+
+            // Reusable save function
+            const saveCurrentPosition = (silent = false) => {
+                const scrollableDiv = document.getElementById('readingContent');
+                if (!scrollableDiv) return;
+
+                const scrollPosition = scrollableDiv.scrollTop;
+                const currentPageNum = parseInt(currentPageSpan.textContent);
+
+                const sections = document.querySelectorAll('.reading-section');
+
+                let currentId = null;
+                let currentType = null;
+                let currentOffset = 0;
+
+                const containerRect = scrollableDiv.getBoundingClientRect();
+                const viewportMiddle = containerRect.top + (containerRect.height / 2);
+
+                // Strategy 1: Center of view
+                sections.forEach(function (section) {
+                    const rect = section.getBoundingClientRect();
+                    if (rect.top <= viewportMiddle && rect.bottom > viewportMiddle) {
+                        currentId = section.dataset.contentId;
+                        currentType = section.dataset.contentType;
+                        currentOffset = containerRect.top - rect.top;
+                    }
+                });
+
+                // Strategy 2: If center fails, check top area
+                if (!currentId) {
+                    const viewportTop = containerRect.top + 100;
+                    sections.forEach(function (section) {
+                        const rect = section.getBoundingClientRect();
+                        if (rect.top <= viewportTop && rect.bottom > viewportTop) {
+                            currentId = section.dataset.contentId;
+                            currentType = section.dataset.contentType;
+                            currentOffset = containerRect.top - rect.top;
+                        }
+                    });
+                }
+
+                fetch('{{ @base }}/lecture/save-bookmark', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRF-Token': window.CSRF_TOKEN
+                    },
+                    body: JSON.stringify({
+                        project_id: projectId,
+                        scroll_position: scrollPosition,
+                        current_page: currentPageNum,
+                        content_id: currentId,
+                        content_type: currentType,
+                        section_offset: currentOffset
+                    })
+                })
+                    .then(function (resp) {
+                        if (resp.ok) {
+                            if (!silent) {
+                                saveBookmarkBtn.innerHTML = '<i class="fas fa-check"></i> Sauvegarde';
+                                setTimeout(function () {
+                                    saveBookmarkBtn.innerHTML = '<i class="fas fa-bookmark"></i> Marque-page';
+                                }, 2000);
+                            } else {
+                                console.log('Auto-saved position', scrollPosition);
+                            }
+                        } else {
+                            if (!silent) alert('Erreur lors de la sauvegarde du marque-page.');
+                        }
+                    })
+                    .catch(function (err) {
+                        console.error(err);
+                        if (!silent) alert('Erreur de communication.');
+                    });
+            };
+
+            // Manual Save
+            saveBookmarkBtn.addEventListener('click', function () {
+                saveCurrentPosition(false);
+            });
+
+            // Scroll Listener (Position Update Only)
+            if (scrollableDiv) {
+                scrollableDiv.addEventListener('scroll', updateCurrentPage);
+            }
+
+            // Load bookmark on page load
+            const loadBookmark = () => {
+                fetch('{{ @base }}/lecture/get-bookmark?project_id=' + projectId)
+                    .then(function (resp) {
+                        return resp.ok ? resp.json() : null;
+                    })
+                    .then(function (data) {
+                        if (!data) return;
+
+                        if (!scrollableDiv) return;
+
+                        let targetElement = null;
+                        let fallbackScroll = null;
+                        const sectionOffset = parseInt(data.section_offset || 0);
+
+                        // Priority 1: Find target element
+                        if (data.content_id && data.content_type) {
+                            const selector = `.reading-section[data-content-id="${data.content_id}"][data-content-type="${data.content_type}"]`;
+                            targetElement = document.querySelector(selector);
+                        }
+
+                        // Priority 2: Fallback pixels
+                        if (!targetElement && data.scroll_position !== undefined) {
+                            fallbackScroll = data.scroll_position;
+                        }
+
+                        if (targetElement || fallbackScroll !== null) {
+                            console.log('Restoring bookmark...');
+
+                            const bookmarkBtn = document.getElementById('saveBookmark');
+                            if (bookmarkBtn) {
+                                const originalHtml = bookmarkBtn.innerHTML;
+                                bookmarkBtn.innerHTML = '<i class="fas fa-check"></i> Position restauree';
+                                setTimeout(() => bookmarkBtn.innerHTML = originalHtml, 3000);
+                            }
+
+                            let attempts = 0;
+                            const maxAttempts = 20;
+
+                            const applyScroll = () => {
+                                attempts++;
+                                const canScroll = scrollableDiv.scrollHeight > scrollableDiv.clientHeight;
+
+                                if (canScroll || attempts >= maxAttempts) {
+                                    if (targetElement) {
+                                        targetElement.scrollIntoView({ block: 'start', behavior: 'instant' });
+                                        scrollableDiv.scrollBy(0, sectionOffset);
+                                    } else if (fallbackScroll !== null) {
+                                        scrollableDiv.scrollTop = fallbackScroll;
+                                    }
+
+                                    updateCurrentPage();
+                                    return;
+                                }
+
+                                if (attempts < maxAttempts) {
+                                    setTimeout(applyScroll, 100);
+                                }
+                            };
+                            applyScroll();
+                        }
+                    })
+                    .catch(function (err) {
+                        console.error('Error loading bookmark:', err);
+                    });
+            };
+
+            if (document.readyState === 'complete') {
+                loadBookmark();
+            } else {
+                window.addEventListener('load', loadBookmark);
+            }
+        });
+    </script>
+</body>
+
+</html>

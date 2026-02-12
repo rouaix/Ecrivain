@@ -1,0 +1,65 @@
+# =============================================================
+# Fichiers d'environnement — NE JAMAIS commiter les credentials
+# =============================================================
+src/.env
+src/.env.local
+src/.env.prod
+
+# =============================================================
+# Données utilisateurs — tokens, clés API, photos, bookmarks
+# =============================================================
+
+# Sous-répertoires utilisateurs (ex: src/data/user@email.com/)
+src/data/*/
+
+# Exceptions : dossiers système à conserver dans le dépôt
+!src/data/migrations/
+!src/data/migrations/*.sql
+
+# Fichiers directement dans src/data/ (logs, json de debug, etc.)
+src/data/*.log
+src/data/*.json
+
+# Uploads publics (conserver les .gitkeep pour créer les dossiers)
+src/public/uploads/**
+!src/public/uploads/**/.gitkeep
+!src/public/uploads/.gitkeep
+
+# =============================================================
+# Cache et fichiers temporaires
+# =============================================================
+src/tmp/
+src/cache/
+cache/
+
+# =============================================================
+# Logs
+# =============================================================
+src/logs/
+src/*.log
+*.log
+www/entry_log.txt
+
+# =============================================================
+# IDE et outils de développement
+# =============================================================
+.idea/
+.vscode/
+.adal/
+.ai/
+.claude/
+*.swp
+*.swo
+*~
+
+# =============================================================
+# OS
+# =============================================================
+.DS_Store
+Thumbs.db
+
+# =============================================================
+# Divers
+# =============================================================
+CLAUDE.md
+*.py

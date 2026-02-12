@@ -1,0 +1,178 @@
+<div class="edit-page-layout">
+
+    <div class="edit-header">
+
+        <h2>Ajouter un acte</h2>
+
+        <a href="{{ @base }}/project/{{ @project.id }}" class="button" title="Retour au projet">
+
+            <i class="fas fa-arrow-left"></i>
+
+        </a>
+
+    </div>
+
+    <check if="!empty(@errors)">
+
+        <div class="error edit-error">
+
+            <ul>
+
+                <repeat group="@errors" value="@err">
+
+                    <li>{{ @err }}</li>
+
+                </repeat>
+
+            </ul>
+
+        </div>
+
+    </check>
+
+    <form method="post" action="{{ @base }}/project/{{ @project.id }}/act/create" id="actCreateForm">
+
+        <input type="hidden" name="csrf_token" value="{{ @csrfToken }}">
+
+        <div class="edit-card">
+
+            <div class="edit-card-section">
+
+                <h3>Informations générales</h3>
+
+                <div class="form-group">
+
+                    <label for="title">Titre de l'acte *</label>
+
+                    <input type="text" id="title" name="title" value="{{ @old.title }}" required class="input-control">
+
+                </div>
+
+                <div class="form-group">
+
+                    <label for="content">Contenu (Introduction)</label>
+
+                    <div id="editor" class="editor-surface editor-height-300">
+
+                        {{ @old.content | raw }}
+
+                    </div>
+
+                    <input type="hidden" name="content" value="{{ @old.content | esc }}">
+
+                </div>
+
+                <div class="form-group">
+
+                    <label for="resume">Résumé (Bref)</label>
+
+                    <div id="resume-editor" class="editor-surface editor-height-150">
+
+                        {{ @old.resume | raw }}
+
+                    </div>
+
+                    <input type="hidden" name="resume" value="{{ @old.resume | esc }}">
+
+                </div>
+
+            </div>
+
+            <div class="edit-actions">
+
+                <input type="submit" value="Créer l'acte" class="button primary large">
+
+            </div>
+
+        </div>
+
+    </form>
+
+</div>
+
+<script nonce="{{ @nonce }}">
+
+    document.addEventListener('DOMContentLoaded', function () {
+
+        // Init Main Editor with Tools
+
+        QuillTools.init('#editor', {
+
+            inputSelector: 'input[name="content"]',
+
+            baseUrl: '{{ @base }}',
+
+            csrfToken: '{{ @csrfToken }}',
+
+            contextId: 'new', // New Act
+
+            contextType: 'act'
+
+        });
+
+        // Init Resume Editor (Simple)
+
+        // Init Resume Editor (Standard)
+
+        // Init Resume Editor (Full)
+
+        var resumeQuill = new Quill('#resume-editor', {
+
+            theme: 'snow',
+
+            modules: {
+
+                toolbar: {
+
+                    container: QuillTools.getToolbarOptions(), // Reuse full toolbar
+
+                    handlers: {
+
+                        'undo': function () { this.quill.history.undo(); },
+
+                        'redo': function () { this.quill.history.redo(); },
+
+                        'emdash': function () { QuillTools.handleEmDash(this.quill); },
+
+                        'group_lines': function () { QuillTools.handleGroupLines(this.quill); },
+
+                        'remove_doublespaces': function () { QuillTools.handleRemoveDoubleSpaces(this.quill); }
+
+                    }
+
+                },
+
+                history: {
+
+                    delay: 2000,
+
+                    maxStack: 500,
+
+                    userOnly: true
+
+                }
+
+            }
+
+        });
+
+        // Track selection for tools
+
+        resumeQuill.on('selection-change', function (range) {
+
+            if (range) QuillTools.activeQuill = resumeQuill;
+
+        });
+
+        // Sync Resume
+
+        resumeQuill.on('text-change', function () {
+            var html = resumeQuill.root.innerHTML;
+            html = QuillTools.cleanQuillHtml(html);
+            document.querySelector('input[name="resume"]').value = html;
+
+        });
+
+    });
+
+</script>

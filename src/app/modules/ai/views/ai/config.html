@@ -1,0 +1,323 @@
+<div class="ai-config-container">
+
+    <div class="ai-config-card">
+
+        <div class="ai-config-header">
+
+            <h2><i class="fas fa-robot"></i> Configuration IA</h2>
+
+            <p>Configurez votre assistant d'écriture intelligent</p>
+
+        </div>
+
+        <check if="{{ @success }}">
+
+            <div class="form-alert">
+
+                Configuration enregistrée avec succès.
+
+            </div>
+
+        </check>
+
+        <form action="{{ @base }}/ai/config" method="post">
+
+            <div class="section-divider">Fournisseur et Modèle</div>
+
+            <div class="form-group">
+
+                <label for="provider">Fournisseur IA</label>
+
+                <select id="provider" name="provider">
+
+                    <option value="openai" {{@config.active_provider=='openai' ?'selected':''}}>OpenAI</option>
+
+                    <option value="gemini" {{@config.active_provider=='gemini' ?'selected':''}}>Google Gemini</option>
+
+                    <option value="mistral" {{@config.active_provider=='mistral' ?'selected':''}}>Mistral AI</option>
+
+                    <option value="anthropic" {{@config.active_provider=='anthropic' ?'selected':''}}>Anthropic (Claude)
+
+                    </option>
+
+                </select>
+
+            </div>
+
+            <div class="form-group">
+
+                <label for="api_key">Clé API</label>
+
+                <input type="password" id="api_key" name="api_key" value="" placeholder="sk-...">
+
+                <small>La clé ne sera pas affichée après enregistrement pour sécurité.</small>
+
+            </div>
+
+            <div class="form-group">
+
+                <label for="model">Modèle</label>
+
+                <select id="model" name="model">
+
+                    <!-- Populated by JS -->
+
+                </select>
+
+            </div>
+
+            <script nonce="{{ @nonce }}">
+
+                const models = {{ json_encode(@models) | raw }};
+
+                const providers = {{ @providers_json | raw }};
+
+                function updateModels() {
+
+                    const provider = document.getElementById('provider').value;
+
+                    const modelSelect = document.getElementById('model');
+
+                    modelSelect.innerHTML = '';
+
+                    const providerModels = models[provider] || [];
+
+                    const providerConfig = providers[provider] || {};
+
+                    const currentModel = providerConfig.model || '';
+
+                    providerModels.forEach(m => {
+
+                        const opt = document.createElement('option');
+
+                        opt.value = m;
+
+                        opt.textContent = m;
+
+                        if (m === currentModel) opt.selected = true;
+
+                        modelSelect.appendChild(opt);
+
+                    });
+
+                    const apiKeyInput = document.getElementById('api_key');
+
+                    if (providerConfig) {
+
+                        apiKeyInput.value = providerConfig.api_key || '';
+
+                    }
+
+                }
+
+                document.addEventListener('DOMContentLoaded', function () {
+
+                    updateModels();
+
+                    const providerSelect = document.getElementById('provider');
+
+                    if (providerSelect) {
+
+                        providerSelect.addEventListener('change', updateModels);
+
+                    }
+
+                });
+
+            </script>
+
+            <div class="section-divider">Prompts Système</div>
+
+            <div class="form-group">
+
+                <label for="system">Rôle Système (Instructions Globales)</label>
+
+                <textarea id="system" name="system" rows="3">{{ @config.prompts.system }}</textarea>
+
+                <small>Définit la personnalité et le comportement général de l'IA.</small>
+
+            </div>
+
+            <div class="form-group">
+
+                <label for="continue">Consigne "Continuer"</label>
+
+                <textarea id="continue" name="continue" rows="3">{{ @config.prompts.continue }}</textarea>
+
+                <small>Instructions ajoutées lors de la demande de continuation de texte.</small>
+
+            </div>
+
+            <div class="form-group">
+
+                <label for="rephrase">Consigne "Reformuler"</label>
+
+                <textarea id="rephrase" name="rephrase" rows="3">{{ @config.prompts.rephrase }}</textarea>
+
+                <small>Instructions ajoutées lors de la demande de reformulation.</small>
+
+            </div>
+
+            <div class="form-group">
+
+                <label for="summarize_chapter">Consigne "Résumé Chapitre"</label>
+
+                <textarea id="summarize_chapter" name="summarize_chapter"
+
+                    rows="3">{{ @config.prompts.summarize_chapter }}</textarea>
+
+                <small>Instructions pour la génération du résumé d'un chapitre (basé sur ses sous-chapitres).</small>
+
+            </div>
+
+            <div class="form-group">
+
+                <label for="summarize_act">Consigne "Résumé Acte"</label>
+
+                <textarea id="summarize_act" name="summarize_act"
+
+                    rows="3">{{ @config.prompts.summarize_act }}</textarea>
+
+                <small>Instructions pour la génération du résumé d'un acte (basé sur les résumés de ses
+
+                    chapitres).</small>
+
+            </div>
+
+            <div class="section-divider">Prompts Personnalisés</div>
+
+            <div class="form-group">
+
+                <div id="customPromptsList">
+
+                    <repeat group="{{ @config.prompts.custom }}" value="{{ @p }}">
+
+                        <div class="ai-custom-prompt-row">
+
+                            <input type="text" name="custom_prompt_label[]" placeholder="Titre à afficher"
+
+                                value="{{ @p.label | esc }}">
+
+                            <textarea name="custom_prompt_value[]" rows="3"
+
+                                placeholder="Consigne / prompt">{{ @p.prompt | esc }}</textarea>
+
+                            <button type="button" class="button small delete ai-custom-prompt-remove">Supprimer</button>
+
+                        </div>
+
+                    </repeat>
+
+                </div>
+
+                <div>
+
+                    <button type="button" class="button small" id="addCustomPrompt">+ Ajouter un prompt</button>
+
+                </div>
+
+                <small>Ces prompts apparaissent dans la liste de choix du prompt utilisateur.</small>
+
+            </div>
+
+            <div class="ai-config-actions">
+
+                <button type="submit" class="button primary">Enregistrer</button>
+
+                <a href="{{ @base }}/dashboard" class="button secondary">Retour</a>
+
+            </div>
+
+        </form>
+
+    </div>
+
+</div>
+
+<script nonce="{{ @nonce }}">
+
+    document.addEventListener('DOMContentLoaded', function () {
+
+        const list = document.getElementById('customPromptsList');
+
+        const addBtn = document.getElementById('addCustomPrompt');
+
+        function addRow(label = '', prompt = '') {
+
+            const row = document.createElement('div');
+
+            row.className = 'ai-custom-prompt-row';
+
+            const input = document.createElement('input');
+
+            input.type = 'text';
+
+            input.name = 'custom_prompt_label[]';
+
+            input.placeholder = 'Titre a afficher';
+
+            input.value = label;
+
+            const textarea = document.createElement('textarea');
+
+            textarea.name = 'custom_prompt_value[]';
+
+            textarea.rows = 3;
+
+            textarea.placeholder = 'Consigne / prompt';
+
+            textarea.value = prompt;
+
+            const remove = document.createElement('button');
+
+            remove.type = 'button';
+
+            remove.className = 'button small delete ai-custom-prompt-remove';
+
+            remove.textContent = 'Supprimer';
+
+            row.appendChild(input);
+
+            row.appendChild(textarea);
+
+            row.appendChild(remove);
+
+            list.appendChild(row);
+
+        }
+
+        if (addBtn) {
+
+            addBtn.addEventListener('click', function () {
+
+                addRow();
+
+            });
+
+        }
+
+        if (list) {
+
+            list.addEventListener('click', function (e) {
+
+                const target = e.target;
+
+                if (target && target.classList.contains('ai-custom-prompt-remove')) {
+
+                    const row = target.closest('.ai-custom-prompt-row');
+
+                    if (row) {
+
+                        row.remove();
+
+                    }
+
+                }
+
+            });
+
+        }
+
+    });
+
+</script>

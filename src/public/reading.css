@@ -1,0 +1,443 @@
+/* Reading Mode Styles */
+/* ==========================================
+   READING MODE
+   Immersive reading experience layout
+   ========================================== */
+/* Base reading mode */
+body.reading-mode {
+    margin: 0;
+    padding: 0;
+    overflow: hidden;
+    height: 100vh;
+    display: flex;
+    flex-direction: column;
+}
+
+/* Hide header and footer in reading mode */
+body.reading-mode header,
+body.reading-mode footer,
+body.reading-mode nav,
+body.reading-mode .header,
+body.reading-mode .main-header {
+    display: none !important;
+}
+
+/* Override main element padding */
+body.reading-mode main {
+    padding: 0 !important;
+}
+
+/* Override container max-width */
+body.reading-mode .container,
+body.reading-mode .reading-container {
+    max-width: none !important;
+    width: 100% !important;
+    padding: 0 !important;
+    margin: 0 !important;
+}
+
+/* Toolbar */
+.reading-toolbar {
+    background: var(--header-bg, #3f51b5);
+    color: var(--header-text, #ffffff);
+    padding: 12px 20px;
+    display: flex !important;
+    align-items: center;
+    gap: 15px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    z-index: 100;
+    flex-shrink: 0;
+    visibility: visible !important;
+    opacity: 1 !important;
+    min-height: 50px;
+}
+
+.toolbar-title {
+    font-size: 1.2rem;
+    font-weight: 600;
+    flex: 1;
+    color: var(--header-text, #ffffff);
+    visibility: visible !important;
+}
+
+.reading-toolbar .toolbar-btn {
+    background: rgba(255, 255, 255, 0.1) !important;
+    color: #ffffff !important;
+    border: 1px solid rgba(255, 255, 255, 0.2) !important;
+    padding: 8px 16px !important;
+    border-radius: 4px !important;
+    cursor: pointer !important;
+    font-size: 0.9rem !important;
+    transition: all 0.2s !important;
+    text-decoration: none !important;
+    display: inline-flex !important;
+    align-items: center !important;
+    gap: 6px !important;
+    visibility: visible !important;
+    height: auto !important;
+}
+
+.reading-toolbar .toolbar-btn:hover {
+    background: rgba(255, 255, 255, 0.25) !important;
+}
+
+/* Main container */
+.reading-container {
+    display: flex;
+    flex: 1;
+    overflow: hidden;
+    position: relative;
+}
+
+/* Table of Contents */
+.reading-toc {
+    width: 320px;
+    background: var(--card-bg);
+    border-right: 1px solid var(--border-color);
+    overflow-y: auto;
+    padding: 20px;
+    flex-shrink: 0;
+    transition: transform 0.3s ease;
+}
+
+.reading-toc.hidden {
+    transform: translateX(-100%);
+    position: absolute;
+    left: 0;
+    height: 100%;
+    z-index: 50;
+}
+
+.reading-toc h2 {
+    margin: 0 0 20px 0;
+    font-size: 1.3rem;
+    color: var(--text-main);
+    padding-bottom: 10px;
+    border-bottom: 2px solid var(--border-light);
+}
+
+.toc-list {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+}
+
+.toc-item {
+    padding: 5px;
+    cursor: pointer;
+    border-radius: 6px;
+    transition: all 0.2s;
+    border-left: 3px solid transparent;
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+    margin: 0;
+}
+
+.toc-item:hover {
+    background: var(--body-bg);
+    border-left-color: var(--link-color);
+}
+
+.toc-item.level-1 {
+    font-weight: 600;
+    font-size: 1rem;
+}
+
+.toc-item.level-2 {
+    padding-left: 24px;
+    font-size: 0.95rem;
+}
+
+.toc-item.level-3 {
+    padding-left: 36px;
+    font-size: 0.9rem;
+    color: var(--text-muted);
+}
+
+.toc-page {
+    color: var(--text-muted);
+    font-size: 0.85rem;
+    font-weight: 500;
+    min-width: 40px;
+    flex-shrink: 0;
+}
+
+/* Main reading content */
+.reading-content {
+    flex: 1;
+    overflow-y: auto;
+    background: var(--body-bg);
+    position: relative;
+}
+
+.lecture-content {
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 40px 60px;
+    background: var(--card-bg);
+    min-height: 100%;
+}
+
+/* Cover page */
+.reading-cover-page {
+    text-align: center;
+    padding: 80px 40px;
+    margin-bottom: 60px;
+    border-bottom: 2px solid var(--border-light);
+}
+
+.cover-image {
+    max-width: 400px;
+    max-height: 500px;
+    margin: 0 auto 40px;
+    display: block;
+    border-radius: 8px;
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.15);
+}
+
+.cover-title {
+    font-size: 2.5rem;
+    font-weight: 700;
+    color: var(--text-main);
+    margin: 0 0 20px 0;
+    line-height: 1.2;
+}
+
+.cover-description {
+    font-size: 1.1rem;
+    color: var(--text-muted);
+    margin: 0 0 30px 0;
+    line-height: 1.6;
+}
+
+.cover-author {
+    font-size: 1.2rem;
+    color: var(--text-main);
+    font-style: italic;
+}
+
+/* Reading sections */
+.reading-section {
+    margin-bottom: 20px;
+    scroll-margin-top: 20px;
+}
+
+.reading-section h1 {
+    font-size: 2rem;
+    font-weight: 700;
+    color: var(--text-main);
+    margin: 20px 0;
+    padding-bottom: 15px;
+    border-bottom: 2px solid var(--border-light);
+}
+
+.reading-section h2 {
+    font-size: 1.6rem;
+    font-weight: 600;
+    color: var(--text-main);
+    margin: 15px 0;
+}
+
+.reading-section h3 {
+    font-size: 1.3rem;
+    font-weight: 600;
+    color: var(--text-main);
+    margin: 10px 0;
+}
+
+.reading-section .typography {
+    font-size: 1.1rem;
+    line-height: 1.8;
+    color: var(--text-main);
+}
+
+.reading-section .typography p {
+    margin-bottom: 20px;
+    text-align: justify;
+}
+
+/* Footer */
+.reading-footer {
+    margin-top: 60px;
+    padding: 30px 0;
+    border-top: 1px solid var(--border-light);
+    text-align: center;
+}
+
+.page-number {
+    font-size: 0.95rem;
+    color: var(--text-muted);
+    font-weight: 500;
+}
+
+/* Selection popup */
+.selection-popup {
+    position: fixed;
+    display: none;
+    gap: 8px;
+    background: var(--card-bg);
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    padding: 8px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    z-index: 1000;
+}
+
+.popup-btn {
+    background: var(--button-bg);
+    color: var(--button-text);
+    border: none;
+    padding: 8px 14px;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 0.9rem;
+    transition: all 0.2s;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.popup-btn:hover {
+    filter: brightness(0.9);
+}
+
+.popup-btn.secondary {
+    background: var(--button-secondary-bg);
+}
+
+.popup-btn.primary {
+    background: var(--link-color);
+    color: white;
+}
+
+/* Comment form popup */
+.comment-form-popup {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.5);
+    display: none;
+    align-items: center;
+    justify-content: center;
+    z-index: 2000;
+}
+
+.comment-form-content {
+    background: var(--card-bg);
+    border-radius: 12px;
+    padding: 30px;
+    max-width: 500px;
+    width: 90%;
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+}
+
+.comment-form-content h3 {
+    margin: 0 0 20px 0;
+    font-size: 1.3rem;
+    color: var(--text-main);
+}
+
+.selected-text-preview {
+    background: var(--body-bg);
+    padding: 12px;
+    border-left: 4px solid var(--link-color);
+    margin-bottom: 20px;
+    font-style: italic;
+    color: var(--text-muted);
+    border-radius: 4px;
+}
+
+.comment-form-popup textarea {
+    width: 100%;
+    padding: 12px;
+    border: 1px solid var(--input-border);
+    border-radius: 6px;
+    font-family: inherit;
+    font-size: 1rem;
+    resize: vertical;
+    box-sizing: border-box;
+    background: var(--input-bg);
+    color: var(--input-text);
+}
+
+.comment-form-popup textarea:focus {
+    outline: none;
+    border-color: var(--link-color);
+}
+
+.comment-form-actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 10px;
+    margin-top: 20px;
+}
+
+/* Fullscreen mode */
+body.fullscreen-mode .reading-toolbar {
+    transform: translateY(-100%);
+    transition: transform 0.3s ease;
+}
+
+body.fullscreen-mode .reading-toolbar:hover {
+    transform: translateY(0);
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .reading-toolbar {
+        display: flex !important;
+        flex-wrap: wrap;
+        padding: 10px 15px;
+        gap: 10px;
+        visibility: visible !important;
+        opacity: 1 !important;
+    }
+
+    .toolbar-title {
+        font-size: 1rem;
+        width: 100%;
+        margin-bottom: 5px;
+    }
+
+    .toolbar-btn {
+        font-size: 0.85rem;
+        padding: 6px 12px;
+    }
+
+    /* Disable auto-hide in fullscreen on mobile (hover doesn't work) */
+    body.fullscreen-mode .reading-toolbar {
+        transform: none !important;
+    }
+
+    .reading-toc {
+        width: 280px;
+        position: absolute;
+        left: 0;
+        height: 100%;
+        z-index: 50;
+        transform: translateX(-100%);
+    }
+
+    .reading-toc:not(.hidden) {
+        transform: translateX(0);
+    }
+
+    .lecture-content {
+        padding: 20px 30px;
+    }
+
+    .cover-title {
+        font-size: 2rem;
+    }
+
+    .reading-section h1 {
+        font-size: 1.6rem;
+    }
+
+    .reading-section h2 {
+        font-size: 1.3rem;
+    }
+}

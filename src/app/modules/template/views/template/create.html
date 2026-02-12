@@ -1,0 +1,71 @@
+<div class="edit-page-layout">
+    <div class="edit-header">
+        <h2><i class="fas fa-plus-circle"></i> Creer un template</h2>
+        <div class="header-actions">
+            <a href="{{ @base }}/templates" class="button" title="Retour aux templates">
+                <i class="fas fa-arrow-left"></i>
+            </a>
+        </div>
+    </div>
+
+    <check if="!empty(@errors)">
+        <div class="error edit-error">
+            <ul>
+                <repeat group="@errors" value="@err">
+                    <li>{{ @err }}</li>
+                </repeat>
+            </ul>
+        </div>
+    </check>
+
+    <form method="post" action="{{ @base }}/template/create">
+        <input type="hidden" name="csrf_token" value="{{ @csrfToken }}">
+
+        <div class="edit-card">
+            <div class="edit-card-section">
+                <h3><i class="fas fa-info-circle"></i> Informations</h3>
+                <p class="info-text">
+                    Creez un nouveau template en dupliquant un template existant. Vous pourrez ensuite personnaliser
+                    l'ordre et la visibilite des elements (sections, actes, chapitres, etc.).
+                </p>
+
+                <div class="form-group">
+                    <label for="name">Nom du template *</label>
+                    <input type="text" id="name" name="name" value="{{ @old.name }}" required
+                           class="input-control title-input"
+                           placeholder="Ex: Scenario, Essai, Bande dessinee...">
+                </div>
+
+                <div class="form-group">
+                    <label for="description">Description</label>
+                    <textarea id="description" name="description" class="input-control" rows="3"
+                              placeholder="Description optionnelle du template...">{{ @old.description }}</textarea>
+                </div>
+            </div>
+
+            <div class="edit-card-section">
+                <h3><i class="fas fa-copy"></i> Template source</h3>
+
+                <div class="form-group">
+                    <label for="source_template_id">Dupliquer a partir de *</label>
+                    <select id="source_template_id" name="source_template_id" required class="input-control">
+                        <option value="">-- Selectionner un template a dupliquer --</option>
+                        <repeat group="{{ @availableTemplates }}" value="{{ @tpl }}">
+                            <option value="{{ @tpl.id }}" {{ (@old.source_template_id == @tpl.id) ? 'selected' : '' }}>
+                                {{ @tpl.name }}
+                                <check if="{{ @tpl.is_system }}"> (Systeme)</check>
+                            </option>
+                        </repeat>
+                    </select>
+                    <small class="help-text">
+                        Le template source sera duplique avec tous ses elements. Vous pourrez ensuite le personnaliser.
+                    </small>
+                </div>
+            </div>
+
+            <div class="edit-actions">
+                <input type="submit" value="Creer le template" class="button primary large">
+            </div>
+        </div>
+    </form>
+</div>

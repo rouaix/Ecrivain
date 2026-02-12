@@ -1,0 +1,124 @@
+/* Quill toolbar styles */
+/* ==========================================
+   QUILL TOOLBAR OVERRIDES
+   Fix button sizing and icon alignment
+   ========================================== */
+/* Reset global button styles for Quill toolbar */
+.ql-toolbar button {
+    background: transparent !important;
+    color: #444 !important;
+    border: none !important;
+    padding: 0 5px !important;
+    cursor: pointer;
+    width: auto !important;
+    display: inline-block !important;
+    float: none !important;
+    line-height: 24px !important;
+    height: auto !important;
+}
+/* Specific fix for custom text buttons (Tiret, Grouper, etc.) */
+.ql-toolbar button.ql-emdash,
+.ql-toolbar button.ql-group_lines,
+.ql-toolbar button.ql-remove_doublespaces,
+.ql-toolbar button.ql-grammarcheck {
+    width: auto !important;
+    min-width: 24px;
+    padding: 0 8px !important;
+    margin-right: 2px;
+    font-weight: 600 !important;
+    font-size: 12px !important;
+    font-family: sans-serif;
+    vertical-align: middle;
+    text-align: center;
+}
+/* Hover states */
+.ql-toolbar button:hover {
+    color: #06c !important;
+}
+/* Fix SVG icons inside buttons (Undo, Redo, Bold, etc.) */
+.ql-toolbar button svg {
+    float: none !important;
+    vertical-align: middle;
+}
+.ql-toolbar button svg .ql-stroke {
+    stroke: #444 !important;
+}
+.ql-toolbar button:hover svg .ql-stroke {
+    stroke: #06c !important;
+}
+.ql-toolbar button svg .ql-fill {
+    fill: #444 !important;
+}
+.ql-toolbar button:hover svg .ql-fill {
+    fill: #06c !important;
+}
+/* Ensure toolbar groups wrap nicely */
+.ql-toolbar .ql-formats {
+    margin-right: 10px !important;
+    display: inline-block;
+    vertical-align: middle;
+    float: none !important;
+}
+/* Critical Quill Overrides */
+.ql-toolbar.ql-snow .ql-formats {
+    margin-right: 15px !important;
+    display: inline-flex !important;
+    align-items: center !important;
+    vertical-align: middle !important;
+}
+.ql-toolbar.ql-snow button {
+    width: auto !important;
+    height: 24px !important;
+    padding: 0 5px !important;
+    margin: 0 2px !important;
+    float: none !important;
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    background: none !important;
+    border: none !important;
+    cursor: pointer !important;
+    color: #444 !important;
+}
+.ql-toolbar.ql-snow button svg {
+    width: 18px !important;
+    height: 18px !important;
+    float: none !important;
+}
+.ql-toolbar.ql-snow button svg .ql-stroke {
+    stroke: #444 !important;
+}
+.ql-toolbar.ql-snow button svg .ql-fill {
+    fill: #444 !important;
+}
+.ql-toolbar.ql-snow button svg path {
+    stroke: #444 !important;
+}
+.ql-toolbar.ql-snow button svg polygon {
+    stroke: #444 !important;
+}
+.ql-toolbar.ql-snow button svg line {
+    stroke: #444 !important;
+}
+.ql-toolbar.ql-snow button:hover svg .ql-stroke,
+.ql-toolbar.ql-snow button.ql-active svg .ql-stroke {
+    stroke: #06c !important;
+}
+.ql-toolbar.ql-snow button:hover svg .ql-fill,
+.ql-toolbar.ql-snow button.ql-active svg .ql-fill {
+    fill: #06c !important;
+}
+.ql-toolbar.ql-snow button.ql-emdash,
+.ql-toolbar.ql-snow button.ql-group_lines,
+.ql-toolbar.ql-snow button.ql-remove_doublespaces {
+    font-weight: bold !important;
+    font-size: 13px !important;
+    padding: 0 8px !important;
+    min-width: 30px !important;
+    border: 1px solid transparent !important;
+}
+.ql-toolbar.ql-snow button.ql-emdash:hover,
+.ql-toolbar.ql-snow button.ql-group_lines:hover,
+.ql-toolbar.ql-snow button.ql-remove_doublespaces:hover {
+    color: #06c !important;
+}

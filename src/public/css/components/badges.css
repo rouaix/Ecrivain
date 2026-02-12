@@ -1,0 +1,19 @@
+/* Badge styles */
+/* ==========================================
+   BADGES
+   Small labels and status indicators
+   ========================================== */
+.badge {
+    display: inline-block;
+    font-size: 0.7rem;
+    padding: 2px 8px;
+    border-radius: 10px;
+    background: var(--bg-muted, #f0f0f0);
+    color: var(--text-muted, #666);
+    font-weight: 500;
+    vertical-align: middle;
+}
+.badge-secondary {
+    background: var(--accent-bg, #e3f2fd);
+    color: var(--accent-color, #1976D2);
+}

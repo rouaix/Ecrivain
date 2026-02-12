@@ -1,0 +1,303 @@
+/* Helper classes */
+/* ==========================================
+   PROJECT EDIT PAGE STYLES
+   ========================================== */
+.edit-page-layout {
+    max-width: 1000px;
+    margin: 0 auto;
+    padding-bottom: 50px;
+}
+.edit-header {
+    margin-bottom: 20px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+.edit-header h2 {
+    margin: 0;
+}
+.edit-error {
+    border-radius: 8px;
+    margin-bottom: 20px;
+}
+.edit-error ul {
+    margin: 0;
+    padding-left: 20px;
+}
+.edit-card {
+    background: var(--card-bg);
+    border: 1px solid var(--border-color);
+    border-radius: 12px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05);
+    padding: 30px;
+    margin-bottom: 30px;
+}
+.edit-card h3 {
+    margin-top: 0;
+    margin-bottom: 15px;
+    padding-bottom: 15px;
+    border-bottom: 1px solid var(--border-light);
+    font-size: 1.2rem;
+    color: var(--text-main);
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+.edit-form-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 20px;
+}
+.edit-card .form-group {
+    margin-bottom: 10px;
+}
+.edit-card label {
+    display: block;
+    margin-bottom: 8px;
+    font-weight: 600;
+    color: var(--text-muted);
+    font-size: 0.85rem;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+}
+.cover-preview-container {
+    width: 100%;
+    height: 250px;
+    background: var(--body-bg);
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+    border: 2px dashed var(--border-light);
+    margin-bottom: 15px;
+    position: relative;
+}
+.cover-preview {
+    max-width: 100%;
+    max-height: 100%;
+    object-fit: contain;
+}
+.cover-placeholder-icon {
+    margin-bottom: 10px;
+    display: block;
+    opacity: 0.3;
+}
+.cover-upload-btn {
+    position: relative;
+    overflow: hidden;
+    width: 100%;
+    text-align: center;
+}
+.cover-upload-btn input[type=file] {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    top: 0;
+    left: 0;
+    opacity: 0;
+    cursor: pointer;
+}
+.helper-text {
+    font-size: 0.85rem;
+    color: var(--text-muted);
+    margin-top: 5px;
+}
+.edit-actions {
+    text-align: right;
+}
+.edit-actions .button {
+    margin-left: 10px;
+}
+.edit-card-section {
+    padding-bottom: 10px;
+}
+.edit-card-section:last-child {
+    border-bottom: none;
+    margin-bottom: 0;
+    padding-bottom: 0;
+}
+.edit-card-section h3 {
+    margin-top: 0;
+    padding-bottom: 10px;
+    border-bottom: 1px solid var(--border-light);
+    font-size: 1.1rem;
+    font-weight: 600;
+    color: var(--text-main);
+}
+.breadcrumb {
+    color: var(--text-muted);
+    font-size: 0.95rem;
+    margin-top: 5px;
+}
+.breadcrumb a {
+    color: var(--link-color);
+    text-decoration: none;
+}
+.breadcrumb a:hover {
+    text-decoration: underline;
+}
+/* PROJECT CREATE FORM STYLES */
+.form-container {
+    min-height: 60vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 40px 20px;
+}
+.form-card {
+    background: var(--card-bg);
+    border: 1px solid var(--border-color);
+    border-radius: 12px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05);
+    padding: 40px;
+    max-width: 600px;
+    width: 100%;
+}
+.form-header {
+    text-align: center;
+    margin-bottom: 30px;
+}
+.form-header h2 {
+    margin: 0 0 10px 0;
+    font-size: 1.8rem;
+    color: var(--text-main);
+    font-weight: 700;
+}
+.form-header p {
+    margin: 0;
+    color: var(--text-muted);
+    font-size: 0.95rem;
+}
+.form-card .form-group {
+    margin-bottom: 20px;
+}
+.form-card label {
+    display: block;
+    margin-bottom: 8px;
+    font-weight: 600;
+    color: var(--text-main);
+    font-size: 0.9rem;
+}
+.form-card input[type="text"],
+.form-card input[type="number"],
+.form-card textarea {
+    width: 100%;
+    padding: 12px 16px;
+    border: 1px solid var(--input-border);
+    border-radius: 6px;
+    font-size: 1rem;
+    transition: border-color 0.2s;
+    box-sizing: border-box;
+}
+.form-card input[type="text"]:focus,
+.form-card input[type="number"]:focus,
+.form-card textarea:focus {
+    outline: none;
+    border-color: var(--link-color);
+}
+.form-card textarea {
+    resize: vertical;
+    font-family: inherit;
+}
+.form-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 15px;
+}
+.form-row__col {
+    display: flex;
+    flex-direction: column;
+}
+/* Template-specific helper classes */
+.header-actions {
+    display: flex;
+    gap: 10px;
+}
+.text-muted-para {
+    color: var(--text-muted);
+    margin: 0;
+}
+.text-muted-small {
+    color: var(--text-muted);
+    font-size: 0.9rem;
+}
+.empty-state {
+    color: var(--text-muted);
+    font-style: italic;
+}
+.help-text {
+    color: var(--text-muted);
+    display: block;
+    margin-top: 5px;
+    font-size: 0.9rem;
+}
+.info-text {
+    color: var(--text-muted);
+    margin: 0 0 20px 0;
+}
+/* Sortable.js styles */
+.sortable-ghost {
+    opacity: 0.4;
+    background-color: #e1f5fe !important;
+}
+/* Dashboard header styles */
+div.dashboard-header > h2 {
+    margin-bottom: 0;
+}
+div.dashboard-header > p {
+    margin-top: 5px;
+    margin-bottom: 20px;
+}
+/* Status labels */
+.status--ok {
+    color: green;
+}
+.status--warn {
+    color: orange;
+}
+.status--error {
+    color: red;
+}
+.status--info {
+    color: #1e88e5;
+}
+.status--muted {
+    color: #666;
+}
+/* Order cell for sortable items */
+.order-cell {
+    display: flex;
+    gap: 4px;
+}
+.order-cell .button.small {
+    padding: 4px 8px;
+    font-size: 0.75rem;
+    min-width: 0;
+}
+/* Export toggle checkbox */
+input[type="checkbox"].export-toggle {
+    accent-color: var(--header-bg);
+    width: 20px;
+    height: 15px;
+    font-size: 11px;
+    position: relative;
+}
+/* HTML details element support */
+details summary {
+    cursor: pointer;
+    font-weight: 600;
+    padding: 5px;
+    outline: none;
+}
+/* Missing utility classes */
+.error {
+    color: var(--button-delete-bg);
+}
+.is-dimmed {
+    opacity: 0.5;
+}
+.status-label {
+    display: inline-block;
+    margin-left: 10px;
+}

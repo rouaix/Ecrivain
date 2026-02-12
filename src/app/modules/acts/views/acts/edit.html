@@ -1,0 +1,332 @@
+<!-- Modern Act Editor -->
+
+<div class="edit-page-layout">
+
+    <div class="edit-header">
+
+        <h2>Modifier l'acte</h2>
+
+        <a href="{{ @base }}/project/{{ @project.id }}" class="button" title="Retour au projet"><i
+                class="fas fa-arrow-left"></i></a>
+
+    </div>
+
+    <check if="!empty(@errors)">
+
+        <div class="error edit-error">
+
+            <ul>
+
+                <repeat group="@errors" value="@err">
+
+                    <li>{{ @err }}</li>
+
+                </repeat>
+
+            </ul>
+
+        </div>
+
+    </check>
+
+    <form method="post" action="{{ @base }}/act/{{ @act.id }}/edit">
+
+        <input type="hidden" name="csrf_token" value="{{ @csrfToken }}">
+
+        <div class="edit-card">
+
+            <!-- Title Section -->
+
+            <div class="edit-card-section">
+
+                <div class="form-group">
+
+                    <label for="title">Titre de l'acte *</label>
+
+                    <input type="text" id="title" name="title" value="{{ @act.title }}" required class="input-control">
+
+                </div>
+
+            </div>
+
+            <!-- Content Section -->
+
+            <div class="edit-card-section">
+
+                <div class="form-group">
+
+                    <label for="content">Contenu</label>
+
+                    <div id="editor" class="editor-surface editor-height-300">
+
+                        {{ @act.content | raw }}
+
+                    </div>
+
+                    <input type="hidden" name="content" value="{{ @act.content | esc }}">
+
+                </div>
+
+            </div>
+
+            <!-- Resume Section -->
+
+            <div class="edit-card-section">
+
+                <div class="form-group">
+
+                    <label for="resume">Résumé (Bref)</label>
+
+                    <div id="resume-editor" class="editor-surface editor-height-150">
+
+                        {{ @act.resume | raw }}
+
+                    </div>
+
+                    <input type="hidden" name="resume" value="{{ @act.resume | esc }}">
+
+                </div>
+
+            </div>
+
+            <!-- Comment Section -->
+
+            <div class="edit-card-section">
+
+                <div class="form-group">
+
+                    <label for="comment">Commentaire</label>
+
+                    <div id="comment-editor" class="editor-surface editor-height-150">
+
+                        {{ @act.comment | raw }}
+
+                    </div>
+
+                    <input type="hidden" name="comment" value="{{ @act.comment | esc }}">
+
+                </div>
+
+            </div>
+
+            <!-- Actions -->
+
+            <div class="edit-actions">
+
+                <input type="submit" value="Enregistrer" class="button primary large">
+
+            </div>
+
+        </div>
+
+    </form>
+
+</div>
+
+<script nonce="{{ @nonce }}">
+
+    document.addEventListener('DOMContentLoaded', function () {
+
+        var editorEl = document.getElementById('editor');
+
+        var initialContentHtml = editorEl ? (editorEl.innerHTML || '') : '';
+
+        // Init Main Editor with Tools
+
+        QuillTools.init('#editor', {
+
+            inputSelector: 'input[name="content"]',
+
+            baseUrl: '{{ @base }}',
+
+            csrfToken: '{{ @csrfToken }}',
+
+            contextId: '{{ @act.id }}',
+
+            contextType: 'act'
+
+        });
+
+        function decodeHtml(html) {
+
+            var txt = document.createElement('textarea');
+
+            txt.innerHTML = html;
+
+            return txt.value;
+
+        }
+
+        function decodeHtmlDeep(html, depth) {
+
+            var current = html;
+
+            for (var i = 0; i < depth; i++) {
+
+                var decoded = decodeHtml(current);
+
+                if (decoded === current) break;
+
+                current = decoded;
+
+            }
+
+            return current;
+
+        }
+
+        var decodedContent = decodeHtmlDeep(initialContentHtml, 2);
+
+        if (decodedContent && decodedContent !== QuillTools.quill.root.innerHTML) {
+
+            QuillTools.quill.clipboard.dangerouslyPasteHTML(decodedContent);
+
+        }
+
+        var resumeEl = document.getElementById('resume-editor');
+
+        var initialResumeHtml = resumeEl ? (resumeEl.innerHTML || '') : '';
+
+        var resumeQuill = new Quill('#resume-editor', {
+
+            theme: 'snow',
+
+            modules: {
+
+                toolbar: {
+
+                    container: QuillTools.getToolbarOptions(), // Get fresh toolbar config
+
+                    handlers: {
+
+                        'undo': function () { this.quill.history.undo(); },
+
+                        'redo': function () { this.quill.history.redo(); },
+
+                        'emdash': function () { QuillTools.handleEmDash(this.quill); },
+
+                        'group_lines': function () { QuillTools.handleGroupLines(this.quill); },
+
+                        'remove_doublespaces': function () { QuillTools.handleRemoveDoubleSpaces(this.quill); }
+
+                    }
+
+                },
+
+                history: {
+
+                    delay: 2000,
+
+                    maxStack: 500,
+
+                    userOnly: true
+
+                }
+
+            }
+
+        });
+
+        // Track selection for tools
+
+        resumeQuill.on('selection-change', function (range) {
+
+            if (range) QuillTools.activeQuill = resumeQuill;
+
+        });
+
+        // Sync Resume
+
+        resumeQuill.on('text-change', function () {
+
+            var html = resumeQuill.root.innerHTML;
+            html = QuillTools.cleanQuillHtml(html);
+
+            document.querySelector('input[name="resume"]').value = html;
+
+        });
+
+        var decodedResume = decodeHtmlDeep(initialResumeHtml, 2);
+
+        if (decodedResume) {
+
+            resumeQuill.clipboard.dangerouslyPasteHTML(decodedResume);
+
+        }
+
+        // Init Comment Editor (Full)
+
+        var commentEl = document.getElementById('comment-editor');
+
+        if (commentEl) {
+
+            var initialCommentHtml = commentEl.innerHTML || '';
+
+            var commentQuill = new Quill('#comment-editor', {
+
+                theme: 'snow',
+
+                modules: {
+
+                    toolbar: {
+
+                        container: QuillTools.getToolbarOptions(),
+
+                        handlers: {
+
+                            'undo': function () { this.quill.history.undo(); },
+
+                            'redo': function () { this.quill.history.redo(); },
+
+                            'emdash': function () { QuillTools.handleEmDash(this.quill); },
+
+                            'group_lines': function () { QuillTools.handleGroupLines(this.quill); },
+
+                            'remove_doublespaces': function () { QuillTools.handleRemoveDoubleSpaces(this.quill); }
+
+                        }
+
+                    },
+
+                    history: {
+
+                        delay: 2000,
+
+                        maxStack: 500,
+
+                        userOnly: true
+
+                    }
+
+                }
+
+            });
+
+            commentQuill.on('selection-change', function (range) {
+
+                if (range) QuillTools.activeQuill = commentQuill;
+
+            });
+
+            commentQuill.on('text-change', function () {
+
+                var html = commentQuill.root.innerHTML;
+                html = QuillTools.cleanQuillHtml(html);
+
+                document.querySelector('input[name="comment"]').value = html;
+
+            });
+
+            var decodedComment = decodeHtmlDeep(initialCommentHtml, 2);
+
+            if (decodedComment) {
+
+                commentQuill.clipboard.dangerouslyPasteHTML(decodedComment);
+
+            }
+
+        }
+
+    });
+
+</script>

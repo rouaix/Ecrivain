@@ -1,0 +1,89 @@
+<!-- Notes Panel -->
+
+<details class="panel" id="panel-notes" data-persist="true">
+
+  <summary>Notes <span class="panel-count">{{ @stats.note_count }}</span></summary>
+
+  <div class="section-group-block" data-type="notes">
+
+    <div class="section-group-heading">
+      <h4></h4>
+      <a class="button small" href="{{ @base }}/project/{{ @project.id }}/note/edit" title="+ Ajouter une note"><i
+          class="fas fa-plus"></i></a>
+
+    </div>
+
+    <check if="{{ !empty(@notes) }}">
+
+      <true>
+
+        <table class="compact-table data-table notes">
+
+          <tbody class="sortable-items" data-type="notes">
+
+            <repeat group="{{ @notes }}" value="{{ @note }}">
+
+              <tr data-id="{{ @note.id }}">
+
+                <td>
+
+                  <div class="notes-actions">
+
+                    <input type="checkbox" class="export-toggle" data-type="note" data-id="{{ @note.id }}" {{
+                      @note.is_exported_attr }} title="Inclure dans l'export">
+
+                    <input type="number" class="order-input" data-type="note" data-id="{{ @note.id }}"
+                      value="{{ @note.order_index + 1 }}">
+
+                    {{ @note.title ?: 'Note sans titre' }}
+
+                  </div>
+
+                  <check if="{{ @note.comment }}">
+
+                    <div class="note-comment">
+
+                      <span>Remarques : </span>{{ @note.comment }}
+
+                    </div>
+
+                  </check>
+
+                </td>
+
+                <td class="compact-meta compact-meta--narrow stats">{{ @note.wc }} mots</td>
+
+                <td class="compact-actions compact-actions--wide actions">
+
+                  <button class="button small preview-btn" data-type="note" data-id="{{ @note.id }}" title="Voir"><i
+                      class="fas fa-eye"></i></button>
+
+                  <a class="button small" href="{{ @base }}/project/{{ @project.id }}/note/edit?id={{ @note.id }}"
+                    title="Modifier"><i class="fas fa-edit"></i></a>
+
+                  <a class="button small delete js-confirm" href="{{ @base }}/note/{{ @note.id }}/delete"
+                    data-confirm="Supprimer cette note ?" title="Supprimer"><i class="fas fa-trash"></i></a>
+
+                </td>
+
+              </tr>
+
+            </repeat>
+
+          </tbody>
+
+        </table>
+
+      </true>
+
+      <false>
+
+        <p class="panel-empty">Aucune note cr&eacute;&eacute;e.</p>
+
+      </false>
+
+    </check>
+
+  </div>
+
+</details>

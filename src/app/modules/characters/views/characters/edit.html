@@ -1,0 +1,252 @@
+<!-- Modern Character Editor -->
+
+<div class="edit-page-layout">
+
+    <div class="edit-header">
+
+        <h2>Modifier le personnage « {{ @character.name }}»</h2>
+
+        <a class="button" href="{{ @base }}/project/{{ @project.id }}/characters"
+
+            title="Retour à la liste des personnages">
+
+            <i class="fas fa-arrow-left"></i>
+
+        </a>
+
+    </div>
+
+    <check if="{{ !empty(@errors) }}">
+
+        <div class="error edit-error">
+
+            <ul>
+
+                <repeat group="{{ @errors }}" value="{{ @err }}">
+
+                    <li>{{ @err }}</li>
+
+                </repeat>
+
+            </ul>
+
+        </div>
+
+    </check>
+
+    <form method="post"
+
+        action="{{ @character.id ? (@base . '/character/' . @character.id . '/edit') : (@base . '/project/' . @project.id . '/character/create') }}">
+
+        <input type="hidden" name="csrf_token" value="{{ @csrfToken }}">
+
+        <div class="edit-card">
+
+            <!-- Name Section -->
+
+            <div class="edit-card-section">
+
+                <div class="form-group">
+
+                    <label for="name">Nom *</label>
+
+                    <input type="text" id="name" name="name" value="{{ @character.name }}" class="input-control"
+
+                        required>
+
+                </div>
+
+            </div>
+
+            <!-- Description Section -->
+
+            <div class="edit-card-section">
+
+                <div id="editor-wrapper" class="editor-wrapper">
+
+                    <div class="form-group editor-column">
+
+                        <label for="description">Description (enrichie)</label>
+
+                        <div id="editor" class="editor-surface editor-height-300">
+
+                            {{ @character.description | raw }}
+
+                        </div>
+
+                        <input type="hidden" name="description" value="{{ @character.description | esc }}">
+
+                        <p class="word-count">Compteur de mots : <span id="wordCount">0</span></p>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+            <!-- Comment Section -->
+
+            <div class="edit-card-section">
+
+                <div class="form-group">
+
+                    <label for="comment">Commentaire</label>
+
+                    <div id="comment-editor" class="editor-surface editor-height-150">
+
+                        {{ @character.comment | raw }}
+
+                    </div>
+
+                    <input type="hidden" name="comment" value="{{ @character.comment | esc }}">
+
+                </div>
+
+            </div>
+
+            <!-- Actions -->
+
+            <div class="edit-actions">
+
+                <input type="submit" value="Enregistrer" class="button primary large">
+
+            </div>
+
+        </div>
+
+    </form>
+
+</div>
+
+<script nonce="{{ @nonce }}">
+
+    document.addEventListener('DOMContentLoaded', function () {
+
+        var editorEl = document.getElementById('editor');
+
+        var initialContentHtml = editorEl ? (editorEl.innerHTML || '') : '';
+
+        QuillTools.init('#editor', {
+
+            inputSelector: 'input[name="description"]',
+
+            baseUrl: '{{ @base }}',
+
+            csrfToken: '{{ @csrfToken }}',
+
+            contextId: '{{ @character.id }}',
+
+            contextType: 'character'
+
+        });
+
+        function decodeHtml(html) {
+
+            var txt = document.createElement('textarea');
+
+            txt.innerHTML = html;
+
+            return txt.value;
+
+        }
+
+        function decodeHtmlDeep(html, depth) {
+
+            var current = html;
+
+            for (var i = 0; i < depth; i++) {
+
+                var decoded = decodeHtml(current);
+
+                if (decoded === current) break;
+
+                current = decoded;
+
+            }
+
+            return current;
+
+        }
+
+        var decodedContent = decodeHtmlDeep(initialContentHtml, 2);
+
+        if (decodedContent && decodedContent !== QuillTools.quill.root.innerHTML) {
+
+            QuillTools.quill.clipboard.dangerouslyPasteHTML(decodedContent);
+
+        }
+
+        var commentEl = document.getElementById('comment-editor');
+
+        if (commentEl) {
+
+            var initialCommentHtml = commentEl.innerHTML || '';
+
+            var commentQuill = new Quill('#comment-editor', {
+
+                theme: 'snow',
+
+                modules: {
+
+                    toolbar: {
+
+                        container: QuillTools.getToolbarOptions(),
+
+                        handlers: {
+
+                            'undo': function () { this.quill.history.undo(); },
+
+                            'redo': function () { this.quill.history.redo(); },
+
+                            'emdash': function () { QuillTools.handleEmDash(this.quill); },
+
+                            'group_lines': function () { QuillTools.handleGroupLines(this.quill); },
+
+                            'remove_doublespaces': function () { QuillTools.handleRemoveDoubleSpaces(this.quill); }
+
+                        }
+
+                    },
+
+                    history: {
+
+                        delay: 2000,
+
+                        maxStack: 500,
+
+                        userOnly: true
+
+                    }
+
+                }
+
+            });
+
+            commentQuill.on('selection-change', function (range) {
+
+                if (range) QuillTools.activeQuill = commentQuill;
+
+            });
+
+            commentQuill.on('text-change', function () {
+
+                var html = commentQuill.root.innerHTML;
+                html = QuillTools.cleanQuillHtml(html);
+
+                document.querySelector('input[name="comment"]').value = html;
+
+            });
+
+            var decodedComment = decodeHtmlDeep(initialCommentHtml, 2);
+
+            if (decodedComment) {
+
+                commentQuill.clipboard.dangerouslyPasteHTML(decodedComment);
+
+            }
+
+        }
+
+    });
+
+</script>

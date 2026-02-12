@@ -1,0 +1,211 @@
+<!-- Element Editor -->
+<div class="edit-page-layout">
+    <div class="edit-header">
+        <h2>Modifier : {{ @config.label_singular ?? 'Élément' }}</h2>
+        <div style="display: flex; gap: 10px;">
+            <button type="button" id="openAiModal" class="button secondary" title="Ouvrir l'assistant narratif">
+                <i class="fas fa-magic"></i>&nbsp;Assistant IA
+            </button>
+            <a href="{{ @base }}/project/{{ @project.id }}" class="button" title="Retour au projet">
+                <i class="fas fa-arrow-left"></i>
+            </a>
+        </div>
+    </div>
+
+    <check if="{{ !empty(@errors) }}">
+        <div class="error edit-error">
+            <ul>
+                <repeat group="{{ @errors }}" value="{{ @err }}">
+                    <li>{{ @err }}</li>
+                </repeat>
+            </ul>
+        </div>
+    </check>
+    <check if="{{ !empty(@success) }}">
+        <div class="alert-success">{{ @success }}</div>
+    </check>
+
+    <form method="post" action="{{ @base }}/element/{{ @element.id }}/save" id="editorForm">
+        <input type="hidden" name="csrf_token" value="{{ @csrfToken }}">
+
+        <div class="edit-card">
+            <!-- Title Section -->
+            <div class="edit-card-section">
+                <div class="form-group">
+                    <label for="title">Titre</label>
+                    <input type="text" id="title" name="title" value="{{ @element.title }}" required
+                        class="input-control title-input">
+                </div>
+
+                <div class="form-group">
+                    <label for="parent_id">Sous-élément de</label>
+                    <select id="parent_id" name="parent_id" class="input-control">
+                        <option value="">-- Aucun (élément principal) --</option>
+                        <repeat group="{{ @topElements }}" value="{{ @top }}">
+                            <check if="{{ @top.id != @element.id }}">
+                                <option value="{{ @top.id }}" {{
+                                    (@element.parent_id==@top.id) ? 'selected' : '' }}>
+                                    {{ @top.title }}
+                                </option>
+                            </check>
+                        </repeat>
+                    </select>
+                </div>
+            </div>
+
+            <!-- Content Section -->
+            <div class="edit-card-section">
+                <div class="form-group">
+                    <label for="content">
+                        <span>Contenu</span>
+                        <span class="word-count inline" style="float: right;">
+                            <span id="wordCount">0</span> mots
+                        </span>
+                    </label>
+                    <div style="clear: both;"></div>
+                    <div id="editor" class="editor-surface editor-height-300">
+                        {{ @element.content | raw }}
+                    </div>
+                    <input type="hidden" name="content" value="{{ @element.content | esc }}">
+                </div>
+            </div>
+
+            <!-- Resume Section -->
+            <check if="{{ !@element.parent_id }}">
+                <div class="edit-card-section">
+                    <div class="form-group">
+                        <label for="resume">Résumé (IA ou Manuel)</label>
+                        <div id="resume-editor" class="editor-surface editor-height-150">
+                            {{ @element.resume | raw }}
+                        </div>
+                        <input type="hidden" name="resume" value="{{ @element.resume | esc }}">
+                    </div>
+                </div>
+            </check>
+
+            <!-- Actions -->
+            <div class="edit-actions">
+                <input type="submit" value="Enregistrer" class="button primary large">
+            </div>
+        </div>
+    </form>
+</div>
+
+<!-- Include Quill adapter and editor tools (reuse from chapter editor) -->
+<script src="https://cdn.quilljs.com/1.3.6/quill.js"></script>
+<script src="{{ @base }}/public/js/quill-adapter.js?v=20" nonce="{{ @nonce }}"></script>
+
+<script nonce="{{ @nonce }}">
+    document.addEventListener('DOMContentLoaded', function () {
+        // Helper to decode HTML entities (F3 escapes content)
+        function decodeHtml(html) {
+            var txt = document.createElement('textarea');
+            txt.innerHTML = html;
+            return txt.value;
+        }
+        function decodeHtmlDeep(html, depth) {
+            var current = html;
+            for (var i = 0; i < depth; i++) {
+                var decoded = decodeHtml(current);
+                if (decoded === current) break;
+                current = decoded;
+            }
+            return current;
+        }
+
+        // Init Main Editor via QuillTools
+        var editorEl = document.getElementById('editor');
+        var initialContentHtml = editorEl ? (editorEl.innerHTML || '') : '';
+
+        if (typeof QuillTools !== 'undefined') {
+            QuillTools.init('#editor', {
+                inputSelector: 'input[name="content"]',
+                baseUrl: '{{ @base }}',
+                csrfToken: '{{ @csrfToken }}',
+                contextId: '{{ @element.id }}',
+                contextType: 'element'
+            });
+
+            // Restore content (may be double-encoded by F3)
+            var decodedContent = decodeHtmlDeep(initialContentHtml, 2);
+            if (decodedContent && decodedContent !== QuillTools.quill.root.innerHTML) {
+                QuillTools.quill.clipboard.dangerouslyPasteHTML(decodedContent);
+            }
+
+            // Force word count update after content restoration
+            QuillTools.updateWordCount();
+        }
+
+        // Init Resume Editor
+        var resumeEl = document.getElementById('resume-editor');
+        var resumeQuill = null;
+        if (resumeEl) {
+            var initialResumeHtml = resumeEl.innerHTML || '';
+            resumeQuill = new Quill('#resume-editor', {
+                theme: 'snow',
+                modules: {
+                    toolbar: {
+                        container: QuillTools.getToolbarOptions(),
+                        handlers: {
+                            'undo': function () { this.quill.history.undo(); },
+                            'redo': function () { this.quill.history.redo(); },
+                            'emdash': function () { QuillTools.handleEmDash(this.quill); },
+                            'group_lines': function () { QuillTools.handleGroupLines(this.quill); },
+                            'remove_doublespaces': function () { QuillTools.handleRemoveDoubleSpaces(this.quill); }
+                        }
+                    },
+                    history: { delay: 2000, maxStack: 500, userOnly: true }
+                }
+            });
+
+            resumeQuill.on('selection-change', function (range) {
+                if (range) QuillTools.activeQuill = resumeQuill;
+            });
+
+            resumeQuill.on('text-change', function () {
+                var html = resumeQuill.root.innerHTML;
+                html = QuillTools.cleanQuillHtml(html);
+                document.querySelector('input[name="resume"]').value = html;
+            });
+
+            var decodedResume = decodeHtmlDeep(initialResumeHtml, 2);
+            if (decodedResume) {
+                resumeQuill.clipboard.dangerouslyPasteHTML(decodedResume);
+            }
+        }
+
+        // Auto-save every 30 seconds
+        var saveTimeout;
+        function triggerAutoSave() {
+            clearTimeout(saveTimeout);
+            saveTimeout = setTimeout(function () {
+                var form = document.getElementById('editorForm');
+                var formData = new FormData(form);
+
+                fetch(form.action, {
+                    method: 'POST',
+                    body: formData,
+                    headers: { 'X-Requested-With': 'XMLHttpRequest' }
+                })
+                .then(function (response) { return response.json(); })
+                .then(function (data) {
+                    if (data.status === 'ok') {
+                        console.log('Auto-saved at', new Date().toLocaleTimeString());
+                    }
+                });
+            }, 30000);
+        }
+
+        QuillTools.quill.on('text-change', triggerAutoSave);
+        if (resumeQuill) resumeQuill.on('text-change', triggerAutoSave);
+
+        // AI Modal integration (reuse from main layout)
+        document.getElementById('openAiModal').addEventListener('click', function () {
+            var aiModal = document.getElementById('aiRequestModal');
+            if (aiModal) {
+                aiModal.classList.add('is-visible');
+            }
+        });
+    });
+</script>
+

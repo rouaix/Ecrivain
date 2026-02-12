@@ -1,0 +1,514 @@
+<!-- Modern Chapter Editor -->
+<div class="edit-page-layout">
+    <div class="edit-header">
+        <h2>Modifier le chapitre</h2>
+        <div style="display: flex; gap: 10px;">
+            <button type="button" id="openAiModal" class="button secondary cache" title="Ouvrir l'assistant narratif">
+                <i class="fas fa-magic"></i>&nbsp;Assistant IA
+            </button>
+            <a href="{{ @base }}/project/{{ @project.id }}" class="button" title="Retour au projet">
+                <i class="fas fa-arrow-left"></i>
+            </a>
+        </div>
+    </div>
+
+    <check if="{{ !empty(@errors) }}">
+        <div class="error edit-error">
+            <ul>
+                <repeat group="{{ @errors }}" value="{{ @err }}">
+                    <li>{{ @err }}</li>
+                </repeat>
+            </ul>
+        </div>
+    </check>
+    <check if="{{ !empty(@success) }}">
+        <div class="alert-success">{{ @success }}</div>
+        <a href="{{ @base }}/project/{{ @project.id }}/chapter/create" class="button">Nouveau chapitre</a>
+    </check>
+
+    <form method="post" action="{{ @base }}/chapter/{{ @chapter.id }}/save" id="editorForm">
+        <input type="hidden" name="csrf_token" value="{{ @csrfToken }}">
+
+        <div class="edit-card">
+            <!-- Title Section -->
+            <div class="edit-card-section">
+                <div class="form-group">
+                    <label for="title">Titre du Chapitre</label>
+                    <input type="text" id="title" name="title" value="{{ @chapter.title }}" required
+                        class="input-control title-input">
+                </div>
+
+                <div class="editor-grid-row">
+                    <div class="form-group">
+                        <label for="act_id">Appartient à l'acte</label>
+                        <select id="act_id" name="act_id" class="input-control">
+                            <option value="">-- Aucun (hors actes) --</option>
+                            <repeat group="{{ @acts }}" value="{{ @act }}">
+                                <option value="{{ @act.id }}" {{ (@chapter.act_id==@act.id) ? 'selected' : '' }}>
+                                    {{ @act.title }}
+                                </option>
+                            </repeat>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="parent_id">Sous-chapitre de</label>
+                        <select id="parent_id" name="parent_id" class="input-control">
+                            <option value="">-- Aucun (chapitre principal) --</option>
+                            <repeat group="{{ @topChapters }}" value="{{ @top }}">
+                                <check if="{{ @top.id != @chapter.id }}">
+                                    <option value="{{ @top.id }}" data-act-id="{{ @top.act_id }}" {{
+                                        (@chapter.parent_id==@top.id) ? 'selected' : '' }}>
+                                        {{ @top.title }}
+                                    </option>
+                                </check>
+                            </repeat>
+                        </select>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Content Section -->
+            <div class="edit-card-section">
+                <div class="form-group">
+                    <label for="content">
+                        <span>Contenu</span>
+                        <span class="word-count inline" style="float: right;">
+                            <span id="wordCount">0</span> mots
+                        </span>
+                    </label>
+                    <div style="clear: both;"></div>
+                    <div id="editor" class="editor-surface editor-height-300">
+                        {{ @chapter.content | raw }}
+                    </div>
+                    <input type="hidden" name="content" value="{{ @chapter.content | esc }}">
+                </div>
+            </div>
+
+            <!-- Resume Section -->
+            <check if="{{ !@chapter.parent_id }}">
+                <div class="edit-card-section">
+                    <div class="form-group">
+                        <label for="resume">Résumé (IA ou Manuel)</label>
+                        <div id="resume-editor" class="editor-surface editor-height-150">
+                            {{ @chapter.resume | raw }}
+                        </div>
+                        <input type="hidden" name="resume" value="{{ @chapter.resume | esc }}">
+                    </div>
+                </div>
+            </check>
+
+            <!-- Comment Section -->
+            <div class="edit-card-section">
+                <div class="form-group">
+                    <label for="comment">Commentaire / Notes</label>
+                    <div id="comment-editor" class="editor-surface editor-height-150">
+                        {{ @chapter.comment | raw }}
+                    </div>
+                    <input type="hidden" name="comment" value="{{ @chapter.comment | esc }}">
+                </div>
+            </div>
+
+            <!-- Actions -->
+            <div class="edit-actions">
+                <input type="submit" value="Enregistrer" class="button primary large">
+            </div>
+        </div>
+    </form>
+</div>
+
+<!-- AI Assistant Modal -->
+<div class="modal-overlay" id="aiAssistantModal">
+    <div class="modal-content" style="max-width: 900px; max-height: 80vh; display: flex; flex-direction: column;">
+        <div class="modal-header">
+            <h3><i class="fas fa-magic"></i> Assistant Narratif</h3>
+            <button type="button" class="modal-close" id="closeAiAssistantModal">&times;</button>
+        </div>
+        <div class="modal-body" style="flex: 1; display: flex; flex-direction: column; overflow: hidden;">
+            <div class="ai-panel" style="height: 100%; display: flex; flex-direction: column;">
+                <div style="margin-bottom: 12px;">
+                    <span class="editor-badge-context">Contexte Projet</span>
+                </div>
+
+                <div class="ai-messages" id="aiChatOutput" style="flex: 1; overflow-y: auto; margin-bottom: 16px;">
+                    <div class="ai-msg system">
+                        Je connais l'intégralité de votre projet « {{ @project.title }} ». Posez-moi une
+                        question sur l'intrigue, les personnages ou la cohérence.
+                    </div>
+                </div>
+
+                <div class="ai-input-area">
+                    <textarea class="ai-textarea" id="aiPrompt"
+                        placeholder="Ex: Que fait Sage au chapitre 3 ? Est-ce cohérent avec son histoire personnelle ?"></textarea>
+                    <div class="ai-actions">
+                        <span></span>
+                        <button type="button" id="btnAiAsk" class="button secondary">
+                            <i class="fas fa-paper-plane"></i> Envoyer
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script nonce="{{ @nonce }}">
+    console.log('Script loaded - before DOMContentLoaded');
+    document.addEventListener('DOMContentLoaded', function () {
+        console.log('DOMContentLoaded fired');
+
+        // --- AI Assistant Modal Logic (moved to top to avoid QuillTools errors) ---
+        const aiAssistantModal = document.getElementById('aiAssistantModal');
+        const openAssistantBtn = document.getElementById('openAiModal');
+        const closeAssistantBtn = document.getElementById('closeAiAssistantModal');
+
+        console.log('AI Assistant Modal elements:', { aiAssistantModal, openAssistantBtn, closeAssistantBtn });
+
+        if (openAssistantBtn && aiAssistantModal && closeAssistantBtn) {
+            console.log('Adding AI Assistant modal event listeners');
+
+            openAssistantBtn.addEventListener('click', function (e) {
+                console.log('Open AI Assistant modal button clicked');
+                e.preventDefault();
+                e.stopPropagation();
+                aiAssistantModal.classList.add('is-visible');
+                console.log('Modal classes:', aiAssistantModal.className);
+            });
+
+            closeAssistantBtn.addEventListener('click', function (e) {
+                console.log('Close AI Assistant modal button clicked');
+                e.preventDefault();
+                e.stopPropagation();
+                aiAssistantModal.classList.remove('is-visible');
+            });
+
+            // Close modal on overlay click
+            aiAssistantModal.addEventListener('click', function (e) {
+                if (e.target === aiAssistantModal) {
+                    console.log('Closing modal - overlay clicked');
+                    aiAssistantModal.classList.remove('is-visible');
+                }
+            });
+
+            // Close modal on Escape key
+            document.addEventListener('keydown', function (e) {
+                if (e.key === 'Escape' && aiAssistantModal.classList.contains('is-visible')) {
+                    console.log('Closing modal - Escape pressed');
+                    aiAssistantModal.classList.remove('is-visible');
+                }
+            });
+        } else {
+            console.error('AI Assistant Modal elements not found:', {
+                modal: !!aiAssistantModal,
+                openBtn: !!openAssistantBtn,
+                closeBtn: !!closeAssistantBtn
+            });
+        }
+
+        var editorEl = document.getElementById('editor');
+        var initialContentHtml = editorEl ? (editorEl.innerHTML || '') : '';
+        console.log('Editor element:', editorEl);
+
+        // Init Main Editor (QuillTools)
+        if (typeof QuillTools !== 'undefined') {
+            QuillTools.init('#editor', {
+                inputSelector: 'input[name="content"]',
+                baseUrl: '{{ @base }}',
+                csrfToken: '{{ @csrfToken }}',
+                contextId: '{{ @chapter.id }}',
+                contextType: 'chapter'
+            });
+        } else {
+            console.error('QuillTools is not defined');
+        }
+
+        var chapterId = '{{ @chapter.id }}';
+
+        // Init Resume Editor (if valid)
+        var resumeEl = document.getElementById('resume-editor');
+        var resumeQuill = null;
+        function decodeHtml(html) {
+            var txt = document.createElement('textarea');
+            txt.innerHTML = html;
+            return txt.value;
+        }
+        function decodeHtmlDeep(html, depth) {
+            var current = html;
+            for (var i = 0; i < depth; i++) {
+                var decoded = decodeHtml(current);
+                if (decoded === current) break;
+                current = decoded;
+            }
+            return current;
+        }
+
+        var decodedContent = decodeHtmlDeep(initialContentHtml, 2);
+        if (decodedContent && decodedContent !== QuillTools.quill.root.innerHTML) {
+            QuillTools.quill.clipboard.dangerouslyPasteHTML(decodedContent);
+        }
+        if (resumeEl) {
+            var initialResumeHtml = resumeEl.innerHTML || '';
+            resumeQuill = new Quill('#resume-editor', {
+                theme: 'snow',
+                modules: {
+                    toolbar: {
+                        container: QuillTools.getToolbarOptions(),
+                        handlers: {
+                            'undo': function () { this.quill.history.undo(); },
+                            'redo': function () { this.quill.history.redo(); },
+                            'emdash': function () { QuillTools.handleEmDash(this.quill); },
+                            'group_lines': function () { QuillTools.handleGroupLines(this.quill); },
+                            'remove_doublespaces': function () { QuillTools.handleRemoveDoubleSpaces(this.quill); }
+                        }
+                    },
+                    history: {
+                        delay: 2000,
+                        maxStack: 500,
+                        userOnly: true
+                    }
+                }
+            });
+
+            // Track selection for tools
+            resumeQuill.on('selection-change', function (range) {
+                if (range) QuillTools.activeQuill = resumeQuill;
+            });
+
+            // Sync Input
+            resumeQuill.on('text-change', function () {
+                var html = resumeQuill.root.innerHTML;
+                html = QuillTools.cleanQuillHtml(html);
+                document.querySelector('input[name="resume"]').value = html;
+            });
+
+            var decodedResume = decodeHtmlDeep(initialResumeHtml, 2);
+            if (decodedResume) {
+                resumeQuill.clipboard.dangerouslyPasteHTML(decodedResume);
+            }
+        }
+
+        // Init Comment Editor (Full)
+        var commentEl = document.getElementById('comment-editor');
+        if (commentEl) {
+            var initialCommentHtml = commentEl.innerHTML || '';
+            var commentQuill = new Quill('#comment-editor', {
+                theme: 'snow',
+                modules: {
+                    toolbar: {
+                        container: QuillTools.getToolbarOptions(),
+                        handlers: {
+                            'undo': function () { this.quill.history.undo(); },
+                            'redo': function () { this.quill.history.redo(); },
+                            'emdash': function () { QuillTools.handleEmDash(this.quill); },
+                            'group_lines': function () { QuillTools.handleGroupLines(this.quill); },
+                            'remove_doublespaces': function () { QuillTools.handleRemoveDoubleSpaces(this.quill); }
+                        }
+                    },
+                    history: {
+                        delay: 2000,
+                        maxStack: 500,
+                        userOnly: true
+                    }
+                }
+            });
+
+            commentQuill.on('selection-change', function (range) {
+                if (range) QuillTools.activeQuill = commentQuill;
+            });
+
+            commentQuill.on('text-change', function () {
+                var html = commentQuill.root.innerHTML;
+                html = QuillTools.cleanQuillHtml(html);
+                document.querySelector('input[name="comment"]').value = html;
+            });
+
+            var decodedComment = decodeHtmlDeep(initialCommentHtml, 2);
+            if (decodedComment) {
+                commentQuill.clipboard.dangerouslyPasteHTML(decodedComment);
+            }
+        }
+
+        // Add comment functionality (Quill Adapted)
+        var commentButton = document.getElementById('commentButton');
+        if (commentButton) {
+            commentButton.addEventListener('click', function () {
+                var range = QuillTools.quill.getSelection();
+                if (!range || range.length === 0) {
+                    alert('Sélectionnez une portion de texte pour commenter.');
+                    return;
+                }
+
+                var userContent = prompt('Saisissez votre commentaire :');
+                if (!userContent) return;
+
+                // Use range index as offsets
+                var start = range.index;
+                var end = range.index + range.length;
+
+                fetch('{{ @base }}/chapter/' + chapterId + '/comment', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRF-Token': window.CSRF_TOKEN
+                    },
+                    body: JSON.stringify({ start: start, end: end, content: userContent })
+                }).then(function (resp) { return resp.json().catch(function () { return null; }); }).then(function (data) {
+                    // Reload comments list
+                    fetch('{{ @base }}/chapter/' + chapterId + '/comments')
+                        .then(function (resp) { return resp.json(); })
+                        .then(function (comments) {
+                            var listDiv = document.getElementById('commentsList');
+                            if (comments.length === 0) {
+                                listDiv.innerHTML = '<p>Aucun commentaire pour l\'instant.</p>';
+                                return;
+                            }
+                            var html = '<ul>';
+                            comments.forEach(function (com) {
+                                // Note: Snippet display might be off if we don't have server-side text content
+                                // But we just display what server sends
+                                // We escape HTML in comments for safety
+                                var snippet = (com.snippet || '').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+                                html += '<li><strong>« ' + snippet + ' »</strong> : ' + com.content.replace(/</g, '&lt;').replace(/>/g, '&gt;') + '</li>';
+                            });
+                            html += '</ul>';
+                            listDiv.innerHTML = html;
+                        });
+                });
+            });
+        }
+
+        // Act Filters (Preserved)
+        const actSelect = document.getElementById('act_id');
+        const parentSelect = document.getElementById('parent_id');
+
+        if (actSelect && parentSelect) {
+            // Cache original options functionality
+            const originalOptions = Array.from(parentSelect.options).map(opt => {
+                return {
+                    value: opt.value,
+                    text: opt.text,
+                    actId: opt.getAttribute('data-act-id'),
+                    selected: opt.selected
+                };
+            });
+
+            function filterChapters() {
+                const selectedActId = actSelect.value;
+                const currentParentValue = parentSelect.value;
+
+                // Clear current options
+                parentSelect.innerHTML = '';
+
+                originalOptions.forEach(data => {
+                    // Always show the placeholder/default option (empty value)
+                    if (data.value === "") {
+                        addOption(data);
+                        return;
+                    }
+
+                    // Filter Logic
+                    // If Act selected -> Show chapters from that Act
+                    // If ID is empty (Aucun) -> Show chapters with no Act
+                    const show = (selectedActId === "" && !data.actId) || (selectedActId !== "" && data.actId == selectedActId);
+
+                    if (show) {
+                        addOption(data);
+                    }
+                });
+
+                // Restore selection if possible
+                if (currentParentValue) {
+                    parentSelect.value = currentParentValue;
+                    if (parentSelect.value !== currentParentValue) {
+                        parentSelect.value = "";
+                    }
+                }
+            }
+
+            function addOption(data) {
+                const opt = document.createElement('option');
+                opt.value = data.value;
+                opt.text = data.text;
+                if (data.actId) opt.setAttribute('data-act-id', data.actId);
+                parentSelect.appendChild(opt);
+            }
+
+            actSelect.addEventListener('change', filterChapters);
+
+            // Initial run
+            filterChapters();
+        }
+
+        // --- AI Chat Logic ---
+        const btnAsk = document.getElementById('btnAiAsk');
+        const txtPrompt = document.getElementById('aiPrompt');
+        const chatOutput = document.getElementById('aiChatOutput');
+        const projectId = '{{ @project.id }}';
+
+        function addMessage(text, type) {
+            const div = document.createElement('div');
+            div.className = 'ai-msg ' + type;
+            // Allow basic bold naming but escape HTML
+            div.innerHTML = text.replace(/\n/g, '<br>');
+            chatOutput.appendChild(div);
+            chatOutput.scrollTop = chatOutput.scrollHeight;
+            return div;
+        }
+
+        async function askAi() {
+            const prompt = txtPrompt.value.trim();
+            if (!prompt) return;
+
+            // UI Updates
+            addMessage(prompt, 'user');
+            txtPrompt.value = '';
+            txtPrompt.disabled = true;
+            btnAsk.disabled = true;
+
+            const loadingDiv = addMessage('Analyse du manuscrit en cours<span class="loading-dots"></span>', 'ai loading');
+
+            try {
+                const response = await fetch('{{ @base }}/ai/ask', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRF-Token': '{{ @csrfToken }}'
+                    },
+                    body: JSON.stringify({
+                        project_id: projectId,
+                        prompt: prompt
+                    })
+                });
+
+                const data = await response.json();
+
+                // Remove loading
+                loadingDiv.remove();
+
+                if (data.success) {
+                    addMessage(data.answer, 'ai');
+                } else {
+                    addMessage('Erreur: ' + (data.error || 'Inconnue'), 'system error');
+                }
+
+            } catch (e) {
+                loadingDiv.remove();
+                addMessage('Erreur réseau: ' + e.message, 'system error');
+            } finally {
+                txtPrompt.disabled = false;
+                btnAsk.disabled = false;
+                txtPrompt.focus();
+            }
+        }
+
+        btnAsk.addEventListener('click', askAi);
+
+        // Enter to submit (Shift+Enter for new line)
+        txtPrompt.addEventListener('keydown', function (e) {
+            if (e.key === 'Enter' && !e.shiftKey) {
+                e.preventDefault();
+                askAi();
+            }
+        });
+
+    });
+</script>

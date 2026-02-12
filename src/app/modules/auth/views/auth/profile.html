@@ -1,0 +1,199 @@
+<div class="profile-container">
+
+    <div class="profile-card">
+
+        <div class="profile-card-header">
+
+            <h2><i class="fas fa-user-circle"></i> Mon Profil</h2>
+
+            <p>Gérez vos informations personnelles et paramètres</p>
+
+        </div>
+
+        <check if="!empty(@errors)">
+
+            <div class="form-alert error">
+
+                <ul>
+
+                    <repeat group="@errors" value="@err">
+
+                        <li>{{ @err }}</li>
+
+                    </repeat>
+
+                </ul>
+
+            </div>
+
+        </check>
+
+        <check if="!empty(@success)">
+
+            <div class="form-alert success">
+
+                Profil mis à jour avec succès.
+
+            </div>
+
+        </check>
+
+        <form method="post" action="{{ @base }}/profile" enctype="multipart/form-data">
+
+            <input type="hidden" name="csrf_token" value="{{ @csrfToken }}">
+
+            <div class="profile-photo-section">
+
+                <img id="profile-photo-img" src="{{ @base }}/profile/photo/{{ @user.username }}" alt=""
+
+                    class="profile-photo"
+
+                    data-fallback="https://ui-avatars.com/api/?name={{ urlencode(@user.username) }}&size=150">
+
+                <div class="photo-actions">
+
+                    <label for="photo" class="button secondary small cursor-pointer">Changer la photo</label>
+
+                    <input type="file" id="photo" name="photo" accept="image/*" class="is-hidden">
+
+                    <div id="photo-name" class="photo-name"></div>
+
+                </div>
+
+            </div>
+
+            <div class="section-divider">Informations Personnelles</div>
+
+            <div class="form-row">
+
+                <div class="form-group">
+
+                    <label for="lastname">Nom</label>
+
+                    <input type="text" id="lastname" name="lastname" value="{{ @user.lastname }}">
+
+                </div>
+
+                <div class="form-group">
+
+                    <label for="firstname">Prénom</label>
+
+                    <input type="text" id="firstname" name="firstname" value="{{ @user.firstname }}">
+
+                </div>
+
+            </div>
+
+            <div class="form-group">
+
+                <label for="dob">Date de naissance</label>
+
+                <input type="date" id="dob" name="dob" value="{{ @user.dob }}" class="input-max-200">
+
+            </div>
+
+            <div class="form-group">
+
+                <label for="bio">Biographie</label>
+
+                <div id="bio-editor" class="editor-surface editor-height-300">
+
+                    {{ @user.bio | raw }}
+
+                </div>
+
+                <input type="hidden" name="bio" value="{{ @user.bio | esc }}">
+
+            </div>
+
+            <div class="section-divider">Paramètres du Compte</div>
+
+            <div class="form-row">
+
+                <div class="form-group">
+
+                    <label for="username">Nom d'utilisateur</label>
+
+                    <input type="text" id="username" name="username" value="{{ @user.username }}" required>
+
+                    <small>Changer votre nom d'utilisateur vous déconnectera peut-être.</small>
+
+                </div>
+
+                <div class="form-group">
+
+                    <label for="password">Nouveau mot de passe</label>
+
+                    <input type="password" id="password" name="password"
+
+                        placeholder="Laisser vide pour conserver l'actuel">
+
+                </div>
+
+            </div>
+
+            <input type="submit" value="Enregistrer les modifications" class="button primary">
+
+        </form>
+
+    </div>
+
+</div>
+
+<script nonce="{{ @nonce }}">
+
+    document.addEventListener('DOMContentLoaded', function () {
+
+        // Handle profile photo fallback
+
+        const photoImg = document.getElementById('profile-photo-img');
+
+        if (photoImg) {
+
+            photoImg.addEventListener('error', function () {
+
+                this.src = this.dataset.fallback;
+
+            });
+
+        }
+
+        // Handle photo input change
+
+        const photoInput = document.getElementById('photo');
+
+        const photoName = document.getElementById('photo-name');
+
+        if (photoInput && photoName) {
+
+            photoInput.addEventListener('change', function () {
+
+                if (this.files && this.files[0]) {
+
+                    photoName.textContent = this.files[0].name;
+
+                }
+
+            });
+
+        }
+
+        // Initialize Quill via QuillTools
+
+        QuillTools.init('#bio-editor', {
+
+            inputSelector: 'input[name="bio"]',
+
+            baseUrl: '{{ @base }}',
+
+            csrfToken: '{{ @csrfToken }}',
+
+            contextId: '{{ @user.id }}',
+
+            contextType: 'profile'
+
+        });
+
+    });
+
+</script>

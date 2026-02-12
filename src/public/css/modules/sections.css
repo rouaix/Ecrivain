@@ -1,0 +1,20 @@
+/* Sections module styles */
+/* ==========================================
+   SECTIONS
+   ========================================== */
+
+td.sous-chapitre>span {
+    font-size: 1em;
+    font-weight: bold;
+}
+
+.stats {
+    width: 80px;
+    text-align: center;
+    font-size: 0.8em;
+    color: var(--text-muted);
+}
+
+div#status {
+    padding-top: 5px;
+}

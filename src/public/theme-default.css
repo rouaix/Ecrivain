@@ -1,0 +1,196 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,700&display=swap');
+
+/* Default theme overrides: minimal black & white with red accent, inspired by rouaix.com */
+body.theme-default {
+    /* Core */
+    --body-bg: #ffffff;
+    --card-bg: #ffffff;
+    --text-main: #111111;
+    --text-muted: #777777;
+    --link-color: #d65151;
+    --disabled-color: #dddddd;
+
+    /* Header & Footer */
+    --header-bg: #000000;
+    --header-text: #ffffff;
+    --footer-bg: #111111;
+    --footer-text: #888888;
+
+    /* Buttons */
+    --button-bg: #777777;
+    --button-text: #ffffff;
+    --button-primary-bg: #d65151;
+    --button-secondary-bg: #999999;
+    --button-delete-bg: #d65151;
+    --button-hover-bg: #222222;
+    --button-delete-hover-bg: #8d1e1e;
+
+    /* Borders & Inputs */
+    --border-color: #e0e0e0;
+    --border-light: #f0f0f0;
+    --input-bg: #fafafa;
+    --input-text: #111111;
+    --input-border: #cccccc;
+
+    /* Tables */
+    --table-header-bg: #f5f5f5;
+    --table-row-bg: #ffffff;
+    --table-row-hover-bg: #fdf0f0;
+
+    /* Accents */
+    --panel-hover-shadow: rgba(214, 81, 81, 0.12);
+
+    /* Typography */
+    font-family: 'Inter', system-ui, sans-serif;
+    font-size: 0.95rem;
+    line-height: 1.6;
+    -webkit-font-smoothing: antialiased;
+}
+
+body.theme-default .button.disabled,
+body.theme-default .button.small.disabled {
+    cursor: default;
+    background-color: var(--disabled-color);
+}
+
+/* Titres */
+body.theme-default h1,
+body.theme-default h2,
+body.theme-default h3,
+body.theme-default .project-card__title {
+    font-family: 'Bricolage Grotesque', system-ui, sans-serif;
+    font-weight: 700;
+    letter-spacing: -0.02em;
+    color: #111111;
+}
+
+/* Boutons */
+body.theme-default .button {
+    font-family: 'Inter', system-ui, sans-serif;
+    font-weight: 600;
+    letter-spacing: 0.03em;
+    border-radius: 4px;
+    text-transform: uppercase;
+}
+
+body.theme-default .button.secondary {
+    background: var(--button-secondary-bg);
+    color: var(--button-text);
+}
+
+body.theme-default .button.delete {
+    background: var(--button-delete-bg);
+}
+
+body.theme-default .button.secondary:hover,
+body.theme-default .button:hover,
+body.theme-default a.button.secondary:hover,
+body.theme-default a.button:hover,
+body.theme-default a.button.small.secondary:hover,
+body.theme-default a.button.small:hover {
+    background: var(--button-hover-bg);
+}
+
+body.theme-default .button.delete:hover {
+    background: var(--button-delete-hover-bg);
+}
+
+/* Liens */
+body.theme-default a {
+    color: var(--link-color);
+}
+
+body.theme-default a:hover {
+    color: var(--button-hover-text);
+    background: var(--button-hover-bg);
+}
+
+/* Buttons styled as links: restore text color on hover */
+body.theme-default a.button:hover {
+    color: var(--button-text);
+}
+
+/* Header */
+body.theme-default header {
+    border-bottom: 2px solid var(--link-color);
+}
+
+body.theme-default header a {
+    color: var(--button-text);
+}
+
+body.theme-default header a:hover {
+    color: var(--link-color);
+}
+
+/* Project cards */
+body.theme-default .project-card {
+    border: 1px solid var(--border-color);
+    border-radius: 4px;
+    box-shadow: none;
+    transition: box-shadow 0.2s, border-color 0.2s;
+}
+
+body.theme-default .project-card:hover {
+    transform: none;
+    border-color: var(--link-color);
+    box-shadow: 4px 4px 4px var(--border-color);
+}
+
+body.theme-default .project-card__cover {
+    background: linear-gradient(135deg, #111111 0%, #333333 100%);
+    background-size: cover;
+    background-position: center;
+    border-bottom: 1px solid var(--border-color);
+}
+
+body.theme-default .project-card__title-overlay {
+    color: var(--button-text);
+}
+
+/* Inputs & forms */
+body.theme-default input:focus,
+body.theme-default textarea:focus,
+body.theme-default select:focus {
+    border-color: var(--link-color);
+    outline: none;
+    box-shadow: 0 0 0 2px var(--link-color);
+}
+
+/* Badges et accents */
+body.theme-default .badge,
+body.theme-default .editor-badge-context {
+    background: var(--link-color);
+    color: var(--button-text);
+}
+
+/* Panneaux latéraux */
+body.theme-default .panel-section-header {
+    border-left: 3px solid var(--link-color);
+}
+
+/* Metric / stat cards */
+body.theme-default .metric-card strong,
+body.theme-default .project-stat .value {
+    color: var(--link-color);
+}
+
+/* Headings colors */
+body.theme-default h1,
+body.theme-default h2,
+body.theme-default h3,
+body.theme-default h4,
+body.theme-default h5,
+body.theme-default h6 {
+    color: var(--text-main);
+}
+
+/* Headings colors */
+body.theme-default header h1,
+body.theme-default header h2,
+body.theme-default header h3,
+body.theme-default header h4,
+body.theme-default header h5,
+body.theme-default header h6 {
+    color: var(--header-text);
+}

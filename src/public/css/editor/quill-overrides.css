@@ -1,0 +1,54 @@
+/* Quill editor overrides */
+/* ==========================================
+   QUILL EDITOR CUSTOMIZATION
+   Container and custom icon overrides
+   ========================================== */
+
+/* L'éditeur Quill injecte color:#000 dans .ql-editor.
+   On force l'héritage depuis .editor-surface qui porte var(--input-text). */
+.ql-editor {
+    color: inherit;
+    background: transparent;
+}
+
+/* Toolbar : fond et texte via les variables du thème */
+.ql-toolbar.ql-snow,
+.ql-container.ql-snow {
+    border-color: var(--input-border);
+    background: var(--input-bg);
+    color: var(--input-text);
+}
+
+/* Icônes SVG dans la toolbar */
+.ql-toolbar .ql-stroke {
+    stroke: var(--text-muted);
+}
+
+.ql-toolbar .ql-fill {
+    fill: var(--text-muted);
+}
+
+.ql-toolbar button:hover .ql-stroke,
+.ql-toolbar button.ql-active .ql-stroke {
+    stroke: var(--link-color);
+}
+
+.ql-toolbar button:hover .ql-fill,
+.ql-toolbar button.ql-active .ql-fill {
+    fill: var(--link-color);
+}
+
+/* Picker labels (alignement, taille) */
+.ql-toolbar .ql-picker-label,
+.ql-toolbar .ql-picker-item {
+    color: var(--text-muted);
+}
+
+.ql-toolbar .ql-picker-options {
+    background: var(--card-bg);
+    border-color: var(--input-border);
+}
+
+.ql-toolbar .ql-picker-item:hover {
+    color: var(--link-color);
+}

@@ -1,0 +1,80 @@
+/* AI Panels and Controls */
+/* ==========================================
+   GRAMMAR PANEL
+   Grammar checking sidebar panel
+   ========================================== */
+.grammar-panel {
+    width: 320px;
+    display: none;
+    background: var(--card-bg);
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    padding: 20px;
+    max-height: 700px;
+    overflow-y: auto;
+    box-shadow: 0 4px 12px var(--panel-hover-shadow);
+}
+.grammar-panel.is-visible {
+    display: block;
+}
+.grammar-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+    border-bottom: 1px solid var(--border-light);
+    padding-bottom: 10px;
+}
+.grammar-header h3 {
+    margin: 0;
+    font-size: 1.1rem;
+    color: var(--text-main);
+}
+.grammar-close-btn {
+    background: none;
+    border: none;
+    cursor: pointer;
+    font-size: 1.5rem;
+    color: var(--text-muted);
+    line-height: 1;
+}
+.grammar-results-placeholder {
+    font-style: italic;
+    color: var(--text-muted);
+    font-size: 0.9em;
+}
+.grammar-error-card {
+    background: white;
+    border: 1px solid #eee;
+    border-radius: 6px;
+    padding: 10px;
+    margin-bottom: 10px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+}
+.grammar-error-title {
+    font-weight: bold;
+    color: #d32f2f;
+    margin-bottom: 5px;
+    font-size: 0.9em;
+}
+.grammar-error-snippet {
+    background: #fff8f8;
+    padding: 5px;
+    border-radius: 4px;
+    margin-bottom: 8px;
+    font-style: italic;
+    font-size: 0.9em;
+}
+.grammar-error-highlight {
+    background: #ffcccc;
+    color: #b71c1c;
+}
+.grammar-error-message {
+    font-size: 0.85em;
+    color: #333;
+    margin-bottom: 8px;
+}
+.suggestion-button {
+    margin-right: 5px;
+    margin-top: 5px;
+}

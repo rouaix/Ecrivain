@@ -1,0 +1,25 @@
+php_value upload_max_filesize 10M
+php_value post_max_size 10M
+php_value max_execution_time 1200
+php_value max_input_time 1200
+
+Options -MultiViews
+RewriteEngine On
+
+# Block access to sensitive file types
+<FilesMatch "\.(ini|env|txt|log|json|md|sql)$">
+    Require all denied
+</FilesMatch>
+
+# Protect sensitive directories
+RewriteRule ^(src|etc|vendor|\.git)/.*$ - [F,L]
+
+# Serve static files from ../public
+RewriteCond %{REQUEST_URI} ^/(.*/)?ecrivain/public/(.*)$
+RewriteCond %{DOCUMENT_ROOT}/../public/%2 -f
+RewriteRule ^public/(.*)$ ../public/$1 [L]
+
+# RewriteBase /ecrivain/
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteCond %{REQUEST_FILENAME} !-d
+RewriteRule .* index.php [QSA,L]

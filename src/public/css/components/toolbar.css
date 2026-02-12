@@ -1,0 +1,25 @@
+/* Toolbar Component */
+/* ==========================================
+   TOOLBARS
+   Navigation and action toolbars
+   ========================================== */
+.navigation-toolbar {
+    display: flex;
+    flex-wrap: wrap;
+}
+
+.navigation-toolbar>* {
+    margin-right: 10px;
+    margin-bottom: 10px;
+}
+
+.navigation-toolbar>*:last-child {
+    margin-right: 0;
+}
+
+.dashboard-toolbar {
+    margin: 10px 0;
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+}

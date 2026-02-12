@@ -1,0 +1,459 @@
+<!DOCTYPE html>
+
+<html lang="fr">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <meta name="robots" content="noindex">
+
+    <title>{{ @title | esc }}</title>
+
+    <link rel="manifest" href="{{ @base }}/public/manifest.json">
+
+    <meta name="theme-color" content="#3f51b5">
+
+    <meta name="csrf-token" content="{{ @csrfToken }}">
+
+    <meta name="description" content="Assistant d'écriture créative propulsé par l'IA.">
+
+    <!-- Open Graph / Facebook -->
+
+    <meta property="og:type" content="website">
+
+    <meta property="og:url" content="{{ @SCHEME }}://{{ @HOST }}{{ @base }}">
+
+    <meta property="og:title" content="{{ @title | esc }}">
+
+    <meta property="og:description" content="Assistant d'écriture créative propulsé par l'IA.">
+
+    <meta property="og:image" content="{{ @base }}/public/icons/icon-512.png">
+
+    <!-- Twitter -->
+
+    <meta property="twitter:card" content="summary_large_image">
+
+    <meta property="twitter:url" content="{{ @SCHEME }}://{{ @HOST }}{{ @base }}">
+
+    <meta property="twitter:title" content="{{ @title | esc }}">
+
+    <meta property="twitter:description" content="Assistant d'écriture créative propulsé par l'IA.">
+
+    <meta property="twitter:image" content="{{ @base }}/public/icons/icon-512.png">
+
+    <link rel="icon" type="image/png" href="{{ @base }}/public/icons/icon-192.png">
+
+    <link href="https://cdn.quilljs.com/1.3.6/quill.snow.css" rel="stylesheet">
+
+    <script nonce="{{ @nonce }}" src="https://cdn.quilljs.com/1.3.6/quill.js"></script>
+
+    <script nonce="{{ @nonce }}" src="{{ @base }}/public/js/quill-adapter.js?v=21"></script>
+
+    <link rel="stylesheet" href="{{ @base }}/public/style.css?v=25">
+
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <set selectedTheme="{{ (isset(@COOKIE.theme) && @COOKIE.theme != '') ? @COOKIE.theme : 'default' }}" />
+
+    <link rel="stylesheet" href="{{ @base }}/public/theme-{{ @selectedTheme }}.css">
+
+</head>
+
+<body class="theme-{{ @selectedTheme }}">
+
+    <header>
+
+        <h1>Assistant</h1>
+
+        <nav class="main-nav">
+
+            <check if="isset(@SESSION.user_id)">
+
+                <true>
+
+                    <a href="{{ @base }}/dashboard">Tableau de bord</a>
+
+                    <a href="#" id="aiRequestBtn">Demande IA</a>
+
+                    <a href="{{ @base }}/logout">Déconnexion</a>
+
+                </true>
+
+                <false>
+
+                    <a href="{{ @base }}/">Accueil</a>
+
+                    <a href="{{ @base }}/login">Connexion</a>
+
+                    <a href="{{ @base }}/register">Inscription</a>
+
+                </false>
+
+            </check>
+
+        </nav>
+
+    </header>
+
+    <main>
+
+        <div class="container">
+
+            {{ @content | raw }}
+
+        </div>
+
+    </main>
+
+    <!-- Shared Tools UI (Hidden by default) -->
+
+    <footer>
+
+        &copy; {{ date('Y') }} Daniel ROUAIX (Ce logiciel est privé et gratuit)
+
+    </footer>
+
+    <!-- Register service worker for PWA support -->
+
+    <script nonce="{{ @nonce }}">
+
+        window.CSRF_TOKEN = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') || '';
+
+        document.querySelectorAll('form[method="post"]').forEach(function (form) {
+
+            if (form.querySelector('input[name="csrf_token"]')) {
+
+                return;
+
+            }
+
+            var hidden = document.createElement('input');
+
+            hidden.type = 'hidden';
+
+            hidden.name = 'csrf_token';
+
+            hidden.value = window.CSRF_TOKEN;
+
+            form.appendChild(hidden);
+
+        });
+
+        if ('serviceWorker' in navigator) {
+
+            window.addEventListener('load', function () {
+
+                navigator.serviceWorker.register('{{ @base }}/public/service-worker.js').catch(function (err) {
+
+                    console.error('ServiceWorker registration failed: ', err);
+
+                });
+
+            });
+
+        }
+
+    </script>
+
+    <!-- AI Request Modal -->
+
+    <check if="isset(@SESSION.user_id)">
+
+        <div id="aiRequestModal" class="modal-overlay modal-overlay--front">
+
+            <div class="modal-content">
+
+                <div class="modal-header">
+
+                    <h3>Demande IA</h3>
+
+                    <button class="modal-close" id="closeAiModal">&times;</button>
+
+                </div>
+
+                <div class="modal-body">
+
+                    <div class="form-group">
+
+                        <label for="aiSystemPrompt">Prompt Système</label>
+
+                        <textarea id="aiSystemPrompt" class="input-block" rows="3"
+
+                            placeholder="Définissez le rôle de l'IA...">{{ @aiSystemPrompt | esc }}</textarea>
+
+                    </div>
+
+                    <div class="form-group">
+
+                        <label for="aiUserPrompt">Prompt</label>
+
+                        <select id="aiUserPromptPreset" class="input-block">
+
+                            <option value="">Choisir un prompt enregistré...</option>
+
+                            <repeat group="{{ @aiUserPrompts }}" value="{{ @promptItem }}">
+
+                                <option value="{{ @promptItem.prompt | esc }}">{{ @promptItem.label | esc }}</option>
+
+                            </repeat>
+
+                        </select>
+
+                        <textarea id="aiUserPrompt" class="input-block" rows="5" style="margin-top: 10px;"
+
+                            placeholder="Votre demande..."></textarea>
+
+                    </div>
+
+                    <div class="form-group">
+
+                        <label for="aiContextFile">Joindre un fichier (Max 1Mo)</label>
+
+                        <input type="file" id="aiContextFile" class="input-block">
+
+                    </div>
+
+                    <div class="form-actions-right">
+
+                        <button class="button primary" id="sendAiRequest">Envoyer</button>
+
+                    </div>
+
+                    <div id="aiResponseContainer" class="ai-response">
+
+                        <h4>Réponse IA</h4>
+
+                        <div id="aiResponseContent" class="ai-response-content"></div>
+
+                    </div>
+
+                    <details id="aiModalDebug" class="ai-debug-details">
+
+                        <summary>Debug — prompts envoyés</summary>
+
+                        <pre id="aiModalDebugBody" class="ai-debug-pre"></pre>
+
+                    </details>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </check>
+
+    <script nonce="{{ @nonce }}">
+
+        document.addEventListener('DOMContentLoaded', function () {
+
+            // AI Request Modal Logic
+
+            const aiModal = document.getElementById('aiRequestModal');
+
+            const aiBtn = document.getElementById('aiRequestBtn');
+
+            const aiClose = document.getElementById('closeAiModal');
+
+            const sendBtn = document.getElementById('sendAiRequest');
+
+            const fileInput = document.getElementById('aiContextFile');
+
+            const responseContainer = document.getElementById('aiResponseContainer');
+
+            const responseContent = document.getElementById('aiResponseContent');
+
+            const systemPromptInput = document.getElementById('aiSystemPrompt');
+
+            const userPromptInput = document.getElementById('aiUserPrompt');
+
+            const userPromptPreset = document.getElementById('aiUserPromptPreset');
+
+            if (aiBtn) {
+
+                aiBtn.addEventListener('click', function (e) {
+
+                    e.preventDefault();
+
+                    aiModal.classList.add('is-visible');
+
+                });
+
+            }
+
+            if (aiClose) {
+
+                aiClose.addEventListener('click', function () {
+
+                    aiModal.classList.remove('is-visible');
+
+                });
+
+            }
+
+            // Close on click outside
+
+            window.addEventListener('click', function (event) {
+
+                if (event.target == aiModal) {
+
+                    aiModal.classList.remove('is-visible');
+
+                }
+
+            });
+
+            if (sendBtn) {
+
+                sendBtn.addEventListener('click', function () {
+
+                    const systemPrompt = systemPromptInput.value;
+
+                    const userPrompt = userPromptInput.value;
+
+                    const file = fileInput.files[0];
+
+                    if (!userPrompt) {
+
+                        alert("Veuillez entrer un prompt.");
+
+                        return;
+
+                    }
+
+                    responseContainer.classList.add('is-visible');
+
+                    responseContent.innerHTML = '<em>Génération en cours...</em>';
+
+                    sendBtn.disabled = true;
+
+                    const processRequest = (fileContent = null) => {
+
+                        fetch('{{ @base }}/ai/generate', {
+
+                            method: 'POST',
+
+                            headers: {
+
+                                'Content-Type': 'application/json',
+
+                                'X-CSRF-Token': window.CSRF_TOKEN
+
+                            },
+
+                            body: JSON.stringify({
+
+                                system_prompt: systemPrompt,
+
+                                prompt: userPrompt,
+
+                                context: fileContent,
+
+                                task: 'custom' // New task type for custom requests
+
+                            })
+
+                        })
+
+                            .then(response => response.json())
+
+                            .then(data => {
+
+                                sendBtn.disabled = false;
+
+                                if (data.text) {
+
+                                    responseContent.innerHTML = data.text.replace(/\n/g, '<br>');
+
+                                } else if (data.error) {
+
+                                    responseContent.innerHTML = '<span class="text-error">Erreur: ' + data.error + '</span>';
+
+                                }
+
+                                if (data.debug) {
+                                    const debugSection = document.getElementById('aiModalDebug');
+                                    const debugBody = document.getElementById('aiModalDebugBody');
+                                    if (debugSection && debugBody) {
+                                        debugBody.textContent =
+                                            'Modèle: ' + data.debug.model + '\n\n' +
+                                            '--- SYSTEM ---\n' + data.debug.system + '\n\n' +
+                                            '--- USER ---\n' + data.debug.user;
+                                        debugSection.classList.add('is-visible');
+                                    }
+                                }
+
+                            })
+
+                            .catch(err => {
+
+                                sendBtn.disabled = false;
+
+                                console.error(err);
+
+                                responseContent.innerHTML = '<span class="text-error">Erreur de communication.</span>';
+
+                            });
+
+                    };
+
+                    if (file) {
+
+                        const reader = new FileReader();
+
+                        reader.onload = function (e) {
+
+                            processRequest(e.target.result);
+
+                        };
+
+                        reader.onerror = function () {
+
+                            alert("Erreur lors de la lecture du fichier.");
+
+                            sendBtn.disabled = false;
+
+                        };
+
+                        reader.readAsText(file);
+
+                    } else {
+
+                        processRequest();
+
+                    }
+
+                });
+
+            }
+
+            if (userPromptPreset && userPromptInput) {
+
+                userPromptPreset.addEventListener('change', function () {
+
+                    const selected = userPromptPreset.value;
+
+                    if (!selected) {
+
+                        return;
+
+                    }
+
+                    userPromptInput.value = selected;
+
+                    userPromptInput.focus();
+
+                });
+
+            }
+
+        });
+
+    </script>
+
+</body>
+
+</html>

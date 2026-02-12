@@ -1,0 +1,76 @@
+<div class="project-page professional-show">
+    <section class="project-hero {{ !@stats.has_content ? 'small' : '' }}">
+        <div class="project-hero__cover {{ !@stats.has_content ? 'small' : '' }}">
+            <check if="{{ isset(@project.cover_image) && @project.cover_image }}">
+                <true>
+                    <img src="{{ @base }}/project/{{ @project.id }}/cover">
+                </true>
+                <false>
+                    <div class="project-hero__cover-placeholder">
+                        <span>Couverture indisponible</span>
+                    </div>
+                </false>
+            </check>
+
+        </div>
+        <div class="project-hero__body">
+            <div class="project-hero__heading"><h1>{{ @project.title }}</h1></div>
+            <check if="{{ !empty(@project.description) }}">
+                <true>
+                    <div class="project-hero__description">{{ nl2br(@project.description) }}</div>
+                </true>
+            </check>
+            <check if="{{ !empty(@authorName) }}">
+                <div class="project-hero__author">{{ @authorName }}</div>
+            </check>
+            <div class="project-hero__actions">
+                <div class="project-hero__actions-group">
+                    <a class="button" href="{{ @base }}/project/{{ @project.id }}/mindmap">Carte mentale</a>
+                    <a class="button" href="{{ @base }}/project/{{ @project.id }}/lecture">Mode Lecture</a>
+                    <a class="button" href="{{ @base }}/project/{{ @project.id }}/export">Exporter Texte</a>
+                    <a class="button" href="{{ @base }}/project/{{ @project.id }}/export/vector"
+                       title="Pour vectorisation IA">Exporter JSON</a>
+                    <a class="button" href="{{ @base }}/project/{{ @project.id }}/export/clean"
+                       title="Texte brut minuscule">Exporter Texte Brut</a>
+                    <a class="button" href="{{ @base }}/project/{{ @project.id }}/export/summaries"
+                       title="Exporter uniquement les résumés">Exporter Résumés</a>
+                    <a class="button" href="{{ @base }}/project/{{ @project.id }}/export/html">Exporter HTML</a>
+                    <a class="button" href="{{ @base }}/project/{{ @project.id }}/export/epub">Exporter Epub</a>
+                </div>
+            </div>
+            <check if="{{ @stats.has_content }}">
+                <true>
+                    <div class="project-hero__metrics">
+                        <article class="metric-card">
+                            <span class="metric-label">Objectif</span>
+                            <strong>{{ @stats.pages_target }} pages</strong>
+                            <span class="metric-sub">{{ @stats.target_words }} mots prévus</span>
+                        </article>
+                        <article class="metric-card">
+                            <span class="metric-label">Progression</span>
+                            <strong>{{ @stats.progress_percent }}% achevé</strong>
+                            <span class="metric-sub">{{ @stats.pages_current }} / {{ @stats.pages_target }} pages •
+                                {{ @stats.total_words }} mots</span>
+                        </article>
+                        <article class="metric-card">
+                            <span class="metric-label">Ressources</span>
+                            <strong>{{ @stats.note_count }} notes</strong>
+                            <span class="metric-sub">Personnages : {{ @stats.character_count }} • Sections :
+                                {{ @stats.before_count }} avant / {{ @stats.after_count }} après</span>
+                        </article>
+                    </div>
+                    <div class="project-hero__progress">
+                        <div class="progress-track">
+                            <div class="progress-bar" data-progress="{{ @stats.progress_percent }}"></div>
+                        </div>
+                        <p class="project-hero__progress-note">
+                            ({{ @stats.wpp }} mots par page • {{ @stats.lpp }} lignes par page)
+                        </p>
+                    </div>
+                </true>
+            </check>
+
+        </div>
+    </section>
+    <div id="saveStatus" class="save-status">Ordre enregistré !</div>
+</div>

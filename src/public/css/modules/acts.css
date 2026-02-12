@@ -1,0 +1,124 @@
+/* Acts module styles */
+/* ==========================================
+   ACTS
+   ========================================== */
+.act-container {
+    border: 1px solid var(--border-light);
+    border-radius: 6px;
+    margin-bottom: 10px;
+    padding: 0;
+    background: var(--card-bg);
+}
+
+.act-summary {
+    list-style: none;
+    /* padding: 10px; */
+    background: var(--table-row-bg);
+    border-radius: 4px;
+    position: relative;
+    padding-left: 30px;
+}
+
+/* Hide default marker across browsers */
+.act-summary::-webkit-details-marker {
+    display: none;
+}
+
+.act-summary::marker {
+    display: none;
+}
+
+/* Custom Arrow */
+.act-summary::before {
+    content: "►";
+    /* Or use a border-triangle */
+    position: absolute;
+    left: 10px;
+    top: 50%;
+    transform: translateY(-50%);
+    font-size: 0.8rem;
+    color: var(--text-muted);
+    transition: transform 0.2s;
+}
+
+details[open]>.act-summary::before {
+    transform: translateY(-50%) rotate(90deg);
+}
+
+/* Apply to nested chapter summaries too if needed, or check existing rules */
+details.act-chapters>summary {
+    list-style: none;
+    position: relative;
+    /*padding-left: 20px;*/
+}
+
+details.act-chapters>summary::-webkit-details-marker {
+    display: none;
+}
+
+details.act-chapters>summary::before {
+    content: "►";
+    display: inline-block;
+    width: 20px;
+    font-size: 0.7rem;
+    color: var(--text-muted);
+    transform: rotate(0deg);
+    transition: transform 0.2s;
+}
+
+details.act-chapters[open]>summary::before {
+    transform: rotate(90deg);
+}
+
+.act-summary h4 {
+    margin: 0;
+    padding: 0;
+    display: inline-block;
+    font-size: 1.1rem;
+}
+
+.act-actions {
+    float: right;
+    display: flex;
+    gap: 5px;
+    position: relative;
+    top: -4px;
+}
+
+.act-description {
+    font-style: italic;
+    color: var(--text-muted);
+    margin: 0;
+    /*border-left: 3px solid var(--border-light);*/
+    padding: 5px;
+}
+
+.act-chapters {
+    margin: 5px;
+    padding: 0;
+}
+
+.act-resume,
+.chapter-resume {
+    text-align: justify;
+    font-style: italic;
+    color: #555;
+    margin-left: 10px;
+    border-left: 3px solid #ccc;
+    padding-left: 10px;
+    padding-right: 10px;
+    font-size: 0.9em;
+}
+
+.act-meta {
+    font-weight: normal;
+    font-size: 0.75rem;
+    color: #777;
+    margin-left: 0.5rem;
+}
+
+.collapse-toggle {
+    cursor: pointer;
+    margin-right: 5px;
+    user-select: none;
+}

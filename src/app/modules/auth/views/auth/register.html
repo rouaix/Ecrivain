@@ -1,0 +1,129 @@
+<div class="auth-container">
+
+    <div class="auth-card">
+
+        <div class="auth-header">
+
+            <h2><i class="fas fa-user-plus"></i> Inscription</h2>
+
+            <p>Créez votre compte pour commencer à écrire</p>
+
+        </div>
+
+        <check if="!empty(@errors)">
+
+            <div class="auth-alert error">
+
+                <ul>
+
+                    <repeat group="@errors" value="@err">
+
+                        <li>{{ @err }}</li>
+
+                    </repeat>
+
+                </ul>
+
+            </div>
+
+        </check>
+
+        <form method="post" action="{{ @base }}/register">
+
+            <input type="hidden" name="csrf_token" value="{{ @csrfToken }}">
+
+            <div class="form-group">
+
+                <label for="username">Nom d'utilisateur *</label>
+
+                <input type="text" id="username" name="username" value="{{ @old.username }}" required>
+
+            </div>
+
+            <div class="form-group">
+
+                <label for="email">Adresse e-mail</label>
+
+                <input type="text" id="email" name="email" value="{{ @old.email }}">
+
+            </div>
+
+            <div class="form-group">
+
+                <label for="password">Mot de passe *</label>
+
+                <input type="password" id="password" name="password" required>
+
+            </div>
+
+            <input type="submit" value="Créer mon compte">
+
+            <div class="auth-footer">
+
+                <p>Vous avez déjà un compte ? <a href="{{ @base }}/login">Connectez-vous</a></p>
+
+            </div>
+
+        </form>
+
+    </div>
+
+</div>
+
+<script nonce="{{ @nonce }}">
+
+    document.addEventListener('DOMContentLoaded', () => {
+
+        const usernameInput = document.getElementById('username');
+
+        const passwordInput = document.getElementById('password');
+
+        if (usernameInput) {
+
+            usernameInput.addEventListener('input', () => {
+
+                usernameInput.value = usernameInput.value.replace(/ /g, '_');
+
+            });
+
+        }
+
+        if (passwordInput) {
+
+            passwordInput.addEventListener('keydown', (event) => {
+
+                if (event.key === ' ') {
+
+                    event.preventDefault();
+
+                }
+
+            });
+
+            passwordInput.addEventListener('input', () => {
+
+                const currentValue = passwordInput.value;
+
+                const sanitized = currentValue.replace(/\s+/g, '');
+
+                if (currentValue !== sanitized) {
+
+                    const cursorPosition = passwordInput.selectionStart;
+
+                    const removed = currentValue.length - sanitized.length;
+
+                    const newPosition = Math.max(cursorPosition - removed, 0);
+
+                    passwordInput.value = sanitized;
+
+                    passwordInput.setSelectionRange(newPosition, newPosition);
+
+                }
+
+            });
+
+        }
+
+    });
+
+</script>

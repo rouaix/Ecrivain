@@ -1,0 +1,48 @@
+<div class="edit-page-layout">
+    <div class="edit-header">
+        <h2>Créer : {{ @config.label_singular ?? 'Élément' }}</h2>
+        <a href="{{ @base }}/project/{{ @project.id }}" class="button" title="Retour au projet">
+            <i class="fas fa-arrow-left"></i>
+        </a>
+    </div>
+
+    <check if="!empty(@errors)">
+        <div class="error edit-error">
+            <ul>
+                <repeat group="@errors" value="@err">
+                    <li>{{ @err }}</li>
+                </repeat>
+            </ul>
+        </div>
+    </check>
+
+    <form method="post" action="{{ @base }}/project/{{ @project.id }}/element/create" id="elementCreateForm">
+        <input type="hidden" name="csrf_token" value="{{ @csrfToken }}">
+        <input type="hidden" name="template_element_id" value="{{ @templateElement.id }}">
+
+        <div class="edit-card">
+            <div class="edit-card-section">
+                <h3>Informations générales</h3>
+                <div class="form-group">
+                    <label for="title">Titre *</label>
+                    <input type="text" id="title" name="title" value="{{ @old.title }}" required class="input-control">
+                </div>
+                <div class="form-group">
+                    <label for="parent_id">Est un sous-élément de</label>
+                    <select id="parent_id" name="parent_id" class="input-control">
+                        <option value="">-- Aucun (élément principal) --</option>
+                        <repeat group="{{ @topElements }}" value="{{ @elem }}">
+                            <option value="{{ @elem.id }}" {{ (isset(@old.parent_id) &&
+                                @old.parent_id==@elem.id) ? 'selected' : '' }}>
+                                {{ @elem.title }}
+                            </option>
+                        </repeat>
+                    </select>
+                </div>
+            </div>
+            <div class="edit-actions">
+                <input type="submit" value="Créer" class="button primary large">
+            </div>
+        </div>
+    </form>
+</div>

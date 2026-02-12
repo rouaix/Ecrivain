@@ -1,0 +1,371 @@
+<div class="edit-page-layout">
+
+    <div class="edit-header">
+
+        <h2>Modifier le projet</h2>
+
+        <a href="{{ @base }}/project/{{ @project.id }}" class="button">
+
+            <i class="fas fa-arrow-left"></i>
+
+        </a>
+
+    </div>
+
+    <check if="!empty(@errors)">
+
+        <div class="error edit-error">
+
+            <ul>
+
+                <repeat group="@errors" value="@err">
+
+                    <li>{{ @err }}</li>
+
+                </repeat>
+
+            </ul>
+
+        </div>
+
+    </check>
+
+    <form method="post" action="{{ @base }}/project/{{ @project.id }}/edit" enctype="multipart/form-data">
+
+        <input type="hidden" name="csrf_token" value="{{ @csrfToken }}">
+
+        <!-- Card 1: Main Info -->
+
+        <div class="edit-card">
+
+            <h3><i class="fas fa-book"></i> Informations Générales</h3>
+
+            <div class="form-group">
+
+                <label for="title">Titre du Projet *</label>
+
+                <input type="text" id="title" name="title" value="{{ @project.title }}"
+
+                    class="input-control title-input" required>
+
+            </div>
+
+            <div class="edit-form-grid">
+
+                <div class="form-group">
+
+                    <label for="author">Auteur</label>
+
+                    <input type="text" id="author" name="author" value="{{ @project.author }}" class="input-control"
+
+                        placeholder="Nom de plume">
+
+                </div>
+
+                <div class="form-group">
+
+                    <!-- Placeholder for future field -->
+
+                </div>
+
+            </div>
+
+            <div class="form-group">
+
+                <label for="description">Synopsis / Description courte</label>
+
+                <textarea id="description" name="description" class="input-control"
+
+                    rows="4">{{ @project.description }}</textarea>
+
+                <div class="helper-text">Ce résumé sera utilisé par l'IA pour comprendre le contexte global.</div>
+
+            </div>
+
+        </div>
+
+        <div class="edit-form-grid">
+
+            <!-- Card 2: Cover -->
+
+            <div class="edit-card">
+
+                <h3><i class="fas fa-image"></i> Couverture</h3>
+
+                <div class="cover-preview-container">
+
+                    <check if="{{ isset(@project.cover_image) && @project.cover_image }}">
+
+                        <true>
+
+                            <img src="{{ @base }}/project/{{ @project.id }}/cover?v={{ mt_rand() }}" alt="Couverture"
+
+                                class="cover-preview">
+
+                        </true>
+
+                        <false>
+
+                            <div class="text-muted text-center">
+
+                                <i class="fas fa-image fa-3x cover-placeholder-icon"></i>
+
+                                Pas de couverture
+
+                            </div>
+
+                        </false>
+
+                    </check>
+
+                </div>
+
+                <div class="form-group">
+
+                    <div class="button secondary cover-upload-btn">
+
+                        <i class="fas fa-upload"></i> Choisir une image...
+
+                        <input type="file" id="cover_image" name="cover_image" accept="image/*">
+
+                    </div>
+
+                    <div class="helper-text text-center">Format JPG, PNG. Max 5 Mo.</div>
+
+                </div>
+
+            </div>
+
+            <!-- Card 3: Settings -->
+
+            <div class="edit-card">
+
+                <h3><i class="fas fa-sliders-h"></i> Paramètres & Objectifs</h3>
+
+                <div class="form-group">
+
+                    <label for="words_per_page">Mots par page (Estimation)</label>
+
+                    <input type="number" id="words_per_page" name="words_per_page"
+
+                        value="{{ @project.words_per_page ?: 350 }}" min="1" class="input-control">
+
+                    <div class="helper-text">Utilisé pour calculer le nombre de pages.</div>
+
+                </div>
+
+                <div class="form-group">
+
+                    <label for="lines_per_page">Lignes par page</label>
+
+                    <input type="number" id="lines_per_page" name="lines_per_page"
+
+                        value="{{ @project.lines_per_page ?: 38 }}" min="1" class="input-control">
+
+                </div>
+
+                <div class="form-group">
+
+                    <label for="target_pages">Objectif de pages (Optionnel)</label>
+
+                    <input type="number" id="target_pages" name="target_pages" value="{{ @project.target_pages ?: 0 }}"
+
+                        min="0" class="input-control">
+
+                </div>
+
+                <div class="form-group">
+
+                    <label for="target_words">Objectif de mots total</label>
+
+                    <input type="number" id="target_words" name="target_words" value="{{ @project.target_words }}"
+
+                        min="0" class="input-control" readonly>
+
+                    <div class="helper-text">Calculé automatiquement (Mots/Page * Pages).</div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+        <!-- Card: Template -->
+
+        <div class="edit-card">
+
+            <h3><i class="fas fa-layer-group"></i> Template</h3>
+
+            <div class="form-group">
+
+                <label for="template_id">Template de projet</label>
+
+                <select id="template_id" name="template_id" class="input-control">
+
+                    <repeat group="{{ @templates }}" value="{{ @tpl }}">
+
+                        <option value="{{ @tpl.id }}" {{ (@project.template_id == @tpl.id) ? 'selected' : '' }}>
+
+                            {{ @tpl.name }}
+
+                            <check if="{{ @tpl.is_system }}"> (système)</check>
+
+                        </option>
+
+                    </repeat>
+
+                </select>
+
+                <div class="helper-text">Définit la structure du projet (sections, actes, chapitres, etc.). <a href="{{ @base }}/templates">Gérer les templates</a></div>
+
+            </div>
+
+        </div>
+
+        <!-- Card 4: Notes -->
+
+        <div class="edit-card">
+
+            <h3><i class="fas fa-sticky-note"></i> Notes sur le projet</h3>
+
+            <div class="form-group">
+
+                <div id="comment-editor" class="editor-surface editor-height-150">
+
+                    {{ @project.comment | raw }}
+
+                </div>
+
+                <input type="hidden" name="comment" value="{{ @project.comment | esc }}">
+
+            </div>
+
+        </div>
+
+        <div class="edit-actions">
+
+            <input type="submit" value="Enregistrer les modifications" class="button primary large">
+
+        </div>
+
+    </form>
+
+</div>
+
+<script nonce="{{ @nonce }}">
+
+    document.addEventListener('DOMContentLoaded', function () {
+
+        const wppInput = document.getElementById('words_per_page');
+
+        const tpInput = document.getElementById('target_pages');
+
+        const twInput = document.getElementById('target_words');
+
+        function calculateWords() {
+
+            const wpp = parseInt(wppInput.value) || 0;
+
+            const tp = parseInt(tpInput.value) || 0;
+
+            if (tp > 0) {
+
+                twInput.value = wpp * tp;
+
+            }
+
+        }
+
+        wppInput.addEventListener('input', calculateWords);
+
+        tpInput.addEventListener('input', calculateWords);
+
+        // Preview Image
+
+        const coverInput = document.getElementById('cover_image');
+
+        const previewContainer = document.querySelector('.cover-preview-container');
+
+        coverInput.addEventListener('change', function (e) {
+
+            const file = e.target.files[0];
+
+            if (file) {
+
+                const reader = new FileReader();
+
+                reader.onload = function (e) {
+
+                    previewContainer.innerHTML = '<img src="' + e.target.result + '" class="cover-preview">';
+
+                }
+
+                reader.readAsDataURL(file);
+
+            }
+
+        });
+
+        // Editor Init
+
+        function decodeHtml(html) {
+
+            var txt = document.createElement('textarea');
+
+            txt.innerHTML = html;
+
+            return txt.value;
+
+        }
+
+        function decodeHtmlDeep(html, depth) {
+
+            var current = html;
+
+            for (var i = 0; i < depth; i++) {
+
+                var decoded = decodeHtml(current);
+
+                if (decoded === current) break;
+
+                current = decoded;
+
+            }
+
+            return current;
+
+        }
+
+        var commentEl = document.getElementById('comment-editor');
+
+        if (commentEl) {
+
+            var initialCommentHtml = commentEl.innerHTML || '';
+
+            QuillTools.init('#comment-editor', {
+
+                inputSelector: 'input[name="comment"]',
+
+                baseUrl: '{{ @base }}',
+
+                csrfToken: '{{ @csrfToken }}',
+
+                contextId: '{{ @project.id }}',
+
+                contextType: 'project'
+
+            });
+
+            var decodedComment = decodeHtmlDeep(initialCommentHtml, 2);
+
+            if (decodedComment) {
+
+                QuillTools.quill.clipboard.dangerouslyPasteHTML(decodedComment);
+
+            }
+
+        }
+
+    });
+
+</script>

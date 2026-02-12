@@ -1,0 +1,164 @@
+/* Quill editor base styles */
+/* ==========================================
+   EDITOR/QUILL STYLES
+   Toolbar overrides are in quill-toolbar.css
+   ========================================== */
+.ql-container {
+    box-sizing: border-box;
+    font-family: Arial, sans-serif;
+    font-size: 1em;
+    height: 100%;
+    margin: 0px;
+    position: relative;
+    padding: 10px;
+}
+
+/* Quill custom icons */
+.ql-icon {
+    font-weight: bold;
+    font-size: 12px;
+}
+
+.ql-icon-emdash {
+    font-size: 16px;
+}
+
+/* Editor Tools & AI Panels */
+.editor-tools-wrapper {
+    margin-top: 10px;
+}
+
+/* Editors */
+.editor-wrapper {
+    display: flex;
+    gap: 20px;
+    align-items: flex-start;
+}
+
+.editor-column {
+    flex: 1;
+}
+
+.editor-surface {
+    color: var(--input-text);
+    border: 1px solid var(--input-border);
+    border-radius: 6px;
+    background: var(--input-bg);
+    transition: border-color 0.2s;
+    padding: 20px;
+    overflow-x: hidden;
+    overflow-y: auto;
+}
+
+.editor-surface:focus-within {
+    /*border-color: var(--link-color);*/
+}
+
+.editor-height-150 {
+    height: 150px;
+    resize: vertical;
+}
+
+.editor-height-200 {
+    height: 200px;
+    resize: vertical;
+}
+
+.editor-height-300 {
+    height: 300px;
+    resize: vertical;
+}
+
+.editor-height-400 {
+    height: 400px;
+    resize: vertical;
+}
+
+.editor-height-500 {
+    height: 500px;
+    resize: vertical;
+}
+
+.editor-height-600 {
+    height: 600px;
+    resize: vertical;
+}
+
+.word-count {
+    margin-top: 10px;
+    font-size: 0.9rem;
+    color: var(--text-muted);
+    text-align: right;
+}
+
+p.word-count {
+    font-size: 0.8em;
+    font-style: italic;
+    font-weight: bold;
+    margin: 0;
+    padding: 5px;
+    color: var(--button-delete-bg);
+}
+
+.word-count.inline {
+    margin-top: 0;
+}
+
+.image-preview {
+    margin-bottom: 15px;
+    text-align: center;
+}
+
+.image-preview__img {
+    max-width: 300px;
+    max-height: 400px;
+}
+
+/* Editor-specific utilities */
+.editor-input-title {
+    font-size: 1.2rem;
+    padding: 10px;
+}
+
+.editor-badge {
+    font-size: 0.75rem;
+    color: var(--text-muted);
+    font-weight: normal;
+}
+
+.editor-link-inherit {
+    color: inherit;
+    text-decoration: none;
+}
+
+.editor-link-inherit:hover {
+    text-decoration: underline;
+}
+
+/* Editor Specific Overrides */
+.editor-grid-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 20px;
+}
+
+.editor-label-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.editor-badge-context {
+    font-size: 0.7rem;
+    background: rgba(0, 0, 0, 0.1);
+    padding: 2px 6px;
+    border-radius: 4px;
+}
+
+.full-width-form-group {
+    margin: 0;
+}
+
+.edit-footer-links {
+    padding: 20px;
+}

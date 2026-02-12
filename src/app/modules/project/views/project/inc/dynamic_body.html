@@ -1,0 +1,66 @@
+<!-- Dynamic Body: Template-driven display -->
+<!-- Renders panels in the order defined by template elements -->
+<!-- Each panel group (sections_before, acts_chapters, sections_after, etc.) is rendered only once -->
+<div class="project-body">
+
+<?php $_renderedPanels = []; ?>
+
+<repeat group="{{ @templateElements }}" value="{{ @tplElem }}">
+    <check if="{{ @tplElem.is_enabled }}">
+
+        <?php
+        // Compute panel key for deduplication
+        $etype = $tplElem['element_type'];
+        $eplacement = $tplElem['section_placement'] ?? '';
+
+        if ($etype === 'section') {
+            $panelKey = 'section_' . $eplacement;
+        } elseif ($etype === 'act' || $etype === 'chapter') {
+            $panelKey = 'acts_chapters';
+        } elseif ($etype === 'element') {
+            $panelKey = 'element_' . $tplElem['id']; // Each custom element type is unique
+        } else {
+            $panelKey = $etype;
+        }
+
+        // Skip if this panel group was already rendered
+        if (isset($_renderedPanels[$panelKey])) {
+            $etype = '_skip_';
+        } else {
+            $_renderedPanels[$panelKey] = true;
+        }
+        ?>
+
+        <?php if ($etype === 'section' && $eplacement === 'before'): ?>
+            <include href="project/inc/sections_before_panel.html" />
+        <?php endif; ?>
+
+        <?php if ($etype === 'act' || $etype === 'chapter'): ?>
+            <include href="project/inc/acts_chapters_panel.html" />
+        <?php endif; ?>
+
+        <?php if ($etype === 'element'): ?>
+            <?php \Base::instance()->set('elemConfig', $tplElem); ?>
+            <include href="project/inc/element_panel.html" />
+        <?php endif; ?>
+
+        <?php if ($etype === 'section' && $eplacement === 'after'): ?>
+            <include href="project/inc/sections_after_panel.html" />
+        <?php endif; ?>
+
+        <?php if ($etype === 'note'): ?>
+            <include href="project/inc/notes_panel.html" />
+        <?php endif; ?>
+
+        <?php if ($etype === 'character'): ?>
+            <include href="project/inc/characters_panel.html" />
+        <?php endif; ?>
+
+        <?php if ($etype === 'file'): ?>
+            <include href="project/inc/files_panel.html" />
+        <?php endif; ?>
+
+    </check>
+</repeat>
+
+</div>

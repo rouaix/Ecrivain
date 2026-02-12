@@ -1,0 +1,924 @@
+<include href="project/inc/header.html" />
+
+<include href="project/inc/new_body.html" />
+
+<!-- Preview Modal -->
+
+<div id="previewModal" class="modal-overlay">
+
+    <div class="modal-content">
+
+        <div class="modal-header">
+
+            <h3 id="modalTitle">Titre</h3>
+
+            <button class="modal-close">&times;</button>
+
+        </div>
+
+        <div id="modalBody" class="modal-body typography">
+
+            <!-- Content loaded via AJAX -->
+
+        </div>
+
+    </div>
+
+</div>
+
+<script nonce="{{ @nonce }}">
+
+    document.addEventListener('DOMContentLoaded', function () {
+
+        const aiSystemPrompt = {{ json_encode(@aiSystemPrompt)
+
+        }};
+
+        document.querySelectorAll('.progress-bar[data-progress]').forEach(function (bar) {
+
+            var value = parseFloat(bar.getAttribute('data-progress')) || 0;
+
+            bar.style.width = value + '%';
+
+        });
+
+        // Export Toggle Logic
+
+        document.querySelectorAll('.export-toggle').forEach(function (checkbox) {
+
+            checkbox.addEventListener('change', function () {
+
+                const type = this.getAttribute('data-type');
+
+                const id = this.getAttribute('data-id');
+
+                const isExported = this.checked ? 1 : 0;
+
+                const projectId = "{{ @project.id }}";
+
+                fetch('{{ @base }}/project/' + projectId + '/export-toggle', {
+
+                    method: 'POST',
+
+                    headers: {
+
+                        'Content-Type': 'application/json',
+
+                        'X-CSRF-Token': window.CSRF_TOKEN
+
+                    },
+
+                    body: JSON.stringify({
+
+                        type: type,
+
+                        id: id,
+
+                        is_exported: isExported
+
+                    })
+
+                })
+
+                    .then(function (resp) {
+
+                        if (resp.ok) {
+
+                            showStatus('Choix d\'export enregistré !');
+
+                        } else {
+
+                            alert('Erreur lors de l\'enregistrement du choix d\'export.');
+
+                            this.checked = !this.checked; // Revert
+
+                        }
+
+                    }.bind(this));
+
+            });
+
+        });
+
+        // Order Index Logic
+
+        document.querySelectorAll('.order-input').forEach(function (input) {
+
+            input.addEventListener('change', function () {
+
+                const type = this.getAttribute('data-type');
+
+                const id = this.getAttribute('data-id');
+
+                const newIndex = this.value;
+
+                const projectId = "{{ @project.id }}";
+
+                fetch('{{ @base }}/project/' + projectId + '/reorder-item', {
+
+                    method: 'POST',
+
+                    headers: {
+
+                        'Content-Type': 'application/json',
+
+                        'X-CSRF-Token': window.CSRF_TOKEN
+
+                    },
+
+                    body: JSON.stringify({
+
+                        type: type,
+
+                        id: id,
+
+                        new_index: newIndex
+
+                    })
+
+                })
+
+                    .then(function (resp) {
+
+                        if (resp.ok) {
+
+                            window.location.reload(); // Reload to reflect re-indexing
+
+                        } else {
+
+                            alert('Erreur lors de la réorganisation.');
+
+                        }
+
+                    });
+
+            });
+
+        });
+
+        // Modal Logic
+
+        const modal = document.getElementById('previewModal');
+
+        const modalTitle = document.getElementById('modalTitle');
+
+        const modalBody = document.getElementById('modalBody');
+
+        const closeModal = document.querySelector('.modal-close');
+
+        if (modal) {
+
+            document.querySelectorAll('.preview-btn').forEach(btn => {
+
+                btn.addEventListener('click', function (e) {
+
+                    e.preventDefault();
+
+                    const type = this.dataset.type;
+
+                    const id = this.dataset.id;
+
+                    const projectId = "{{ @project.id }}";
+
+                    modalTitle.innerText = "Chargement...";
+
+                    modalBody.innerHTML = '<div class="modal-loading">Chargement du contenu...</div>';
+
+                    modal.classList.add('is-visible');
+
+                    fetch(`{{ @base }}/project/${projectId}/preview/${type}/${id}`)
+
+                        .then(response => response.json())
+
+                        .then(data => {
+
+                            modalTitle.innerText = data.title;
+
+                            modalBody.innerHTML = data.content;
+
+                        })
+
+                        .catch(err => {
+
+                            modalTitle.innerText = "Erreur";
+
+                            modalBody.innerHTML = "Impossible de charger le contenu.";
+
+                            console.error(err);
+
+                        });
+
+                });
+
+            });
+
+            closeModal.onclick = () => modal.classList.remove('is-visible');
+
+            window.onclick = (event) => {
+
+                if (event.target == modal) modal.classList.remove('is-visible');
+
+            };
+
+        }
+
+        // --- Persistence Logic ---
+
+        document.querySelectorAll('details[data-persist="true"]').forEach(details => {
+
+            const id = details.id;
+
+            if (!id) return;
+
+            const savedState = localStorage.getItem('details-state-' + id);
+
+            if (savedState === 'open') {
+
+                details.setAttribute('open', '');
+
+            } else if (savedState === 'closed') {
+
+                details.removeAttribute('open');
+
+            }
+
+            // Save state on toggle
+
+            details.addEventListener('toggle', function () {
+
+                const state = this.open ? 'open' : 'closed';
+
+                localStorage.setItem('details-state-' + id, state);
+
+            });
+
+        });
+
+        // AI Summary Logic
+
+        document.querySelectorAll('.ai-summary-btn').forEach(btn => {
+
+            btn.addEventListener('click', function (e) {
+
+                e.preventDefault();
+
+                const chapterId = this.dataset.id;
+
+                const originalText = this.innerText;
+
+                if (!confirm('Voulez-vous générer un résumé de ce chapitre basé sur ses sous-chapitres ? Cela remplacera la description actuelle.')) {
+
+                    return;
+
+                }
+
+                this.innerText = 'Génération...';
+
+                this.disabled = true;
+
+                fetch('{{ @base }}/ai/summarize-chapter', {
+
+                    method: 'POST',
+
+                    headers: {
+
+                        'Content-Type': 'application/json',
+
+                        'X-CSRF-Token': window.CSRF_TOKEN
+
+                    },
+
+                    body: JSON.stringify({
+
+                        chapter_id: chapterId,
+
+                        system_prompt: aiSystemPrompt
+
+                    })
+
+                })
+
+                    .then(response => response.json())
+
+                    .then(data => {
+
+                        this.innerText = originalText;
+
+                        this.disabled = false;
+
+                        if (data.success) {
+
+                            alert('Résumé généré et enregistré avec succès !');
+
+                            window.location.reload(); // Reload to show updated description if visible or just refresh state
+
+                        } else {
+
+                            alert('Erreur : ' + (data.error || 'Erreur inconnue'));
+
+                        }
+
+                    })
+
+                    .catch(err => {
+
+                        this.innerText = originalText;
+
+                        this.disabled = false;
+
+                        console.error(err);
+
+                        alert('Erreur de communication avec le serveur.');
+
+                    });
+
+            });
+
+        });
+
+        // AI Act Summary Logic
+
+        document.querySelectorAll('.ai-act-summary-btn').forEach(btn => {
+
+            btn.addEventListener('click', function (e) {
+
+                e.preventDefault();
+
+                e.stopPropagation(); // Prevent detail toggle
+
+                const actId = this.dataset.id;
+
+                const originalText = this.innerText;
+
+                if (!confirm('Voulez-vous générer un résumé pour cet acte basé sur ses chapitres ? Cela remplacera le résumé actuel.')) {
+
+                    return;
+
+                }
+
+                this.innerText = 'Génération...';
+
+                this.disabled = true;
+
+                fetch('{{ @base }}/ai/summarize-act', {
+
+                    method: 'POST',
+
+                    headers: {
+
+                        'Content-Type': 'application/json',
+
+                        'X-CSRF-Token': window.CSRF_TOKEN
+
+                    },
+
+                    body: JSON.stringify({
+
+                        act_id: actId,
+
+                        system_prompt: aiSystemPrompt
+
+                    })
+
+                })
+
+                    .then(response => response.json())
+
+                    .then(data => {
+
+                        this.innerText = originalText;
+
+                        this.disabled = false;
+
+                        if (data.success) {
+
+                            alert('Résumé de l\'acte généré et enregistré avec succès !');
+
+                            window.location.reload();
+
+                        } else {
+
+                            alert('Erreur : ' + (data.error || 'Erreur inconnue'));
+
+                        }
+
+                    })
+
+                    .catch(err => {
+
+                        this.innerText = originalText;
+
+                        this.disabled = false;
+
+                        console.error(err);
+
+                        alert('Erreur de communication avec le serveur.');
+
+                    });
+
+            });
+
+        });
+
+    }); // DOMContentLoaded
+
+</script>
+
+<script nonce="{{ @nonce }}">
+
+    document.addEventListener('DOMContentLoaded', function () {
+
+        // --- Collapsible Chapters Logic ---
+
+        const toggles = document.querySelectorAll('.collapse-toggle');
+
+        function setToggleState(id, isCollapsed) {
+
+            const rows = document.querySelectorAll('.sub-of-' + id);
+
+            const toggle = document.querySelector('.collapse-toggle[data-target=\"' + id + '\"]');
+
+            if (!toggle) return;
+
+            if (isCollapsed) {
+
+                rows.forEach(r => r.classList.add('is-hidden'));
+
+                toggle.textContent = '▶';
+
+            } else {
+
+                rows.forEach(r => r.classList.remove('is-hidden'));
+
+                toggle.textContent = '▼';
+
+            }
+
+        }
+
+        toggles.forEach(toggle => {
+
+            const id = toggle.getAttribute('data-target');
+
+            const storageKey = 'chapter_collapsed_' + id;
+
+            // Init state from local storage
+
+            const isCollapsed = localStorage.getItem(storageKey) === 'true';
+
+            setToggleState(id, isCollapsed);
+
+            toggle.addEventListener('click', function (e) {
+
+                e.preventDefault();
+
+                e.stopPropagation(); // Prevent detail/summary toggle if inside one
+
+                // Toggle state
+
+                const currentlyCollapsed = localStorage.getItem(storageKey) === 'true';
+
+                const newState = !currentlyCollapsed;
+
+                localStorage.setItem(storageKey, newState);
+
+                setToggleState(id, newState);
+
+            });
+
+        });
+
+    });
+
+</script>
+
+<script nonce="{{ @nonce }}">
+
+    document.addEventListener('DOMContentLoaded', function () {
+
+        // --- File Upload Modal Logic ---
+
+        const fileUploadModal = document.getElementById('fileUploadModal');
+
+        const addFileBtn = document.getElementById('addFileBtn');
+
+        const closeFileModal = document.getElementById('closeFileModal');
+
+        const fileUploadForm = document.getElementById('fileUploadForm');
+
+        if (addFileBtn && fileUploadModal) {
+
+            addFileBtn.addEventListener('click', function() {
+
+                fileUploadModal.classList.add('is-visible');
+
+            });
+
+        }
+
+        if (closeFileModal) {
+
+            closeFileModal.addEventListener('click', function() {
+
+                fileUploadModal.classList.remove('is-visible');
+
+            });
+
+        }
+
+        if (fileUploadModal) {
+
+            fileUploadModal.addEventListener('click', function(e) {
+
+                if (e.target === fileUploadModal) {
+
+                    fileUploadModal.classList.remove('is-visible');
+
+                }
+
+            });
+
+        }
+
+        if (fileUploadForm) {
+
+            fileUploadForm.addEventListener('submit', function(e) {
+
+                e.preventDefault();
+
+                const formData = new FormData(this);
+
+                const projectId = "{{ @project.id }}";
+
+                fetch('{{ @base }}/project/' + projectId + '/file/upload', {
+
+                    method: 'POST',
+
+                    body: formData
+
+                })
+
+                .then(response => response.json())
+
+                .then(data => {
+
+                    if (data.success) {
+
+                        alert('Fichier ajouté avec succès!');
+
+                        window.location.reload();
+
+                    } else {
+
+                        alert('Erreur: ' + (data.error || 'Erreur inconnue'));
+
+                    }
+
+                })
+
+                .catch(err => {
+
+                    console.error(err);
+
+                    alert('Erreur lors de l\'envoi du fichier.');
+
+                });
+
+            });
+
+        }
+
+        // --- File Preview Logic ---
+
+        const modal = document.getElementById('previewModal');
+
+        const modalTitle = document.getElementById('modalTitle');
+
+        const modalBody = document.getElementById('modalBody');
+
+        const closePreviewModal = document.getElementById('closePreviewModal');
+
+        // Close preview modal on X button
+
+        if (closePreviewModal) {
+
+            closePreviewModal.addEventListener('click', function() {
+
+                modal.classList.remove('is-visible');
+
+            });
+
+        }
+
+        // Close preview modal on backdrop click
+
+        if (modal) {
+
+            modal.addEventListener('click', function(e) {
+
+                if (e.target === modal) {
+
+                    modal.classList.remove('is-visible');
+
+                }
+
+            });
+
+        }
+
+        document.querySelectorAll('.preview-file-btn').forEach(btn => {
+
+            btn.addEventListener('click', function(e) {
+
+                e.preventDefault();
+
+                const fileId = this.dataset.id;
+
+                const filename = this.dataset.filename;
+
+                const filetype = this.dataset.type;
+
+                const projectId = "{{ @project.id }}";
+
+                modalTitle.innerText = filename;
+
+                // Check if it's an image or PDF for preview
+
+                if (filetype && (filetype.startsWith('image/') || filetype === 'application/pdf')) {
+
+                    if (filetype.startsWith('image/')) {
+
+                        modalBody.innerHTML = '<img src="{{ @base }}/project/' + projectId + '/file/' + fileId + '/download" style="max-width: 100%; height: auto;">';
+
+                    } else if (filetype === 'application/pdf') {
+
+                        modalBody.innerHTML = '<iframe src="{{ @base }}/project/' + projectId + '/file/' + fileId + '/download" style="width: 100%; height: 600px; border: none;"></iframe>';
+
+                    }
+
+                } else {
+
+                    modalBody.innerHTML = '<p>Prévisualisation non disponible pour ce type de fichier.</p><p><a href="{{ @base }}/project/' + projectId + '/file/' + fileId + '/download" class="button" download>Télécharger le fichier</a></p>';
+
+                }
+
+                modal.classList.add('is-visible');
+
+            });
+
+        });
+
+        // --- Sort Files Alphabetically Logic ---
+
+        const sortFilesBtn = document.getElementById('sortFilesBtn');
+
+        if (sortFilesBtn) {
+
+            sortFilesBtn.addEventListener('click', function() {
+
+                const filesTable = document.querySelector('.sortable-items[data-type="files"]');
+
+                if (!filesTable) return;
+
+                const rows = Array.from(filesTable.querySelectorAll('tr'));
+
+                // Sort rows by filename (stored in the file-actions div)
+
+                rows.sort((a, b) => {
+
+                    const filenameA = a.querySelector('.file-actions')?.textContent.trim().toLowerCase() || '';
+
+                    const filenameB = b.querySelector('.file-actions')?.textContent.trim().toLowerCase() || '';
+
+                    return filenameA.localeCompare(filenameB);
+
+                });
+
+                // Reorder the rows in the DOM
+
+                rows.forEach(row => filesTable.appendChild(row));
+
+                showStatus('Fichiers triés par ordre alphabétique !');
+
+            });
+
+        }
+
+        // --- Global Search Logic ---
+
+        const searchInput = document.getElementById('globalSearchInput');
+
+        const clearSearchBtn = document.getElementById('clearSearchBtn');
+
+        if (searchInput) {
+
+            searchInput.addEventListener('input', function() {
+
+                const searchTerm = this.value.toLowerCase().trim();
+
+                // Show/hide clear button
+
+                if (clearSearchBtn) {
+
+                    clearSearchBtn.style.display = searchTerm ? 'inline-block' : 'none';
+
+                }
+
+                // Get all searchable elements
+
+                const searchableElements = [
+
+                    // Sections (before and after)
+
+                    ...document.querySelectorAll('.section-group-block tr[data-id]'),
+
+                    // Acts
+
+                    ...document.querySelectorAll('.act-container'),
+
+                    // Chapters and sub-chapters
+
+                    ...document.querySelectorAll('.sortable-chapters tr[data-id]'),
+
+                    // Custom elements
+
+                    ...document.querySelectorAll('.elements tbody tr[data-id]'),
+
+                    // Notes
+
+                    ...document.querySelectorAll('.notes tbody tr[data-id]'),
+
+                    // Files
+
+                    ...document.querySelectorAll('.sortable-items[data-type="files"] tr[data-id]')
+
+                ];
+
+                let matchCount = 0;
+
+                const matchedElements = [];
+
+                searchableElements.forEach(element => {
+
+                    const textContent = element.textContent.toLowerCase();
+
+                    const matches = !searchTerm || textContent.includes(searchTerm);
+
+                    if (matches) {
+
+                        element.style.display = '';
+
+                        matchCount++;
+
+                        matchedElements.push(element);
+
+                    } else {
+
+                        element.style.display = 'none';
+
+                    }
+
+                });
+
+                // Auto-expand and reveal all matched elements
+
+                if (searchTerm) {
+
+                    // Expand all panels
+
+                    document.querySelectorAll('.panel[data-persist="true"]').forEach(panel => {
+
+                        const hasVisibleContent = Array.from(panel.querySelectorAll('tr[data-id]')).some(el => el.style.display !== 'none');
+
+                        if (hasVisibleContent) {
+
+                            panel.setAttribute('open', '');
+
+                        }
+
+                    });
+
+                    // Expand act containers and their chapters
+
+                    document.querySelectorAll('.act-container').forEach(act => {
+
+                        if (act.style.display !== 'none') {
+
+                            act.setAttribute('open', '');
+
+                            // Also expand the chapters details inside
+
+                            const chaptersDetails = act.querySelector('.act-chapters');
+
+                            if (chaptersDetails) chaptersDetails.setAttribute('open', '');
+
+                        }
+
+                    });
+
+                    // Expand all custom element panels
+
+                    document.querySelectorAll('details.panel').forEach(panel => {
+
+                        const hasVisibleContent = Array.from(panel.querySelectorAll('tr[data-id]')).some(el => el.style.display !== 'none');
+
+                        if (hasVisibleContent) {
+
+                            panel.setAttribute('open', '');
+
+                        }
+
+                    });
+
+                    // Un-collapse sub-chapters/sub-elements that match
+
+                    matchedElements.forEach(element => {
+
+                        // If it's a sub-chapter or sub-element (has class .sub-chapter), make sure it's visible
+
+                        if (element.classList.contains('sub-chapter')) {
+
+                            element.classList.remove('is-hidden');
+
+                            // Also update the collapse toggle icon to show it's expanded
+
+                            const dataId = element.getAttribute('data-id');
+
+                            const parentClasses = element.className.match(/sub-of-(\d+)/);
+
+                            if (parentClasses && parentClasses[1]) {
+
+                                const parentId = parentClasses[1];
+
+                                const toggle = document.querySelector('.collapse-toggle[data-target="' + parentId + '"]');
+
+                                if (toggle) {
+
+                                    toggle.textContent = '▼';
+
+                                }
+
+                            }
+
+                        }
+
+                    });
+
+                } else {
+
+                    // If search is cleared, restore collapsed state from localStorage
+
+                    document.querySelectorAll('.collapse-toggle').forEach(toggle => {
+
+                        const id = toggle.getAttribute('data-target');
+
+                        const storageKey = 'chapter_collapsed_' + id;
+
+                        const isCollapsed = localStorage.getItem(storageKey) === 'true';
+
+                        const rows = document.querySelectorAll('.sub-of-' + id);
+
+                        if (isCollapsed) {
+
+                            rows.forEach(r => r.classList.add('is-hidden'));
+
+                            toggle.textContent = '▶';
+
+                        } else {
+
+                            rows.forEach(r => r.classList.remove('is-hidden'));
+
+                            toggle.textContent = '▼';
+
+                        }
+
+                    });
+
+                }
+
+            });
+
+        }
+
+        if (clearSearchBtn) {
+
+            clearSearchBtn.addEventListener('click', function() {
+
+                if (searchInput) {
+
+                    searchInput.value = '';
+
+                    searchInput.dispatchEvent(new Event('input'));
+
+                    searchInput.focus();
+
+                }
+
+            });
+
+        }
+
+    });
+
+</script>
+

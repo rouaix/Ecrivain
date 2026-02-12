@@ -1,0 +1,128 @@
+/* Form inputs and controls */
+/* ==========================================
+   FORMS & INPUTS
+   ========================================== */
+.form-group {
+    margin: 0;
+}
+
+input,
+select,
+textarea {
+    font-size: 1em;
+    font-family: Arial, sans-serif;
+}
+
+input[type="text"],
+input[type="password"],
+input[type="number"],
+textarea,
+select {
+    width: 100%;
+    padding: 6px;
+    box-sizing: border-box;
+    background: var(--input-bg);
+    color: var(--input-text);
+    border: 1px solid var(--input-border);
+}
+
+/* Hide spin buttons for number inputs */
+input[type=number]::-webkit-inner-spin-button,
+input[type=number]::-webkit-outer-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+}
+
+input[type=number] {
+    -moz-appearance: textfield;
+}
+
+input[type="number"].order-input,
+.chapter-actions>input[type="number"],
+.section-actions>input[type="number"],
+.notes-actions>input[type="number"],
+.sous-chapitre>input[type="number"] {
+    width: 40px;
+    height: 15px;
+    margin-right: 5px;
+    display: inline-block;
+    padding: 1px 5px 1px 5px;
+    position: relative;
+    top: -1px;
+    font-size: 0.7rem !important;
+}
+
+label {
+    display: block;
+    margin-bottom: 4px;
+}
+
+/* Form helpers */
+.form-row {
+    display: flex;
+    gap: 20px;
+}
+
+.form-row__col {
+    flex: 1;
+}
+
+.form-group--mt-15 {
+    margin-top: 15px;
+}
+
+.form-group--mt-20 {
+    margin-top: 20px;
+}
+
+.form-actions-right {
+    margin-top: 30px;
+    text-align: right;
+}
+
+.form-actions-right--sm {
+    margin-top: 15px;
+}
+
+.input-block {
+    display: block;
+    width: 100%;
+    box-sizing: border-box;
+}
+
+.input-max-200 {
+    max-width: 200px;
+}
+
+.input-control {
+    width: 100%;
+    padding: 10px 15px;
+    border: 1px solid var(--input-border);
+    border-radius: 8px;
+    background: var(--input-bg);
+    color: var(--input-text);
+    font-family: inherit;
+    transition: all 0.2s;
+    box-sizing: border-box;
+    /* Important for width 100% */
+}
+
+.input-control:focus {
+    border-color: var(--link-color);
+    box-shadow: 0 0 0 3px rgba(63, 81, 181, 0.1);
+    outline: none;
+}
+
+textarea.input-control {
+    resize: vertical;
+    min-height: 100px;
+}
+
+.input-control.title-input {
+    font-size: 1.2rem;
+    font-weight: bold;
+}
+
+.input-control[readonly] {
+    background: var(--body-bg);
+}

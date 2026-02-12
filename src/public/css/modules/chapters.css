@@ -1,0 +1,43 @@
+/* Chapter module styles */
+/* ==========================================
+   CHAPTERS
+   ========================================== */
+.section-group-block {
+    margin-bottom: 5px;
+    /*padding-left: 20px;*/
+}
+
+.section-group-heading {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 10px;
+}
+
+.section-group-heading h4 {
+    margin: 0;
+    font-size: 1rem;
+    color: var(--text-muted);
+}
+
+.sub-chapter-comment,
+.chapter-comment,
+.act-comment,
+.char-comment,
+.note-comment,
+.section-comment {
+    font-size: 0.7em;
+    font-style: italic;
+    margin: 0;
+    padding: 5px 10px;
+    color: var(--button-delete-bg);
+}
+
+.sub-chapter-comment>span,
+.chapter-comment>span,
+.act-comment>span,
+.char-comment>span,
+.note-comment>span,
+.section-comment>span {
+    font-weight: bold;
+}

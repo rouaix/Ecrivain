@@ -1,0 +1,107 @@
+<?php
+// Extract element config from templateElement
+$f3 = \Base::instance();
+$elemConfig = $f3->get('elemConfig');
+$cfg = json_decode($elemConfig['config_json'] ?? '{}', true);
+$elemId = $elemConfig['id'];
+$customElemsByType = $f3->get('customElementsByType');
+$customElems = $customElemsByType[$elemId] ?? [];
+?>
+
+<details class="panel" id="panel-element-{{ @elemConfig.id }}" data-persist="true">
+    <summary>
+        <?= $cfg['label_plural'] ?? 'Éléments personnalisés' ?>
+        <span class="panel-count">
+            <?= count($customElems) ?>
+        </span>
+    </summary>
+
+    <check if="{{ !empty(@customElementsByType[@elemConfig.id]) }}">
+        <true>
+            <table class="compact-table data-table">
+                <tbody>
+                    <repeat group="{{ @customElementsByType[@elemConfig.id] }}" value="{{ @ce }}">
+                        <tr data-id="{{ @ce.id }}">
+                            <td>
+                                <input type="checkbox" class="export-toggle" data-type="element" data-id="{{ @ce.id }}"
+                                    {{ @ce.is_exported_attr }}>
+                                <input type="number" class="order-input" data-type="element" data-id="{{ @ce.id }}"
+                                    value="{{ @ce.order_index + 1 }}" min="1" max="999">
+
+                                <!-- Collapse toggle for elements with sub-elements -->
+                                <check if="{{ isset(@ce.subs) && count(@ce.subs) > 0 }}">
+                                    <span class="collapse-toggle" data-target="{{ @ce.id }}">&#9660;</span>
+                                </check>
+
+                                {{ @ce.title }}
+                                <!-- Debug: show subs count -->
+                                <check if="{{ isset(@ce.subs) }}">
+                                    <span style="font-size:0.8em;color:#999;">({{ count(@ce.subs) }} sub(s))</span>
+                                </check>
+                            </td>
+                            <td class="compact-meta stats">{{ @ce.wc }} mots</td>
+                            <td class="compact-actions actions">
+                                <a class="button small" href="{{ @base }}/project/{{ @project.id }}/element/create?type={{ @elemConfig.id }}&parent_id={{ @ce.id }}"
+                                    title="+ Sous-élément">
+                                    <i class="fas fa-plus"></i>
+                                </a>
+                                <button class="button small preview-btn" data-type="element" data-id="{{ @ce.id }}"
+                                    title="Prévisualiser">
+                                    <i class="fas fa-eye"></i>
+                                </button>
+                                <a class="button small" href="{{ @base }}/element/{{ @ce.id }}" title="Éditer">
+                                    <i class="fas fa-edit"></i>
+                                </a>
+                                <a class="button small delete js-confirm" href="{{ @base }}/element/{{ @ce.id }}/delete"
+                                    data-confirm="Supprimer cet élément ?" title="Supprimer">
+                                    <i class="fas fa-trash"></i>
+                                </a>
+                            </td>
+                        </tr>
+
+                        <!-- Sub-elements -->
+                        <repeat group="{{ @ce.subs }}" value="{{ @sub }}">
+                            <tr data-id="{{ @sub.id }}" class="sub-chapter sub-of-{{ @ce.id }}">
+                                <td class="sous-chapitre">
+                                    <input type="checkbox" class="export-toggle" data-type="element" data-id="{{ @sub.id }}"
+                                        {{ @sub.is_exported_attr }}>
+                                    <input type="number" class="order-input" data-type="element" data-id="{{ @sub.id }}"
+                                        value="{{ @sub.order_index + 1 }}" min="1" max="999">
+
+                                    <span>{{ @sub.title }}</span>
+                                </td>
+                                <td class="compact-meta stats">{{ @sub.wc }} mots</td>
+                                <td class="compact-actions actions">
+                                    <button class="button small preview-btn" data-type="element" data-id="{{ @sub.id }}"
+                                        title="Prévisualiser">
+                                        <i class="fas fa-eye"></i>
+                                    </button>
+                                    <a class="button small" href="{{ @base }}/element/{{ @sub.id }}" title="Éditer">
+                                        <i class="fas fa-edit"></i>
+                                    </a>
+                                    <a class="button small delete js-confirm" href="{{ @base }}/element/{{ @sub.id }}/delete"
+                                        data-confirm="Supprimer ce sous-élément ?" title="Supprimer">
+                                        <i class="fas fa-trash"></i>
+                                    </a>
+                                </td>
+                            </tr>
+                        </repeat>
+                    </repeat>
+                </tbody>
+            </table>
+        </true>
+        <false>
+            <p class="panel-empty">Aucun élément créé.</p>
+        </false>
+    </check>
+
+    <div class="panel-footer">
+        <?php
+        $cfg = json_decode($elemConfig['config_json'] ?? '{}', true);
+        ?>
+        <a class="button" href="{{ @base }}/project/{{ @project.id }}/element/create?type={{ @elemConfig.id }}">
+            <i class="fas fa-plus"></i> Ajouter
+            <?= mb_strtolower($cfg['label_singular'] ?? 'un élément') ?>
+        </a>
+    </div>
+</details>

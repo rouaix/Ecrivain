@@ -1,0 +1,56 @@
+/* Ecrivain - Main Stylesheet */
+/* Modular CSS Architecture - 36+ files organized by category */
+/* Import font */
+@import url('https://fonts.googleapis.com/css2?family=Google+Sans:wght@400;500;700&family=Roboto:wght@400;500&display=swap');
+/* Core - Foundation styles */
+@import 'css/core/variables.css';
+@import 'css/core/reset.css';
+@import 'css/core/base.css';
+/* Layout - Page structure */
+@import 'css/layout/header.css';
+@import 'css/layout/footer.css';
+@import 'css/layout/grid.css';
+/* Components - Reusable UI elements */
+@import 'css/components/forms.css';
+@import 'css/components/buttons.css';
+@import 'css/components/tables.css';
+@import 'css/components/cards.css';
+@import 'css/components/panels.css';
+@import 'css/components/modals.css';
+@import 'css/components/alerts.css';
+@import 'css/components/badges.css';
+@import 'css/components/toolbar.css';
+@import 'css/components/theme-selector.css';
+/* Modules - Feature-specific styles */
+@import 'css/modules/project.css';
+@import 'css/modules/chapters.css';
+@import 'css/modules/acts.css';
+@import 'css/modules/characters.css';
+@import 'css/modules/notes.css';
+@import 'css/modules/sections.css';
+/* Editor - Quill editor customization */
+@import 'css/editor/quill-base.css';
+@import 'css/editor/quill-toolbar.css';
+@import 'css/editor/quill-overrides.css';
+@import 'css/editor/editor-tools.css';
+/* AI - AI feature styles */
+@import 'css/ai/ai-modal.css';
+@import 'css/ai/ai-panels.css';
+@import 'css/ai/ai-config.css';
+@import 'css/ai/ai-usage.css';
+/* Auth - Authentication pages */
+@import 'css/auth/auth.css';
+@import 'css/auth/profile.css';
+@import 'css/auth/tokens.css';
+/* Features - Special features */
+@import 'reading-mode.css';
+@import 'export.css';
+@import 'mindmap.css';
+@import 'template-editor.css';
+/* Utilities - Helper classes */
+@import 'css/utilities/spacing.css';
+@import 'css/utilities/text.css';
+@import 'css/utilities/visibility.css';
+@import 'css/utilities/helpers.css';
+/* Media Queries - Responsive design */
+@import 'media-queries.css';

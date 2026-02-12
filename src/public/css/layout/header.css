@@ -1,0 +1,29 @@
+/* Header and navigation */
+header {
+    background: var(--header-bg);
+    color: var(--header-text);
+    padding: 10px 20px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+header h1 {
+    margin: 0;
+    font-size: 1.4em;
+}
+
+main {
+    padding: 20px;
+    flex: 1;
+}
+
+nav a {
+    color: var(--header-text);
+    margin-right: 15px;
+    text-decoration: none;
+}
+
+nav a:last-child {
+    margin-right: 0;
+}

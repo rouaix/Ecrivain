@@ -1,0 +1,97 @@
+<div class="edit-header">
+
+    <h2>Personnages : {{ @project.title }}</h2>
+
+    <span>
+
+        <a href="{{ @base }}/project/{{ @project.id }}" class="button" title="Retour au projet"><i
+
+                class="fas fa-arrow-left"></i></a>
+
+        <a href="{{ @base }}/project/{{ @project.id }}/character/create" class="button" title="Nouveau personnage"><i
+
+                class="fas fa-plus"></i></a>
+
+    </span>
+
+</div>
+
+<check if="{{ empty(@characters) }}">
+
+    <true>
+
+        <div class="panel-empty">
+
+            <p>Aucun personnage créé pour ce projet.</p>
+
+        </div>
+
+    </true>
+
+    <false>
+
+        <div class="characters-grid">
+
+            <repeat group="{{ @characters }}" value="{{ @char }}">
+
+                <div class="character-card">
+
+                    <div class="character-header">
+
+                        <h3 class="character-name">{{ @char.name }}</h3>
+
+                    </div>
+
+                    <div class="character-description">
+
+                        {{ @char.description | raw }}
+
+                    </div>
+
+                    <div class="character-actions">
+
+                        <a class="button small" href="{{ @base }}/character/{{ @char.id }}/edit" title="Modifier"><i
+
+                                class="fas fa-edit"></i></a>
+
+                        <a class="button small delete js-confirm" href="{{ @base }}/character/{{ @char.id }}/delete"
+
+                            data-confirm="Confirmer la suppression de ce personnage ?" title="Supprimer"><i
+
+                                class="fas fa-trash"></i></a>
+
+                    </div>
+
+                </div>
+
+            </repeat>
+
+        </div>
+
+    </false>
+
+</check>
+
+<script nonce="{{ @nonce }}">
+
+    document.addEventListener('DOMContentLoaded', function () {
+
+        document.querySelectorAll('.js-confirm').forEach(function (el) {
+
+            el.addEventListener('click', function (e) {
+
+                if (!confirm(this.dataset.confirm || 'Confirmer ?')) {
+
+                    e.preventDefault();
+
+                }
+
+            });
+
+        });
+
+    });
+
+</script>
+
+</content>

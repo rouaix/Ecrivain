@@ -1,0 +1,207 @@
+<div class="edit-page-layout">
+
+    <div class="edit-header">
+
+        <h2>Créer un chapitre</h2>
+
+        <a href="{{ @base }}/project/{{ @project.id }}" class="button" title="Retour au projet">
+
+            <i class="fas fa-arrow-left"></i>
+
+        </a>
+
+    </div>
+
+    <check if="!empty(@errors)">
+
+        <div class="error edit-error">
+
+            <ul>
+
+                <repeat group="@errors" value="@err">
+
+                    <li>{{ @err }}</li>
+
+                </repeat>
+
+            </ul>
+
+        </div>
+
+    </check>
+
+    <form method="post" action="{{ @base }}/project/{{ @project.id }}/chapter/create" id="chapterCreateForm">
+
+        <input type="hidden" name="csrf_token" value="{{ @csrfToken }}">
+
+        <div class="edit-card">
+
+            <div class="edit-card-section">
+
+                <h3>Informations générales</h3>
+
+                <div class="form-group">
+
+                    <label for="title">Titre du chapitre *</label>
+
+                    <input type="text" id="title" name="title" value="{{ @old.title }}" required class="input-control">
+
+                </div>
+
+                <div class="editor-grid-row">
+
+                    <div class="form-group">
+
+                        <label for="act_id">Appartient à l'acte</label>
+
+                        <select id="act_id" name="act_id" class="input-control">
+
+                            <option value="">-- Aucun (hors actes) --</option>
+
+                            <repeat group="{{ @acts }}" value="{{ @act }}">
+
+                                <option value="{{ @act.id }}" {{ (isset(@old.act_id) && @old.act_id==@act.id)
+
+                                    ? 'selected' : '' }}>
+
+                                    {{ @act.title }}
+
+                                </option>
+
+                            </repeat>
+
+                        </select>
+
+                    </div>
+
+                    <div class="form-group">
+
+                        <label for="parent_id">Est un sous-chapitre de</label>
+
+                        <select id="parent_id" name="parent_id" class="input-control">
+
+                            <option value="">-- Aucun (chapitre principal) --</option>
+
+                            <repeat group="{{ @chapters }}" value="{{ @ch }}">
+
+                                <option value="{{ @ch.id }}" data-act-id="{{ @ch.act_id }}" {{ (isset(@old.parent_id) &&
+
+                                    @old.parent_id==@ch.id) ? 'selected' : '' }}>
+
+                                    {{ @ch.title }}
+
+                                </option>
+
+                            </repeat>
+
+                        </select>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+            <div class="edit-actions">
+
+                <input type="submit" value="Créer le chapitre" class="button primary large">
+
+            </div>
+
+        </div>
+
+    </form>
+
+</div>
+
+<script nonce="{{ @nonce }}">
+
+    document.addEventListener('DOMContentLoaded', function () {
+
+        const actSelect = document.getElementById('act_id');
+
+        const parentSelect = document.getElementById('parent_id');
+
+        if (!actSelect || !parentSelect) {
+
+            return;
+
+        }
+
+        const originalOptions = Array.from(parentSelect.options).map(opt => ({
+
+            value: opt.value,
+
+            text: opt.text,
+
+            actId: opt.getAttribute('data-act-id')
+
+        }));
+
+        function filterChapters() {
+
+            const selectedActId = actSelect.value;
+
+            const currentParentValue = parentSelect.value;
+
+            parentSelect.innerHTML = '';
+
+            originalOptions.forEach(data => {
+
+                if (data.value === '') {
+
+                    addOption(data);
+
+                    return;
+
+                }
+
+                const matchesAct = selectedActId === '' ? !data.actId : data.actId == selectedActId;
+
+                if (matchesAct) {
+
+                    addOption(data);
+
+                }
+
+            });
+
+            if (currentParentValue) {
+
+                parentSelect.value = currentParentValue;
+
+                if (parentSelect.value !== currentParentValue) {
+
+                    parentSelect.value = '';
+
+                }
+
+            }
+
+        }
+
+        function addOption(data) {
+
+            const option = document.createElement('option');
+
+            option.value = data.value;
+
+            option.text = data.text;
+
+            if (data.actId) {
+
+                option.setAttribute('data-act-id', data.actId);
+
+            }
+
+            parentSelect.appendChild(option);
+
+        }
+
+        actSelect.addEventListener('change', filterChapters);
+
+        filterChapters();
+
+    });
+
+</script>

@@ -1,0 +1,372 @@
+<div class="edit-page-layout">
+    <div class="edit-header">
+        <h2><i class="fas fa-layer-group"></i> {{ @template.name }}</h2>
+        <div class="header-actions">
+            <a href="{{ @base }}/templates" class="button" title="Retour aux templates">
+                <i class="fas fa-arrow-left"></i>
+            </a>
+        </div>
+    </div>
+
+    <check if="!empty(@errors)">
+        <div class="error edit-error">
+            <ul>
+                <repeat group="@errors" value="@err">
+                    <li>{{ @err }}</li>
+                </repeat>
+            </ul>
+        </div>
+    </check>
+
+    <check if="{{ isset(@SESSION.error) }}">
+        <div class="error edit-error">{{ @SESSION.error }}</div>
+        <?php $f3->clear('SESSION.error'); ?>
+    </check>
+
+    <check if="!empty(@success)">
+        <div class="alert-success">{{ @success }}</div>
+    </check>
+
+    <!-- Informations generales -->
+    <form method="post" action="{{ @base }}/template/{{ @template.id }}/edit">
+        <input type="hidden" name="csrf_token" value="{{ @csrfToken }}">
+        <div class="edit-card">
+            <div class="edit-card-section">
+                <h3><i class="fas fa-info-circle"></i> Informations generales</h3>
+                <div class="form-group">
+                    <label for="name">Nom du template</label>
+                    <input type="text" id="name" name="name" value="{{ @template.name }}" required class="input-control title-input">
+                </div>
+                <div class="form-group">
+                    <label for="description">Description</label>
+                    <textarea id="description" name="description" class="input-control" rows="3">{{ @template.description }}</textarea>
+                </div>
+            </div>
+
+            <!-- Elements du template -->
+            <div class="edit-card-section">
+                <h3><i class="fas fa-th-list"></i> Elements du template</h3>
+
+                <check if="{{ !empty(@elements) }}">
+                    <table class="data-table" id="elementsTable">
+                        <thead>
+                            <tr>
+                                <th class="tpl-col-order">Ordre</th>
+                                <th>Type</th>
+                                <th>Label</th>
+                                <th>Position</th>
+                                <th class="text-center tpl-col-enabled">Actif</th>
+                                <th class="tpl-col-actions">Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="sortableElements">
+                            <repeat group="{{ @elements }}" value="{{ @elem }}">
+                                <tr data-id="{{ @elem.id }}">
+                                    <td class="order-cell">
+                                        <button type="button" class="button small move-up" title="Monter"><i class="fas fa-arrow-up"></i></button>
+                                        <button type="button" class="button small move-down" title="Descendre"><i class="fas fa-arrow-down"></i></button>
+                                    </td>
+                                    <td>
+                                        {{ @elem.type_label }}
+                                        <check if="{{ @elem.element_subtype }}">
+                                            <span class="badge">{{ @elem.element_subtype }}</span>
+                                        </check>
+                                    </td>
+                                    <td>{{ @elem.display_label }}</td>
+                                    <td>
+                                        <check if="{{ @elem.section_placement == 'before' }}">
+                                            <span class="badge badge-secondary">Avant</span>
+                                        </check>
+                                        <check if="{{ @elem.section_placement == 'after' }}">
+                                            <span class="badge badge-secondary">Apres</span>
+                                        </check>
+                                        <check if="{{ !@elem.section_placement }}">
+                                            <span class="badge">Principal</span>
+                                        </check>
+                                    </td>
+                                    <td class="text-center">
+                                        <input type="checkbox" name="element_enabled[{{ @elem.id }}]" value="1"
+                                               {{ (@elem.is_enabled) ? 'checked' : '' }}>
+                                    </td>
+                                    <td class="actions">
+                                        <button type="button" class="button small edit-elem-btn"
+                                                data-id="{{ @elem.id }}"
+                                                data-type="{{ @elem.element_type }}"
+                                                data-subtype="{{ @elem.element_subtype }}"
+                                                data-placement="{{ @elem.section_placement }}"
+                                                data-label="{{ @elem.main_label | esc }}"
+                                                data-label-plural="{{ @elem.plural_label | esc }}"
+                                                title="Modifier">
+                                            <i class="fas fa-pencil-alt"></i>
+                                        </button>
+                                        <button type="button" class="button small delete delete-elem-btn"
+                                                data-id="{{ @elem.id }}" title="Supprimer">
+                                            <i class="fas fa-trash"></i>
+                                        </button>
+                                    </td>
+                                </tr>
+                            </repeat>
+                        </tbody>
+                    </table>
+                </check>
+
+                <check if="{{ empty(@elements) }}">
+                    <p class="empty-state">Aucun element configure. Ajoutez-en ci-dessous.</p>
+                </check>
+            </div>
+
+            <div class="edit-actions">
+                <input type="submit" value="Enregistrer" class="button primary large">
+            </div>
+        </div>
+    </form>
+
+    <!-- Ajouter un element -->
+    <div class="edit-card">
+        <div class="edit-card-section">
+            <h3><i class="fas fa-plus-circle"></i> Ajouter un element</h3>
+            <form method="post" action="{{ @base }}/template/{{ @template.id }}/element/add" id="addElementForm">
+                <input type="hidden" name="csrf_token" value="{{ @csrfToken }}">
+
+                <div class="editor-grid-row">
+                    <div class="form-group">
+                        <label for="add_element_type">Type</label>
+                        <select id="add_element_type" name="element_type" class="input-control" required>
+                            <option value="">-- Choisir --</option>
+                            <optgroup label="Structure">
+                                <option value="section">Section</option>
+                                <option value="act">Acte</option>
+                                <option value="chapter">Chapitre</option>
+                            </optgroup>
+                            <optgroup label="Contenu">
+                                <option value="note">Note</option>
+                                <option value="character">Personnage</option>
+                                <option value="file">Fichier</option>
+                                <option value="element">Element personnalise</option>
+                            </optgroup>
+                        </select>
+                    </div>
+
+                    <div class="form-group" id="addPlacementGroup">
+                        <label for="add_section_placement">Position</label>
+                        <select id="add_section_placement" name="section_placement" class="input-control">
+                            <option value="">Principal</option>
+                            <option value="before">Avant le contenu</option>
+                            <option value="after">Apres le contenu</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="editor-grid-row" id="addSubtypeRow">
+                    <div class="form-group tpl-hidden" id="subtypeGroup">
+                        <label for="add_element_subtype">Sous-type section</label>
+                        <select id="add_element_subtype" name="element_subtype" class="input-control">
+                            <option value="">-- Aucun --</option>
+                            <option value="cover">Couverture</option>
+                            <option value="preface">Preface</option>
+                            <option value="introduction">Introduction</option>
+                            <option value="prologue">Prologue</option>
+                            <option value="postface">Postface</option>
+                            <option value="appendices">Annexes</option>
+                            <option value="back_cover">4e de couverture</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="editor-grid-row">
+                    <div class="form-group">
+                        <label for="add_label">Label</label>
+                        <input type="text" id="add_label" name="label" class="input-control" placeholder="Ex: Scene, Episode, Planche..." required>
+                    </div>
+                    <div class="form-group" id="labelPluralGroup">
+                        <label for="add_label_plural">Label pluriel</label>
+                        <input type="text" id="add_label_plural" name="label_plural" class="input-control" placeholder="Ex: Scenes, Episodes, Planches...">
+                    </div>
+                </div>
+
+                <div class="edit-actions">
+                    <input type="submit" value="Ajouter" class="button primary">
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- Modal de modification d'un element -->
+<div id="editElemModal" class="modal-overlay">
+    <div class="modal-content tpl-modal-box">
+        <div class="modal-header">
+            <h3><i class="fas fa-pencil-alt"></i> Modifier l'element</h3>
+            <button type="button" class="modal-close" id="closeEditModal">&times;</button>
+        </div>
+        <form id="editElemForm" method="post" action="">
+            <input type="hidden" name="csrf_token" value="{{ @csrfToken }}">
+            <div class="modal-body">
+                <div class="editor-grid-row">
+                    <div class="form-group">
+                        <label for="edit_element_type">Type</label>
+                        <select id="edit_element_type" name="element_type" class="input-control">
+                            <optgroup label="Structure">
+                                <option value="section">Section</option>
+                                <option value="act">Acte</option>
+                                <option value="chapter">Chapitre</option>
+                            </optgroup>
+                            <optgroup label="Contenu">
+                                <option value="note">Note</option>
+                                <option value="character">Personnage</option>
+                                <option value="file">Fichier</option>
+                                <option value="element">Element personnalise</option>
+                            </optgroup>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="edit_placement">Position</label>
+                        <select id="edit_placement" name="section_placement" class="input-control">
+                            <option value="">Principal</option>
+                            <option value="before">Avant le contenu</option>
+                            <option value="after">Apres le contenu</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="form-group tpl-hidden" id="editSubtypeGroup">
+                    <label for="edit_subtype">Sous-type section</label>
+                    <select id="edit_subtype" name="element_subtype" class="input-control">
+                        <option value="">-- Aucun --</option>
+                        <option value="cover">Couverture</option>
+                        <option value="preface">Preface</option>
+                        <option value="introduction">Introduction</option>
+                        <option value="prologue">Prologue</option>
+                        <option value="postface">Postface</option>
+                        <option value="appendices">Annexes</option>
+                        <option value="back_cover">4e de couverture</option>
+                    </select>
+                </div>
+                <div class="editor-grid-row">
+                    <div class="form-group">
+                        <label for="edit_label">Label</label>
+                        <input type="text" id="edit_label" name="label" class="input-control" required>
+                    </div>
+                    <div class="form-group" id="editPluralGroup">
+                        <label for="edit_label_plural">Label pluriel</label>
+                        <input type="text" id="edit_label_plural" name="label_plural" class="input-control">
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="button secondary" id="cancelEditModal">Annuler</button>
+                <button type="submit" class="button primary">Enregistrer</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- Form cache pour suppression -->
+<form id="deleteElemForm" method="post" action="" class="tpl-delete-form">
+    <input type="hidden" name="csrf_token" value="{{ @csrfToken }}">
+</form>
+
+<script nonce="{{ @nonce }}">
+document.addEventListener('DOMContentLoaded', function() {
+    var templateId = {{ @template.id }};
+    var baseUrl = '{{ @base }}';
+    var csrfToken = '{{ @csrfToken }}';
+
+    // ===== Reordonnancement avec fleches =====
+    var tbody = document.getElementById('sortableElements');
+
+    function saveOrder() {
+        var rows = tbody.querySelectorAll('tr[data-id]');
+        var order = Array.from(rows).map(function(r) { return parseInt(r.dataset.id); });
+        fetch(baseUrl + '/template/' + templateId + '/reorder', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json', 'X-CSRF-Token': csrfToken },
+            body: JSON.stringify({ order: order })
+        });
+    }
+
+    if (tbody) {
+        tbody.addEventListener('click', function(e) {
+            var btn = e.target.closest('.move-up, .move-down');
+            if (!btn) return;
+            e.preventDefault();
+            var row = btn.closest('tr');
+            if (btn.classList.contains('move-up') && row.previousElementSibling) {
+                tbody.insertBefore(row, row.previousElementSibling);
+                saveOrder();
+            } else if (btn.classList.contains('move-down') && row.nextElementSibling) {
+                tbody.insertBefore(row.nextElementSibling, row);
+                saveOrder();
+            }
+        });
+    }
+
+    // ===== Ajout : show/hide subtype selon type =====
+    var addTypeSelect = document.getElementById('add_element_type');
+    var addSubtypeGroup = document.getElementById('subtypeGroup');
+    var addLabelPluralGroup = document.getElementById('labelPluralGroup');
+    var addPlacementGroup = document.getElementById('addPlacementGroup');
+
+    function updateAddFormFields() {
+        var val = addTypeSelect.value;
+        var isSection = val === 'section';
+        addSubtypeGroup.classList.toggle('tpl-hidden', !isSection);
+        addLabelPluralGroup.classList.toggle('tpl-hidden', isSection);
+        addPlacementGroup.style.display = isSection ? '' : 'none';
+    }
+
+    if (addTypeSelect) {
+        addTypeSelect.addEventListener('change', updateAddFormFields);
+        updateAddFormFields();
+    }
+
+    // ===== Modal modification =====
+    var editModal = document.getElementById('editElemModal');
+    var editForm = document.getElementById('editElemForm');
+    var editTypeSelect = document.getElementById('edit_element_type');
+    var editPlacement = document.getElementById('edit_placement');
+    var editSubtype = document.getElementById('edit_subtype');
+    var editSubtypeGroup = document.getElementById('editSubtypeGroup');
+    var editLabel = document.getElementById('edit_label');
+    var editLabelPlural = document.getElementById('edit_label_plural');
+    var editPluralGroup = document.getElementById('editPluralGroup');
+
+    function updateEditModalFields() {
+        var isSection = editTypeSelect.value === 'section';
+        editSubtypeGroup.classList.toggle('tpl-hidden', !isSection);
+        editPluralGroup.classList.toggle('tpl-hidden', isSection);
+    }
+
+    editTypeSelect.addEventListener('change', updateEditModalFields);
+
+    document.querySelectorAll('.edit-elem-btn').forEach(function(btn) {
+        btn.addEventListener('click', function() {
+            var elemId = this.dataset.id;
+            editForm.action = baseUrl + '/template/' + templateId + '/element/' + elemId + '/update';
+            editTypeSelect.value = this.dataset.type;
+            editPlacement.value = this.dataset.placement || '';
+            editSubtype.value = this.dataset.subtype || '';
+            editLabel.value = this.dataset.label;
+            editLabelPlural.value = this.dataset.labelPlural || '';
+            updateEditModalFields();
+            editModal.classList.add('is-visible');
+        });
+    });
+
+    function closeModal() { editModal.classList.remove('is-visible'); }
+    document.getElementById('closeEditModal').addEventListener('click', closeModal);
+    document.getElementById('cancelEditModal').addEventListener('click', closeModal);
+    editModal.addEventListener('click', function(e) {
+        if (e.target === editModal) closeModal();
+    });
+
+    // ===== Suppression =====
+    var deleteForm = document.getElementById('deleteElemForm');
+    document.querySelectorAll('.delete-elem-btn').forEach(function(btn) {
+        btn.addEventListener('click', function() {
+            if (!confirm('Supprimer cet element du template ?')) return;
+            deleteForm.action = baseUrl + '/template/' + templateId + '/element/' + this.dataset.id + '/delete';
+            deleteForm.submit();
+        });
+    });
+});
+</script>

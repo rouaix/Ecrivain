@@ -1,0 +1,50 @@
+<!-- Characters Panel -->
+
+<details class="panel" id="panel-characters" data-persist="true">
+
+  <summary>Personnages <span class="panel-count">{{ @stats.character_count }}</span></summary>
+
+  <check if="{{ empty(@characters) }}">
+
+    <true>
+
+      <p class="panel-empty">Aucun personnage d&eacute;fini.</p>
+
+    </true>
+
+    <false>
+
+      <ul class="character-list">
+
+        <repeat group="{{ @characters }}" value="{{ @char }}">
+
+          <li>{{ @char.name }}
+
+            <check if="{{ @char.comment }}">
+
+              <div class="char-comment">
+
+                <span>Remarques : </span>{{ @char.comment }}
+
+              </div>
+
+            </check>
+
+          </li>
+
+        </repeat>
+
+      </ul>
+
+    </false>
+
+  </check>
+
+  <div class="panel-actions panel-actions-row">
+
+    <a class="button small" href="{{ @base }}/project/{{ @project.id }}/characters" title="G&eacute;rer les personnages"><i
+        class="fas fa-users-cog"></i></a>
+
+  </div>
+
+</details>

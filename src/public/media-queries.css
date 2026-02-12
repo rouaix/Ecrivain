@@ -1,0 +1,1240 @@
+/* Responsive media queries */
+/* ==========================================
+   MEDIA QUERIES
+   ========================================== */
+/* ==========================================
+   DESKTOP - Ensure modals are properly centered
+   ========================================== */
+@media (min-width: 481px) {
+    /* NE PAS forcer display sur .modal-overlay sans .is-visible */
+    /* Sinon la modal est toujours visible! */
+    .modal-overlay.is-visible {
+        display: flex !important;
+        align-items: center !important;
+        justify-content: center !important;
+    }
+    .modal-content {
+        position: relative !important;
+        top: auto !important;
+        left: auto !important;
+        right: auto !important;
+        bottom: auto !important;
+        transform: none !important;
+        margin: auto !important;
+    }
+    /* Mindmap popup centering - Desktop */
+    .popup-overlay.is-visible {
+        display: flex !important;
+        align-items: center !important;
+        justify-content: center !important;
+    }
+    .popup-content {
+        position: relative !important;
+        top: auto !important;
+        left: auto !important;
+        right: auto !important;
+        bottom: auto !important;
+        transform: none !important;
+        margin: auto !important;
+    }
+}
+@media (max-width: 1200px) {
+    .editor-layout {
+        grid-template-columns: 1fr;
+    }
+}
+
+@media (max-width: 1024px) {
+    .project-hero {
+        grid-template-columns: 1fr;
+        text-align: left;
+    }
+
+    .project-hero__cover {
+        width: 100%;
+        height: 260px;
+    }
+
+    .project-hero__metrics {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .project-grid {
+        grid-template-columns: 1fr;
+    }
+}
+
+@media (max-width: 900px) {
+    .project-split-layout {
+        grid-template-columns: 1fr;
+    }
+}
+
+@media (max-width: 768px) {
+    .project-header {
+        flex-direction: column;
+    }
+
+    .character-list {
+        column-count: 1;
+    }
+
+    .reading-toc {
+        position: absolute;
+        width: 280px;
+        height: 100%;
+    }
+
+    .reading-content>div:nth-child(2) {
+        padding: 20px;
+    }
+
+    .cover-title {
+        font-size: 2rem;
+    }
+
+    .data-table {
+        font-size: 0.8rem;
+    }
+
+    .data-table th,
+    .data-table td {
+        padding: 8px;
+    }
+}
+
+@media (max-width: 720px) {
+    .project-hero__actions {
+        flex-direction: column;
+    }
+
+    .project-hero__metrics {
+        grid-template-columns: 1fr;
+    }
+
+    .project-hero__cover {
+        height: 200px;
+    }
+}
+
+@media (max-width: 600px) {
+    .profile-card .form-row {
+        grid-template-columns: 1fr;
+    }
+
+    .form-row {
+        grid-template-columns: 1fr;
+    }
+
+    .ai-config-actions {
+        flex-direction: column;
+    }
+}
+/* ==========================================
+   MOBILE OPTIMIZATIONS (max-width: 480px)
+   Améliore l'affichage mobile sans toucher desktop/tablette
+   ========================================== */
+@media (max-width: 480px) {
+    /* Header & Navigation */
+    header {
+        padding: 8px 12px;
+        flex-wrap: wrap;
+    }
+    header h1 {
+        font-size: 1.1em;
+    }
+    nav {
+        width: 100%;
+        margin-top: 8px;
+    }
+    nav a {
+        font-size: 0.85rem;
+        margin-right: 10px;
+    }
+    /* Main Container */
+    main {
+        padding: 12px;
+    }
+    /* Project Hero */
+    .project-hero {
+        padding: 12px;
+        gap: 15px;
+        border-radius: 12px;
+    }
+    .project-hero__cover {
+        width: 100%;
+        height: 280px;
+        margin: 0 auto;
+    }
+    .project-hero.small .project-hero__cover.small {
+        width: 100px;
+        height: calc(100px * 1.42);
+    }
+    .project-hero__heading h1 {
+        font-size: 1.6rem;
+        line-height: 1.3;
+    }
+    .project-hero__description {
+        font-size: 1rem;
+        line-height: 1.4;
+    }
+    .project-hero__author {
+        font-size: 0.85rem;
+        margin-bottom: 10px;
+    }
+    .project-hero__actions {
+        flex-direction: column;
+        width: 100%;
+        gap: 8px;
+    }
+    .project-hero__actions .button,
+    .project-hero__actions button {
+        width: 100%;
+        height: 36px !important;
+        font-size: 14px !important;
+    }
+    .project-hero__metrics {
+        grid-template-columns: 1fr;
+        gap: 10px;
+    }
+    .metric-card {
+        padding: 12px;
+        min-height: auto;
+    }
+    .metric-label {
+        font-size: 0.7rem;
+    }
+    .metric-card strong {
+        font-size: 1.3rem;
+    }
+    .metric-sub {
+        font-size: 0.8rem;
+    }
+    /* Project Cards */
+    .projects-grid {
+        grid-template-columns: 1fr;
+        gap: 16px;
+        margin-top: 16px;
+    }
+    .project-card {
+        width: 100%;
+        max-width: 100%;
+    }
+    .project-card__cover {
+        height: calc(100vw - 24px);
+        max-height: 400px;
+    }
+    .project-card__title-overlay {
+        font-size: 1.2rem;
+        padding: 8px;
+    }
+    .project-card__info {
+        padding: 12px 16px;
+    }
+    .project-card__actions {
+        padding: 0 16px 12px 16px;
+        flex-wrap: wrap;
+    }
+    .project-card__actions .button {
+        height: 32px !important;
+        font-size: 13px !important;
+    }
+    /* Project Title Row */
+    .project-title-row {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 10px;
+    }
+    .project-title-row h2 {
+        font-size: 1.5rem;
+    }
+    .project-actions {
+        width: 100%;
+        flex-direction: column;
+    }
+    .project-actions .button {
+        width: 100%;
+        height: 36px !important;
+        font-size: 14px !important;
+    }
+    /* Meta Cards */
+    .project-meta {
+        flex-direction: column;
+        gap: 12px;
+        margin-top: 15px;
+    }
+    .meta-card {
+        min-width: 100%;
+        padding: 12px;
+    }
+    .meta-label {
+        font-size: 0.75rem;
+    }
+    .meta-card strong {
+        font-size: 1.2rem;
+    }
+    .meta-sub {
+        font-size: 0.8rem;
+    }
+    /* Buttons */
+    input[type="submit"],
+    button:not(.ql-toolbar button),
+    .button:not(.ql-toolbar button) {
+        height: 36px !important;
+        font-size: 14px !important;
+        padding: 0 12px !important;
+    }
+    .button.small {
+        height: 32px !important;
+        font-size: 13px !important;
+    }
+    /* Panels */
+    .panel,
+    .card-panel {
+        padding: 12px;
+        margin-bottom: 12px;
+    }
+    /* Panel Summary (details) */
+    .panel summary {
+        font-size: 0.95rem;
+        padding: 8px;
+        word-wrap: break-word;
+    }
+    .panel-count {
+        font-size: 0.8rem;
+        margin-left: 4px;
+    }
+    .panel-empty {
+        padding: 12px 8px;
+        font-size: 0.9rem;
+    }
+    /* Section Group Headings */
+    .section-group-heading {
+        flex-wrap: wrap;
+        gap: 6px;
+        padding: 8px 4px;
+    }
+    .section-group-heading h4 {
+        font-size: 0.9rem;
+        flex: 1;
+        min-width: 0;
+    }
+    .section-group-heading .button.small {
+        height: 28px !important;
+        width: 28px !important;
+        padding: 0 !important;
+        font-size: 0.85rem !important;
+    }
+    /* Tables */
+    .data-table {
+        font-size: 0.75rem;
+    }
+    .data-table th,
+    .data-table td {
+        padding: 6px 4px;
+    }
+    /* Forms */
+    .form-group {
+        margin-bottom: 12px;
+    }
+    .form-group label {
+        font-size: 0.9rem;
+        margin-bottom: 4px;
+    }
+    .form-group input,
+    .form-group textarea,
+    .form-group select {
+        font-size: 14px;
+        padding: 8px;
+    }
+    /* Editor Tools */
+    .editor-tools {
+        flex-direction: column;
+        gap: 8px;
+    }
+    .editor-tools .button {
+        width: 100%;
+    }
+    /* AI Panels */
+    .ai-panel {
+        padding: 12px;
+    }
+    .ai-panel h3 {
+        font-size: 1.1rem;
+    }
+    /* Character List */
+    .character-grid {
+        grid-template-columns: 1fr;
+    }
+    /* Cover Elements */
+    .cover-title {
+        font-size: 1.5rem !important;
+    }
+    .cover-description {
+        font-size: 1rem;
+        line-height: 1.5;
+    }
+    .cover-author {
+        font-size: 1rem;
+    }
+    /* Project Split Layout */
+    .project-split-layout {
+        gap: 16px;
+    }
+    /* Progress Container */
+    .progress-container {
+        padding: 12px;
+    }
+    /* Reading Mode */
+    .reading-toc {
+        width: 240px;
+    }
+    .reading-content > div:nth-child(2) {
+        padding: 12px;
+    }
+    /* Modals - General */
+    .modal-overlay {
+        align-items: center !important;
+        justify-content: center !important;
+        padding: 5px !important;
+        box-sizing: border-box !important;
+    }
+    .modal-overlay.is-visible {
+        display: flex !important;
+        align-items: center !important;
+        justify-content: center !important;
+    }
+    .modal-content {
+        width: calc(100vw - 20px) !important;
+        max-width: calc(100vw - 20px) !important;
+        margin: 0 auto !important;
+        padding: 12px !important;
+        max-height: 90vh;
+        position: relative !important;
+        top: auto !important;
+        left: auto !important;
+        transform: none !important;
+        pointer-events: auto !important;
+        box-sizing: border-box !important;
+        overflow-x: hidden !important;
+    }
+    .modal-header {
+        padding: 16px 12px;
+        position: relative;
+        z-index: 10;
+    }
+    .modal-header h2,
+    .modal-header h3 {
+        font-size: 1.3rem;
+    }
+    .modal-close {
+        position: relative !important;
+        z-index: 20 !important;
+        pointer-events: auto !important;
+        cursor: pointer !important;
+        touch-action: manipulation !important;
+        -webkit-tap-highlight-color: rgba(0, 0, 0, 0.2) !important;
+        min-width: 36px !important;
+        min-height: 36px !important;
+        display: flex !important;
+        align-items: center !important;
+        justify-content: center !important;
+    }
+    button.modal-close,
+    button#closeAiModal {
+        background: transparent !important;
+        border: none !important;
+    }
+    .modal-body {
+        max-height: calc(90vh - 120px);
+        overflow-y: auto;
+        overflow-x: hidden !important;
+        box-sizing: border-box !important;
+    }
+    /* Modal form elements - prevent overflow */
+    .modal-content input[type="text"],
+    .modal-content input[type="password"],
+    .modal-content input[type="email"],
+    .modal-content input[type="file"],
+    .modal-content textarea,
+    .modal-content select,
+    .modal-content .input-block {
+        max-width: 100% !important;
+        box-sizing: border-box !important;
+    }
+    .modal-header,
+    .modal-body,
+    .modal-footer {
+        box-sizing: border-box !important;
+        overflow-x: hidden !important;
+    }
+    /* Act and Chapter Lists */
+    .act-header,
+    .chapter-header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 8px;
+    }
+    .act-actions,
+    .chapter-actions {
+        width: 100%;
+        flex-direction: column;
+    }
+    /* Grid System */
+    .grid-2,
+    .grid-3,
+    .grid-4 {
+        grid-template-columns: 1fr;
+    }
+    /* Act Containers */
+    .act-container {
+        margin-bottom: 12px;
+    }
+    .act-summary {
+        padding-left: 25px;
+        padding-right: 8px;
+    }
+    .act-summary h4 {
+        font-size: 1rem;
+    }
+    .act-actions {
+        position: static;
+        float: none;
+        margin-top: 8px;
+        flex-wrap: wrap;
+    }
+    .act-actions .button {
+        height: 32px !important;
+        font-size: 12px !important;
+        padding: 0 8px !important;
+    }
+    /* Chapter Lists */
+    .chapter-item {
+        padding: 8px;
+    }
+    .chapter-actions {
+        flex-wrap: wrap;
+        gap: 4px;
+    }
+    .chapter-actions .button {
+        height: 32px !important;
+        font-size: 12px !important;
+    }
+    /* Section Groups */
+    .section-group-heading {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 8px;
+    }
+    /* Notes and Characters */
+    .note-item,
+    .character-item {
+        padding: 12px;
+    }
+    /* Compact Tables */
+    .compact-table {
+        font-size: 0.7rem;
+        table-layout: fixed;
+        width: 100%;
+        overflow: visible !important;
+    }
+    .compact-table tbody {
+        overflow: visible !important;
+    }
+    .compact-table tr {
+        overflow: visible !important;
+    }
+    .compact-table th,
+    .compact-table td {
+        padding: 4px 2px;
+    }
+    .compact-table td:first-child,
+    .compact-table td.compact-meta,
+    .compact-table td.compact-meta--narrow {
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+    /* Custom Elements Tables - Mobile Optimization */
+    .compact-table td:first-child {
+        width: 35%;
+        word-wrap: break-word;
+        overflow-wrap: break-word;
+        max-width: 35%;
+    }
+    .compact-table td.compact-meta {
+        width: 15%;
+        font-size: 0.65rem;
+        white-space: nowrap;
+        max-width: 15%;
+    }
+    .compact-table td.compact-meta--narrow {
+        width: 12%;
+        font-size: 0.6rem;
+        max-width: 12%;
+    }
+    .compact-table td.compact-actions {
+        width: 50%;
+        padding: 4px 2px;
+        max-width: 50%;
+        overflow: visible !important;
+    }
+    .compact-table td.compact-actions--wide {
+        width: 53%;
+        padding: 4px 2px;
+        max-width: 53%;
+        overflow: visible !important;
+    }
+    .compact-table .actions {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 2px;
+        justify-content: flex-end;
+        overflow: visible !important;
+    }
+    .compact-table .actions .button.small {
+        height: 26px !important;
+        width: 26px !important;
+        min-width: 26px !important;
+        max-width: 26px !important;
+        padding: 0 !important;
+        font-size: 0.75rem !important;
+        display: inline-flex !important;
+        align-items: center !important;
+        justify-content: center !important;
+        flex-shrink: 0 !important;
+        box-sizing: border-box !important;
+    }
+    .compact-table .actions .button.small i {
+        margin: 0 !important;
+        font-size: 0.75rem !important;
+    }
+    /* Order inputs in compact tables */
+    .compact-table input[type="number"].order-input {
+        width: 32px;
+        height: 18px;
+        font-size: 0.65rem !important;
+        padding: 1px 3px !important;
+    }
+    /* Checkboxes in compact tables */
+    .compact-table input[type="checkbox"] {
+        margin: 0 2px 0 0;
+    }
+    /* Collapse toggle */
+    .compact-table .collapse-toggle {
+        font-size: 0.7rem;
+        margin: 0 2px;
+    }
+    /* Sub-elements indentation mobile */
+    .compact-table .sous-chapitre {
+        padding-left: 8px !important;
+        font-size: 0.65rem;
+    }
+    /* File, Note, Section actions containers */
+    .file-actions,
+    .notes-actions,
+    .section-actions {
+        display: flex;
+        align-items: center;
+        gap: 4px;
+        flex-wrap: wrap;
+        font-size: 0.75rem;
+    }
+    .file-actions i.fa-file {
+        font-size: 0.7rem;
+        margin-right: 2px;
+    }
+    /* Comments in compact tables */
+    .file-comment,
+    .note-comment,
+    .section-comment {
+        font-size: 0.6rem !important;
+        padding: 3px 6px !important;
+        margin-top: 3px;
+        line-height: 1.2;
+    }
+    /* Element panel footer */
+    .panel-footer {
+        padding: 8px;
+        text-align: center;
+    }
+    .panel-footer .button {
+        width: 100%;
+        height: 36px !important;
+        font-size: 13px !important;
+    }
+    /* File Upload */
+    input[type="file"] {
+        font-size: 13px;
+        padding: 8px;
+    }
+    /* Select Dropdowns */
+    select {
+        font-size: 14px;
+        padding: 8px;
+        min-height: 36px;
+    }
+    /* Quill Editor Mobile */
+    .ql-container {
+        font-size: 15px;
+    }
+    .ql-toolbar {
+        padding: 6px;
+    }
+    .ql-toolbar button {
+        width: 24px !important;
+        height: 24px !important;
+    }
+    /* AI Config Mobile */
+    .ai-custom-prompt-row {
+        padding: 12px;
+    }
+    .ai-config-actions {
+        flex-direction: column !important;
+        gap: 8px !important;
+    }
+    .ai-config-actions .button {
+        width: 100% !important;
+        height: 40px !important;
+        font-size: 15px !important;
+        padding: 10px 16px !important;
+    }
+    .ai-form-actions {
+        flex-direction: column;
+    }
+    .ai-form-actions .button {
+        width: 100%;
+        height: 40px !important;
+        font-size: 15px !important;
+    }
+    /* Auth Pages */
+    .auth-container {
+        padding: 16px;
+    }
+    .auth-card {
+        padding: 20px;
+    }
+    /* Profile */
+    .profile-photo-section {
+        flex-direction: column;
+        text-align: center;
+    }
+    /* Export Options */
+    .export-options {
+        flex-direction: column;
+    }
+    /* Template Editor */
+    .template-grid {
+        grid-template-columns: 1fr;
+    }
+    .edit-card {
+        padding: 16px !important;
+    }
+    .edit-card .data-table {
+        margin: 0 -16px;
+        width: calc(100% + 32px);
+        font-size: 0.8rem;
+    }
+    .edit-card .data-table th,
+    .edit-card .data-table td {
+        padding: 8px 6px;
+        font-size: 0.8rem;
+    }
+    .tpl-col-order {
+        width: 60px;
+    }
+    .order-cell {
+        flex-direction: column;
+        gap: 2px;
+    }
+    .order-cell .button.small {
+        width: 100%;
+        font-size: 0.7rem;
+        padding: 2px 4px;
+    }
+    .tpl-col-enabled {
+        width: 50px;
+    }
+    .tpl-col-actions {
+        width: 80px;
+    }
+    .tpl-col-actions .actions {
+        flex-direction: column;
+        gap: 2px;
+    }
+    .tpl-col-actions .button {
+        font-size: 0.7rem !important;
+        padding: 4px 6px !important;
+        height: 24px !important;
+    }
+    .tpl-modal-box {
+        max-width: 95%;
+        width: 95%;
+    }
+    .modal-footer {
+        padding: 12px;
+        flex-direction: column;
+    }
+    .modal-footer .button {
+        width: 100% !important;
+        height: 36px !important;
+    }
+    /* Preview Modal (project/show) */
+    #previewModal.modal-overlay {
+        align-items: center !important;
+        justify-content: center !important;
+        padding: 5px !important;
+        box-sizing: border-box !important;
+    }
+    #previewModal.modal-overlay.is-visible {
+        display: flex !important;
+        align-items: center !important;
+        justify-content: center !important;
+    }
+    #previewModal .modal-content {
+        width: calc(100vw - 20px) !important;
+        max-width: calc(100vw - 20px) !important;
+        margin: 0 auto !important;
+        padding: 10px !important;
+        max-height: 90vh;
+        position: relative !important;
+        top: auto !important;
+        left: auto !important;
+        transform: none !important;
+        box-sizing: border-box !important;
+        overflow-x: hidden !important;
+    }
+    #previewModal .modal-header {
+        padding: 16px;
+        flex-wrap: wrap;
+    }
+    #previewModal .modal-header h3 {
+        font-size: 1.2rem;
+        flex: 1;
+        min-width: 0;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+    }
+    #previewModal .modal-body {
+        padding: 16px;
+        font-size: 1rem;
+        line-height: 1.6;
+        max-height: calc(90vh - 120px);
+        overflow-y: auto;
+    }
+    #previewModal .modal-body.typography {
+        font-size: 0.95rem;
+    }
+    #previewModal .modal-close {
+        width: 32px;
+        height: 32px;
+        font-size: 1.5rem !important;
+        flex-shrink: 0;
+    }
+    /* Mindmap Popup (mindmap) - Mobile */
+    .popup-overlay {
+        align-items: center !important;
+        justify-content: center !important;
+        padding: 5px !important;
+        box-sizing: border-box !important;
+    }
+    .popup-overlay.is-visible {
+        display: flex !important;
+        align-items: center !important;
+        justify-content: center !important;
+    }
+    .popup-content {
+        width: calc(100vw - 20px) !important;
+        max-width: calc(100vw - 20px) !important;
+        margin: 0 auto !important;
+        padding: 16px !important;
+        max-height: 90vh;
+        position: relative !important;
+        top: auto !important;
+        left: auto !important;
+        transform: none !important;
+        box-sizing: border-box !important;
+        overflow-x: hidden !important;
+    }
+    .popup-close {
+        width: 36px;
+        height: 36px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+        touch-action: manipulation;
+    }
+    #popup-title {
+        font-size: 1.2rem;
+        margin-right: 40px;
+    }
+    #popup-body {
+        font-size: 0.95rem;
+        line-height: 1.6;
+    }
+    /* Reading Mode (lecture/read) */
+    .reading-container {
+        flex-direction: column;
+    }
+    .reading-toc {
+        position: fixed !important;
+        width: 85vw !important;
+        max-width: 320px !important;
+        height: 100vh !important;
+        left: -85vw;
+        top: 0;
+        transition: left 0.3s ease;
+        z-index: 999;
+        box-shadow: 2px 0 8px rgba(0, 0, 0, 0.2);
+    }
+    .reading-toc:not(.hidden) {
+        left: 0;
+    }
+    .reading-toc h2 {
+        font-size: 1.1rem;
+        padding: 12px;
+    }
+    .toc-list {
+        padding: 8px;
+    }
+    .toc-item {
+        padding: 10px 8px;
+        font-size: 0.9rem;
+    }
+    .toc-page {
+        font-size: 0.75rem;
+    }
+    .reading-content {
+        width: 100% !important;
+        padding: 12px !important;
+    }
+    .lecture-content {
+        padding: 8px;
+    }
+    .reading-cover-page {
+        padding: 20px 12px;
+    }
+    .reading-cover-page .cover-title {
+        font-size: 1.8rem !important;
+    }
+    .reading-cover-page .cover-description {
+        font-size: 0.95rem;
+    }
+    .reading-cover-page .cover-author {
+        font-size: 0.9rem;
+    }
+    .reading-section {
+        padding: 12px 8px;
+        margin-bottom: 20px;
+    }
+    .reading-section h1 {
+        font-size: 1.6rem;
+    }
+    .reading-section h2 {
+        font-size: 1.3rem;
+    }
+    .reading-section h3 {
+        font-size: 1.1rem;
+    }
+    .reading-section .typography {
+        font-size: 1rem;
+        line-height: 1.6;
+    }
+    .reading-footer {
+        padding: 16px 12px;
+    }
+    .page-number {
+        font-size: 0.9rem;
+    }
+    /* Selection Popup Mobile */
+    .selection-popup {
+        position: fixed !important;
+        bottom: 20px !important;
+        left: 50% !important;
+        transform: translateX(-50%) !important;
+        top: auto !important;
+        width: 90% !important;
+        max-width: 320px !important;
+        flex-wrap: wrap;
+        justify-content: center;
+        padding: 8px;
+        gap: 8px;
+    }
+    .popup-btn {
+        font-size: 0.85rem !important;
+        padding: 8px 12px !important;
+        height: auto !important;
+        white-space: nowrap;
+    }
+    /* Comment Form Popup Mobile */
+    .comment-form-popup {
+        position: fixed !important;
+        width: 95% !important;
+        max-width: 95% !important;
+        left: 50% !important;
+        top: 50% !important;
+        transform: translate(-50%, -50%) !important;
+        padding: 16px;
+    }
+    .comment-form-content {
+        width: 100%;
+    }
+    .comment-form-content h3 {
+        font-size: 1.2rem;
+        margin-bottom: 12px;
+    }
+    .selected-text-preview {
+        font-size: 0.9rem;
+        padding: 8px;
+        margin-bottom: 12px;
+    }
+    #commentTextarea {
+        font-size: 14px;
+        padding: 10px;
+    }
+    .comment-form-actions {
+        flex-direction: column;
+        gap: 8px;
+    }
+    .comment-form-actions .popup-btn {
+        width: 100% !important;
+    }
+    /* AI Request Modal Mobile (Dashboard) */
+    #aiRequestModal.modal-overlay {
+        align-items: center !important;
+        justify-content: center !important;
+        padding: 5px !important;
+        box-sizing: border-box !important;
+    }
+    #aiRequestModal.modal-overlay.is-visible {
+        display: flex !important;
+        align-items: center !important;
+        justify-content: center !important;
+        z-index: 9999 !important;
+    }
+    #aiRequestModal .modal-content {
+        width: calc(100vw - 20px) !important;
+        max-width: calc(100vw - 20px) !important;
+        margin: 0 auto !important;
+        padding: 10px !important;
+        max-height: 90vh;
+        position: relative !important;
+        top: auto !important;
+        left: auto !important;
+        transform: none !important;
+        pointer-events: auto !important;
+        box-sizing: border-box !important;
+        overflow-x: hidden !important;
+    }
+    #aiRequestModal .modal-header {
+        position: relative;
+        z-index: 10;
+    }
+    #aiRequestModal .modal-header h3 {
+        font-size: 1.2rem;
+    }
+    #aiRequestModal .modal-close,
+    #aiRequestModal #closeAiModal {
+        position: relative !important;
+        z-index: 20 !important;
+        pointer-events: auto !important;
+        cursor: pointer !important;
+        touch-action: manipulation !important;
+        min-width: 40px !important;
+        min-height: 40px !important;
+        font-size: 2rem !important;
+    }
+    #aiRequestModal .modal-body {
+        padding: 16px 12px;
+        max-height: calc(90vh - 100px);
+        overflow-y: auto;
+    }
+    #aiRequestModal .form-group {
+        margin-bottom: 16px;
+    }
+    #aiRequestModal .input-block,
+    #aiRequestModal textarea,
+    #aiRequestModal select {
+        font-size: 14px;
+        padding: 10px;
+    }
+    #aiRequestModal .form-actions-right {
+        margin-top: 16px;
+    }
+    #aiRequestModal .form-actions-right .button {
+        width: 100% !important;
+        height: 40px !important;
+        font-size: 15px !important;
+    }
+    #aiRequestModal .ai-response {
+        margin-top: 20px;
+        padding: 16px;
+    }
+    #aiRequestModal .ai-response h4 {
+        font-size: 1.1rem;
+    }
+    /* Typography Mobile Adjustments */
+    h1 {
+        font-size: 1.8rem;
+        line-height: 1.3;
+    }
+    h2 {
+        font-size: 1.4rem;
+        line-height: 1.3;
+    }
+    h3 {
+        font-size: 1.2rem;
+    }
+    h4 {
+        font-size: 1rem;
+    }
+    /* Link Spacing for Touch */
+    a {
+        padding: 2px 0;
+    }
+    nav a {
+        padding: 4px 0;
+        display: inline-block;
+    }
+    /* Badge and Tag Adjustments */
+    .badge,
+    .tag {
+        font-size: 0.75rem;
+        padding: 3px 6px;
+    }
+    /* Alert Messages */
+    .alert {
+        padding: 12px;
+        font-size: 0.9rem;
+    }
+    /* Loading Indicators */
+    .loading,
+    .spinner {
+        font-size: 0.9rem;
+    }
+    /* Image Containers */
+    .image-container,
+    .cover-image {
+        max-width: 100%;
+        height: auto;
+    }
+    /* Ensure Full Width for Mobile */
+    .container,
+    .wrapper {
+        padding: 0 12px;
+    }
+    /* Spacing Utilities Mobile Override */
+    .mt-20,
+    .mb-20 {
+        margin-top: 12px !important;
+        margin-bottom: 12px !important;
+    }
+    .mt-30,
+    .mb-30 {
+        margin-top: 16px !important;
+        margin-bottom: 16px !important;
+    }
+    .p-20 {
+        padding: 12px !important;
+    }
+    .p-30 {
+        padding: 16px !important;
+    }
+}
+/* ==========================================
+   ADDITIONAL MOBILE TWEAKS (max-width: 380px)
+   Pour les très petits écrans
+   ========================================== */
+@media (max-width: 380px) {
+    /* Extra small screens */
+    header h1 {
+        font-size: 1rem;
+    }
+    nav a {
+        font-size: 0.8rem;
+        margin-right: 8px;
+    }
+    main {
+        padding: 10px;
+    }
+    .project-hero {
+        padding: 10px;
+    }
+    .project-hero__heading h1 {
+        font-size: 1.4rem;
+    }
+    .project-card__title-overlay {
+        font-size: 1rem;
+    }
+    .button,
+    input[type="submit"],
+    button {
+        font-size: 13px !important;
+    }
+    .modal-content {
+        width: 98%;
+        padding: 12px;
+    }
+    /* Preview Modal Extra Small */
+    #previewModal .modal-content {
+        padding: 10px;
+    }
+    #previewModal .modal-header {
+        padding: 12px;
+    }
+    #previewModal .modal-body {
+        padding: 12px;
+        font-size: 0.9rem;
+    }
+    /* Reading Mode Extra Small */
+    .reading-toc {
+        width: 90vw !important;
+        left: -90vw;
+    }
+    .reading-content {
+        padding: 8px !important;
+    }
+    .reading-section {
+        padding: 8px 4px;
+    }
+    .reading-section h1 {
+        font-size: 1.4rem;
+    }
+    .reading-section h2 {
+        font-size: 1.2rem;
+    }
+    .reading-cover-page .cover-title {
+        font-size: 1.6rem !important;
+    }
+    /* Compact Tables - Extra Small Adjustments */
+    .compact-table td:first-child {
+        width: 30%;
+        max-width: 30%;
+        font-size: 0.7rem;
+    }
+    .compact-table td.compact-meta,
+    .compact-table td.compact-meta--narrow {
+        width: 10%;
+        max-width: 10%;
+        font-size: 0.55rem;
+    }
+    .compact-table td.compact-actions,
+    .compact-table td.compact-actions--wide {
+        width: 60%;
+        max-width: 60%;
+    }
+    .compact-table .actions {
+        gap: 1px;
+    }
+    .compact-table .actions .button.small {
+        height: 24px !important;
+        width: 24px !important;
+        min-width: 24px !important;
+        max-width: 24px !important;
+        font-size: 0.7rem !important;
+    }
+    .compact-table .actions .button.small i {
+        font-size: 0.7rem !important;
+    }
+}

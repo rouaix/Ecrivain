@@ -1,0 +1,75 @@
+/* Theme Selector Component */
+/* ==========================================
+   THEME SELECTOR
+   Theme switcher form with color swatches
+   ========================================== */
+.theme-selector {
+    display: flex;
+    align-items: center;
+    margin: 10px 0;
+    padding: 15px;
+    background: var(--card-bg);
+    border-radius: var(--border-radius);
+}
+
+.theme-selector>* {
+    margin-right: 10px;
+}
+
+.theme-selector>*:last-child {
+    margin-right: 0;
+}
+
+.theme-label {
+    font-weight: 600;
+    font-size: 0.9rem;
+    margin-right: 10px;
+    color: var(--text-muted);
+}
+
+.theme-btn {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    cursor: pointer;
+    padding: 0;
+    margin: 0 5px;
+    transition: all 0.2s ease;
+    border: 2px solid transparent;
+}
+
+.theme-btn:hover {
+    transform: scale(1.1);
+}
+
+.theme-btn.active {
+    box-shadow: 0 0 0 1px var(--link-color);
+    border-color: transparent;
+}
+
+/* Color swatches for each theme */
+
+.theme-swatch--default {
+    background: linear-gradient(135deg, #ffffff 50%, #d65151 50%) !important;
+    border: 1px solid #d65151 !important;
+}
+
+.theme-swatch--blue {
+    background: linear-gradient(135deg, #ffffff 50%, #3b7dd8 50%) !important;
+    border: 1px solid #2563eb !important;
+}
+
+.theme-swatch--dark {
+    background: linear-gradient(135deg, #0f1117 50%, #3b82f6 50%) !important;
+    border: 1px solid #444444 !important;
+}
+
+.theme-swatch--forest {
+    background: linear-gradient(135deg, #f4f1ea 50%, #4a7a59 50%) !important;
+    border: 1px solid #4a7a59 !important;
+}
+
+.theme-swatch--moderne {
+    background: linear-gradient(135deg, #f6f6f6 50%, #3f51b5 50%) !important;
+    border: 1px solid #3f51b5 !important;
+}

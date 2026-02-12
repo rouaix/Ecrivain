@@ -1,0 +1,110 @@
+/* Template editor styles */
+/* ==========================================
+   TEMPLATE EDITOR
+   ========================================== */
+
+/* Table inside edit-card: full width, no outer border, tight integration */
+.edit-card .data-table {
+    width: 100%;
+    margin: 0 -30px;
+    width: calc(100% + 60px);
+    border-radius: 0;
+    border-left: none;
+    border-right: none;
+}
+
+.edit-card .data-table th,
+.edit-card .data-table td {
+    padding: 10px 15px;
+    vertical-align: middle;
+}
+
+/* Order column: compact arrow buttons side by side */
+.tpl-col-order {
+    width: 80px;
+}
+
+.order-cell {
+    display: flex;
+    gap: 4px;
+}
+
+.order-cell .button.small {
+    padding: 4px 8px;
+    font-size: 0.75rem;
+    min-width: 0;
+}
+
+/* Enabled toggle column */
+.tpl-col-enabled {
+    width: 60px;
+}
+
+/* Actions column */
+.tpl-col-actions {
+    width: 100px;
+}
+
+.tpl-col-actions .actions {
+    display: flex;
+    gap: 4px;
+    justify-content: flex-end;
+}
+
+/* Badges in template table */
+.edit-card .badge {
+    display: inline-block;
+    font-size: 0.7rem;
+    padding: 2px 8px;
+    border-radius: 10px;
+    background: var(--bg-muted, #f0f0f0);
+    color: var(--text-muted, #666);
+    font-weight: 500;
+    vertical-align: middle;
+}
+
+.edit-card .badge-secondary {
+    background: var(--accent-bg, #e3f2fd);
+    color: var(--accent-color, #1976D2);
+}
+
+/* Hidden by default (JS toggle) */
+.tpl-hidden {
+    display: none;
+}
+
+/* Modal sizing for template element edit */
+.tpl-modal-box {
+    max-width: 600px;
+}
+
+/* Hidden delete form */
+.tpl-delete-form {
+    display: none;
+}
+
+.sub-indent {
+    margin-left: 20px;
+}
+
+.modal-footer {
+    padding: 20px;
+    text-align: right;
+    display: flex;
+    gap: 10px;
+    justify-content: flex-end;
+}
+
+.elements td span {
+    font-weight: bold;
+}
+
+input[type="checkbox"].export-toggle {
+    accent-color: var(--header-bg);
+    width: 20px;
+    height: 15px;
+    font-size: 11px;
+    position: relative;
+    top: 1px;
+    cursor: pointer;
+}
