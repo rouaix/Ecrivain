@@ -24,3 +24,13 @@
 *.woff2 binary
 *.ttf binary
 *.eot binary
+
+
+*.html linguist-vendored
+*.css linguist-vendored
+*.js linguist-vendored
+
+*.php linguist-language=PHP
+
+vendor/ linguist-vendored
+node_modules/ linguist-vendored
