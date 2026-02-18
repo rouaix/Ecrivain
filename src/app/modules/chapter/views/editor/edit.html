@@ -4,7 +4,7 @@
         <h2>Modifier le chapitre</h2>
         <div class="editor-top-bar">
             <span id="autosave-indicator" class="autosave-indicator"></span>
-            <div id="sessionGoalWidget" class="session-goal-widget" title="Cliquer pour définir un objectif de session">
+            <div id="sessionGoalWidget" class="session-goal-widget" title="Cliquer pour définir un objectif de session" style="display:none;">
                 <span id="sessionGoalText" class="session-goal-text"></span>
                 <div id="sessionGoalTrack" class="session-goal-track" style="display:none;">
                     <div id="sessionGoalFill" class="session-goal-fill"></div>
@@ -912,10 +912,10 @@ body.focus-mode .focus-exit-btn { display: flex; }
 
     function updateGoalWidget() {
         if (!sessionGoal) {
-            goalText.textContent = '+ Objectif session';
-            goalTrack.style.display = 'none';
+            goalWidget.style.display = 'none';
             return;
         }
+        goalWidget.style.display = 'flex';
         var added = Math.max(0, getWordCount() - initialWords);
         var pct   = Math.min(100, Math.round(added / sessionGoal * 100));
         goalText.textContent = added + '\u202f/\u202f' + sessionGoal + ' mots';
