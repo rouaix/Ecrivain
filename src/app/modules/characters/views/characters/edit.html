@@ -116,7 +116,80 @@
 
     </form>
 
+    <!-- Character mentions timeline -->
+    <check if="{{ @character.id }}">
+        <div class="edit-card char-mentions-card">
+            <div class="char-mentions-header">
+                <h3><i class="fas fa-map-marker-alt"></i> Apparitions dans les chapitres</h3>
+            </div>
+            <check if="{{ empty(@mentions) }}">
+                <p class="char-mentions-empty">
+                    Aucune mention de « {{ @character.name | esc }} » trouvée dans le contenu des chapitres.
+                </p>
+            </check>
+            <check if="{{ !empty(@mentions) }}">
+                <div class="char-mentions-list">
+                    <repeat group="{{ @mentions }}" value="{{ @act }}">
+                        <div class="char-mentions-act">
+                            <div class="char-mentions-act-label">{{ @act.label | esc }}</div>
+                            <repeat group="{{ @act.chapters }}" value="{{ @ch }}">
+                                <a href="{{ @base }}/chapter/{{ @ch.id }}" class="char-mentions-chapter">
+                                    <i class="fas fa-book-open"></i>
+                                    <span>{{ @ch.title | esc }}</span>
+                                    <i class="fas fa-chevron-right char-mentions-arrow"></i>
+                                </a>
+                            </repeat>
+                        </div>
+                    </repeat>
+                </div>
+            </check>
+        </div>
+    </check>
+
 </div>
+
+<style nonce="{{ @nonce }}">
+.char-mentions-card {
+    margin-top: 1.5rem;
+}
+.char-mentions-header {
+    margin-bottom: 12px;
+}
+.char-mentions-header h3 {
+    margin: 0; font-size: 1rem; color: var(--text-main, #333);
+}
+.char-mentions-header h3 i {
+    color: var(--link-color, #3f51b5); margin-right: 8px;
+}
+.char-mentions-empty {
+    color: var(--text-muted, #777); font-size: .85rem; margin: 0;
+}
+.char-mentions-list { display: flex; flex-direction: column; gap: 16px; }
+.char-mentions-act-label {
+    font-size: .75rem; font-weight: 600; text-transform: uppercase;
+    letter-spacing: .06em; color: var(--text-muted, #888);
+    margin-bottom: 6px;
+}
+.char-mentions-chapter {
+    display: flex; align-items: center; gap: 10px;
+    padding: 9px 12px; border-radius: 7px;
+    border: 1px solid var(--border-color, #e0e0e0);
+    background: var(--card-bg, #fff);
+    color: var(--text-main, #333); text-decoration: none;
+    font-size: .88rem; margin-bottom: 4px;
+    transition: background .15s, border-color .15s;
+}
+.char-mentions-chapter:hover {
+    background: var(--table-row-hover-bg, #f0f4f8);
+    border-color: var(--link-color, #3f51b5);
+    color: var(--text-main, #333);
+}
+.char-mentions-chapter i:first-child {
+    color: var(--link-color, #3f51b5); flex-shrink: 0;
+}
+.char-mentions-chapter span { flex: 1; }
+.char-mentions-arrow { color: var(--text-muted, #bbb); font-size: .7rem; flex-shrink: 0; }
+</style>
 
 <script nonce="{{ @nonce }}">
 
