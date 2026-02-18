@@ -140,3 +140,7 @@ a.button i {
 #btn-generate-token {
     margin-bottom: 20px;
 }
+
+#searchToggleBtn {
+    margin-right: 15px;
+}
