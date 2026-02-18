@@ -249,6 +249,9 @@ class ChapterController extends Controller
         // This direct SQL update appears redundant but kept for compatibility
         $this->db->exec('UPDATE chapters SET `comment`=? WHERE id=?', [$comment, $cid]);
 
+        // Bust AI context cache so the next ask() rebuilds fresh project context
+        unset($_SESSION['_ai_ctx_' . $chapterModel->project_id]);
+
         if ($this->f3->get('AJAX')) {
             echo json_encode(['status' => 'ok']);
             exit;
