@@ -10,6 +10,9 @@
             <a href="{{ @base }}/chapter/{{ @chapter.id }}/versions" class="button secondary" title="Historique des versions">
                 <i class="fas fa-history"></i>
             </a>
+            <button type="button" id="btnFocusMode" class="button secondary" title="Mode focus (F11)">
+                <i class="fas fa-expand"></i>
+            </button>
             <a href="{{ @base }}/project/{{ @project.id }}" class="button" title="Retour au projet">
                 <i class="fas fa-arrow-left"></i>
             </a>
@@ -72,7 +75,7 @@
             </div>
 
             <!-- Content Section -->
-            <div class="edit-card-section">
+            <div class="edit-card-section focus-content">
                 <div class="form-group">
                     <label for="content">
                         <span>Contenu</span>
@@ -133,6 +136,11 @@
         </div>
     </form>
 </div>
+
+<!-- Focus mode exit button (fixed, only visible in focus mode) -->
+<button type="button" id="focusExitBtn" class="focus-exit-btn" title="Quitter le mode focus (Échap)">
+    <i class="fas fa-compress"></i> Quitter le focus
+</button>
 
 <!-- AI Assistant Modal -->
 <div class="modal-overlay" id="aiAssistantModal">
@@ -198,6 +206,39 @@
 .autosave-indicator.error  { background: rgba(239,68,68,.12);   color: #b91c1c; }
 .autosave-indicator.error::before  { background: #ef4444; }
 @keyframes as-pulse { 0%,100%{opacity:1} 50%{opacity:.25} }
+
+/* Focus mode */
+body.focus-mode header,
+body.focus-mode footer,
+body.focus-mode .edit-header,
+body.focus-mode .edit-card > .edit-card-section:not(.focus-content),
+body.focus-mode .edit-actions,
+body.focus-mode .error,
+body.focus-mode .alert-success { display: none !important; }
+
+body.focus-mode { background: #f5f4f0; }
+body.focus-mode main { display: flex; align-items: flex-start; justify-content: center; min-height: 100vh; padding: 60px 20px; }
+body.focus-mode .container { max-width: none; width: 100%; padding: 0; }
+body.focus-mode .edit-page-layout { width: 100%; }
+body.focus-mode .edit-card { background: transparent; border: none; box-shadow: none; max-width: 900px; margin: 0 auto; padding: 0; }
+body.focus-mode .edit-card-section.focus-content { display: block !important; }
+body.focus-mode .form-group label { display: none; }
+body.focus-mode .ql-container { border: none !important; font-size: 1.15rem; line-height: 1.85; }
+body.focus-mode .ql-editor { min-height: 80vh; padding: 20px 0; color: #2d2d2d; caret-color: #3f51b5; }
+body.focus-mode .editor-surface { border: none; box-shadow: none; }
+body.focus-mode .editor-height-300 { height: auto; }
+body.focus-mode .word-count { display: none; }
+
+.focus-exit-btn {
+    display: none;
+    position: fixed; top: 18px; right: 20px; z-index: 9999;
+    background: rgba(60,60,60,.7); border: 1px solid rgba(255,255,255,.15);
+    color: #fff; border-radius: 8px; padding: 7px 14px; gap: 7px;
+    cursor: pointer; font-size: .8rem; backdrop-filter: blur(6px);
+    transition: background .15s; align-items: center;
+}
+.focus-exit-btn:hover { background: rgba(60,60,60,.9); }
+body.focus-mode .focus-exit-btn { display: flex; }
 
 /* Grammar panel */
 .grammar-header {
@@ -788,5 +829,46 @@
             });
         });
     }
+}());
+</script>
+
+<script nonce="{{ @nonce }}">
+(function () {
+    var FOCUS_CLASS = 'focus-mode';
+
+    function enterFocus() {
+        document.body.classList.add(FOCUS_CLASS);
+        document.getElementById('btnFocusMode').innerHTML = '<i class="fas fa-compress"></i>';
+        document.getElementById('btnFocusMode').title = 'Quitter le mode focus (Échap)';
+        if (typeof QuillTools !== 'undefined' && QuillTools.quill) {
+            QuillTools.quill.focus();
+        }
+    }
+
+    function exitFocus() {
+        document.body.classList.remove(FOCUS_CLASS);
+        document.getElementById('btnFocusMode').innerHTML = '<i class="fas fa-expand"></i>';
+        document.getElementById('btnFocusMode').title = 'Mode focus (F11)';
+    }
+
+    function toggleFocus() {
+        document.body.classList.contains(FOCUS_CLASS) ? exitFocus() : enterFocus();
+    }
+
+    var btn = document.getElementById('btnFocusMode');
+    if (btn) btn.addEventListener('click', toggleFocus);
+
+    var exitBtn = document.getElementById('focusExitBtn');
+    if (exitBtn) exitBtn.addEventListener('click', exitFocus);
+
+    document.addEventListener('keydown', function (e) {
+        if (e.key === 'F11') {
+            e.preventDefault();
+            toggleFocus();
+        }
+        if (e.key === 'Escape' && document.body.classList.contains(FOCUS_CLASS)) {
+            exitFocus();
+        }
+    });
 }());
 </script>
