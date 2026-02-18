@@ -78,6 +78,11 @@
 
                     <a href="#" id="aiRequestBtn">Demande IA</a>
 
+                    <form method="get" action="{{ @base }}/search" class="nav-search-form" role="search">
+                        <input type="text" name="q" id="navSearchInput" placeholder="Rechercher… (Ctrl+K)"
+                            class="nav-search-input" autocomplete="off" aria-label="Recherche globale">
+                    </form>
+
                     <a href="{{ @base }}/logout">Déconnexion</a>
 
                 </true>
@@ -118,6 +123,19 @@
 
     <!-- Register service worker for PWA support -->
 
+    <style>
+        .nav-search-form { display: inline-flex; align-items: center; }
+        .nav-search-input {
+            padding: 4px 10px; border: 1px solid rgba(255,255,255,.35);
+            border-radius: 4px; background: rgba(255,255,255,.15);
+            color: inherit; font-size: .85rem; width: 180px;
+            transition: width .2s, background .2s;
+        }
+        .nav-search-input::placeholder { color: rgba(255,255,255,.6); }
+        .nav-search-input:focus { outline: none; width: 240px; background: rgba(255,255,255,.25); }
+        @media (max-width: 600px) { .nav-search-input { width: 120px; } .nav-search-input:focus { width: 150px; } }
+    </style>
+
     <script nonce="{{ @nonce }}">
 
         window.CSRF_TOKEN = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') || '';
@@ -140,6 +158,14 @@
 
             form.appendChild(hidden);
 
+        });
+
+        // Ctrl+K → focus search input
+        document.addEventListener('keydown', function (e) {
+            if ((e.ctrlKey || e.metaKey) && e.key === 'k') {
+                var si = document.getElementById('navSearchInput');
+                if (si) { e.preventDefault(); si.focus(); si.select(); }
+            }
         });
 
         if ('serviceWorker' in navigator) {
