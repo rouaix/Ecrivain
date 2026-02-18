@@ -214,7 +214,7 @@ Données disponibles : `chapters.word_count` (calculable à la sauvegarde) + hor
 
 ---
 
-### 17. Export EPUB
+### 17. Export EPUB ✅ RÉALISÉ
 
 **Contexte :** L'export PDF existe (via html2pdf). L'EPUB manque alors que c'est le format standard des liseuses.
 
@@ -226,7 +226,7 @@ Données disponibles : `chapters.word_count` (calculable à la sauvegarde) + hor
 
 ---
 
-### 18. Templates de projet améliorés
+### 18. Templates de projet améliorés ✅ RÉALISÉ
 
 **Contexte :** Le système de templates existe mais reste basique.
 
@@ -237,7 +237,7 @@ Données disponibles : `chapters.word_count` (calculable à la sauvegarde) + hor
 
 ---
 
-### 19. Mode relecture avec annotations
+### 19. Mode relecture avec annotations ✅ RÉALISÉ
 
 **Proposition :**
 - Mode "relecture" distinct du mode "lecture" : surlignage et annotation de passages
