@@ -1,0 +1,51 @@
+<div class="edit-page-layout">
+    <div class="edit-header">
+        <h2><i class="fas fa-file-import"></i> Importer un template</h2>
+        <a href="{{ @base }}/templates" class="button" title="Retour aux templates">
+            <i class="fas fa-arrow-left"></i>
+        </a>
+    </div>
+
+    <check if="{{ !empty(@errors) }}">
+        <div class="error edit-error">
+            <repeat group="{{ @errors }}" value="{{ @err }}">
+                <div>{{ @err | esc }}</div>
+            </repeat>
+        </div>
+    </check>
+
+    <div class="edit-card">
+        <div class="edit-card-section">
+            <h3><i class="fas fa-info-circle"></i> À propos de l'import</h3>
+            <p class="text-muted-para">
+                Importez un fichier <code>.json</code> exporté depuis cette application pour créer un nouveau template personnalisé.
+                Le template importé sera disponible pour tous vos projets.
+            </p>
+        </div>
+
+        <div class="edit-card-section">
+            <form method="POST" action="{{ @base }}/template/import" enctype="multipart/form-data">
+                <input type="hidden" name="csrf_token" value="{{ @csrfToken }}">
+
+                <div class="form-group">
+                    <label for="importName">Nom du template <span class="text-muted-small">(laisser vide pour utiliser le nom du fichier)</span></label>
+                    <input type="text" id="importName" name="name" class="form-control"
+                           value="{{ @old.name | esc }}" placeholder="Nom du template importé">
+                </div>
+
+                <div class="form-group">
+                    <label for="templateFile">Fichier JSON <span style="color:var(--danger-color,#e53e3e)">*</span></label>
+                    <input type="file" id="templateFile" name="template_file" class="form-control"
+                           accept=".json,application/json" required>
+                </div>
+
+                <div class="form-actions">
+                    <button type="submit" class="button primary">
+                        <i class="fas fa-file-import"></i> Importer
+                    </button>
+                    <a href="{{ @base }}/templates" class="button secondary">Annuler</a>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>

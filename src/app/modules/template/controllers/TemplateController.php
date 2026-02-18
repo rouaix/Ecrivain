@@ -441,6 +441,142 @@ class TemplateController extends Controller
     }
 
     /**
+     * Export a template as a JSON file.
+     */
+    public function exportJson()
+    {
+        $templateId = (int) $this->f3->get('PARAMS.id');
+        $user = $this->currentUser();
+
+        $templateModel = new ProjectTemplate();
+        $templateModel->load(['id=?', $templateId]);
+
+        if ($templateModel->dry()) {
+            $this->f3->error(404);
+            return;
+        }
+
+        // Any user can export a template visible to them
+        $available = array_column($templateModel->getAllAvailable($user['id']), 'id');
+        if (!in_array($templateId, $available)) {
+            $this->f3->error(403);
+            return;
+        }
+
+        $template = $templateModel->cast();
+        $elements = $templateModel->getElements($templateId);
+
+        $export = [
+            'name'        => $template['name'],
+            'description' => $template['description'] ?? '',
+            'elements'    => array_map(function ($elem) {
+                return [
+                    'element_type'      => $elem['element_type'],
+                    'element_subtype'   => $elem['element_subtype'],
+                    'section_placement' => $elem['section_placement'],
+                    'display_order'     => (int) $elem['display_order'],
+                    'is_enabled'        => (int) $elem['is_enabled'],
+                    'config_json'       => json_decode($elem['config_json'] ?? '{}', true),
+                ];
+            }, $elements),
+        ];
+
+        $json     = json_encode($export, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE);
+        $filename = 'template_' . preg_replace('/[^a-z0-9]+/', '_', strtolower($template['name'])) . '.json';
+
+        header('Content-Type: application/json');
+        header('Content-Disposition: attachment; filename="' . $filename . '"');
+        header('Content-Length: ' . strlen($json));
+        echo $json;
+        exit;
+    }
+
+    /**
+     * Show import form (GET) or process an imported JSON template (POST).
+     */
+    public function importJson()
+    {
+        $user = $this->currentUser();
+
+        if ($this->f3->get('VERB') === 'GET') {
+            $this->render('template/import.html', [
+                'title'  => 'Importer un template',
+                'errors' => [],
+                'old'    => ['name' => ''],
+            ]);
+            return;
+        }
+
+        // POST: parse uploaded file
+        $errors = [];
+
+        if (empty($_FILES['template_file']) || (int) $_FILES['template_file']['error'] !== UPLOAD_ERR_OK) {
+            $errors[] = 'Veuillez sélectionner un fichier JSON valide.';
+        }
+
+        $data = null;
+        if (empty($errors)) {
+            $content = file_get_contents($_FILES['template_file']['tmp_name']);
+            $data    = json_decode($content, true);
+            if (!$data || !isset($data['elements']) || !is_array($data['elements'])) {
+                $errors[] = 'Fichier JSON invalide ou format non reconnu.';
+            }
+        }
+
+        if (!empty($errors)) {
+            $this->render('template/import.html', [
+                'title'  => 'Importer un template',
+                'errors' => $errors,
+                'old'    => ['name' => trim($_POST['name'] ?? '')],
+            ]);
+            return;
+        }
+
+        $name = trim($_POST['name'] ?? '') ?: trim($data['name'] ?? 'Template importé');
+        if ($name === '') {
+            $name = 'Template importé';
+        }
+
+        // Create the new user template
+        $newTemplate              = new ProjectTemplate();
+        $newTemplate->name        = $name;
+        $newTemplate->description = $data['description'] ?? '';
+        $newTemplate->is_default  = 0;
+        $newTemplate->is_system   = 0;
+        $newTemplate->created_by  = $user['id'];
+        $newTemplate->save();
+        $newId = $newTemplate->id;
+
+        $validTypes = ['section', 'act', 'chapter', 'note', 'character', 'file', 'element'];
+        foreach ($data['elements'] as $idx => $elem) {
+            $elementType = $elem['element_type'] ?? '';
+            if (!in_array($elementType, $validTypes)) {
+                continue;
+            }
+            $configJson = isset($elem['config_json'])
+                ? json_encode($elem['config_json'], JSON_UNESCAPED_UNICODE)
+                : '{}';
+
+            $this->db->exec(
+                'INSERT INTO template_elements (template_id, element_type, element_subtype, section_placement, display_order, is_enabled, config_json)
+                 VALUES (?, ?, ?, ?, ?, ?, ?)',
+                [
+                    $newId,
+                    $elementType,
+                    $elem['element_subtype'] ?? null,
+                    $elem['section_placement'] ?? null,
+                    (int) ($elem['display_order'] ?? $idx),
+                    (int) ($elem['is_enabled'] ?? 1),
+                    $configJson,
+                ]
+            );
+        }
+
+        $this->f3->set('SESSION.success', 'Template "' . htmlspecialchars($name) . '" importé avec succès.');
+        $this->f3->reroute('/template/' . $newId . '/edit');
+    }
+
+    /**
      * Reorder template elements via AJAX.
      */
     public function reorder()
