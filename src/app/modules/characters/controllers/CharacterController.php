@@ -99,10 +99,36 @@ class CharacterController extends Controller
         }
         $project = $projectModel->findAndCast(['id=?', $charModel->project_id])[0];
 
+        // Find chapters where the character name is mentioned
+        $mentions = [];
+        if ($charModel->name) {
+            $rows = $this->db->exec(
+                'SELECT c.id, c.title, c.order_index, c.act_id,
+                        a.title AS act_title, a.order_index AS act_order
+                 FROM chapters c
+                 LEFT JOIN acts a ON a.id = c.act_id
+                 WHERE c.project_id = ?
+                   AND (c.content LIKE ? OR c.resume LIKE ?)
+                 ORDER BY a.order_index ASC, c.order_index ASC, c.id ASC',
+                [$charModel->project_id, '%' . $charModel->name . '%', '%' . $charModel->name . '%']
+            ) ?: [];
+
+            // Group by act
+            foreach ($rows as $row) {
+                $actKey = $row['act_id'] ?? 0;
+                $actLabel = $row['act_title'] ?: 'Sans acte';
+                if (!isset($mentions[$actKey])) {
+                    $mentions[$actKey] = ['label' => $actLabel, 'chapters' => []];
+                }
+                $mentions[$actKey]['chapters'][] = $row;
+            }
+        }
+
         $this->render('characters/edit.html', [
             'title' => 'Modifier personnage',
             'project' => $project,
             'character' => $charModel->cast(),
+            'mentions' => $mentions,
             'errors' => []
         ]);
     }

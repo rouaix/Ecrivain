@@ -183,7 +183,7 @@ Données disponibles : `chapters.word_count` (calculable à la sauvegarde) + hor
 
 ---
 
-### 14. Suivi des personnages dans le texte
+### 14. Suivi des personnages dans le texte ✅ RÉALISÉ — branche `feature/character-tracking`
 
 **Manque actuel :** Les fiches personnages existent mais sans lien avec le contenu des chapitres.
 
