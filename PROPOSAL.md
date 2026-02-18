@@ -51,7 +51,7 @@ if (!$jwtSecret && !$isLocal) {
 
 ---
 
-### 4. Estimation des tokens IA
+### 4. Estimation des tokens IA ✅ RÉALISÉ — branche `fix/accurate-token-counting`
 
 **Fichier :** `src/app/modules/ai/controllers/AiController.php`
 
