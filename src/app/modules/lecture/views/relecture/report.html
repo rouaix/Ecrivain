@@ -1,0 +1,105 @@
+<div class="edit-page-layout">
+    <div class="edit-header">
+        <h2><i class="fas fa-file-alt"></i> Rapport de relecture — {{ @project.title | esc }}</h2>
+        <div class="header-actions">
+            <button onclick="window.print()" class="button secondary" title="Imprimer">
+                <i class="fas fa-print"></i> Imprimer
+            </button>
+            <a href="{{ @base }}/project/{{ @project.id }}/relecture" class="button" title="Retour à la relecture">
+                <i class="fas fa-arrow-left"></i> Relecture
+            </a>
+        </div>
+    </div>
+
+    <div class="edit-card">
+        <div class="edit-card-section">
+            <p class="text-muted-para">
+                <strong>{{ @total }}</strong> annotation{{ @total != 1 ? 's' : '' }} au total dans ce projet.
+            </p>
+
+            <!-- Summary by category -->
+            <check if="{{ @total > 0 }}">
+                <div class="report-summary" id="reportSummary"></div>
+                <script id="reportAnnotsRaw" type="application/json">{{ @annotationsJson | raw }}</script>
+            </check>
+        </div>
+
+        <check if="{{ !empty(@grouped) }}">
+            <true>
+                <repeat group="{{ @grouped }}" value="{{ @group }}">
+                    <div class="report-group edit-card-section">
+                        <h3 class="report-group-title">
+                            <i class="fas fa-book-open"></i> {{ @group.title | esc }}
+                        </h3>
+                        <div class="report-annotations">
+                            <repeat group="{{ @group.annotations }}" value="{{ @ann }}">
+                                <div class="report-annotation-item">
+                                    <span class="report-cat-badge report-cat-{{ @ann.category }}">
+                                        <check if="{{ @ann.category == 'to_rewrite' }}">À reformuler</check>
+                                        <check if="{{ @ann.category == 'inconsistency' }}">Incohérence</check>
+                                        <check if="{{ @ann.category == 'to_check' }}">À vérifier</check>
+                                        <check if="{{ @ann.category == 'good' }}">Bien</check>
+                                    </span>
+                                    <span class="report-selected-text">&ldquo;{{ @ann.selected_text | esc }}&rdquo;</span>
+                                    <check if="{{ @ann.comment }}">
+                                        <span class="report-comment"> — {{ @ann.comment | esc }}</span>
+                                    </check>
+                                </div>
+                            </repeat>
+                        </div>
+                    </div>
+                </repeat>
+            </true>
+            <false>
+                <div class="edit-card-section">
+                    <p class="empty-state">Aucune annotation pour ce projet. Utilisez le <a href="{{ @base }}/project/{{ @project.id }}/relecture">mode relecture</a> pour en ajouter.</p>
+                </div>
+            </false>
+        </check>
+    </div>
+</div>
+
+<script nonce="{{ @nonce }}">
+(function () {
+    var raw = document.getElementById('reportAnnotsRaw');
+    if (!raw) return;
+    var annotations = JSON.parse(raw.textContent || '[]');
+    var CATEGORIES = {
+        to_rewrite:    { label: 'À reformuler', color: '#f97316' },
+        inconsistency: { label: 'Incohérence',  color: '#ef4444' },
+        to_check:      { label: 'À vérifier',   color: '#eab308' },
+        good:          { label: 'Bien',          color: '#22c55e' }
+    };
+    var counts = {};
+    annotations.forEach(function (a) { counts[a.category] = (counts[a.category] || 0) + 1; });
+    var html = Object.keys(CATEGORIES).map(function (k) {
+        if (!counts[k]) return '';
+        return '<span class="report-summary-badge" style="background:' + CATEGORIES[k].color + '">' +
+               CATEGORIES[k].label + ' : ' + counts[k] + '</span>';
+    }).join('');
+    var el = document.getElementById('reportSummary');
+    if (el) el.innerHTML = html;
+})();
+</script>
+
+<style nonce="{{ @nonce }}">
+.report-summary { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 8px; }
+.report-summary-badge { color: #fff; border-radius: 12px; padding: 3px 12px; font-size: .78rem; font-weight: 700; }
+.report-group { margin-bottom: 0; }
+.report-group-title { font-size: 1rem; font-weight: 600; color: var(--text-main, #333); margin-bottom: .75rem; display: flex; align-items: center; gap: 8px; }
+.report-group-title i { color: var(--link-color, #3f51b5); }
+.report-annotations { display: flex; flex-direction: column; gap: 6px; }
+.report-annotation-item { display: flex; align-items: baseline; gap: 8px; flex-wrap: wrap; font-size: .88rem; padding: 5px 0; border-bottom: 1px solid var(--border-color, #f0f0f0); }
+.report-cat-badge { border-radius: 12px; padding: 2px 10px; font-size: .7rem; font-weight: 700; color: #fff; flex-shrink: 0; }
+.report-cat-to_rewrite    { background: #f97316; }
+.report-cat-inconsistency { background: #ef4444; }
+.report-cat-to_check      { background: #eab308; }
+.report-cat-good          { background: #22c55e; }
+.report-selected-text { font-style: italic; color: var(--text-muted, #666); }
+.report-comment { color: var(--text-main, #333); }
+@media print {
+    .edit-header .header-actions { display: none !important; }
+    .report-cat-badge { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+    .report-summary-badge { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+}
+</style>
