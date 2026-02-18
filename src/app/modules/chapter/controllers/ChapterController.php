@@ -254,14 +254,18 @@ class ChapterController extends Controller
         // This direct SQL update appears redundant but kept for compatibility
         $this->db->exec('UPDATE chapters SET `comment`=? WHERE id=?', [$comment, $cid]);
 
-        // Record daily writing snapshot
+        // Record daily writing snapshot (non-blocking: table may not exist yet)
         $user = $this->currentUser();
-        $this->db->exec(
-            'INSERT INTO writing_stats (user_id, chapter_id, project_id, stat_date, word_count)
-             VALUES (?, ?, ?, CURDATE(), ?)
-             ON DUPLICATE KEY UPDATE word_count = VALUES(word_count)',
-            [$user['id'], $cid, $chapterModel->project_id, $wordCount]
-        );
+        try {
+            $this->db->exec(
+                'INSERT INTO writing_stats (user_id, chapter_id, project_id, stat_date, word_count)
+                 VALUES (?, ?, ?, CURDATE(), ?)
+                 ON DUPLICATE KEY UPDATE word_count = VALUES(word_count)',
+                [$user['id'], $cid, $chapterModel->project_id, $wordCount]
+            );
+        } catch (Exception $e) {
+            error_log('writing_stats insert failed: ' . $e->getMessage());
+        }
 
         // Bust AI context cache so the next ask() rebuilds fresh project context
         unset($_SESSION['_ai_ctx_' . $chapterModel->project_id]);
