@@ -101,13 +101,7 @@
         good:          { label: 'Bien',          color: '#22c55e' }
     };
 
-    var BASE = document.documentElement.dataset.base || '';
-    try {
-        BASE = JSON.parse(document.getElementById('reviewProjectData').textContent || '{}').base || BASE;
-    } catch (e) {}
-    // Use window.location to build base
-    var baseEl = document.querySelector('[data-base]');
-    BASE = (baseEl ? baseEl.dataset.base : '') || (window.location.pathname.split('/project/')[0] || '');
+    var BASE_PATH = '{{ @base }}';
 
     var projectData  = JSON.parse(document.getElementById('reviewProjectData').textContent  || '{}');
     var annotations  = JSON.parse(document.getElementById('reviewAnnotationsData').textContent || '[]');
@@ -115,12 +109,6 @@
     var currentFilter  = 'all';
     var pendingSelection = null; // {text, contentId, contentType}
     var popup = document.getElementById('annotationPopup');
-
-    // Resolve BASE from a known route pattern
-    // e.g. current URL is /project/5/relecture → BASE is ''
-    // Or /subfolder/project/5/relecture → BASE is '/subfolder'
-    var m = window.location.pathname.match(/^(.*?)\/project\/\d+\/relecture/);
-    var BASE_PATH = m ? m[1] : '';
 
     // ── Highlights ────────────────────────────────────────────────────────────
 
