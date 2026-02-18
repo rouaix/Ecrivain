@@ -88,6 +88,20 @@
                 </div>
             </div>
 
+            <!-- Grammar Check Section -->
+            <div class="edit-card-section">
+                <div class="grammar-header">
+                    <label>Vérification grammaticale</label>
+                    <div class="grammar-header-actions">
+                        <span id="grammarStatus" class="grammar-status"></span>
+                        <button type="button" id="btnGrammarCheck" class="button secondary">
+                            <i class="fas fa-spell-check" style="margin-right: 10px;"></i>Vérifier
+                        </button>
+                    </div>
+                </div>
+                <div id="grammarResults" class="grammar-results"></div>
+            </div>
+
             <!-- Resume Section -->
             <check if="{{ !@chapter.parent_id }}">
                 <div class="edit-card-section">
@@ -184,6 +198,42 @@
 .autosave-indicator.error  { background: rgba(239,68,68,.12);   color: #b91c1c; }
 .autosave-indicator.error::before  { background: #ef4444; }
 @keyframes as-pulse { 0%,100%{opacity:1} 50%{opacity:.25} }
+
+/* Grammar panel */
+.grammar-header {
+    display: flex; align-items: center; justify-content: space-between; margin-bottom: 8px;
+}
+.grammar-header-actions { display: flex; align-items: center; gap: 10px; }
+.grammar-status { font-size: .78rem; padding: 2px 8px; border-radius: 10px; }
+.grammar-status--checking { background: rgba(59,130,246,.12); color: #1d4ed8; }
+.grammar-status--ok  { background: rgba(34,197,94,.12); color: #15803d; }
+.grammar-status--warn { background: rgba(245,158,11,.12); color: #b07000; }
+.grammar-status--error { background: rgba(239,68,68,.12); color: #b91c1c; }
+.grammar-results { display: flex; flex-direction: column; gap: 8px; margin-top: 8px; }
+.grammar-none { color: var(--text-muted, #777); font-size: .85rem; margin: 0; }
+.grammar-count { color: var(--text-muted, #777); font-size: .82rem; margin: 0 0 4px; }
+.grammar-item {
+    border: 1px solid var(--border-color, #e0e0e0); border-radius: 7px;
+    padding: 10px 12px; background: var(--card-bg, #fff);
+}
+.grammar-item-top { display: flex; flex-wrap: wrap; align-items: baseline; gap: 8px; margin-bottom: 6px; }
+.grammar-word { font-weight: 600; color: #b91c1c; font-size: .88rem; }
+.grammar-msg  { color: var(--text-muted, #666); font-size: .82rem; }
+.grammar-item-actions { display: flex; flex-wrap: wrap; align-items: center; gap: 6px; }
+.grammar-suggestions-label { font-size: .78rem; color: var(--text-muted, #888); }
+.grammar-fix-btn {
+    font-size: .78rem; padding: 2px 8px; border-radius: 4px; cursor: pointer;
+    background: var(--link-color, #3f51b5); color: #fff; border: none;
+}
+.grammar-fix-btn:hover { opacity: .85; }
+.grammar-ignore-btn, .grammar-dict-btn {
+    font-size: .78rem; padding: 2px 8px; border-radius: 4px; cursor: pointer;
+    background: none; border: 1px solid var(--border-color, #ccc);
+    color: var(--text-muted, #666);
+}
+.grammar-ignore-btn:hover, .grammar-dict-btn:hover {
+    background: var(--table-header-bg, #f5f5f5);
+}
 </style>
 
 <script nonce="{{ @nonce }}">
@@ -624,4 +674,109 @@
         // ─────────────────────────────────────────────────────────────────────
 
     });
+</script>
+
+<script id="grammarIgnoredWords" type="application/json">{{ @ignoredWords | raw }}</script>
+
+<script nonce="{{ @nonce }}">
+(function () {
+    var grammarBtn     = document.getElementById('btnGrammarCheck');
+    var grammarStatus  = document.getElementById('grammarStatus');
+    var grammarResults = document.getElementById('grammarResults');
+    var projectId      = '{{ @project.id }}';
+    var baseUrl        = '{{ @base }}';
+
+    var ignoredWords = [];
+    try {
+        ignoredWords = JSON.parse(document.getElementById('grammarIgnoredWords').textContent || '[]');
+    } catch (e) {}
+
+    function setGrammarStatus(msg, cls) {
+        if (!grammarStatus) return;
+        grammarStatus.textContent = msg;
+        grammarStatus.className = 'grammar-status' + (cls ? ' grammar-status--' + cls : '');
+    }
+
+    function renderGrammarResults(matches) {
+        if (!grammarResults) return;
+        if (matches.length === 0) {
+            grammarResults.innerHTML = '<p class="grammar-none">Aucun problème détecté.</p>';
+            return;
+        }
+        var html = '<p class="grammar-count">' + matches.length + ' problème(s) détecté(s)</p>';
+        matches.forEach(function (m, idx) {
+            var word = (QuillTools && QuillTools.quill) ? QuillTools.quill.getText(m.offset, m.length) : '';
+            var wordEsc = word.replace(/</g, '&lt;').replace(/"/g, '&quot;');
+            var suggestions = (m.replacements || []).slice(0, 4).map(function (r) {
+                var vEsc = r.value.replace(/"/g, '&quot;').replace(/</g, '&lt;');
+                return '<button type="button" class="grammar-fix-btn"'
+                    + ' data-offset="' + m.offset + '" data-length="' + m.length + '" data-value="' + vEsc + '">'
+                    + vEsc + '</button>';
+            }).join('');
+            html += '<div class="grammar-item">'
+                + '<div class="grammar-item-top">'
+                + '<span class="grammar-word">' + wordEsc + '</span>'
+                + '<span class="grammar-msg">' + m.message.replace(/</g, '&lt;') + '</span>'
+                + '</div>'
+                + '<div class="grammar-item-actions">'
+                + (suggestions ? '<span class="grammar-suggestions-label">Suggestions\u00a0:</span> ' + suggestions : '')
+                + '<button type="button" class="grammar-ignore-btn" data-word="' + wordEsc + '">Ignorer</button>'
+                + '<button type="button" class="grammar-dict-btn" data-word="' + wordEsc + '">+ Dictionnaire</button>'
+                + '</div></div>';
+        });
+        grammarResults.innerHTML = html;
+
+        grammarResults.querySelectorAll('.grammar-fix-btn').forEach(function (btn) {
+            btn.addEventListener('click', function () {
+                if (QuillTools && QuillTools.quill) {
+                    QuillTools.applyGrammarFix(parseInt(btn.dataset.offset), parseInt(btn.dataset.length), btn.dataset.value);
+                }
+                btn.closest('.grammar-item').remove();
+            });
+        });
+
+        grammarResults.querySelectorAll('.grammar-ignore-btn').forEach(function (btn) {
+            btn.addEventListener('click', function () {
+                ignoredWords.push(btn.dataset.word);
+                btn.closest('.grammar-item').remove();
+            });
+        });
+
+        grammarResults.querySelectorAll('.grammar-dict-btn').forEach(function (btn) {
+            btn.addEventListener('click', function () {
+                var word = btn.dataset.word;
+                fetch(baseUrl + '/project/' + projectId + '/dictionary/add', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json', 'X-CSRF-Token': window.CSRF_TOKEN },
+                    body: JSON.stringify({ word: word })
+                }).then(function (r) { return r.json(); }).then(function (data) {
+                    if (data.words) ignoredWords = data.words;
+                    btn.closest('.grammar-item').remove();
+                });
+            });
+        });
+    }
+
+    if (grammarBtn) {
+        grammarBtn.addEventListener('click', function () {
+            grammarBtn.disabled = true;
+            setGrammarStatus('Vérification en cours\u2026', 'checking');
+            grammarResults.innerHTML = '';
+            if (!QuillTools || !QuillTools.quill) {
+                setGrammarStatus('Éditeur non initialisé', 'error');
+                grammarBtn.disabled = false;
+                return;
+            }
+            QuillTools.checkGrammar(ignoredWords, function (matches, err) {
+                grammarBtn.disabled = false;
+                if (err) {
+                    setGrammarStatus('Erreur de connexion', 'error');
+                    return;
+                }
+                setGrammarStatus(matches.length > 0 ? matches.length + ' problème(s)' : 'OK', matches.length > 0 ? 'warn' : 'ok');
+                renderGrammarResults(matches);
+            });
+        });
+    }
+}());
 </script>

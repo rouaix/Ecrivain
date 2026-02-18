@@ -153,6 +153,21 @@ class ChapterController extends Controller
         $chapterData = $chapterModel->cast();
         $chapterData['comment'] = $this->getChapterComment($cid);
 
+        // Build ignored-words list: project dictionary + character names
+        $ignoredWords = [];
+        $projRow = $this->db->exec('SELECT ignored_words FROM projects WHERE id=?', [$project['id']]);
+        if ($projRow && !empty($projRow[0]['ignored_words'])) {
+            $ignoredWords = json_decode($projRow[0]['ignored_words'], true) ?: [];
+        }
+        $charRows = $this->db->exec(
+            'SELECT name FROM characters WHERE project_id=? AND name IS NOT NULL AND name != \'\'',
+            [$project['id']]
+        ) ?: [];
+        foreach ($charRows as $cr) {
+            $ignoredWords[] = $cr['name'];
+        }
+        $ignoredWords = array_values(array_unique($ignoredWords));
+
         $this->render('editor/edit.html', [
             'title' => $chapterModel->title,
             'chapter' => $chapterData,
@@ -163,7 +178,8 @@ class ChapterController extends Controller
             'topChapters' => $topChapters,
             'comments' => $comments,
             'errors' => [],
-            'success' => $success
+            'success' => $success,
+            'ignoredWords' => json_encode($ignoredWords),
         ]);
     }
 
