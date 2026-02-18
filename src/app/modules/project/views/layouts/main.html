@@ -78,10 +78,9 @@
 
                     <a href="#" id="aiRequestBtn">Demande IA</a>
 
-                    <form method="get" action="{{ @base }}/search" class="nav-search-form" role="search">
-                        <input type="text" name="q" id="navSearchInput" placeholder="Rechercher… (Ctrl+K)"
-                            class="nav-search-input" autocomplete="off" aria-label="Recherche globale">
-                    </form>
+                    <button type="button" id="searchToggleBtn" class="nav-search-btn" title="Rechercher (Ctrl+K)" aria-label="Ouvrir la recherche">
+                        <i class="fas fa-search"></i>
+                    </button>
 
                     <a href="{{ @base }}/logout">Déconnexion</a>
 
@@ -113,6 +112,24 @@
 
     </main>
 
+    <!-- Search Overlay -->
+    <check if="isset(@SESSION.user_id)">
+        <div id="searchOverlay" role="dialog" aria-modal="true" aria-label="Recherche globale">
+            <div id="searchOverlayBox">
+                <form method="get" action="{{ @base }}/search" id="searchOverlayForm">
+                    <div class="search-overlay-input-wrap">
+                        <i class="fas fa-search search-overlay-icon"></i>
+                        <input type="text" name="q" id="searchOverlayInput"
+                            placeholder="Rechercher dans vos textes…"
+                            autocomplete="off" spellcheck="false">
+                        <kbd class="search-overlay-esc">Esc</kbd>
+                    </div>
+                </form>
+                <p class="search-overlay-hint">Appuyez sur <kbd>Entrée</kbd> pour rechercher · <kbd>Esc</kbd> pour fermer</p>
+            </div>
+        </div>
+    </check>
+
     <!-- Shared Tools UI (Hidden by default) -->
 
     <footer>
@@ -124,16 +141,55 @@
     <!-- Register service worker for PWA support -->
 
     <style>
-        .nav-search-form { display: inline-flex; align-items: center; }
-        .nav-search-input {
-            padding: 4px 10px; border: 1px solid rgba(255,255,255,.35);
-            border-radius: 4px; background: rgba(255,255,255,.15);
-            color: inherit; font-size: .85rem; width: 180px;
-            transition: width .2s, background .2s;
+        /* Nav search button */
+        .nav-search-btn {
+            background: none; border: none; cursor: pointer;
+            color: var(--header-text); font-size: 1rem;
+            padding: 4px 8px; border-radius: 4px;
+            opacity: .8; transition: opacity .15s, background .15s;
+            margin-right: 15px;
         }
-        .nav-search-input::placeholder { color: rgba(255,255,255,.6); }
-        .nav-search-input:focus { outline: none; width: 240px; background: rgba(255,255,255,.25); }
-        @media (max-width: 600px) { .nav-search-input { width: 120px; } .nav-search-input:focus { width: 150px; } }
+        .nav-search-btn:hover { opacity: 1; background: rgba(255,255,255,.15); }
+
+        /* Search overlay */
+        #searchOverlay {
+            display: none; position: fixed; inset: 0;
+            background: rgba(0,0,0,.55); z-index: 9000;
+            align-items: flex-start; justify-content: center;
+            padding-top: 15vh;
+        }
+        #searchOverlay.is-open { display: flex; }
+        #searchOverlayBox {
+            background: var(--card-bg, #fff); border-radius: 12px;
+            box-shadow: 0 20px 60px rgba(0,0,0,.35);
+            width: min(640px, 92vw); overflow: hidden;
+        }
+        .search-overlay-input-wrap {
+            display: flex; align-items: center; gap: 12px;
+            padding: 16px 20px; border-bottom: 1px solid var(--border-color, #e0e0e0);
+        }
+        .search-overlay-icon { font-size: 1.1rem; color: var(--text-muted, #888); flex-shrink: 0; }
+        #searchOverlayInput {
+            flex: 1; border: none; outline: none; background: transparent;
+            font-size: 1.15rem; color: var(--text-color, #222);
+            font-family: inherit;
+        }
+        #searchOverlayInput::placeholder { color: var(--text-muted, #aaa); }
+        .search-overlay-esc {
+            font-size: .7rem; padding: 2px 6px; border-radius: 4px;
+            border: 1px solid var(--border-color, #ccc);
+            color: var(--text-muted, #888); background: var(--bg-subtle, #f5f5f5);
+            font-family: inherit; flex-shrink: 0;
+        }
+        .search-overlay-hint {
+            font-size: .78rem; color: var(--text-muted, #999);
+            padding: 10px 20px; margin: 0;
+        }
+        .search-overlay-hint kbd {
+            font-size: .75rem; padding: 1px 5px; border-radius: 3px;
+            border: 1px solid var(--border-color, #ccc);
+            background: var(--bg-subtle, #f5f5f5); font-family: inherit;
+        }
     </style>
 
     <script nonce="{{ @nonce }}">
@@ -160,12 +216,33 @@
 
         });
 
-        // Ctrl+K → focus search input
+        // Search overlay logic
+        var searchOverlay = document.getElementById('searchOverlay');
+        var searchInput   = document.getElementById('searchOverlayInput');
+        var searchToggle  = document.getElementById('searchToggleBtn');
+
+        function openSearch() {
+            if (!searchOverlay) return;
+            searchOverlay.classList.add('is-open');
+            if (searchInput) { searchInput.value = ''; searchInput.focus(); }
+        }
+        function closeSearch() {
+            if (searchOverlay) searchOverlay.classList.remove('is-open');
+        }
+
+        if (searchToggle) searchToggle.addEventListener('click', openSearch);
+
+        if (searchOverlay) {
+            searchOverlay.addEventListener('click', function (e) {
+                if (e.target === searchOverlay) closeSearch();
+            });
+        }
+
         document.addEventListener('keydown', function (e) {
             if ((e.ctrlKey || e.metaKey) && e.key === 'k') {
-                var si = document.getElementById('navSearchInput');
-                if (si) { e.preventDefault(); si.focus(); si.select(); }
+                e.preventDefault(); openSearch();
             }
+            if (e.key === 'Escape') closeSearch();
         });
 
         if ('serviceWorker' in navigator) {
