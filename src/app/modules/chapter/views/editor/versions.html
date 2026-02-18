@@ -1,0 +1,55 @@
+<div class="edit-page-layout">
+    <div class="edit-header">
+        <h2><i class="fas fa-history"></i> Historique des versions</h2>
+        <a href="{{ @base }}/chapter/{{ @chapter.id }}" class="button" title="Retour à l'éditeur">
+            <i class="fas fa-arrow-left"></i>
+        </a>
+    </div>
+
+    <div class="edit-card">
+        <p style="margin: 0 0 16px; color: var(--text-muted, #777); font-size: .88rem;">
+            Chapitre&nbsp;: <strong>{{ @chapter.title | esc }}</strong> &mdash;
+            Les 10 dernières sauvegardes sont conservées.
+        </p>
+
+        <check if="{{ empty(@versions) }}">
+            <p style="color: var(--text-muted, #777);">Aucune version enregistrée pour ce chapitre.</p>
+        </check>
+
+        <check if="{{ !empty(@versions) }}">
+            <div class="versions-list">
+                <repeat group="{{ @versions }}" value="{{ @v }}" counter="{{ @i }}">
+                    <div class="version-item">
+                        <div class="version-meta">
+                            <span class="version-num">Version {{ @i }}</span>
+                            <span class="version-date">{{ @v.created_at }}</span>
+                            <span class="version-words">{{ number_format(@v.word_count, 0, ',', '\u{202f}') }} mots</span>
+                        </div>
+                        <form method="post" action="{{ @base }}/chapter/{{ @chapter.id }}/restore/{{ @v.id }}"
+                              onsubmit="return confirm('Restaurer cette version ? Le contenu actuel sera remplacé.');">
+                            <input type="hidden" name="csrf_token" value="{{ @csrfToken }}">
+                            <button type="submit" class="button secondary">
+                                <i class="fas fa-undo"></i> Restaurer
+                            </button>
+                        </form>
+                    </div>
+                </repeat>
+            </div>
+        </check>
+    </div>
+</div>
+
+<style nonce="{{ @nonce }}">
+.versions-list { display: flex; flex-direction: column; gap: 8px; }
+.version-item {
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 12px 16px;
+    border: 1px solid var(--border-color, #e0e0e0);
+    border-radius: 8px;
+    background: var(--card-bg, #fff);
+}
+.version-meta { display: flex; align-items: center; gap: 16px; flex-wrap: wrap; }
+.version-num  { font-weight: 600; color: var(--text-main, #333); min-width: 70px; }
+.version-date { color: var(--text-muted, #777); font-size: .85rem; }
+.version-words { color: var(--text-muted, #777); font-size: .85rem; }
+</style>

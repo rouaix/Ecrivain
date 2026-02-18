@@ -161,7 +161,7 @@ Données disponibles : `chapters.word_count` (calculable à la sauvegarde) + hor
 
 ---
 
-### 12. Historique des versions de chapitre
+### 12. Historique des versions de chapitre ✅ RÉALISÉ — branche `feature/chapter-versions`
 
 **Contexte :** En cas de suppression accidentelle ou de réécriture ratée, le contenu est perdu.
 

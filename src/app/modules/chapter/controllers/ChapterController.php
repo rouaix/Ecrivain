@@ -267,6 +267,24 @@ class ChapterController extends Controller
             error_log('writing_stats insert failed: ' . $e->getMessage());
         }
 
+        // Save version snapshot, keep last 10 (non-blocking)
+        try {
+            $this->db->exec(
+                'INSERT INTO chapter_versions (chapter_id, content, word_count) VALUES (?, ?, ?)',
+                [$cid, $content, $wordCount]
+            );
+            $this->db->exec(
+                'DELETE FROM chapter_versions WHERE chapter_id = ? AND id NOT IN (
+                    SELECT id FROM (
+                        SELECT id FROM chapter_versions WHERE chapter_id = ? ORDER BY created_at DESC LIMIT 10
+                    ) AS keep
+                )',
+                [$cid, $cid]
+            );
+        } catch (Exception $e) {
+            error_log('chapter_versions insert failed: ' . $e->getMessage());
+        }
+
         // Bust AI context cache so the next ask() rebuilds fresh project context
         unset($_SESSION['_ai_ctx_' . $chapterModel->project_id]);
 
@@ -376,6 +394,69 @@ class ChapterController extends Controller
         $pid = $chapterModel->project_id;
         $chapterModel->erase();
         $this->f3->reroute('/project/' . $pid);
+    }
+
+    public function versions()
+    {
+        $cid = (int) $this->f3->get('PARAMS.id');
+        $chapterModel = new Chapter();
+        $chapterModel->load(['id=?', $cid]);
+        if ($chapterModel->dry()) {
+            $this->f3->error(404);
+            return;
+        }
+
+        $projectModel = new Project();
+        if (!$projectModel->count(['id=? AND user_id=?', $chapterModel->project_id, $this->currentUser()['id']])) {
+            $this->f3->error(403);
+            return;
+        }
+
+        $versions = $this->db->exec(
+            'SELECT id, word_count, created_at FROM chapter_versions WHERE chapter_id = ? ORDER BY created_at DESC',
+            [$cid]
+        ) ?: [];
+
+        $this->render('editor/versions.html', [
+            'title'    => 'Historique — ' . $chapterModel->title,
+            'chapter'  => $chapterModel->cast(),
+            'versions' => $versions,
+        ]);
+    }
+
+    public function restore()
+    {
+        $cid = (int) $this->f3->get('PARAMS.id');
+        $vid = (int) $this->f3->get('PARAMS.vid');
+
+        $chapterModel = new Chapter();
+        $chapterModel->load(['id=?', $cid]);
+        if ($chapterModel->dry()) {
+            $this->f3->error(404);
+            return;
+        }
+
+        $projectModel = new Project();
+        if (!$projectModel->count(['id=? AND user_id=?', $chapterModel->project_id, $this->currentUser()['id']])) {
+            $this->f3->error(403);
+            return;
+        }
+
+        $rows = $this->db->exec(
+            'SELECT content, word_count FROM chapter_versions WHERE id = ? AND chapter_id = ?',
+            [$vid, $cid]
+        );
+        if (!$rows) {
+            $this->f3->error(404);
+            return;
+        }
+
+        $chapterModel->content   = $rows[0]['content'];
+        $chapterModel->word_count = (int) $rows[0]['word_count'];
+        $chapterModel->save();
+
+        $this->f3->set('SESSION.success', 'Version restaurée avec succès.');
+        $this->f3->reroute('/chapter/' . $cid);
     }
 
     private function getChapterComment(int $cid): string
