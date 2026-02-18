@@ -243,11 +243,25 @@ class ChapterController extends Controller
 
         $chapterModel->act_id = $actId;
         $chapterModel->parent_id = $parentId;
+
+        // Compute word count from plain text
+        $wordCount = $this->countWords($content);
+        $chapterModel->word_count = $wordCount;
+
         $chapterModel->save();
 
         // Comment already sanitized above and saved via ORM
         // This direct SQL update appears redundant but kept for compatibility
         $this->db->exec('UPDATE chapters SET `comment`=? WHERE id=?', [$comment, $cid]);
+
+        // Record daily writing snapshot
+        $user = $this->currentUser();
+        $this->db->exec(
+            'INSERT INTO writing_stats (user_id, chapter_id, project_id, stat_date, word_count)
+             VALUES (?, ?, ?, CURDATE(), ?)
+             ON DUPLICATE KEY UPDATE word_count = VALUES(word_count)',
+            [$user['id'], $cid, $chapterModel->project_id, $wordCount]
+        );
 
         // Bust AI context cache so the next ask() rebuilds fresh project context
         unset($_SESSION['_ai_ctx_' . $chapterModel->project_id]);
@@ -367,5 +381,14 @@ class ChapterController extends Controller
             return '';
         }
         return (string) $rows[0]['comment'];
+    }
+
+    private function countWords(string $html): int
+    {
+        $text = strip_tags($html);
+        $text = html_entity_decode($text, ENT_QUOTES, 'UTF-8');
+        $text = trim(preg_replace('/\s+/', ' ', $text));
+        if ($text === '') return 0;
+        return count(explode(' ', $text));
     }
 }
