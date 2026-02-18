@@ -168,6 +168,14 @@ if ($isLocal) {
 
     $f3->set('DEBUG', (int) $debugLevel);
 
+    // Guard: JWT_SECRET is mandatory in production
+    $jwtCheck = getenv('JWT_SECRET') ?: $_ENV['JWT_SECRET'] ?? null;
+    if (!$jwtCheck || strlen($jwtCheck) < 32) {
+        http_response_code(500);
+        error_log('FATAL: JWT_SECRET is missing or too short (min 32 chars). Set it in .env.');
+        die('Configuration error: JWT_SECRET must be set in .env (minimum 32 characters).');
+    }
+
 }
 
 $f3->set('ROOT', $docRoot);

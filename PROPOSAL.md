@@ -22,7 +22,7 @@ Toutes les clés API (OpenAI, Anthropic, etc.) transitent sans vérification TLS
 
 ---
 
-### 2. JWT_SECRET non requis au démarrage
+### 2. JWT_SECRET non requis au démarrage ✅ RÉALISÉ — branche `fix/jwt-secret-guard`
 
 **Fichier :** `src/www/index.php`
 
