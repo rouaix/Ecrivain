@@ -88,7 +88,7 @@ Aucune limite de fréquence n'existe sur `/ai/generate`, `/ai/summarize-*`, etc.
 
 ---
 
-### 7. Liste des modèles IA dynamique
+### 7. Liste des modèles IA dynamique ✅ RÉALISÉ — branche `feature/ai-models-json`
 
 **Fichier :** `AiController.php::getModels()` — ~150 modèles codés en dur
 

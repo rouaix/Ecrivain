@@ -965,151 +965,24 @@ class AiController extends Controller
         ];
     }
 
-    private function getModels()
+    private function getModels(): array
     {
-        return [
-            'openai' => [
-                'gpt-4-0613',
-                'gpt-4',
-                'gpt-3.5-turbo',
-                'gpt-5.2-codex',
-                'gpt-4o-mini-tts-2025-12-15',
-                'gpt-realtime-mini-2025-12-15',
-                'gpt-audio-mini-2025-12-15',
-                'chatgpt-image-latest',
-                'davinci-002',
-                'babbage-002',
-                'gpt-3.5-turbo-instruct',
-                'gpt-3.5-turbo-instruct-0914',
-                'dall-e-3',
-                'dall-e-2',
-                'gpt-4-1106-preview',
-                'gpt-3.5-turbo-1106',
-                'tts-1-hd',
-                'tts-1-1106',
-                'tts-1-hd-1106',
-                'text-embedding-3-small',
-                'text-embedding-3-large',
-                'gpt-4-0125-preview',
-                'gpt-4-turbo-preview',
-                'gpt-3.5-turbo-0125',
-                'gpt-4-turbo',
-                'gpt-4-turbo-2024-04-09',
-                'gpt-4o',
-                'gpt-4o-2024-05-13',
-                'gpt-4o-mini-2024-07-18',
-                'gpt-4o-mini',
-                'gpt-4o-2024-08-06',
-                'chatgpt-4o-latest',
-                'gpt-4o-audio-preview',
-                'gpt-4o-realtime-preview',
-                'omni-moderation-latest',
-                'omni-moderation-2024-09-26',
-                'gpt-4o-realtime-preview-2024-12-17',
-                'gpt-4o-audio-preview-2024-12-17',
-                'gpt-4o-mini-realtime-preview-2024-12-17',
-                'gpt-4o-mini-audio-preview-2024-12-17',
-                'o1-2024-12-17',
-                'o1',
-                'gpt-4o-mini-realtime-preview',
-                'gpt-4o-mini-audio-preview',
-                'o3-mini',
-                'o3-mini-2025-01-31',
-                'gpt-4o-2024-11-20',
-                'gpt-4o-search-preview-2025-03-11',
-                'gpt-4o-search-preview',
-                'gpt-4o-mini-search-preview-2025-03-11',
-                'gpt-4o-mini-search-preview',
-                'gpt-4o-transcribe',
-                'gpt-4o-mini-transcribe',
-                'o1-pro-2025-03-19',
-                'o1-pro',
-                'gpt-4o-mini-tts',
-                'o3-2025-04-16',
-                'o4-mini-2025-04-16',
-                'o3',
-                'o4-mini',
-                'gpt-4.1-2025-04-14',
-                'gpt-4.1',
-                'gpt-4.1-mini-2025-04-14',
-                'gpt-4.1-mini',
-                'gpt-4.1-nano-2025-04-14',
-                'gpt-4.1-nano',
-                'gpt-image-1',
-                'gpt-4o-realtime-preview-2025-06-03',
-                'gpt-4o-audio-preview-2025-06-03',
-                'gpt-4o-transcribe-diarize',
-                'gpt-5-chat-latest',
-                'gpt-5-2025-08-07',
-                'gpt-5',
-                'gpt-5-mini-2025-08-07',
-                'gpt-5-mini',
-                'gpt-5-nano-2025-08-07',
-                'gpt-5-nano',
-                'gpt-audio-2025-08-28',
-                'gpt-realtime',
-                'gpt-realtime-2025-08-28',
-                'gpt-audio',
-                'gpt-5-codex',
-                'gpt-image-1-mini',
-                'gpt-5-pro-2025-10-06',
-                'gpt-5-pro',
-                'gpt-audio-mini',
-                'gpt-audio-mini-2025-10-06',
-                'gpt-5-search-api',
-                'gpt-realtime-mini',
-                'gpt-realtime-mini-2025-10-06',
-                'sora-2',
-                'sora-2-pro',
-                'gpt-5-search-api-2025-10-14',
-                'gpt-5.1-chat-latest',
-                'gpt-5.1-2025-11-13',
-                'gpt-5.1',
-                'gpt-5.1-codex',
-                'gpt-5.1-codex-mini',
-                'gpt-5.1-codex-max',
-                'gpt-image-1.5',
-                'gpt-5.2-2025-12-11',
-                'gpt-5.2',
-                'gpt-5.2-pro-2025-12-11',
-                'gpt-5.2-pro',
-                'gpt-5.2-chat-latest',
-                'gpt-4o-mini-transcribe-2025-12-15',
-                'gpt-4o-mini-transcribe-2025-03-20',
-                'gpt-4o-mini-tts-2025-03-20',
-                'gpt-3.5-turbo-16k',
-                'tts-1',
-                'whisper-1',
-                'text-embedding-ada-002'
-            ],
-            'gemini' => [
-                'gemini-3-pro',
-                'gemini-3-flash',
-                'gemini-2.5-pro',
-                'gemini-2.5-flash',
-                'gemini-2.0-flash',
-                'gemini-1.5-pro',
-                'gemini-1.5-flash',
-                'gemini-pro'
-            ],
-            'mistral' => [
-                'mistral-large-latest',
-                'mistral-medium-latest',
-                'mistral-small-latest',
-                'codestral-latest',
-                'ministral-3-latest',
-                'open-mistral-nemo'
-            ],
-            'anthropic' => [
-                'claude-opus-4-5-20251101',
-                'claude-sonnet-4-5-20250929',
-                'claude-haiku-4-5-20251001',
-                'claude-3-7-sonnet-20250219',
-                'claude-3-5-sonnet-latest',
-                'claude-3-5-haiku-latest',
-                'claude-3-opus-latest'
-            ]
-        ];
+        $file = $this->f3->get('ROOT') . '/app/ai_models.json';
+
+        if (!file_exists($file)) {
+            error_log('ai_models.json not found at ' . $file);
+            return [];
+        }
+
+        $data = json_decode(file_get_contents($file), true);
+
+        if (!is_array($data)) {
+            error_log('ai_models.json is invalid JSON');
+            return [];
+        }
+
+        // Strip meta keys (prefixed with _) before returning
+        return array_filter($data, fn($k) => $k[0] !== '_', ARRAY_FILTER_USE_KEY);
     }
 
     private function getUserConfigFile()
