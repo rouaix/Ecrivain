@@ -353,10 +353,7 @@ class AiController extends Controller
 
         if ($result['success']) {
             $text = $result['text'];
-            $promptTokens = ceil((strlen($system) + strlen($userPrompt)) / 4);
-            $completionTokens = ceil(strlen($text) / 4);
-
-            $this->logAiUsage($model, $promptTokens, $completionTokens, $task);
+            $this->logAiUsage($model, $result['prompt_tokens'] ?? 0, $result['completion_tokens'] ?? 0, $task);
 
             echo json_encode([
                 'text' => $text,
@@ -470,9 +467,7 @@ class AiController extends Controller
             $chapter->save();
 
             // Log usage
-            $promptTokens = ceil((strlen($systemPrompt) + strlen($fullPrompt)) / 4);
-            $completionTokens = ceil(strlen($summary) / 4);
-            $this->logAiUsage($model, $promptTokens, $completionTokens, 'summarize_chapter');
+            $this->logAiUsage($model, $result['prompt_tokens'] ?? 0, $result['completion_tokens'] ?? 0, 'summarize_chapter');
 
             echo json_encode(['success' => true, 'summary' => $summary]);
         } else {
@@ -554,9 +549,7 @@ class AiController extends Controller
             $act->save();
 
             // Log usage
-            $promptTokens = ceil((strlen($systemPrompt) + strlen($fullPrompt)) / 4);
-            $completionTokens = ceil(strlen($summary) / 4);
-            $this->logAiUsage($model, $promptTokens, $completionTokens, 'summarize_act');
+            $this->logAiUsage($model, $result['prompt_tokens'] ?? 0, $result['completion_tokens'] ?? 0, 'summarize_act');
 
             echo json_encode(['success' => true, 'summary' => $summary]);
         } else {
@@ -688,9 +681,7 @@ class AiController extends Controller
         $result = $service->generate($system, $userPrompt);
 
         if ($result['success']) {
-            $promptTokens = ceil((strlen($system) + strlen($userPrompt)) / 4);
-            $completionTokens = ceil(strlen($result['text']) / 4);
-            $this->logAiUsage($model, $promptTokens, $completionTokens, 'ask_project');
+            $this->logAiUsage($model, $result['prompt_tokens'] ?? 0, $result['completion_tokens'] ?? 0, 'ask_project');
 
             echo json_encode(['success' => true, 'answer' => $result['text']]);
         } else {

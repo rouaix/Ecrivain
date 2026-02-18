@@ -19,7 +19,7 @@ class AiService extends Prefab
      * @param string $systemPrompt Context/Role definition
      * @param string $userPrompt The actual input
      * @param float $temperature Creativity (0.0 to 1.0)
-     * @return array ['success' => bool, 'text' => string, 'error' => string]
+     * @return array ['success' => bool, 'text' => string, 'prompt_tokens' => int, 'completion_tokens' => int, 'error' => string]
      */
     public function generate(string $systemPrompt, string $userPrompt, float $temperature = 0.7, int $maxTokens = 800)
     {
@@ -65,7 +65,15 @@ class AiService extends Prefab
                 return ['success' => false, 'error' => 'API Error: ' . ($json['message'] ?? json_encode($json))];
             }
             $text = $json['choices'][0]['message']['content'] ?? null;
-            return $text ? ['success' => true, 'text' => $text] : ['success' => false, 'error' => 'Invalid Response: ' . json_encode(array_keys($json))];
+            if (!$text) {
+                return ['success' => false, 'error' => 'Invalid Response: ' . json_encode(array_keys($json))];
+            }
+            return [
+                'success'           => true,
+                'text'              => $text,
+                'prompt_tokens'     => (int) ($json['usage']['prompt_tokens']     ?? 0),
+                'completion_tokens' => (int) ($json['usage']['completion_tokens'] ?? 0),
+            ];
         });
     }
 
@@ -96,7 +104,15 @@ class AiService extends Prefab
                 return ['success' => false, 'error' => 'Gemini Error: ' . ($json['error']['message'] ?? json_encode($json['error']))];
             }
             $text = $json['candidates'][0]['content']['parts'][0]['text'] ?? null;
-            return $text ? ['success' => true, 'text' => $text] : ['success' => false, 'error' => 'Invalid Response'];
+            if (!$text) {
+                return ['success' => false, 'error' => 'Invalid Response'];
+            }
+            return [
+                'success'           => true,
+                'text'              => $text,
+                'prompt_tokens'     => (int) ($json['usageMetadata']['promptTokenCount']     ?? 0),
+                'completion_tokens' => (int) ($json['usageMetadata']['candidatesTokenCount'] ?? 0),
+            ];
         });
     }
 
@@ -123,7 +139,15 @@ class AiService extends Prefab
                 return ['success' => false, 'error' => 'Anthropic Error: ' . ($json['error']['message'] ?? json_encode($json['error']))];
             }
             $text = $json['content'][0]['text'] ?? null;
-            return $text ? ['success' => true, 'text' => $text] : ['success' => false, 'error' => 'Invalid Response'];
+            if (!$text) {
+                return ['success' => false, 'error' => 'Invalid Response'];
+            }
+            return [
+                'success'           => true,
+                'text'              => $text,
+                'prompt_tokens'     => (int) ($json['usage']['input_tokens']  ?? 0),
+                'completion_tokens' => (int) ($json['usage']['output_tokens'] ?? 0),
+            ];
         });
     }
 
