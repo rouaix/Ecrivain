@@ -673,98 +673,110 @@
         });
         // ─────────────────────────────────────────────────────────────────────
 
-        // ─── Grammar check ────────────────────────────────────────────────────
-        var ignoredWords = {{ @ignoredWords | raw }};
-        var projectId    = '{{ @project.id }}';
-        var baseUrl      = '{{ @base }}';
+    });
+</script>
 
-        var grammarBtn     = document.getElementById('btnGrammarCheck');
-        var grammarStatus  = document.getElementById('grammarStatus');
-        var grammarResults = document.getElementById('grammarResults');
+<script id="grammarIgnoredWords" type="application/json">{{ @ignoredWords | raw }}</script>
 
-        function setGrammarStatus(msg, cls) {
-            grammarStatus.textContent = msg;
-            grammarStatus.className = 'grammar-status' + (cls ? ' grammar-status--' + cls : '');
+<script nonce="{{ @nonce }}">
+(function () {
+    var grammarBtn     = document.getElementById('btnGrammarCheck');
+    var grammarStatus  = document.getElementById('grammarStatus');
+    var grammarResults = document.getElementById('grammarResults');
+    var projectId      = '{{ @project.id }}';
+    var baseUrl        = '{{ @base }}';
+
+    var ignoredWords = [];
+    try {
+        ignoredWords = JSON.parse(document.getElementById('grammarIgnoredWords').textContent || '[]');
+    } catch (e) {}
+
+    function setGrammarStatus(msg, cls) {
+        if (!grammarStatus) return;
+        grammarStatus.textContent = msg;
+        grammarStatus.className = 'grammar-status' + (cls ? ' grammar-status--' + cls : '');
+    }
+
+    function renderGrammarResults(matches) {
+        if (!grammarResults) return;
+        if (matches.length === 0) {
+            grammarResults.innerHTML = '<p class="grammar-none">Aucun problème détecté.</p>';
+            return;
         }
+        var html = '<p class="grammar-count">' + matches.length + ' problème(s) détecté(s)</p>';
+        matches.forEach(function (m, idx) {
+            var word = (QuillTools && QuillTools.quill) ? QuillTools.quill.getText(m.offset, m.length) : '';
+            var wordEsc = word.replace(/</g, '&lt;').replace(/"/g, '&quot;');
+            var suggestions = (m.replacements || []).slice(0, 4).map(function (r) {
+                var vEsc = r.value.replace(/"/g, '&quot;').replace(/</g, '&lt;');
+                return '<button type="button" class="grammar-fix-btn"'
+                    + ' data-offset="' + m.offset + '" data-length="' + m.length + '" data-value="' + vEsc + '">'
+                    + vEsc + '</button>';
+            }).join('');
+            html += '<div class="grammar-item">'
+                + '<div class="grammar-item-top">'
+                + '<span class="grammar-word">' + wordEsc + '</span>'
+                + '<span class="grammar-msg">' + m.message.replace(/</g, '&lt;') + '</span>'
+                + '</div>'
+                + '<div class="grammar-item-actions">'
+                + (suggestions ? '<span class="grammar-suggestions-label">Suggestions\u00a0:</span> ' + suggestions : '')
+                + '<button type="button" class="grammar-ignore-btn" data-word="' + wordEsc + '">Ignorer</button>'
+                + '<button type="button" class="grammar-dict-btn" data-word="' + wordEsc + '">+ Dictionnaire</button>'
+                + '</div></div>';
+        });
+        grammarResults.innerHTML = html;
 
-        function renderGrammarResults(matches) {
-            if (matches.length === 0) {
-                grammarResults.innerHTML = '<p class="grammar-none">Aucun problème détecté.</p>';
+        grammarResults.querySelectorAll('.grammar-fix-btn').forEach(function (btn) {
+            btn.addEventListener('click', function () {
+                if (QuillTools && QuillTools.quill) {
+                    QuillTools.applyGrammarFix(parseInt(btn.dataset.offset), parseInt(btn.dataset.length), btn.dataset.value);
+                }
+                btn.closest('.grammar-item').remove();
+            });
+        });
+
+        grammarResults.querySelectorAll('.grammar-ignore-btn').forEach(function (btn) {
+            btn.addEventListener('click', function () {
+                ignoredWords.push(btn.dataset.word);
+                btn.closest('.grammar-item').remove();
+            });
+        });
+
+        grammarResults.querySelectorAll('.grammar-dict-btn').forEach(function (btn) {
+            btn.addEventListener('click', function () {
+                var word = btn.dataset.word;
+                fetch(baseUrl + '/project/' + projectId + '/dictionary/add', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json', 'X-CSRF-Token': window.CSRF_TOKEN },
+                    body: JSON.stringify({ word: word })
+                }).then(function (r) { return r.json(); }).then(function (data) {
+                    if (data.words) ignoredWords = data.words;
+                    btn.closest('.grammar-item').remove();
+                });
+            });
+        });
+    }
+
+    if (grammarBtn) {
+        grammarBtn.addEventListener('click', function () {
+            grammarBtn.disabled = true;
+            setGrammarStatus('Vérification en cours\u2026', 'checking');
+            grammarResults.innerHTML = '';
+            if (!QuillTools || !QuillTools.quill) {
+                setGrammarStatus('Éditeur non initialisé', 'error');
+                grammarBtn.disabled = false;
                 return;
             }
-            var html = '<p class="grammar-count">' + matches.length + ' problème(s) détecté(s)</p>';
-            matches.forEach(function (m, idx) {
-                var word = QuillTools.quill.getText(m.offset, m.length);
-                var suggestions = (m.replacements || []).slice(0, 4).map(function (r) {
-                    return '<button type="button" class="grammar-fix-btn" data-idx="' + idx + '" data-offset="' + m.offset + '" data-length="' + m.length + '" data-value="' + r.value.replace(/"/g, '&quot;') + '">' + r.value + '</button>';
-                }).join('');
-                html += '<div class="grammar-item">' +
-                    '<div class="grammar-item-top">' +
-                        '<span class="grammar-word">' + word.replace(/</g, '&lt;') + '</span>' +
-                        '<span class="grammar-msg">' + m.message.replace(/</g, '&lt;') + '</span>' +
-                    '</div>' +
-                    '<div class="grammar-item-actions">' +
-                        (suggestions ? '<span class="grammar-suggestions-label">Suggestions :</span> ' + suggestions : '') +
-                        '<button type="button" class="grammar-ignore-btn" data-idx="' + idx + '" data-word="' + word.replace(/"/g, '&quot;') + '">Ignorer</button>' +
-                        '<button type="button" class="grammar-dict-btn" data-idx="' + idx + '" data-word="' + word.replace(/"/g, '&quot;') + '">+ Dictionnaire</button>' +
-                    '</div>' +
-                '</div>';
+            QuillTools.checkGrammar(ignoredWords, function (matches, err) {
+                grammarBtn.disabled = false;
+                if (err) {
+                    setGrammarStatus('Erreur de connexion', 'error');
+                    return;
+                }
+                setGrammarStatus(matches.length > 0 ? matches.length + ' problème(s)' : 'OK', matches.length > 0 ? 'warn' : 'ok');
+                renderGrammarResults(matches);
             });
-            grammarResults.innerHTML = html;
-
-            // Bind fix buttons
-            grammarResults.querySelectorAll('.grammar-fix-btn').forEach(function (btn) {
-                btn.addEventListener('click', function () {
-                    var offset = parseInt(btn.dataset.offset);
-                    var length = parseInt(btn.dataset.length);
-                    var value  = btn.dataset.value;
-                    QuillTools.applyGrammarFix(offset, length, value);
-                    // Re-run check after fix
-                    btn.closest('.grammar-item').remove();
-                });
-            });
-
-            // Bind ignore buttons (session only)
-            grammarResults.querySelectorAll('.grammar-ignore-btn').forEach(function (btn) {
-                btn.addEventListener('click', function () {
-                    ignoredWords.push(btn.dataset.word);
-                    btn.closest('.grammar-item').remove();
-                });
-            });
-
-            // Bind "add to dictionary" buttons
-            grammarResults.querySelectorAll('.grammar-dict-btn').forEach(function (btn) {
-                btn.addEventListener('click', function () {
-                    var word = btn.dataset.word;
-                    fetch(baseUrl + '/project/' + projectId + '/dictionary/add', {
-                        method: 'POST',
-                        headers: { 'Content-Type': 'application/json', 'X-CSRF-Token': window.CSRF_TOKEN },
-                        body: JSON.stringify({ word: word })
-                    }).then(function (r) { return r.json(); }).then(function (data) {
-                        if (data.words) ignoredWords = data.words;
-                        btn.closest('.grammar-item').remove();
-                    });
-                });
-            });
-        }
-
-        if (grammarBtn) {
-            grammarBtn.addEventListener('click', function () {
-                grammarBtn.disabled = true;
-                setGrammarStatus('Vérification en cours…', 'checking');
-                grammarResults.innerHTML = '';
-                QuillTools.checkGrammar(ignoredWords, function (matches, err) {
-                    grammarBtn.disabled = false;
-                    if (err) {
-                        setGrammarStatus('Erreur de connexion', 'error');
-                        return;
-                    }
-                    setGrammarStatus(matches.length > 0 ? matches.length + ' problème(s)' : 'OK', matches.length > 0 ? 'warn' : 'ok');
-                    renderGrammarResults(matches);
-                });
-            });
-        }
-        // ─────────────────────────────────────────────────────────────────────
-
-    });
+        });
+    }
+}());
 </script>
