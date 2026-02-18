@@ -116,6 +116,13 @@ class StatsController extends Controller
         $distParams = $projectId ? [$uid, $projectId] : [$uid];
         $topChapters = $this->db->exec($distSql, $distParams) ?: [];
 
+        // --- Project word goal ---
+        $targetWords = 0;
+        if ($projectId) {
+            $goalRow = $this->db->exec('SELECT target_words FROM projects WHERE id=?', [$projectId]);
+            $targetWords = (int) ($goalRow[0]['target_words'] ?? 0);
+        }
+
         // --- Chart data as JSON ---
         $chartLabels = array_map(fn($d) => (new DateTime($d))->format('d/m'), $dates);
         $chartData   = array_values($dailyWords);
@@ -130,6 +137,7 @@ class StatsController extends Controller
             'wordsMonth'   => $wordsMonth,
             'streak'       => $streak,
             'topChapters'  => $topChapters,
+            'targetWords'  => $targetWords,
             'chartLabels'  => json_encode($chartLabels),
             'chartData'    => json_encode($chartData),
         ]);

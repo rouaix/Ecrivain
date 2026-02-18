@@ -204,7 +204,7 @@ Données disponibles : `chapters.word_count` (calculable à la sauvegarde) + hor
 
 ---
 
-### 16. Objectifs d'écriture
+### 16. Objectifs d'écriture ✅ RÉALISÉ — branche `feature/writing-goals`
 
 **Proposition :**
 - Objectif de mots par session (ex. : 500 mots aujourd'hui)
