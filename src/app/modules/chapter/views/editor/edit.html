@@ -2,6 +2,7 @@
 <div class="edit-page-layout">
     <div class="edit-header">
         <h2>Modifier le chapitre</h2>
+        <span id="autosave-indicator" class="autosave-indicator"></span>
         <div style="display: flex; gap: 10px;">
             <button type="button" id="openAiModal" class="button secondary cache" title="Ouvrir l'assistant narratif">
                 <i class="fas fa-magic"></i>&nbsp;Assistant IA
@@ -151,7 +152,83 @@
     </div>
 </div>
 
+<style>
+.autosave-indicator {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 0.78rem;
+    padding: 4px 12px;
+    border-radius: 20px;
+    transition: background 0.3s, color 0.3s;
+    white-space: nowrap;
+}
+.autosave-indicator:empty { display: none; }
+.autosave-indicator::before {
+    content: '';
+    width: 7px;
+    height: 7px;
+    border-radius: 50%;
+    display: inline-block;
+    flex-shrink: 0;
+}
+.autosave-indicator.dirty  { background: rgba(245,158,11,.12); color: #b07000; }
+.autosave-indicator.dirty::before  { background: #f59e0b; }
+.autosave-indicator.saving { background: rgba(59,130,246,.12);  color: #1d4ed8; }
+.autosave-indicator.saving::before { background: #3b82f6; animation: as-pulse .8s ease-in-out infinite; }
+.autosave-indicator.saved  { background: rgba(34,197,94,.12);   color: #15803d; }
+.autosave-indicator.saved::before  { background: #22c55e; }
+.autosave-indicator.error  { background: rgba(239,68,68,.12);   color: #b91c1c; }
+.autosave-indicator.error::before  { background: #ef4444; }
+@keyframes as-pulse { 0%,100%{opacity:1} 50%{opacity:.25} }
+</style>
+
 <script nonce="{{ @nonce }}">
+    // ─── Auto-save ────────────────────────────────────────────────────────────
+    var _asDirty  = false;
+    var _asSaving = false;
+
+    function _asSetStatus(state, label) {
+        var el = document.getElementById('autosave-indicator');
+        if (!el) return;
+        el.className = 'autosave-indicator ' + state;
+        el.textContent = label;
+    }
+
+    function _markDirty() {
+        if (_asSaving) return;
+        _asDirty = true;
+        _asSetStatus('dirty', 'Modifications non enregistrées');
+    }
+
+    async function _doAutoSave() {
+        if (!_asDirty || _asSaving) return;
+        _asSaving = true;
+        _asSetStatus('saving', 'Enregistrement\u2026');
+        var form = document.getElementById('editorForm');
+        try {
+            var resp = await fetch(form.action, {
+                method: 'POST',
+                headers: { 'X-Requested-With': 'XMLHttpRequest' },
+                body: new FormData(form)
+            });
+            var json = await resp.json();
+            if (json.status === 'ok') {
+                _asDirty = false;
+                var t = new Date();
+                var hm = t.getHours().toString().padStart(2, '0') + ':' + t.getMinutes().toString().padStart(2, '0');
+                _asSetStatus('saved', 'Enregistré à ' + hm);
+            } else {
+                _asSetStatus('error', 'Échec de l\'enregistrement');
+            }
+        } catch (e) {
+            _asSetStatus('error', 'Erreur réseau');
+        } finally {
+            _asSaving = false;
+        }
+    }
+    // ─────────────────────────────────────────────────────────────────────────
+
     console.log('Script loaded - before DOMContentLoaded');
     document.addEventListener('DOMContentLoaded', function () {
         console.log('DOMContentLoaded fired');
@@ -217,6 +294,7 @@
                 contextId: '{{ @chapter.id }}',
                 contextType: 'chapter'
             });
+            QuillTools.quill.on('text-change', _markDirty);
         } else {
             console.error('QuillTools is not defined');
         }
@@ -279,6 +357,7 @@
                 html = QuillTools.cleanQuillHtml(html);
                 document.querySelector('input[name="resume"]').value = html;
             });
+            resumeQuill.on('text-change', _markDirty);
 
             var decodedResume = decodeHtmlDeep(initialResumeHtml, 2);
             if (decodedResume) {
@@ -320,6 +399,7 @@
                 html = QuillTools.cleanQuillHtml(html);
                 document.querySelector('input[name="comment"]').value = html;
             });
+            commentQuill.on('text-change', _markDirty);
 
             var decodedComment = decodeHtmlDeep(initialCommentHtml, 2);
             if (decodedComment) {
@@ -509,6 +589,29 @@
                 askAi();
             }
         });
+
+        // ─── Auto-save wiring ─────────────────────────────────────────────────
+        // Track changes on non-Quill fields
+        document.getElementById('title').addEventListener('input', _markDirty);
+        document.getElementById('act_id').addEventListener('change', _markDirty);
+        document.getElementById('parent_id').addEventListener('change', _markDirty);
+
+        // Auto-save every 30 seconds if dirty
+        setInterval(_doAutoSave, 30000);
+
+        // Warn before leaving with unsaved changes
+        window.addEventListener('beforeunload', function (e) {
+            if (_asDirty) {
+                e.preventDefault();
+                e.returnValue = '';
+            }
+        });
+
+        // Mark clean on manual submit (bouton Enregistrer)
+        document.getElementById('editorForm').addEventListener('submit', function () {
+            _asDirty = false;
+        });
+        // ─────────────────────────────────────────────────────────────────────
 
     });
 </script>

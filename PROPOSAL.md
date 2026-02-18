@@ -39,7 +39,7 @@ if (!$jwtSecret && !$isLocal) {
 
 ## Optimisations techniques
 
-### 3. Auto-save avec indicateur visuel
+### 3. Auto-save avec indicateur visuel ✅ RÉALISÉ — branche `feature/autosave`
 
 **Contexte :** L'éditeur de chapitre ne sauvegarde que sur clic explicite. Perte de données possible.
 
