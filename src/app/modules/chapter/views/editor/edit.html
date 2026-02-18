@@ -340,7 +340,7 @@
                     },
                     history: {
                         delay: 2000,
-                        maxStack: 500,
+                        maxStack: 100,
                         userOnly: true
                     }
                 }
@@ -384,7 +384,7 @@
                     },
                     history: {
                         delay: 2000,
-                        maxStack: 500,
+                        maxStack: 100,
                         userOnly: true
                     }
                 }
@@ -599,12 +599,19 @@
         // Auto-save every 30 seconds if dirty
         setInterval(_doAutoSave, 30000);
 
-        // Warn before leaving with unsaved changes
+        // Warn before leaving with unsaved changes + cleanup Quill listeners
         window.addEventListener('beforeunload', function (e) {
             if (_asDirty) {
                 e.preventDefault();
                 e.returnValue = '';
             }
+            // Remove all event listeners from secondary Quill instances to free memory
+            if (resumeQuill)  { resumeQuill.off('text-change');  resumeQuill.off('selection-change');  }
+            if (typeof commentQuill !== 'undefined' && commentQuill) {
+                commentQuill.off('text-change');
+                commentQuill.off('selection-change');
+            }
+            if (QuillTools && QuillTools.quill) { QuillTools.quill.off('text-change'); }
         });
 
         // Mark clean on manual submit (bouton Enregistrer)

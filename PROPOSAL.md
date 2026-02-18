@@ -107,7 +107,7 @@ Les modèles disponibles évoluent rapidement. Cette liste sera obsolète régul
 
 ---
 
-### 8. Gestion mémoire de l'éditeur Quill
+### 8. Gestion mémoire de l'éditeur Quill ✅ RÉALISÉ — branche `fix/quill-memory-management`
 
 **Fichier :** `src/app/modules/chapter/views/editor/edit.html`
 
