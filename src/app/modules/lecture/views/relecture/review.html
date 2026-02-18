@@ -101,7 +101,8 @@
         good:          { label: 'Bien',          color: '#22c55e' }
     };
 
-    var BASE_PATH = '{{ @base }}';
+    var BASE_PATH   = '{{ @base }}';
+    var CSRF_TOKEN  = '{{ @csrfToken }}';
 
     var projectData  = JSON.parse(document.getElementById('reviewProjectData').textContent  || '{}');
     var annotations  = JSON.parse(document.getElementById('reviewAnnotationsData').textContent || '[]');
@@ -261,6 +262,7 @@
         data.append('selected_text', pendingSelection.text);
         data.append('comment',       comment);
         data.append('category',      category);
+        data.append('csrf_token',    CSRF_TOKEN);
 
         document.getElementById('annotationSubmit').disabled = true;
 
@@ -307,7 +309,9 @@
 
     function deleteAnnotation(annotId) {
         if (!confirm('Supprimer cette annotation ?')) return;
-        fetch(BASE_PATH + '/relecture/annotation/' + annotId + '/delete', { method: 'POST' })
+        var delData = new FormData();
+        delData.append('csrf_token', CSRF_TOKEN);
+        fetch(BASE_PATH + '/relecture/annotation/' + annotId + '/delete', { method: 'POST', body: delData })
             .then(function (r) {
                 if (!r.ok) throw new Error('HTTP ' + r.status);
                 return r.json();
