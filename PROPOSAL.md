@@ -149,7 +149,7 @@ scrollableDiv.addEventListener('scroll', debounce(updateCurrentPage, 100));
 
 ---
 
-### 11. Statistiques d'écriture
+### 11. Statistiques d'écriture ✅ RÉALISÉ — branche `feature/writing-stats`
 
 **Proposition :** Tableau de bord avec :
 - Nombre de mots écrits aujourd'hui / cette semaine / ce mois
