@@ -117,7 +117,7 @@ Trois instances Quill coexistent (éditeur principal, résumé, commentaire). Au
 
 ---
 
-### 9. Performance du mode lecture
+### 9. Performance du mode lecture ✅ RÉALISÉ — branche `fix/scroll-debounce`
 
 **Fichier :** `src/app/modules/lecture/views/lecture/read.html`
 

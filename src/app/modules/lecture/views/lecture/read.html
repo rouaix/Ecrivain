@@ -304,6 +304,15 @@
                 });
             });
 
+            // Debounce utility
+            function debounce(fn, delay) {
+                var timer;
+                return function () {
+                    clearTimeout(timer);
+                    timer = setTimeout(fn, delay);
+                };
+            }
+
             // Update current page on scroll
             function updateCurrentPage() {
                 if (!scrollableDiv) return;
@@ -328,8 +337,10 @@
                 currentPageSpan.textContent = currentPage;
             }
 
+            var debouncedUpdatePage = debounce(updateCurrentPage, 100);
+
             if (scrollableDiv) {
-                scrollableDiv.addEventListener('scroll', updateCurrentPage);
+                scrollableDiv.addEventListener('scroll', debouncedUpdatePage);
             }
             updateCurrentPage();
 
@@ -446,13 +457,10 @@
 
             // Reusable save function
             const saveCurrentPosition = (silent = false) => {
-                const scrollableDiv = document.getElementById('readingContent');
                 if (!scrollableDiv) return;
 
                 const scrollPosition = scrollableDiv.scrollTop;
                 const currentPageNum = parseInt(currentPageSpan.textContent);
-
-                const sections = document.querySelectorAll('.reading-section');
 
                 let currentId = null;
                 let currentType = null;
@@ -524,10 +532,7 @@
                 saveCurrentPosition(false);
             });
 
-            // Scroll Listener (Position Update Only)
-            if (scrollableDiv) {
-                scrollableDiv.addEventListener('scroll', updateCurrentPage);
-            }
+            // Scroll listener already registered above (debouncedUpdatePage)
 
             // Load bookmark on page load
             const loadBookmark = () => {
