@@ -74,7 +74,7 @@ Aucune limite de fréquence n'existe sur `/ai/generate`, `/ai/summarize-*`, etc.
 
 ---
 
-### 6. Optimisation du contexte IA
+### 6. Optimisation du contexte IA ✅ RÉALISÉ — branche `feature/ai-context-cache`
 
 **Fichier :** `AiController.php::ask()`
 

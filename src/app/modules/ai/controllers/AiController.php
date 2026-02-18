@@ -611,6 +611,19 @@ class AiController extends Controller
             return mb_strlen($text) > $max ? mb_substr($text, 0, $max) . '…' : $text;
         };
 
+        // ── Context cache ────────────────────────────────────────────────────
+        // The project context (sections, characters, notes, acts, chapters) is
+        // expensive to build (5 queries). Cache it in the session for 5 minutes.
+        // ChapterController::update() busts the cache on every chapter save.
+        $ctxCacheKey = '_ai_ctx_' . $projectId;
+        $ctxCached   = $_SESSION[$ctxCacheKey] ?? null;
+        $contextText = '';
+
+        if ($ctxCached && (time() - ($ctxCached['at'] ?? 0)) < 300) {
+            $contextText = $ctxCached['text'];
+        } else {
+        // ─────────────────────────────────────────────────────────────────────
+
         $lines = [];
 
         // Titre du projet
@@ -688,6 +701,8 @@ class AiController extends Controller
         }
 
         $contextText = implode("\n", $lines);
+        $_SESSION[$ctxCacheKey] = ['text' => $contextText, 'at' => time()];
+        } // end context cache miss
 
         // Prepare AI Service
         $userConfig = $this->getUserConfig();
