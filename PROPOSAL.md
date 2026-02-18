@@ -172,7 +172,7 @@ Données disponibles : `chapters.word_count` (calculable à la sauvegarde) + hor
 
 ---
 
-### 13. Vérification grammaticale intégrée (LanguageTool)
+### 13. Vérification grammaticale intégrée (LanguageTool) ✅ RÉALISÉ — branche `feature/languagetool`
 
 **Contexte :** Le code dans `quill-adapter.js` prépare une intégration LanguageTool mais elle est incomplète.
 

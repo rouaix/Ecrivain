@@ -372,5 +372,40 @@ var QuillTools = {
             this.quill.insertText(range.index, t.value);
             this.closeAiModal();
         }
+    },
+
+    // ─── Grammar check (LanguageTool) ────────────────────────────────────────
+
+    checkGrammar: function (ignoredWords, callback) {
+        var text = this.quill.getText();
+        if (!text.trim()) {
+            callback([], null);
+            return;
+        }
+        var params = new URLSearchParams({
+            text: text,
+            language: 'fr',
+            disabledRules: 'WHITESPACE_RULE'
+        });
+        fetch('https://api.languagetool.org/v2/check', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+            body: params.toString()
+        })
+        .then(function (r) { return r.json(); })
+        .then(function (data) {
+            var lower = (ignoredWords || []).map(function (w) { return w.toLowerCase(); });
+            var matches = (data.matches || []).filter(function (m) {
+                var word = text.substr(m.offset, m.length).trim().toLowerCase();
+                return !lower.some(function (w) { return w === word; });
+            });
+            callback(matches, null);
+        })
+        .catch(function (err) { callback([], err); });
+    },
+
+    applyGrammarFix: function (offset, length, replacement) {
+        this.quill.deleteText(offset, length);
+        this.quill.insertText(offset, replacement);
     }
 };
