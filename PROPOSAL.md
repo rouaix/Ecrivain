@@ -194,7 +194,7 @@ Données disponibles : `chapters.word_count` (calculable à la sauvegarde) + hor
 
 ---
 
-### 15. Mode focus / plein écran
+### 15. Mode focus / plein écran ✅ RÉALISÉ — branche `feature/focus-mode`
 
 **Proposition :**
 - Mode d'écriture immersif : masquer la navigation, les panels latéraux, le fond
