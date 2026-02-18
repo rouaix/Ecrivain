@@ -1,0 +1,96 @@
+<div class="edit-page-layout">
+    <div class="edit-header">
+        <h2><i class="fas fa-search"></i> Recherche</h2>
+    </div>
+
+    <div class="search-page">
+        <form method="get" action="{{ @base }}/search" class="search-form">
+            <div class="search-input-row">
+                <input type="text" name="q" value="{{ @q | esc }}" placeholder="Rechercher dans tous vos textes…"
+                    class="input-control search-input" autofocus autocomplete="off">
+                <select name="project_id" class="input-control search-scope">
+                    <option value="">Tous les projets</option>
+                    <repeat group="{{ @projects }}" value="{{ @proj }}">
+                        <option value="{{ @proj.id }}" {{ (@projectId == @proj.id) ? 'selected' : '' }}>
+                            {{ @proj.title | esc }}
+                        </option>
+                    </repeat>
+                </select>
+                <button type="submit" class="button primary">Rechercher</button>
+            </div>
+        </form>
+
+        <check if="{{ !empty(@error) }}">
+            <div class="alert-warning">{{ @error | esc }}</div>
+        </check>
+
+        <check if="{{ !empty(@q) && empty(@error) }}">
+            <check if="{{ empty(@results) }}">
+                <div class="search-empty">
+                    <i class="fas fa-search" style="font-size:2rem;opacity:.3;"></i>
+                    <p>Aucun résultat pour « <strong>{{ @q | esc }}</strong> ».</p>
+                </div>
+            </check>
+            <check if="{{ !empty(@results) }}">
+                <p class="search-count">
+                    <strong>{{ count(@results) }}</strong> résultat(s) pour « {{ @q | esc }} »
+                </p>
+                <div class="search-results">
+                    <repeat group="{{ @results }}" value="{{ @res }}">
+                        <a href="{{ @base }}{{ @res.url }}" class="search-result-card">
+                            <div class="search-result-type">
+                                <i class="fas {{ @res.icon }}"></i>
+                                {{ @res.type }}
+                            </div>
+                            <div class="search-result-body">
+                                <div class="search-result-title">{{ @res.title | raw }}</div>
+                                <check if="{{ !empty(@res.excerpt) }}">
+                                    <div class="search-result-excerpt">{{ @res.excerpt | raw }}</div>
+                                </check>
+                            </div>
+                        </a>
+                    </repeat>
+                </div>
+            </check>
+        </check>
+    </div>
+</div>
+
+<style nonce="{{ @nonce }}">
+.search-page { max-width: 860px; margin: 0 auto; }
+.search-form { margin-bottom: 1.5rem; }
+.search-input-row { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
+.search-input { flex: 1; min-width: 200px; font-size: 1.05rem; height: 40px; box-sizing: border-box; }
+.search-scope { width: 200px; height: 40px; box-sizing: border-box; }
+.search-count { color: var(--text-muted, #666); margin-bottom: 1rem; font-size: .9rem; }
+.search-results { display: flex; flex-direction: column; gap: 10px; }
+.search-result-card {
+    display: flex; gap: 16px; align-items: flex-start;
+    background: var(--card-bg, #fff); border: 1px solid var(--border-color, #e0e0e0);
+    border-radius: 8px; padding: 14px 16px; text-decoration: none;
+    color: var(--text-main, #333); transition: box-shadow .15s, border-color .15s, background .15s;
+}
+.search-result-card:hover {
+    box-shadow: 0 2px 8px rgba(0,0,0,.1);
+    border-color: var(--link-color, #3f51b5);
+    background: var(--table-row-hover-bg, #f0f4f8);
+    color: var(--text-main, #333);
+}
+.search-result-type {
+    min-width: 100px; font-size: .75rem; font-weight: 600; text-transform: uppercase;
+    letter-spacing: .05em; color: var(--link-color, #3f51b5); display: flex;
+    flex-direction: column; align-items: center; gap: 4px; padding-top: 2px;
+}
+.search-result-type i { font-size: 1.2rem; }
+.search-result-body { flex: 1; min-width: 0; }
+.search-result-title { font-weight: 600; margin-bottom: 4px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.search-result-excerpt { font-size: .875rem; color: var(--text-muted, #666); line-height: 1.5; }
+.search-result-excerpt mark { background: var(--table-row-hover-bg, #fff3cd); color: var(--text-main, #333); border-radius: 2px; padding: 0 2px; }
+.search-empty { text-align: center; padding: 3rem 0; color: var(--text-muted, #888); }
+.alert-warning { background: #fff3cd; border: 1px solid #ffc107; border-radius: 6px; padding: 10px 16px; margin-bottom: 1rem; color: #856404; }
+@media (max-width: 600px) {
+    .search-input-row { flex-direction: column; }
+    .search-scope, .search-input { width: 100%; }
+    .search-result-type { min-width: 70px; }
+}
+</style>

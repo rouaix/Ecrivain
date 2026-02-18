@@ -137,7 +137,7 @@ scrollableDiv.addEventListener('scroll', debounce(updateCurrentPage, 100));
 
 ## Nouvelles fonctionnalités
 
-### 10. Recherche plein texte
+### 10. Recherche plein texte ✅ RÉALISÉ — branche `feature/fulltext-search`
 
 **Manque actuel :** Aucun moyen de chercher un mot dans les chapitres, les notes, ou de retrouver toutes les mentions d'un personnage.
 
