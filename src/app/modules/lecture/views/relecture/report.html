@@ -2,11 +2,11 @@
     <div class="edit-header">
         <h2><i class="fas fa-file-alt"></i> Rapport de relecture — {{ @project.title | esc }}</h2>
         <div class="header-actions">
-            <button onclick="window.print()" class="button secondary" title="Imprimer">
-                <i class="fas fa-print"></i> Imprimer
+            <button id="printBtn" class="button secondary" title="Imprimer">
+                <i class="fas fa-print" style="margin-right:8px"></i>Imprimer
             </button>
             <a href="{{ @base }}/project/{{ @project.id }}/relecture" class="button" title="Retour à la relecture">
-                <i class="fas fa-arrow-left"></i> Relecture
+                <i class="fas fa-arrow-left" style="margin-right:8px"></i>Relecture
             </a>
         </div>
     </div>
@@ -61,6 +61,9 @@
 
 <script nonce="{{ @nonce }}">
 (function () {
+    var btn = document.getElementById('printBtn');
+    if (btn) { btn.addEventListener('click', function () { window.print(); }); }
+
     var raw = document.getElementById('reportAnnotsRaw');
     if (!raw) return;
     var annotations = JSON.parse(raw.textContent || '[]');
