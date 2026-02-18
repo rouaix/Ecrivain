@@ -22,22 +22,22 @@
     <div class="stats-kpi-grid">
         <div class="stats-kpi-card">
             <div class="stats-kpi-icon"><i class="fas fa-calendar-day"></i></div>
-            <div class="stats-kpi-value">{{ number_format(@wordsToday, 0, ',', '\u{202f}') }}</div>
+            <div class="stats-kpi-value">{{ number_format(@wordsToday, 0, ',', "\u{202f}") }}</div>
             <div class="stats-kpi-label">mots aujourd'hui</div>
         </div>
         <div class="stats-kpi-card">
             <div class="stats-kpi-icon"><i class="fas fa-calendar-week"></i></div>
-            <div class="stats-kpi-value">{{ number_format(@wordsWeek, 0, ',', '\u{202f}') }}</div>
+            <div class="stats-kpi-value">{{ number_format(@wordsWeek, 0, ',', "\u{202f}") }}</div>
             <div class="stats-kpi-label">mots cette semaine</div>
         </div>
         <div class="stats-kpi-card">
             <div class="stats-kpi-icon"><i class="fas fa-calendar-alt"></i></div>
-            <div class="stats-kpi-value">{{ number_format(@wordsMonth, 0, ',', '\u{202f}') }}</div>
+            <div class="stats-kpi-value">{{ number_format(@wordsMonth, 0, ',', "\u{202f}") }}</div>
             <div class="stats-kpi-label">mots ce mois</div>
         </div>
         <div class="stats-kpi-card">
             <div class="stats-kpi-icon"><i class="fas fa-book"></i></div>
-            <div class="stats-kpi-value">{{ number_format(@totalWords, 0, ',', '\u{202f}') }}</div>
+            <div class="stats-kpi-value">{{ number_format(@totalWords, 0, ',', "\u{202f}") }}</div>
             <div class="stats-kpi-label">mots au total</div>
         </div>
         <div class="stats-kpi-card {{ @streak > 0 ? 'stats-kpi-card--streak' : '' }}">
@@ -46,6 +46,25 @@
             <div class="stats-kpi-label">jour(s) de suite</div>
         </div>
     </div>
+
+    <!-- Project word goal -->
+    <check if="{{ @targetWords > 0 }}">
+        <set pct="{{ min(100, round(@totalWords / @targetWords * 100)) }}" />
+        <div class="stats-card stats-goal-card">
+            <div class="stats-goal-header">
+                <span class="stats-goal-title"><i class="fas fa-bullseye"></i> Objectif du projet</span>
+                <span class="stats-goal-numbers">
+                    {{ number_format(@totalWords, 0, ',', "\u{202f}") }}
+                    /
+                    {{ number_format(@targetWords, 0, ',', "\u{202f}") }} mots
+                    &mdash; {{ @pct }}&nbsp;%
+                </span>
+            </div>
+            <div class="stats-goal-track">
+                <div class="stats-goal-fill {{ @pct >= 100 ? 'stats-goal-fill--done' : '' }}" style="width:{{ @pct }}%"></div>
+            </div>
+        </div>
+    </check>
 
     <!-- 30-day chart -->
     <div class="stats-card">
@@ -67,7 +86,7 @@
                         <div class="stats-bar-track">
                             <div class="stats-bar-fill" style="width:{{ round(@ch.word_count / @maxWc * 100) }}%"></div>
                         </div>
-                        <span class="stats-bar-count">{{ number_format(@ch.word_count, 0, ',', '\u{202f}') }}</span>
+                        <span class="stats-bar-count">{{ number_format(@ch.word_count, 0, ',', "\u{202f}") }}</span>
                     </div>
                 </repeat>
             </div>
@@ -183,6 +202,14 @@ document.addEventListener('DOMContentLoaded', function () {
 .stats-bar-track { flex: 1; background: var(--border-color, #e0e0e0); border-radius: 3px; height: 10px; }
 .stats-bar-fill { background: var(--link-color, #3f51b5); border-radius: 3px; height: 100%; min-width: 4px; }
 .stats-bar-count { width: 60px; text-align: right; font-size: .8rem; color: var(--text-muted, #777); flex-shrink: 0; }
+.stats-goal-card { padding: 16px 20px; }
+.stats-goal-header { display: flex; justify-content: space-between; align-items: baseline; flex-wrap: wrap; gap: 8px; margin-bottom: 10px; }
+.stats-goal-title { font-size: .95rem; font-weight: 600; color: var(--text-main, #333); }
+.stats-goal-title i { color: var(--link-color, #3f51b5); margin-right: 6px; }
+.stats-goal-numbers { font-size: .85rem; color: var(--text-muted, #777); }
+.stats-goal-track { background: var(--border-color, #e0e0e0); border-radius: 6px; height: 12px; overflow: hidden; }
+.stats-goal-fill { background: var(--link-color, #3f51b5); height: 100%; border-radius: 6px; transition: width .4s ease; min-width: 4px; }
+.stats-goal-fill--done { background: #22c55e; }
 @media (max-width: 600px) {
     .stats-bar-label { width: 100px; }
     .stats-kpi-grid { grid-template-columns: repeat(2, 1fr); }

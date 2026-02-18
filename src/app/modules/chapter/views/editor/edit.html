@@ -2,7 +2,15 @@
 <div class="edit-page-layout">
     <div class="edit-header">
         <h2>Modifier le chapitre</h2>
-        <span id="autosave-indicator" class="autosave-indicator"></span>
+        <div class="editor-top-bar">
+            <span id="autosave-indicator" class="autosave-indicator"></span>
+            <div id="sessionGoalWidget" class="session-goal-widget" title="Cliquer pour définir un objectif de session" style="display:none;">
+                <span id="sessionGoalText" class="session-goal-text"></span>
+                <div id="sessionGoalTrack" class="session-goal-track" style="display:none;">
+                    <div id="sessionGoalFill" class="session-goal-fill"></div>
+                </div>
+            </div>
+        </div>
         <div style="display: flex; gap: 10px;">
             <button type="button" id="openAiModal" class="button secondary cache" title="Ouvrir l'assistant narratif">
                 <i class="fas fa-magic"></i>&nbsp;Assistant IA
@@ -206,6 +214,15 @@
 .autosave-indicator.error  { background: rgba(239,68,68,.12);   color: #b91c1c; }
 .autosave-indicator.error::before  { background: #ef4444; }
 @keyframes as-pulse { 0%,100%{opacity:1} 50%{opacity:.25} }
+
+/* Editor top bar (autosave + session goal) */
+.editor-top-bar { display: flex; align-items: center; justify-content: center; gap: 12px; flex: 1; min-width: 0; }
+.session-goal-widget { display: flex; align-items: center; gap: 8px; cursor: pointer; }
+.session-goal-text { font-size: .75rem; color: var(--text-muted, #777); white-space: nowrap; }
+.session-goal-text:empty { display: none; }
+.session-goal-track { width: 80px; height: 5px; background: var(--border-color, #e0e0e0); border-radius: 3px; overflow: hidden; }
+.session-goal-fill { height: 100%; border-radius: 3px; background: var(--link-color, #3f51b5); transition: width .3s; }
+.session-goal-fill.done { background: #22c55e; }
 
 /* Focus mode */
 body.focus-mode header,
@@ -869,6 +886,78 @@ body.focus-mode .focus-exit-btn { display: flex; }
         if (e.key === 'Escape' && document.body.classList.contains(FOCUS_CLASS)) {
             exitFocus();
         }
+    });
+}());
+</script>
+
+<script nonce="{{ @nonce }}">
+(function () {
+    var GOAL_KEY   = 'ecrivain_session_goal';
+    var goalText   = document.getElementById('sessionGoalText');
+    var goalTrack  = document.getElementById('sessionGoalTrack');
+    var goalFill   = document.getElementById('sessionGoalFill');
+    var goalWidget = document.getElementById('sessionGoalWidget');
+
+    var sessionGoal    = parseInt(localStorage.getItem(GOAL_KEY) || '0', 10);
+    var initialWords   = 0;
+    var goalReached    = false;
+
+    function getWordCount() {
+        if (typeof QuillTools !== 'undefined' && QuillTools.quill) {
+            var text = QuillTools.quill.getText().trim();
+            return text.length > 0 ? text.split(/\s+/).length : 0;
+        }
+        return 0;
+    }
+
+    function updateGoalWidget() {
+        if (!sessionGoal) {
+            goalWidget.style.display = 'none';
+            return;
+        }
+        goalWidget.style.display = 'flex';
+        var added = Math.max(0, getWordCount() - initialWords);
+        var pct   = Math.min(100, Math.round(added / sessionGoal * 100));
+        goalText.textContent = added + '\u202f/\u202f' + sessionGoal + ' mots';
+        goalTrack.style.display = 'block';
+        goalFill.style.width = pct + '%';
+        if (pct >= 100) {
+            goalFill.classList.add('done');
+            if (!goalReached) {
+                goalReached = true;
+                goalText.textContent = '\u2713 Objectif atteint\u00a0! (' + added + ' mots)';
+            }
+        } else {
+            goalFill.classList.remove('done');
+            goalReached = false;
+        }
+    }
+
+    if (goalWidget) {
+        goalWidget.addEventListener('click', function () {
+            var val = prompt('Objectif de mots pour cette session (0 pour désactiver) :', sessionGoal || '');
+            if (val === null) return;
+            var n = parseInt(val, 10);
+            if (isNaN(n) || n < 0) return;
+            sessionGoal = n;
+            goalReached = false;
+            if (n > 0) localStorage.setItem(GOAL_KEY, n);
+            else localStorage.removeItem(GOAL_KEY);
+            updateGoalWidget();
+        });
+    }
+
+    // Wait for QuillTools to be ready then capture initial word count
+    window.addEventListener('load', function () {
+        setTimeout(function () {
+            initialWords = getWordCount();
+            updateGoalWidget();
+
+            // Update on every Quill text change
+            if (typeof QuillTools !== 'undefined' && QuillTools.quill) {
+                QuillTools.quill.on('text-change', updateGoalWidget);
+            }
+        }, 300);
     });
 }());
 </script>
