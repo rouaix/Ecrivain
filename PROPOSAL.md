@@ -66,7 +66,7 @@ La tokenisation varie selon le fournisseur et le modèle (GPT-4o vs Claude vs Ge
 
 ---
 
-### 5. Rate limiting sur les endpoints IA
+### 5. Rate limiting sur les endpoints IA ✅ RÉALISÉ — branche `feature/ai-rate-limiting`
 
 Aucune limite de fréquence n'existe sur `/ai/generate`, `/ai/summarize-*`, etc. Un utilisateur peut déclencher des centaines d'appels API en boucle.
 

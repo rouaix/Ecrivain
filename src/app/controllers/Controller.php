@@ -488,4 +488,35 @@ abstract class Controller
         // All checks passed
         return ['success' => true, 'error' => null, 'extension' => $ext];
     }
+
+    /**
+     * Sliding-window rate limiter stored in the user session.
+     *
+     * @param string $key         Unique bucket name (e.g. 'ai_gen')
+     * @param int    $maxRequests Maximum number of requests allowed in the window
+     * @param int    $windowSecs  Rolling window duration in seconds
+     * @return bool  true = request allowed, false = rate limit exceeded
+     */
+    protected function checkRateLimit(string $key, int $maxRequests, int $windowSecs): bool
+    {
+        $now = time();
+        $sessionKey = '_rl_' . $key;
+
+        // Retrieve timestamps recorded in the current window
+        $timestamps = $_SESSION[$sessionKey] ?? [];
+
+        // Discard entries that have fallen outside the rolling window
+        $timestamps = array_values(
+            array_filter($timestamps, fn(int $t) => ($now - $t) < $windowSecs)
+        );
+
+        if (count($timestamps) >= $maxRequests) {
+            return false;
+        }
+
+        $timestamps[] = $now;
+        $_SESSION[$sessionKey] = $timestamps;
+
+        return true;
+    }
 }

@@ -171,6 +171,13 @@ class AiController extends Controller
     public function generate()
     {
         header('Content-Type: application/json');
+
+        if (!$this->checkRateLimit('ai_gen', 10, 60)) {
+            http_response_code(429);
+            echo json_encode(['success' => false, 'error' => 'Trop de requêtes IA. Attendez quelques secondes avant de réessayer.']);
+            return;
+        }
+
         try {
         $json = json_decode($this->f3->get('BODY'), true);
         $prompt = $json['prompt'] ?? '';
@@ -401,6 +408,12 @@ class AiController extends Controller
             return;
         }
 
+        if (!$this->checkRateLimit('ai_gen', 10, 60)) {
+            http_response_code(429);
+            echo json_encode(['success' => false, 'error' => 'Trop de requêtes IA. Attendez quelques secondes avant de réessayer.']);
+            return;
+        }
+
         // Lazy Migration: Ensure resume column exists (rename description if needed)
         try {
             // Try to rename 'description' to 'resume' if it exists
@@ -505,6 +518,12 @@ class AiController extends Controller
             return;
         }
 
+        if (!$this->checkRateLimit('ai_gen', 10, 60)) {
+            http_response_code(429);
+            echo json_encode(['success' => false, 'error' => 'Trop de requêtes IA. Attendez quelques secondes avant de réessayer.']);
+            return;
+        }
+
         // Load chapters
         $chapterModel = new \Chapter($db);
         $chapters = $chapterModel->find(['act_id=?', $actId], ['order' => 'order_index ASC, id ASC']);
@@ -578,6 +597,12 @@ class AiController extends Controller
         if ($projectModel->dry()) {
             http_response_code(403);
             echo json_encode(['success' => false, 'error' => 'Accès non autorisé']);
+            return;
+        }
+
+        if (!$this->checkRateLimit('ai_gen', 10, 60)) {
+            http_response_code(429);
+            echo json_encode(['success' => false, 'error' => 'Trop de requêtes IA. Attendez quelques secondes avant de réessayer.']);
             return;
         }
 
@@ -695,6 +720,12 @@ class AiController extends Controller
     public function synonyms()
     {
         $word = $this->f3->get('PARAMS.word');
+
+        if (!$this->checkRateLimit('ai_synonyms', 20, 60)) {
+            // Silent fallback: return empty array so the JS falls back to static synonyms
+            echo json_encode([]);
+            return;
+        }
 
         // Load User Config
         $userConfig = $this->getUserConfig();
