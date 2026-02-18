@@ -1889,27 +1889,32 @@ class ProjectController extends Controller
             unset($sectionsBefore[$coverKey]);
         }
 
-        // --- Flatten Content List ---
+        // --- Build Content List via Template System (same ordering as other exports) ---
         $contentList = [];
 
-        // 1. Sections Before
-        foreach ($sectionsBefore as $sec) {
-            if (isset($sec['is_exported']) && (int) $sec['is_exported'] === 0)
-                continue;
-            $title = $sec['title'] ?? ($sec['name'] ?? '');
-            $contentList[] = ['title' => $title, 'content' => $sec['content'], 'type' => 'section'];
+        // Load template configuration
+        $templateElements = [];
+        $db = $this->f3->get('DB');
+        if ($db->exists('templates') && $db->exists('template_elements')) {
+            $templateId = $project['template_id'] ?? null;
+            $templateModel = new ProjectTemplate();
+            if (!$templateId) {
+                $template = $templateModel->getDefault();
+            } else {
+                $template = $templateModel->findAndCast(['id=?', $templateId]);
+                $template = $template ? $template[0] : $templateModel->getDefault();
+            }
+            $templateElements = $template ? $templateModel->getElements($template['id']) : [];
         }
 
-        // 2. Chapters (Hierarchical Sort & Mixed Acts/Orphans)
+        // Build chapter hierarchy
         $chaptersByAct = [];
         $chaptersWithoutAct = [];
         $subChaptersByParent = [];
-
         foreach ($allChapters as $ch) {
             if ($ch['parent_id'])
                 $subChaptersByParent[$ch['parent_id']][] = $ch;
         }
-
         foreach ($allChapters as $ch) {
             if (!$ch['parent_id']) {
                 $subs = $subChaptersByParent[$ch['id']] ?? [];
@@ -1927,75 +1932,116 @@ class ProjectController extends Controller
         $actModel = new Act();
         $acts = $actModel->getAllByProject($pid);
 
-        // Merge Acts and Orphan Chapters for strict ordering
-        $rootItems = [];
-        foreach ($acts as $act) {
-            $act['is_act'] = true;
-            $rootItems[] = $act;
-        }
-        foreach ($chaptersWithoutAct as $ch) {
-            $ch['is_act'] = false;
-            $rootItems[] = $ch;
-        }
-
-        // Sort mixed list
-        usort($rootItems, function ($a, $b) {
-            return ($a['order_index'] <=> $b['order_index']) ?: ($a['id'] <=> $b['id']);
-        });
-
-        foreach ($rootItems as $item) {
-            if ($item['is_act']) {
-                // Determine Act Visibility (skip if no chapters? Or always show?)
-                // Usually show act title if it exists.
-
-                // Add Act Divider
-                $contentList[] = ['title' => $item['title'], 'content' => $item['content'] ?? '', 'type' => 'act-title'];
-
-                if (isset($chaptersByAct[$item['id']])) {
-                    $actChaps = $chaptersByAct[$item['id']];
-                    usort($actChaps, function ($a, $b) {
-                        return ($a['order_index'] <=> $b['order_index']) ?: ($a['id'] <=> $b['id']);
-                    });
-
-                    foreach ($actChaps as $topCh) {
-                        if (isset($topCh['is_exported']) && (int) $topCh['is_exported'] === 0)
-                            continue;
-                        $contentList[] = ['title' => $topCh['title'], 'content' => $topCh['content'], 'type' => 'chapter'];
-                        foreach ($topCh['subs'] as $sub) {
-                            if (isset($sub['is_exported']) && (int) $sub['is_exported'] === 0)
-                                continue;
-                            $contentList[] = ['title' => $sub['title'], 'content' => $sub['content'], 'type' => 'sub-chapter'];
-                        }
-                    }
-                }
-            } else {
-                // Orphan Chapter
-                $topCh = $item;
-                if (isset($topCh['is_exported']) && (int) $topCh['is_exported'] === 0)
-                    continue;
-                $contentList[] = ['title' => $topCh['title'], 'content' => $topCh['content'], 'type' => 'chapter'];
-                foreach ($topCh['subs'] as $sub) {
-                    if (isset($sub['is_exported']) && (int) $sub['is_exported'] === 0)
-                        continue;
-                    $contentList[] = ['title' => $sub['title'], 'content' => $sub['content'], 'type' => 'sub-chapter'];
-                }
+        // Load custom elements
+        $customElementsByType = [];
+        if ($db->exists('elements')) {
+            $elementModel = new Element();
+            $customElements = $elementModel->getAllByProject($pid);
+            foreach ($customElements as $elem) {
+                $tid = $elem['template_element_id'];
+                if (!isset($customElementsByType[$tid])) $customElementsByType[$tid] = [];
+                $customElementsByType[$tid][] = $elem;
             }
         }
 
-        // 3. Sections After
-        foreach ($sectionsAfter as $sec) {
-            if (isset($sec['is_exported']) && (int) $sec['is_exported'] === 0)
-                continue;
-            $title = $sec['title'] ?? ($sec['name'] ?? '');
-            $contentList[] = ['title' => $title, 'content' => $sec['content'], 'type' => 'section'];
-        }
+        // Helper: append an item to contentList, respecting is_exported
+        $addItem = function ($item, $type) use (&$contentList) {
+            if (isset($item['is_exported']) && (int) $item['is_exported'] === 0) return;
+            $title = $item['title'] ?? ($item['name'] ?? '');
+            $contentList[] = ['title' => $title, 'content' => $item['content'] ?? '', 'type' => $type];
+        };
 
-        // 4. Notes
-        foreach ($notes as $note) {
-            if (isset($note['is_exported']) && (int) $note['is_exported'] === 0)
-                continue;
-            $title = $note['title'] ?? ($note['name'] ?? 'Note');
-            $contentList[] = ['title' => $title, 'content' => $note['content'], 'type' => 'note'];
+        if (!empty($templateElements)) {
+            // Template-driven ordering (same as HTML/text exports)
+            foreach ($templateElements as $elem) {
+                if (!$elem['is_enabled']) continue;
+                switch ($elem['element_type']) {
+                    case 'section':
+                        $sections = ($elem['section_placement'] === 'before') ? $sectionsBefore : $sectionsAfter;
+                        foreach ($sections as $sec) {
+                            if ($sec['type'] === $elem['element_subtype']) {
+                                $addItem($sec, 'section');
+                            }
+                        }
+                        break;
+                    case 'act':
+                        foreach ($acts as $act) {
+                            if (!isset($chaptersByAct[$act['id']])) continue;
+                            $contentList[] = ['title' => $act['title'], 'content' => $act['content'] ?? '', 'type' => 'act-title'];
+                            $actChaps = $chaptersByAct[$act['id']];
+                            usort($actChaps, function ($a, $b) {
+                                return ($a['order_index'] <=> $b['order_index']) ?: ($a['id'] <=> $b['id']);
+                            });
+                            foreach ($actChaps as $ch) {
+                                $addItem($ch, 'chapter');
+                                foreach ($ch['subs'] as $sub) { $addItem($sub, 'sub-chapter'); }
+                            }
+                        }
+                        break;
+                    case 'chapter':
+                        usort($chaptersWithoutAct, function ($a, $b) {
+                            return ($a['order_index'] <=> $b['order_index']) ?: ($a['id'] <=> $b['id']);
+                        });
+                        foreach ($chaptersWithoutAct as $ch) {
+                            $addItem($ch, 'chapter');
+                            foreach ($ch['subs'] as $sub) { $addItem($sub, 'sub-chapter'); }
+                        }
+                        break;
+                    case 'note':
+                        foreach ($notes as $note) { $addItem($note, 'note'); }
+                        break;
+                    case 'element':
+                        $elements = $customElementsByType[$elem['id']] ?? [];
+                        $topElements = [];
+                        $subElementsByParent = [];
+                        foreach ($elements as $e) {
+                            if ($e['parent_id']) $subElementsByParent[$e['parent_id']][] = $e;
+                            else $topElements[] = $e;
+                        }
+                        usort($topElements, function ($a, $b) {
+                            return ($a['order_index'] <=> $b['order_index']) ?: ($a['id'] <=> $b['id']);
+                        });
+                        foreach ($topElements as $topElem) {
+                            $addItem($topElem, 'section');
+                            $subs = $subElementsByParent[$topElem['id']] ?? [];
+                            usort($subs, function ($a, $b) {
+                                return ($a['order_index'] <=> $b['order_index']) ?: ($a['id'] <=> $b['id']);
+                            });
+                            foreach ($subs as $sub) { $addItem($sub, 'sub-chapter'); }
+                        }
+                        break;
+                }
+            }
+        } else {
+            // Fallback: legacy ordering when no template is configured
+            foreach ($sectionsBefore as $sec) { $addItem($sec, 'section'); }
+
+            $rootItems = [];
+            foreach ($acts as $act) { $act['is_act'] = true; $rootItems[] = $act; }
+            foreach ($chaptersWithoutAct as $ch) { $ch['is_act'] = false; $rootItems[] = $ch; }
+            usort($rootItems, function ($a, $b) {
+                return ($a['order_index'] <=> $b['order_index']) ?: ($a['id'] <=> $b['id']);
+            });
+            foreach ($rootItems as $item) {
+                if ($item['is_act']) {
+                    $contentList[] = ['title' => $item['title'], 'content' => $item['content'] ?? '', 'type' => 'act-title'];
+                    if (isset($chaptersByAct[$item['id']])) {
+                        $actChaps = $chaptersByAct[$item['id']];
+                        usort($actChaps, function ($a, $b) {
+                            return ($a['order_index'] <=> $b['order_index']) ?: ($a['id'] <=> $b['id']);
+                        });
+                        foreach ($actChaps as $ch) {
+                            $addItem($ch, 'chapter');
+                            foreach ($ch['subs'] as $sub) { $addItem($sub, 'sub-chapter'); }
+                        }
+                    }
+                } else {
+                    $addItem($item, 'chapter');
+                    foreach ($item['subs'] as $sub) { $addItem($sub, 'sub-chapter'); }
+                }
+            }
+            foreach ($sectionsAfter as $sec) { $addItem($sec, 'section'); }
+            foreach ($notes as $note) { $addItem($note, 'note'); }
         }
 
         // --- ZIP Creation ---
@@ -2041,6 +2087,7 @@ class ProjectController extends Controller
 
         // 2. Content Pages
         $playOrder = 1;
+        $navLiItems = "";
 
         foreach ($contentList as $idx => $item) {
             $itemId = "item_" . $idx;
@@ -2048,7 +2095,7 @@ class ProjectController extends Controller
 
             $safeContent = $this->sanitizeToXhtml($item['content']);
 
-            $xhtml = "<html xmlns='http://www.w3.org/1999/xhtml'><head><title>" . htmlspecialchars($item['title']) . "</title><link rel='stylesheet' type='text/css' href='style.css'/></head><body>";
+            $xhtml = "<?xml version='1.0' encoding='utf-8'?><html xmlns='http://www.w3.org/1999/xhtml'><head><title>" . htmlspecialchars($item['title']) . "</title><link rel='stylesheet' type='text/css' href='style.css'/></head><body>";
 
             if ($item['type'] === 'act-title') {
                 $xhtml .= "<h1 class='act-title'>" . htmlspecialchars($item['title']) . "</h1>";
@@ -2066,24 +2113,44 @@ class ProjectController extends Controller
 
             if ($item['title']) {
                 $navPoints .= "<navPoint id='nav_$itemId' playOrder='$playOrder'><navLabel><text>" . htmlspecialchars($item['title']) . "</text></navLabel><content src='$file'/></navPoint>";
+                $navLiItems .= "<li><a href='" . $file . "'>" . htmlspecialchars($item['title']) . "</a></li>\n";
                 $playOrder++;
             }
         }
 
         $manifestItems[] = "<item id='css' href='style.css' media-type='text/css'/>";
         $manifestItems[] = "<item id='ncx' href='toc.ncx' media-type='application/x-dtbncx+xml'/>";
+        $manifestItems[] = "<item id='nav' href='nav.xhtml' media-type='application/xhtml+xml' properties='nav'/>";
 
-        // Generate OPF
-        $manifestXml = implode("\n", $manifestItems);
-        $spineXml = implode("\n", $spineRefs);
+        // Generate EPUB 3 nav document
+        $navXhtml = "<?xml version='1.0' encoding='utf-8'?>
+<!DOCTYPE html>
+<html xmlns='http://www.w3.org/1999/xhtml' xmlns:epub='http://www.idpf.org/2007/ops' lang='fr'>
+<head><meta charset='utf-8'/><title>Table des matières</title></head>
+<body>
+<nav epub:type='toc' id='toc'>
+  <h1>Table des matières</h1>
+  <ol>
+    <li><a href='title.xhtml'>Page de titre</a></li>
+    $navLiItems
+  </ol>
+</nav>
+</body></html>";
+        $zip->addFromString('OEBPS/nav.xhtml', $navXhtml);
 
-        $opf = "<?xml version='1.0'?>
-<package xmlns='http://www.idpf.org/2007/opf' unique-identifier='bookid' version='2.0'>
+        // Generate OPF (EPUB 3)
+        $manifestXml = implode("\n    ", $manifestItems);
+        $spineXml = implode("\n    ", $spineRefs);
+        $modified = gmdate('Y-m-d\TH:i:s\Z');
+
+        $opf = "<?xml version='1.0' encoding='utf-8'?>
+<package xmlns='http://www.idpf.org/2007/opf' unique-identifier='bookid' version='3.0' xml:lang='fr'>
   <metadata xmlns:dc='http://purl.org/dc/elements/1.1/'>
     <dc:title>" . htmlspecialchars($project['title']) . "</dc:title>
     <dc:creator>" . htmlspecialchars($author) . "</dc:creator>
     <dc:language>fr</dc:language>
     <dc:identifier id='bookid'>urn:uuid:EcrivainProject{$pid}</dc:identifier>
+    <meta property='dcterms:modified'>{$modified}</meta>
   </metadata>
   <manifest>
     $manifestXml
@@ -2093,7 +2160,7 @@ class ProjectController extends Controller
   </spine>
 </package>";
 
-        // Generate NCX
+        // Generate NCX (EPUB 2 backward compatibility)
         $ncx = "<?xml version='1.0'?>
 <!DOCTYPE ncx PUBLIC '-//NISO//DTD ncx 2005-1//EN' 'http://www.daisy.org/z3986/2005/ncx-2005-1.dtd'>
 <ncx xmlns='http://www.daisy.org/z3986/2005/ncx/' version='2005-1'>
