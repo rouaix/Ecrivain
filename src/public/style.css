@@ -21,6 +21,7 @@
 @import 'css/components/badges.css';
 @import 'css/components/toolbar.css';
 @import 'css/components/theme-selector.css';
+@import 'css/components/search.css';
 /* Modules - Feature-specific styles */
 @import 'css/modules/project.css';
 @import 'css/modules/chapters.css';
