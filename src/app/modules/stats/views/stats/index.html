@@ -7,8 +7,8 @@
     </div>
 
     <!-- Scope selector -->
-    <form method="get" action="{{ @base }}/stats" class="stats-scope-form">
-        <select name="project_id" class="input-control" onchange="this.form.submit()" style="max-width:280px;">
+    <form method="get" action="{{ @base }}/stats" class="stats-scope-form" id="statsProjectForm" onsubmit="console.log('Form submitted');">
+        <select name="project_id" class="input-control" id="statsProjectSelect" style="max-width:280px;">
             <option value="">Tous les projets</option>
             <repeat group="{{ @projects }}" value="{{ @proj }}">
                 <option value="{{ @proj.id }}" {{ (@projectId == @proj.id) ? 'selected' : '' }}>
@@ -76,6 +76,26 @@
 </div>
 
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js" nonce="{{ @nonce }}"></script>
+<script nonce="{{ @nonce }}">
+// Project filter functionality
+window.addEventListener('DOMContentLoaded', function() {
+    try {
+        var select = document.getElementById('statsProjectSelect');
+        var form = document.getElementById('statsProjectForm');
+        
+        console.log('Project filter initialized', { select: !!select, form: !!form });
+        
+        if (select && form) {
+            select.addEventListener('change', function() {
+                console.log('Project selection changed, submitting form...');
+                form.submit();
+            });
+        }
+    } catch (e) {
+        console.error('Error initializing project filter:', e);
+    }
+});
+</script>
 <script nonce="{{ @nonce }}">
 document.addEventListener('DOMContentLoaded', function () {
     var isDark = document.body.classList.contains('theme-dark');

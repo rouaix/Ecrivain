@@ -3,9 +3,11 @@
     <div class="edit-header">
         <h2>Modifier : {{ @config.label_singular ?? 'Élément' }}</h2>
         <div style="display: flex; gap: 10px;">
+            <!---
             <button type="button" id="openAiModal" class="button secondary" title="Ouvrir l'assistant narratif">
                 <i class="fas fa-magic"></i>&nbsp;Assistant IA
             </button>
+            -->
             <a href="{{ @base }}/project/{{ @project.id }}" class="button" title="Retour au projet">
                 <i class="fas fa-arrow-left"></i>
             </a>
@@ -43,8 +45,7 @@
                         <option value="">-- Aucun (élément principal) --</option>
                         <repeat group="{{ @topElements }}" value="{{ @top }}">
                             <check if="{{ @top.id != @element.id }}">
-                                <option value="{{ @top.id }}" {{
-                                    (@element.parent_id==@top.id) ? 'selected' : '' }}>
+                                <option value="{{ @top.id }}" {{ (@element.parent_id==@top.id) ? 'selected' : '' }}>
                                     {{ @top.title }}
                                 </option>
                             </check>
@@ -187,12 +188,12 @@
                     body: formData,
                     headers: { 'X-Requested-With': 'XMLHttpRequest' }
                 })
-                .then(function (response) { return response.json(); })
-                .then(function (data) {
-                    if (data.status === 'ok') {
-                        console.log('Auto-saved at', new Date().toLocaleTimeString());
-                    }
-                });
+                    .then(function (response) { return response.json(); })
+                    .then(function (data) {
+                        if (data.status === 'ok') {
+                            console.log('Auto-saved at', new Date().toLocaleTimeString());
+                        }
+                    });
             }, 30000);
         }
 
@@ -208,4 +209,3 @@
         });
     });
 </script>
-

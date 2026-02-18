@@ -14,7 +14,12 @@ class StatsController extends Controller
     {
         $user      = $this->currentUser();
         $uid       = $user['id'];
-        $projectId = (int) ($this->f3->get('PARAMS.pid') ?? 0);
+        
+        // Get project_id from URL parameter or GET parameter
+        $projectId = (int) ($this->f3->get('PARAMS.pid') ?? ($_GET['project_id'] ?? 0));
+        
+        // Debug: log to file to see what's happening
+        file_put_contents('/tmp/stats_debug.log', date('Y-m-d H:i:s') . " - projectId: " . $projectId . "\n", FILE_APPEND);
 
         // Project scope: restrict to one project or all user projects
         $projectModel = new Project();

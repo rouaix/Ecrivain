@@ -309,7 +309,8 @@ class ChapterController extends Controller
             exit;
         }
 
-        $this->f3->set('SESSION.success', 'Chapitre enregistré.');
+        // Ne plus afficher le message de succès pour éviter la duplication avec l'indicateur d'auto-sauvegarde
+        // $this->f3->set('SESSION.success', 'Chapitre enregistré.');
         $this->f3->reroute('/chapter/' . $cid);
     }
 

@@ -240,6 +240,7 @@
     // ─── Auto-save ────────────────────────────────────────────────────────────
     var _asDirty  = false;
     var _asSaving = false;
+    var _lastSavedTime = null;
 
     function _asSetStatus(state, label) {
         var el = document.getElementById('autosave-indicator');
@@ -251,7 +252,11 @@
     function _markDirty() {
         if (_asSaving) return;
         _asDirty = true;
-        _asSetStatus('dirty', 'Modifications non enregistrées');
+        if (_lastSavedTime) {
+            _asSetStatus('dirty', 'Modifications non enregistrées (dernier enregistrement à ' + _lastSavedTime + ')');
+        } else {
+            _asSetStatus('dirty', 'Modifications non enregistrées');
+        }
     }
 
     async function _doAutoSave() {
@@ -270,6 +275,7 @@
                 _asDirty = false;
                 var t = new Date();
                 var hm = t.getHours().toString().padStart(2, '0') + ':' + t.getMinutes().toString().padStart(2, '0');
+                _lastSavedTime = hm;
                 _asSetStatus('saved', 'Enregistré à ' + hm);
             } else {
                 _asSetStatus('error', 'Échec de l\'enregistrement');
@@ -670,6 +676,10 @@
         // Mark clean on manual submit (bouton Enregistrer)
         document.getElementById('editorForm').addEventListener('submit', function () {
             _asDirty = false;
+            var t = new Date();
+            var hm = t.getHours().toString().padStart(2, '0') + ':' + t.getMinutes().toString().padStart(2, '0');
+            _lastSavedTime = hm;
+            _asSetStatus('saved', 'Enregistré à ' + hm);
         });
         // ─────────────────────────────────────────────────────────────────────
 
