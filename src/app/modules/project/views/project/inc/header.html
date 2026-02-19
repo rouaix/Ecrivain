@@ -14,7 +14,9 @@
 
         </div>
         <div class="project-hero__body">
-            <div class="project-hero__heading"><h1>{{ @project.title }}</h1></div>
+            <div class="project-hero__heading">
+                <h1>{{ @project.title }}</h1>
+            </div>
             <check if="{{ !empty(@project.description) }}">
                 <true>
                     <div class="project-hero__description">{{ nl2br(@project.description) }}</div>
@@ -26,15 +28,17 @@
             <div class="project-hero__actions">
                 <div class="project-hero__actions-group">
                     <a class="button" href="{{ @base }}/project/{{ @project.id }}/mindmap">Carte mentale</a>
-                    <a class="button" href="{{ @base }}/project/{{ @project.id }}/lecture">Mode Lecture</a>
+                    <a class="button" href="{{ @base }}/project/{{ @project.id }}/lecture">Lecture</a>
                     <a class="button" href="{{ @base }}/project/{{ @project.id }}/relecture">Relecture</a>
+                </div>
+                <div class="project-hero__actions-group">
                     <a class="button" href="{{ @base }}/project/{{ @project.id }}/export">Exporter Texte</a>
                     <a class="button" href="{{ @base }}/project/{{ @project.id }}/export/vector"
-                       title="Pour vectorisation IA">Exporter JSON</a>
+                        title="Pour vectorisation IA">Exporter JSON</a>
                     <a class="button" href="{{ @base }}/project/{{ @project.id }}/export/clean"
-                       title="Texte brut minuscule">Exporter Texte Brut</a>
+                        title="Texte brut minuscule">Exporter Texte Brut</a>
                     <a class="button" href="{{ @base }}/project/{{ @project.id }}/export/summaries"
-                       title="Exporter uniquement les résumés">Exporter Résumés</a>
+                        title="Exporter uniquement les résumés">Exporter Résumés</a>
                     <a class="button" href="{{ @base }}/project/{{ @project.id }}/export/html">Exporter HTML</a>
                     <a class="button" href="{{ @base }}/project/{{ @project.id }}/export/epub">Exporter Epub</a>
                 </div>
