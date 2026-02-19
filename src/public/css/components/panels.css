@@ -11,12 +11,15 @@
     margin-bottom: 10px;
     transition: box-shadow 0.2s;
 }
+
 .panel:hover {
     box-shadow: 0 5px 15px var(--panel-hover-shadow);
 }
+
 .panel-open summary {
-    list-style: none;
+    /*list-style: none;*/
 }
+
 .panel-heading {
     display: flex;
     justify-content: space-between;
@@ -24,28 +27,34 @@
     margin-bottom: 5px;
     padding-bottom: 5px;
 }
+
 .panel-heading h3 {
     margin: 0 0 5px 0;
     font-size: 1.3rem;
 }
+
 .panel-subtitle {
     margin: 0;
     color: var(--text-muted);
     font-size: 0.9rem;
 }
+
 .panel-actions {
     display: flex;
     gap: 5px;
 }
+
 .panel-actions-row {
     margin: 10px 0 0 5px;
 }
+
 .panel-empty {
     text-align: center;
     color: var(--text-muted);
     font-style: italic;
     padding: 20px;
 }
+
 .panel-count {
     background: var(--header-bg);
     color: var(--header-text);

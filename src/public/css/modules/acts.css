@@ -11,12 +11,12 @@
 }
 
 .act-summary {
-    list-style: none;
+    /* list-style: none;*/
     /* padding: 10px; */
     background: var(--table-row-bg);
     border-radius: 4px;
     position: relative;
-    padding-left: 30px;
+    padding-left: 10px;
 }
 
 /* Hide default marker across browsers */
@@ -30,7 +30,7 @@
 
 /* Custom Arrow */
 .act-summary::before {
-    content: "►";
+    /*content: "►";*/
     /* Or use a border-triangle */
     position: absolute;
     left: 10px;
@@ -47,9 +47,9 @@ details[open]>.act-summary::before {
 
 /* Apply to nested chapter summaries too if needed, or check existing rules */
 details.act-chapters>summary {
-    list-style: none;
+    /*list-style: none;*/
     position: relative;
-    /*padding-left: 20px;*/
+    padding-left: 10px;
 }
 
 details.act-chapters>summary::-webkit-details-marker {
@@ -57,7 +57,7 @@ details.act-chapters>summary::-webkit-details-marker {
 }
 
 details.act-chapters>summary::before {
-    content: "►";
+    /*content: "►";*/
     display: inline-block;
     width: 20px;
     font-size: 0.7rem;
@@ -81,8 +81,10 @@ details.act-chapters[open]>summary::before {
     float: right;
     display: flex;
     gap: 5px;
+    /*
     position: relative;
     top: -4px;
+    */
 }
 
 .act-description {
@@ -121,4 +123,5 @@ details.act-chapters[open]>summary::before {
     cursor: pointer;
     margin-right: 5px;
     user-select: none;
+    font-size: 12px;
 }
