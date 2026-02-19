@@ -356,11 +356,14 @@ class AiController extends Controller
             $system = "Tu es un assistant d'écriture créative.";
         }
 
+        $t0     = microtime(true);
         $result = $service->generate($system, $userPrompt, 0.7, $maxTokens);
+        $elapsed = microtime(true) - $t0;
 
         if ($result['success']) {
             $text = $result['text'];
             $this->logAiUsage($model, $result['prompt_tokens'] ?? 0, $result['completion_tokens'] ?? 0, $task);
+            $this->notifyAiCompletionIfNeeded($elapsed, $task);
 
             echo json_encode([
                 'text' => $text,
@@ -470,7 +473,9 @@ class AiController extends Controller
         $fullPrompt = $taskPrompt . "\n\n[CONTENU]\n" . $content;
 
         $systemPrompt = $this->compressPrompt($systemPrompt);
+        $t0     = microtime(true);
         $result = $service->generate($systemPrompt, $fullPrompt, 0.7, 500);
+        $elapsed = microtime(true) - $t0;
 
         if ($result['success']) {
             $summary = $result['text'];
@@ -479,8 +484,9 @@ class AiController extends Controller
             $chapter->resume = $summary;
             $chapter->save();
 
-            // Log usage
+            // Log usage + notify if long
             $this->logAiUsage($model, $result['prompt_tokens'] ?? 0, $result['completion_tokens'] ?? 0, 'summarize_chapter');
+            $this->notifyAiCompletionIfNeeded($elapsed, 'summarize_chapter');
 
             echo json_encode(['success' => true, 'summary' => $summary]);
         } else {
@@ -558,7 +564,9 @@ class AiController extends Controller
         $fullPrompt = $taskPrompt . "\n\n[RÉSUMÉS DES CHAPITRES]\n" . $content;
 
         $systemPrompt = $this->compressPrompt($systemPrompt);
+        $t0     = microtime(true);
         $result = $service->generate($systemPrompt, $fullPrompt, 0.7, 500);
+        $elapsed = microtime(true) - $t0;
 
         if ($result['success']) {
             $summary = $result['text'];
@@ -567,8 +575,9 @@ class AiController extends Controller
             $act->resume = $summary;
             $act->save();
 
-            // Log usage
+            // Log usage + notify if long
             $this->logAiUsage($model, $result['prompt_tokens'] ?? 0, $result['completion_tokens'] ?? 0, 'summarize_act');
+            $this->notifyAiCompletionIfNeeded($elapsed, 'summarize_act');
 
             echo json_encode(['success' => true, 'summary' => $summary]);
         } else {
@@ -718,10 +727,13 @@ class AiController extends Controller
             "Utilise un ton constructif et professionnel. Cite des références précises (noms de chapitres, actes, personnages) si pertinent.\n\n" .
             $contextText;
 
+        $t0     = microtime(true);
         $result = $service->generate($system, $userPrompt);
+        $elapsed = microtime(true) - $t0;
 
         if ($result['success']) {
             $this->logAiUsage($model, $result['prompt_tokens'] ?? 0, $result['completion_tokens'] ?? 0, 'ask_project');
+            $this->notifyAiCompletionIfNeeded($elapsed, 'ask_project');
 
             echo json_encode(['success' => true, 'answer' => $result['text']]);
         } else {
@@ -835,6 +847,18 @@ class AiController extends Controller
             'custom' => $customPrompts
         ];
 
+        // Update notification preferences (preserve internal tracking fields)
+        $prevNotifs = $config['notifications'] ?? [];
+        $config['notifications'] = [
+            'ai_completion_notify'         => (bool) $this->f3->get('POST.notify_ai_completion'),
+            'ai_completion_threshold_secs' => max(10, (int) ($this->f3->get('POST.ai_completion_threshold') ?: 30)),
+            'usage_alert_enabled'          => (bool) $this->f3->get('POST.usage_alert_enabled'),
+            'usage_alert_threshold'        => max(0, (int) ($this->f3->get('POST.usage_alert_threshold') ?: 100000)),
+            'usage_alert_sent_date'        => $prevNotifs['usage_alert_sent_date'] ?? null,
+            'weekly_stats'                 => (bool) $this->f3->get('POST.weekly_stats'),
+            'last_weekly_sent'             => $prevNotifs['last_weekly_sent'] ?? null,
+        ];
+
         file_put_contents($file, json_encode($config, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE));
         $this->f3->reroute('/ai/config?success=1');
     }
@@ -853,7 +877,16 @@ class AiController extends Controller
                 'summarize_chapter' => $defaults['summarize_chapter'],
                 'summarize_act' => $defaults['summarize_act'],
                 'custom' => $defaults['custom_prompts']
-            ]
+            ],
+            'notifications' => [
+                'ai_completion_notify'        => false,
+                'ai_completion_threshold_secs' => 30,
+                'usage_alert_enabled'          => false,
+                'usage_alert_threshold'        => 100000,
+                'usage_alert_sent_date'        => null,
+                'weekly_stats'                 => false,
+                'last_weekly_sent'             => null,
+            ],
         ];
 
         if ($file && file_exists($file)) {
@@ -914,6 +947,25 @@ class AiController extends Controller
         }
 
         return $config;
+    }
+
+    /**
+     * Send a completion notification email if the call exceeded the configured threshold.
+     */
+    private function notifyAiCompletionIfNeeded(float $duration, string $task): void
+    {
+        $user = $this->currentUser();
+        if (!$user || empty($user['email'])) return;
+
+        $config = $this->getUserConfig();
+        $notifs = $config['notifications'] ?? [];
+        if (empty($notifs['ai_completion_notify'])) return;
+
+        $threshold = (float) ($notifs['ai_completion_threshold_secs'] ?? 30);
+        if ($duration < $threshold) return;
+
+        $notif = new NotificationService();
+        $notif->sendAiCompletionEmail($user['email'], $task, $duration);
     }
 
     /**

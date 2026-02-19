@@ -3,10 +3,10 @@
 /* Status labels */
 /* Alerts */
 .alert-success {
-    background: #d4edda;
+    /*background: #d4edda;*/
     color: #155724;
     padding: 5px;
-    border: 1px solid #c3e6cb;
+    /*border: 1px solid #c3e6cb;*/
     border-radius: 4px;
     margin: 15px;
     font-weight: bold;
@@ -16,6 +16,7 @@
 .alert-success--wide {
     margin-bottom: 15px;
 }
+
 /* Save status notification */
 .save-status {
     position: fixed;

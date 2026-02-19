@@ -79,6 +79,7 @@ class SectionController extends Controller
 
         // Handle image upload for cover/back_cover
         $imagePath = null;
+        $user = $this->currentUser();
         if (($type === 'cover' || $type === 'back_cover') && isset($_FILES['image'])) {
             // SECURITY: Multi-level validation (fixes vulnerability #14)
             $validation = $this->validateImageUpload($_FILES['image']);
@@ -86,18 +87,25 @@ class SectionController extends Controller
             if (!$validation['success']) {
                 $errors[] = $validation['error'];
             } else {
-                $uploadDir = 'public/uploads/covers/';
+                $uploadDir = 'data/' . $user['email'] . '/projects/' . $pid . '/sections/';
                 if (!is_dir($uploadDir)) {
                     mkdir($uploadDir, 0755, true);
                 }
 
                 // Use validated extension (not from filename)
                 $extension = $validation['extension'];
-                $filename = uniqid('cover_') . '.' . $extension;
+                $filename = $type . '.' . $extension;
                 $targetPath = $uploadDir . $filename;
 
+                // Delete any existing image for this type (may have different extension)
+                foreach (glob($uploadDir . $type . '.*') as $old) {
+                    if ($old !== $targetPath) {
+                        unlink($old);
+                    }
+                }
+
                 if (move_uploaded_file($_FILES['image']['tmp_name'], $targetPath)) {
-                    $imagePath = '/' . $targetPath;
+                    $imagePath = '/project/' . $pid . '/section/' . $type . '/image';
                 } else {
                     $errors[] = 'Erreur lors du téléchargement de l\'image.';
                 }
@@ -146,6 +154,87 @@ class SectionController extends Controller
     }
 
     /**
+     * Delete section image
+     * POST /project/@pid/section/@type/image/delete
+     */
+    public function deleteImage()
+    {
+        $pid  = (int) $this->f3->get('PARAMS.pid');
+        $type = $this->f3->get('PARAMS.type');
+        $user = $this->currentUser();
+
+        // Verify project ownership
+        $projectModel = new Project();
+        if (!$projectModel->count(['id=? AND user_id=?', $pid, $user['id']])) {
+            $this->f3->error(403);
+            return;
+        }
+
+        // Delete physical file
+        $dir = 'data/' . $user['email'] . '/projects/' . $pid . '/sections/';
+        foreach (glob($dir . $type . '.*') ?: [] as $f) {
+            unlink($f);
+        }
+
+        // Clear image_path in DB
+        $sectionModel = new Section();
+        $sectionModel->load(['project_id=? AND type=?', $pid, $type]);
+        if (!$sectionModel->dry()) {
+            $sid = $sectionModel->id;
+            $sectionModel->image_path = null;
+            $sectionModel->save();
+            $this->f3->reroute('/project/' . $pid . '/section/' . $type . '?id=' . $sid);
+        }
+
+        $this->f3->reroute('/project/' . $pid);
+    }
+
+    /**
+     * Serve section image
+     * GET /project/@pid/section/@type/image
+     */
+    public function image()
+    {
+        $pid  = (int) $this->f3->get('PARAMS.pid');
+        $type = $this->f3->get('PARAMS.type');
+        $user = $this->currentUser();
+
+        // Verify project ownership
+        $projectModel = new Project();
+        if (!$projectModel->count(['id=? AND user_id=?', $pid, $user['id']])) {
+            $this->f3->error(403);
+            return;
+        }
+
+        $dir = 'data/' . $user['email'] . '/projects/' . $pid . '/sections/';
+        $filePath = null;
+        foreach (glob($dir . $type . '.*') ?: [] as $f) {
+            $filePath = $f;
+            break;
+        }
+
+        if (!$filePath || !file_exists($filePath)) {
+            $this->f3->error(404);
+            return;
+        }
+
+        $ext = strtolower(pathinfo($filePath, PATHINFO_EXTENSION));
+        $mimeTypes = [
+            'jpg'  => 'image/jpeg',
+            'jpeg' => 'image/jpeg',
+            'png'  => 'image/png',
+            'gif'  => 'image/gif',
+            'webp' => 'image/webp',
+        ];
+        $mime = $mimeTypes[$ext] ?? 'application/octet-stream';
+
+        header('Content-Type: ' . $mime);
+        header('Cache-Control: public, max-age=31536000');
+        readfile($filePath);
+        exit;
+    }
+
+    /**
      * Delete a section
      * GET /section/@id/delete
      */
@@ -159,8 +248,19 @@ class SectionController extends Controller
         if (!$sectionModel->dry()) {
             // Verify project ownership
             $projectModel = new Project();
-            if ($projectModel->count(['id=? AND user_id=?', $sectionModel->project_id, $this->currentUser()['id']])) {
-                $pid = $sectionModel->project_id;
+            $user = $this->currentUser();
+            if ($projectModel->count(['id=? AND user_id=?', $sectionModel->project_id, $user['id']])) {
+                $pid  = $sectionModel->project_id;
+                $type = $sectionModel->type;
+
+                // Delete associated image file if any
+                if (!empty($sectionModel->image_path)) {
+                    $dir = 'data/' . $user['email'] . '/projects/' . $pid . '/sections/';
+                    foreach (glob($dir . $type . '.*') as $f) {
+                        unlink($f);
+                    }
+                }
+
                 $sectionModel->erase();
                 $this->f3->reroute('/project/' . $pid);
                 return;

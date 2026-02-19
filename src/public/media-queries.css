@@ -1143,6 +1143,45 @@
     }
 }
 /* ==========================================
+   MOBILE FAB (Floating Action Button) Save
+   ========================================== */
+.mobile-fab-save {
+    display: none;
+}
+@media (max-width: 767px) {
+    .mobile-fab-save {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        position: fixed;
+        bottom: 24px;
+        right: 20px;
+        width: 56px;
+        height: 56px;
+        border-radius: 50%;
+        background: var(--link-color, #3f51b5);
+        color: #fff;
+        border: none;
+        box-shadow: 0 4px 12px rgba(0,0,0,.25);
+        font-size: 1.2rem;
+        cursor: pointer;
+        z-index: 1000;
+        transition: background .15s, transform .1s;
+        touch-action: manipulation;
+    }
+    .mobile-fab-save:hover,
+    .mobile-fab-save:active {
+        background: var(--link-hover, #3949ab);
+        transform: scale(1.05);
+    }
+    /* Larger Quill toolbar buttons for touch */
+    .ql-toolbar button {
+        width: 32px !important;
+        height: 32px !important;
+        padding: 4px !important;
+    }
+}
+/* ==========================================
    ADDITIONAL MOBILE TWEAKS (max-width: 380px)
    Pour les très petits écrans
    ========================================== */

@@ -126,6 +126,13 @@ class AuthController extends Controller
 
             $this->log("New SessionID: " . session_id() . " | Set UserID: " . $_SESSION['user_id']);
 
+            // Send weekly stats email if enabled and due (non-blocking)
+            try {
+                $this->sendWeeklyStatsIfDue(['id' => $user['id'], 'email' => $user['email']]);
+            } catch (\Throwable $e) {
+                error_log('AuthController: weekly stats notification failed — ' . $e->getMessage());
+            }
+
             // Explicitly close session to ensure write before redirect
 
             session_write_close();
@@ -1132,6 +1139,76 @@ class AuthController extends Controller
         ];
 
         file_put_contents($file, json_encode($payload));
+
+    }
+
+    /**
+     * Send the weekly writing stats email if the user has opted in and 7 days have passed.
+     */
+    private function sendWeeklyStatsIfDue(array $user): void
+    {
+
+        if (empty($user['email'])) return;
+
+        $configFile = $this->getUserDataDir($user['email']) . '/ai_config.json';
+
+        if (!file_exists($configFile)) return;
+
+        $config = json_decode(file_get_contents($configFile), true);
+
+        if (!is_array($config)) return;
+
+        $notifs = $config['notifications'] ?? [];
+
+        if (empty($notifs['weekly_stats'])) return;
+
+        // Only send once every 7 days
+        $lastSent = $notifs['last_weekly_sent'] ?? null;
+
+        if ($lastSent && (time() - strtotime($lastSent)) < 7 * 24 * 3600) return;
+
+        $stats = $this->gatherWeeklyStats($user['id']);
+
+        $notif = new NotificationService();
+
+        if ($notif->sendWeeklyStatsEmail($user['email'], $stats)) {
+
+            $config['notifications']['last_weekly_sent'] = date('Y-m-d H:i:s');
+
+            file_put_contents($configFile, json_encode($config, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE));
+
+        }
+
+    }
+
+    /**
+     * Gather writing and AI usage statistics for the last 7 days.
+     */
+    private function gatherWeeklyStats(int $userId): array
+    {
+
+        $since = date('Y-m-d', strtotime('-7 days'));
+
+        $wordsResult = $this->db->exec(
+            'SELECT SUM(word_count) as total FROM writing_stats WHERE user_id=? AND stat_date >= ?',
+            [$userId, $since]
+        );
+
+        $sessionsResult = $this->db->exec(
+            'SELECT COUNT(DISTINCT stat_date) as total FROM writing_stats WHERE user_id=? AND stat_date >= ?',
+            [$userId, $since]
+        );
+
+        $tokensResult = $this->db->exec(
+            'SELECT SUM(total_tokens) as total FROM ai_usage WHERE user_id=? AND DATE(created_at) >= ?',
+            [$userId, $since]
+        );
+
+        return [
+            'words_this_week' => (int) ($wordsResult[0]['total'] ?? 0),
+            'sessions'        => (int) ($sessionsResult[0]['total'] ?? 0),
+            'ai_tokens'       => (int) ($tokensResult[0]['total'] ?? 0),
+        ];
 
     }
 

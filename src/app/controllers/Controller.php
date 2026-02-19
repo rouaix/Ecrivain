@@ -403,7 +403,7 @@ abstract class Controller
         return base64_encode($iv . $tag . $encrypted);
     }
     /**
-     * Log AI usage.
+     * Log AI usage and check usage-alert threshold.
      */
     protected function logAiUsage(string $model, int $promptTokens, int $completionTokens, string $feature): void
     {
@@ -419,6 +419,43 @@ abstract class Controller
         $usage->total_tokens = $promptTokens + $completionTokens;
         $usage->feature_name = $feature;
         $usage->save();
+
+        $this->checkAiUsageAlert($user);
+    }
+
+    /**
+     * Send a usage-threshold alert email once per day if enabled.
+     */
+    private function checkAiUsageAlert(array $user): void
+    {
+        if (empty($user['email'])) return;
+
+        $configFile = $this->getUserDataDir($user['email']) . '/ai_config.json';
+        if (!file_exists($configFile)) return;
+
+        $config = json_decode(file_get_contents($configFile), true);
+        if (!is_array($config)) return;
+
+        $notifs = $config['notifications'] ?? [];
+        if (empty($notifs['usage_alert_enabled'])) return;
+
+        $threshold = (int) ($notifs['usage_alert_threshold'] ?? 0);
+        if ($threshold <= 0) return;
+
+        // Only send once per day
+        $today = date('Y-m-d');
+        if (($notifs['usage_alert_sent_date'] ?? '') === $today) return;
+
+        $usageModel = new AiUsage();
+        $todayTotal = $usageModel->getTodayTotalByUser($user['id']);
+
+        if ($todayTotal >= $threshold) {
+            $notif = new NotificationService();
+            if ($notif->sendUsageAlertEmail($user['email'], $todayTotal, $threshold)) {
+                $config['notifications']['usage_alert_sent_date'] = $today;
+                file_put_contents($configFile, json_encode($config, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE));
+            }
+        }
     }
     /**
      * Validate image upload with multi-level security checks.

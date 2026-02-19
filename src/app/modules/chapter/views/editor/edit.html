@@ -145,6 +145,11 @@
     </form>
 </div>
 
+<!-- Mobile FAB Save Button (visible on mobile only) -->
+<button type="button" class="mobile-fab-save" id="mobileSaveBtn" title="Enregistrer">
+    <i class="fas fa-save"></i>
+</button>
+
 <!-- Focus mode exit button (fixed, only visible in focus mode) -->
 <button type="button" id="focusExitBtn" class="focus-exit-btn" title="Quitter le mode focus (Échap)">
     <i class="fas fa-compress"></i> Quitter le focus
@@ -730,6 +735,19 @@ body.focus-mode .focus-exit-btn { display: flex; }
             }
             if (QuillTools && QuillTools.quill) { QuillTools.quill.off('text-change'); }
         });
+
+        // Mobile FAB save button
+        var mobileSaveBtn = document.getElementById('mobileSaveBtn');
+        if (mobileSaveBtn) {
+            mobileSaveBtn.addEventListener('click', function () {
+                var form = document.getElementById('editorForm');
+                if (form.requestSubmit) {
+                    form.requestSubmit();
+                } else {
+                    form.submit();
+                }
+            });
+        }
 
         // Mark clean on manual submit (bouton Enregistrer)
         document.getElementById('editorForm').addEventListener('submit', function () {

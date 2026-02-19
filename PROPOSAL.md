@@ -247,10 +247,10 @@ Données disponibles : `chapters.word_count` (calculable à la sauvegarde) + hor
 
 ---
 
-### 20. Intégration webhooks / notifications
+### 20. Intégration webhooks / notifications ✅ RÉALISÉ — branche `feature/notifications`
 
 **Proposition :**
-- Notification (email ou webhook configurable) à la fin d'une génération IA longue
+- Notification (email) à la fin d'une génération IA longue
 - Résumé hebdomadaire des statistiques d'écriture par email
 - Alerte si l'usage IA dépasse un seuil configurable (coût)
 
@@ -258,7 +258,7 @@ Données disponibles : `chapters.word_count` (calculable à la sauvegarde) + hor
 
 ## Améliorations PWA / mobile
 
-### 21. Offline réel avec IndexedDB
+### 21. Offline réel avec IndexedDB ✅ RÉALISÉ — branche `feature/offline-indexeddb`
 
 **Contexte :** Le service worker est enregistré mais n'implémente pas de stratégie de cache.
 
@@ -269,7 +269,7 @@ Données disponibles : `chapters.word_count` (calculable à la sauvegarde) + hor
 
 ---
 
-### 22. Interface mobile de l'éditeur
+### 22. Interface mobile de l'éditeur ✅ RÉALISÉ — branche `feature/mobile-editor`
 
 **Constat :** Quill n'est pas optimisé pour le tactile. La barre d'outils est difficilement utilisable sur mobile.
 

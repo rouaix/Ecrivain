@@ -83,9 +83,16 @@
 
                             <div class="image-preview">
 
-                                <img src="{{ @section.image_path }}" alt="Image actuelle" class="image-preview__img">
+                                <img src="{{ @base }}{{ @section.image_path }}" alt="Image actuelle"
+                                    class="image-preview__img">
 
-                                <p><small>Image actuelle</small></p>
+                                <form method="post"
+                                    action="{{ @base }}/project/{{ @project.id }}/section/{{ @sectionType }}/image/delete"
+                                    style="margin-top:0.5rem">
+                                    <input type="hidden" name="csrf_token" value="{{ @csrfToken }}">
+                                    <div><button type="submit" class="button delete small">Supprimer l'image</button>
+                                    </div>
+                                </form>
 
                             </div>
 

@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lecture hors-ligne — Ecrivain</title>
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body { font-family: Georgia, "Times New Roman", serif; background: #faf9f6; color: #2c2c2c; min-height: 100vh; }
+        #toolbar {
+            position: sticky; top: 0; background: #3f51b5; color: #fff;
+            padding: 12px 20px; display: flex; align-items: center; gap: 12px;
+            z-index: 10; flex-wrap: wrap;
+        }
+        #toolbar h1 { font-size: 1rem; font-weight: 600; flex: 1; min-width: 0;
+            white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        #toolbar button {
+            color: #fff; background: rgba(255,255,255,.2); border: none; cursor: pointer;
+            border-radius: 4px; padding: 6px 14px; font-size: .85rem; white-space: nowrap; font-family: inherit;
+        }
+        #toolbar button:hover { background: rgba(255,255,255,.35); }
+        #offline-banner {
+            background: #ff9800; color: #1a1a1a; text-align: center;
+            padding: 7px 16px; font-size: .88rem; font-family: sans-serif;
+        }
+        #content-wrap { max-width: 740px; margin: 0 auto; padding: 36px 24px 80px; line-height: 1.85; }
+        #status { text-align: center; padding: 60px 20px; color: #666; font-family: sans-serif; }
+        .project-list { list-style: none; }
+        .project-list li { margin: 10px 0; }
+        .project-list a {
+            display: block; padding: 14px 20px; background: #fff; border-radius: 8px;
+            border: 1px solid #ddd; color: #3f51b5; text-decoration: none; font-family: sans-serif;
+        }
+        .project-list a:hover { background: #f0f4ff; }
+        .project-list small { display: block; color: #888; font-size: .8rem; margin-top: 4px; font-weight: normal; }
+        /* Typography */
+        #content-wrap h1 { font-size: 1.8rem; margin: 2em 0 .8em; }
+        #content-wrap h2 { font-size: 1.35rem; margin: 1.8em 0 .6em; }
+        #content-wrap h3 { font-size: 1.1rem; margin: 1.4em 0 .4em; }
+        #content-wrap p { margin: .7em 0; }
+        #content-wrap .reading-cover-page { text-align: center; padding: 4em 0; border-bottom: 2px solid #3f51b5; margin-bottom: 3em; }
+        #content-wrap .cover-title { font-size: 2.2rem; margin: 1em 0 .5em; }
+        #content-wrap .cover-description { color: #555; font-style: italic; margin: .5em 0; }
+        #content-wrap .cover-author { margin-top: 2em; font-style: italic; color: #666; }
+        #content-wrap .cover-image { max-width: 260px; border-radius: 6px; box-shadow: 0 4px 16px rgba(0,0,0,.2); margin-bottom: 1.5em; }
+        #content-wrap .reading-section { margin-bottom: 3em; }
+        #content-wrap .reading-footer { text-align: center; margin-top: 4em; padding: 2em 0; color: #999; font-family: sans-serif; font-size: .85rem; }
+        .meta-info { color: #888; font-size: .82rem; margin-bottom: 2em; font-family: sans-serif; padding: 8px 0; border-bottom: 1px solid #e0e0e0; }
+        /* Hide interactive elements not available offline */
+        .selection-popup, .comment-form-popup { display: none !important; }
+    </style>
+</head>
+<body>
+    <div id="toolbar">
+        <h1 id="page-title">Lecture hors-ligne</h1>
+        <button onclick="history.back()">&#8592; Retour</button>
+    </div>
+    <div id="offline-banner">
+        Mode hors-ligne &mdash; Contenu mis en cache localement
+    </div>
+    <div id="content-wrap">
+        <div id="status">Chargement du contenu mis en cache&hellip;</div>
+    </div>
+
+    <script>
+        /* Inline IDB logic (no external dependencies) */
+        var DB_NAME = 'ecrivain-offline';
+        var DB_VERSION = 1;
+        var STORE_NAME = 'projects';
+        var _db = null;
+
+        function openDb() {
+            if (_db) return Promise.resolve(_db);
+            return new Promise(function (resolve, reject) {
+                var req = indexedDB.open(DB_NAME, DB_VERSION);
+                req.onupgradeneeded = function (e) {
+                    var db = e.target.result;
+                    if (!db.objectStoreNames.contains(STORE_NAME)) {
+                        db.createObjectStore(STORE_NAME, { keyPath: 'id' });
+                    }
+                };
+                req.onsuccess = function (e) { _db = e.target.result; resolve(_db); };
+                req.onerror = function () { reject(req.error); };
+            });
+        }
+
+        function loadProject(id) {
+            return openDb().then(function (db) {
+                return new Promise(function (resolve, reject) {
+                    var req = db.transaction(STORE_NAME, 'readonly')
+                        .objectStore(STORE_NAME).get(String(id));
+                    req.onsuccess = function () { resolve(req.result || null); };
+                    req.onerror = function () { reject(req.error); };
+                });
+            });
+        }
+
+        function listProjects() {
+            return openDb().then(function (db) {
+                return new Promise(function (resolve, reject) {
+                    var req = db.transaction(STORE_NAME, 'readonly')
+                        .objectStore(STORE_NAME).getAll();
+                    req.onsuccess = function () { resolve(req.result); };
+                    req.onerror = function () { reject(req.error); };
+                });
+            });
+        }
+
+        /* Extract project ID from current URL (/project/123/lecture) or ?id= param */
+        function getProjectId() {
+            var params = new URLSearchParams(window.location.search);
+            if (params.get('id')) return params.get('id');
+            var m = window.location.pathname.match(/\/project\/(\d+)\/lecture/);
+            return m ? m[1] : null;
+        }
+
+        var projectId = getProjectId();
+        var statusDiv = document.getElementById('status');
+        var contentWrap = document.getElementById('content-wrap');
+        var pageTitle = document.getElementById('page-title');
+
+        if (projectId) {
+            loadProject(projectId).then(function (project) {
+                if (!project) {
+                    statusDiv.innerHTML =
+                        '<h2 style="margin-bottom:.8em">Contenu non disponible hors-ligne</h2>' +
+                        '<p>Ce projet n\'a pas ete mis en cache. Connectez-vous et ouvrez le mode lecture pour l\'activer.</p>';
+                    return;
+                }
+                pageTitle.textContent = project.title + ' (hors-ligne)';
+                document.title = project.title + ' \u2014 Lecture hors-ligne';
+                var savedDate = new Date(project.savedAt).toLocaleString('fr-FR');
+                contentWrap.innerHTML =
+                    '<p class="meta-info">Cache du ' + savedDate + ' &mdash; Connectez-vous pour obtenir la version a jour.</p>' +
+                    project.html;
+            }).catch(function (err) {
+                statusDiv.innerHTML = '<p>Erreur de chargement du cache : ' + err.message + '</p>';
+            });
+        } else {
+            listProjects().then(function (projects) {
+                if (!projects || projects.length === 0) {
+                    statusDiv.innerHTML =
+                        '<h2 style="margin-bottom:.8em">Aucun projet en cache</h2>' +
+                        '<p>Pour lire hors-ligne, ouvrez le mode lecture d\'un projet en ligne et cliquez sur <strong>Hors-ligne</strong> dans la barre d\'outils.</p>';
+                    return;
+                }
+                var html = '<h2 style="margin-bottom:1.5em;font-family:sans-serif">Projets disponibles hors-ligne</h2>' +
+                    '<ul class="project-list">';
+                projects.forEach(function (p) {
+                    var d = new Date(p.savedAt).toLocaleString('fr-FR');
+                    html += '<li><a href="?id=' + encodeURIComponent(p.id) + '">' +
+                        p.title + '<small>Cache le ' + d + '</small></a></li>';
+                });
+                html += '</ul>';
+                contentWrap.innerHTML = html;
+                pageTitle.textContent = 'Projets hors-ligne';
+            });
+        }
+    </script>
+</body>
+</html>

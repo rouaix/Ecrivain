@@ -38,11 +38,25 @@ class AiUsage extends Mapper
     public function getRecentUsage(int $userId, int $limit = 20): array
     {
         return $this->db->exec(
-            'SELECT * FROM ai_usage 
-             WHERE user_id = ? 
-             ORDER BY created_at DESC 
+            'SELECT * FROM ai_usage
+             WHERE user_id = ?
+             ORDER BY created_at DESC
              LIMIT ?',
             [$userId, $limit]
         );
+    }
+
+    /**
+     * Get total tokens consumed today by a user.
+     */
+    public function getTodayTotalByUser(int $userId): int
+    {
+        $result = $this->db->exec(
+            'SELECT SUM(total_tokens) as total
+             FROM ai_usage
+             WHERE user_id = ? AND DATE(created_at) = CURDATE()',
+            [$userId]
+        );
+        return (int) ($result[0]['total'] ?? 0);
     }
 }

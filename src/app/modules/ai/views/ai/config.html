@@ -220,6 +220,72 @@
 
             </div>
 
+            <div class="section-divider">Notifications par email</div>
+
+            <div class="form-group">
+
+                <label class="checkbox-label">
+
+                    <input type="checkbox" name="notify_ai_completion" value="1"
+                        <check if="{{ @config.notifications.ai_completion_notify }}">checked</check>>
+                    Notifier par email quand une génération IA longue est terminée
+
+                </label>
+
+                <small>Un email est envoyé si la durée dépasse le seuil ci-dessous.</small>
+
+            </div>
+
+            <div class="form-group">
+
+                <label for="ai_completion_threshold">Seuil de durée (secondes)</label>
+
+                <input type="number" id="ai_completion_threshold" name="ai_completion_threshold"
+                    value="{{ @config.notifications.ai_completion_threshold_secs | esc }}"
+                    min="10" max="300" placeholder="30">
+
+                <small>Valeur par défaut : 30 secondes.</small>
+
+            </div>
+
+            <div class="form-group">
+
+                <label class="checkbox-label">
+
+                    <input type="checkbox" name="usage_alert_enabled" value="1"
+                        <check if="{{ @config.notifications.usage_alert_enabled }}">checked</check>>
+                    Alerte email si le seuil de tokens IA est dépassé dans la journée
+
+                </label>
+
+            </div>
+
+            <div class="form-group">
+
+                <label for="usage_alert_threshold">Seuil de tokens (par jour)</label>
+
+                <input type="number" id="usage_alert_threshold" name="usage_alert_threshold"
+                    value="{{ @config.notifications.usage_alert_threshold | esc }}"
+                    min="0" placeholder="100000">
+
+                <small>Alerte envoyée une fois par jour. 0 = désactivé.</small>
+
+            </div>
+
+            <div class="form-group">
+
+                <label class="checkbox-label">
+
+                    <input type="checkbox" name="weekly_stats" value="1"
+                        <check if="{{ @config.notifications.weekly_stats }}">checked</check>>
+                    Recevoir un résumé hebdomadaire d'écriture par email
+
+                </label>
+
+                <small>Envoyé lors de votre première connexion de la semaine.</small>
+
+            </div>
+
             <div class="ai-config-actions">
 
                 <button type="submit" class="button primary">Enregistrer</button>

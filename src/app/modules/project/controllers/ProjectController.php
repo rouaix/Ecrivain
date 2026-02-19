@@ -699,8 +699,9 @@ class ProjectController extends Controller
     public function update()
     {
         $pid = (int) $this->f3->get('PARAMS.id');
+        $user = $this->currentUser();
         $projectModel = new Project();
-        $projectModel->load(['id=? AND user_id=?', $pid, $this->currentUser()['id']]);
+        $projectModel->load(['id=? AND user_id=?', $pid, $user['id']]);
 
         if ($projectModel->dry()) {
             $this->f3->error(404);
@@ -751,7 +752,7 @@ class ProjectController extends Controller
                         error_log("Cover upload validation failed: " . $validation['error']);
                     }
                 } else {
-                    $uploadDir = 'public/uploads/covers/';
+                    $uploadDir = 'data/' . $user['email'] . '/projects/' . $pid . '/';
 
                     if (!is_dir($uploadDir)) {
                         if (!mkdir($uploadDir, 0755, true)) {
@@ -763,13 +764,12 @@ class ProjectController extends Controller
                     if (empty($errors)) {
                         // Use validated extension (not from filename)
                         $extension = $validation['extension'];
-                        // Format: project_{pid}_couverture_{timestamp}.ext
-                        $filename = 'project_' . $pid . '_couverture_' . time() . '.' . $extension;
+                        $filename = 'cover.' . $extension;
                         $targetPath = $uploadDir . $filename;
 
                         if (move_uploaded_file($_FILES['cover_image']['tmp_name'], $targetPath)) {
-                            // Remove old cover image if exists
-                            if (!empty($projectModel->cover_image)) {
+                            // Remove old cover image if exists (may have different extension)
+                            if (!empty($projectModel->cover_image) && $projectModel->cover_image !== $filename) {
                                 $oldFile = $uploadDir . $projectModel->cover_image;
                                 if (file_exists($oldFile)) {
                                     unlink($oldFile);
@@ -841,8 +841,9 @@ class ProjectController extends Controller
     public function cover()
     {
         $pid = (int) $this->f3->get('PARAMS.id');
+        $user = $this->currentUser();
         $projectModel = new Project();
-        $project = $projectModel->findAndCast(['id=? AND user_id=?', $pid, $this->currentUser()['id']]);
+        $project = $projectModel->findAndCast(['id=? AND user_id=?', $pid, $user['id']]);
 
         if (!$project || empty($project[0]['cover_image'])) {
             error_log("Cover not found - Project: {$pid}, Cover: " . ($project[0]['cover_image'] ?? 'none'));
@@ -852,9 +853,9 @@ class ProjectController extends Controller
 
         $projectData = $project[0];
         $coverImage = $projectData['cover_image'];
+        $userEmail = $user['email'];
 
-        // Use public/uploads/covers/ path (consistent with SectionController)
-        $filePath = 'public/uploads/covers/' . $coverImage;
+        $filePath = 'data/' . $userEmail . '/projects/' . $pid . '/' . $coverImage;
 
         if (!file_exists($filePath)) {
             error_log("Cover file not found at path: {$filePath}");
@@ -1843,7 +1844,8 @@ class ProjectController extends Controller
 
         // --- Data Gathering (Mirroring exportFile logic) ---
 
-        $author = $this->currentUser()['username'] ?? 'Auteur inconnu';
+        $epubUser = $this->currentUser();
+        $author = $epubUser['username'] ?? 'Auteur inconnu';
 
         $sectionModel = new Section();
         $chapterModel = new Chapter();
@@ -1861,9 +1863,12 @@ class ProjectController extends Controller
             if ($sec['type'] === 'cover') {
                 $coverKey = $k;
                 if (!empty($sec['image_path'])) {
-                    // Start relative for EPUB? No, need absolute or embedding.
-                    // For EPUB, we need to grab the file and add it to the ZIP.
-                    $coverImage = $sec['image_path'];
+                    // Resolve filesystem path from data/{email}/projects/{pid}/sections/cover.*
+                    $coverDir = 'data/' . $epubUser['email'] . '/projects/' . $pid . '/sections/';
+                    foreach (glob($coverDir . 'cover.*') as $f) {
+                        $coverImage = $f;
+                        break;
+                    }
                 }
                 if (!empty($sec['title'])) {
                     $project['description'] = $sec['title'];
@@ -2068,8 +2073,8 @@ class ProjectController extends Controller
         $titlePageHtml = "<html xmlns='http://www.w3.org/1999/xhtml'><head><title>Title Page</title><link rel='stylesheet' type='text/css' href='style.css'/></head><body>";
         $titlePageHtml .= "<div class='title-page'>";
 
-        if ($coverImage && file_exists('.' . $coverImage)) {
-            $zip->addFile('.' . $coverImage, 'OEBPS/cover.jpg');
+        if ($coverImage && file_exists($coverImage)) {
+            $zip->addFile($coverImage, 'OEBPS/cover.jpg');
             $manifestItems[] = "<item id='cover-img' href='cover.jpg' media-type='image/jpeg'/>";
             $titlePageHtml .= "<img src='cover.jpg' alt='Cover' class='title-page__cover' /><br/>";
         }
