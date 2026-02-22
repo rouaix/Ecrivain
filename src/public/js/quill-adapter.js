@@ -5,6 +5,7 @@
 
 var QuillTools = {
     quill: null,
+    activeQuill: null, // Tracks the most recently focused Quill instance
     config: {
         selector: '#editor',
         inputSelector: 'input[name="content"]',
@@ -92,6 +93,13 @@ var QuillTools = {
 
         // Sync to Hidden Input on Change
         var self = this;
+
+        // Track this as the active Quill instance when focused
+        QuillTools.activeQuill = this.quill;
+        this.quill.on('selection-change', function (range) {
+            if (range) QuillTools.activeQuill = self.quill;
+        });
+
         this.quill.on('text-change', function () {
             var html = self.quill.root.innerHTML;
             html = self.cleanQuillHtml(html);
@@ -108,6 +116,11 @@ var QuillTools = {
 
         // Expose global for HTML callbacks if needed
         window.EditorTools = this; // Backward compatibility for views calling EditorTools
+
+        // Init dictation once (only on pages with an editor)
+        if (!QuillTools.dictation.button) {
+            QuillTools.dictation.init();
+        }
     },
 
     styleCustomButtons: function () {
@@ -420,5 +433,154 @@ var QuillTools = {
     applyGrammarFix: function (offset, length, replacement) {
         this.quill.deleteText(offset, length);
         this.quill.insertText(offset, replacement);
+    },
+
+    // ─── Dictée vocale (Web Speech API) ──────────────────────────────────────
+
+    dictation: {
+        recognition: null,
+        isRecording: false,
+        button: null,
+        indicator: null,
+
+        init: function () {
+            var SR = window.SpeechRecognition || window.webkitSpeechRecognition;
+
+            if (SR) {
+                var self = this;
+                this.recognition = new SR();
+                this.recognition.continuous = true;
+                this.recognition.interimResults = true;
+                this.recognition.lang = 'fr-FR';
+
+                this.recognition.onresult = function (e) { self.handleResult(e); };
+                this.recognition.onerror  = function (e) { self.handleError(e); };
+                this.recognition.onend    = function ()  { self.handleEnd(); };
+            }
+
+            // Le bouton est toujours créé (message si navigateur non supporté)
+            this.createButton();
+            this.createIndicator();
+        },
+
+        createButton: function () {
+            var btn = document.createElement('button');
+            btn.id   = 'dictation-btn';
+            btn.type = 'button';
+            btn.title = 'Dictée vocale — cliquer pour démarrer';
+            btn.setAttribute('aria-label', 'Dictée vocale');
+            btn.innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="currentColor"><path d="M12 14a3 3 0 0 0 3-3V5a3 3 0 0 0-6 0v6a3 3 0 0 0 3 3zm-1 1.93V18H9v2h6v-2h-2v-2.07A6 6 0 0 0 18 11h-2a4 4 0 0 1-8 0H6a6 6 0 0 0 5 5.93z"/></svg>';
+            var self = this;
+            btn.addEventListener('click', function () { self.toggle(); });
+            document.body.appendChild(btn);
+            this.button = btn;
+        },
+
+        createIndicator: function () {
+            var el = document.createElement('div');
+            el.id = 'dictation-indicator';
+            document.body.appendChild(el);
+            this.indicator = el;
+        },
+
+        toggle: function () {
+            if (this.isRecording) { this.stop(); } else { this.start(); }
+        },
+
+        start: function () {
+            if (!this.recognition) {
+                alert('La dictée vocale n\'est pas disponible dans ce navigateur.\nUtilisez Chrome ou Edge.');
+                return;
+            }
+            var quill = QuillTools.activeQuill || QuillTools.quill;
+            if (!quill) {
+                alert('Positionnez le curseur dans un éditeur avant de démarrer la dictée.');
+                return;
+            }
+            try {
+                this.recognition.start();
+                this.isRecording = true;
+                this.button.classList.add('is-recording');
+                this.button.title = 'Dictée en cours — cliquer pour arrêter';
+            } catch (e) { /* Déjà démarrée */ }
+        },
+
+        stop: function () {
+            this.recognition.stop();
+            this.isRecording = false;
+            if (this.button) {
+                this.button.classList.remove('is-recording');
+                this.button.title = 'Dictée vocale — cliquer pour démarrer';
+            }
+            if (this.indicator) {
+                this.indicator.textContent = '';
+                this.indicator.classList.remove('is-visible');
+            }
+        },
+
+        handleResult: function (event) {
+            var quill = QuillTools.activeQuill || QuillTools.quill;
+            if (!quill) return;
+
+            var finalTranscript   = '';
+            var interimTranscript = '';
+
+            for (var i = event.resultIndex; i < event.results.length; i++) {
+                if (event.results[i].isFinal) {
+                    finalTranscript += event.results[i][0].transcript;
+                } else {
+                    interimTranscript += event.results[i][0].transcript;
+                }
+            }
+
+            // Afficher les résultats intermédiaires dans l'indicateur
+            if (this.indicator) {
+                this.indicator.textContent = interimTranscript;
+                this.indicator.classList.toggle('is-visible', interimTranscript.length > 0);
+            }
+
+            if (finalTranscript) {
+                if (this.indicator) {
+                    this.indicator.textContent = '';
+                    this.indicator.classList.remove('is-visible');
+                }
+                var sel = quill.getSelection(true);
+                var idx = sel ? sel.index : quill.getLength() - 1;
+                // Ajouter un espace avant si le caractère précédent n'est pas un séparateur
+                var prevChar = idx > 0 ? quill.getText(idx - 1, 1) : '';
+                var needsSpace = prevChar !== '' && prevChar !== ' ' && prevChar !== '\n';
+                var text = (needsSpace ? ' ' : '') + finalTranscript;
+                quill.insertText(idx, text, 'user');
+                quill.setSelection(idx + text.length);
+            }
+        },
+
+        handleError: function (event) {
+            if (event.error === 'not-allowed') {
+                alert('Accès au microphone refusé. Vérifiez les permissions de votre navigateur.');
+            } else if (event.error !== 'no-speech' && event.error !== 'aborted') {
+                console.warn('Dictée vocale — erreur :', event.error);
+            }
+            this.isRecording = false;
+            if (this.button) {
+                this.button.classList.remove('is-recording');
+                this.button.title = 'Dictée vocale — cliquer pour démarrer';
+            }
+            if (this.indicator) {
+                this.indicator.textContent = '';
+                this.indicator.classList.remove('is-visible');
+            }
+        },
+
+        handleEnd: function () {
+            // Redémarrer automatiquement si la reconnaissance s'arrête seule
+            if (this.isRecording) {
+                try { this.recognition.start(); } catch (e) {
+                    this.isRecording = false;
+                    if (this.button) this.button.classList.remove('is-recording');
+                }
+            }
+        }
     }
 };
+

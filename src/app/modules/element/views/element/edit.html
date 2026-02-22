@@ -92,10 +92,6 @@
     </form>
 </div>
 
-<!-- Include Quill adapter and editor tools (reuse from chapter editor) -->
-<script src="https://cdn.quilljs.com/1.3.6/quill.js"></script>
-<script src="{{ @base }}/public/js/quill-adapter.js?v=20" nonce="{{ @nonce }}"></script>
-
 <script nonce="{{ @nonce }}">
     document.addEventListener('DOMContentLoaded', function () {
         // Helper to decode HTML entities (F3 escapes content)

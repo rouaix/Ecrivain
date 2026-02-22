@@ -18,7 +18,7 @@ header('X-XSS-Protection: 1; mode=block');
 
 header('Referrer-Policy: strict-origin-when-cross-origin');
 
-header('Permissions-Policy: geolocation=(), microphone=(), camera=()');
+header('Permissions-Policy: geolocation=(), microphone=(self), camera=()');
 
 header('Strict-Transport-Security: max-age=31536000; includeSubDomains');
 

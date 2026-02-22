@@ -1,0 +1,60 @@
+/* ─── Dictée vocale ──────────────────────────────────────────────────────────
+   Bouton flottant + indicateur de transcription intermédiaire
+   ─────────────────────────────────────────────────────────────────────────── */
+
+#dictation-btn {
+    position: fixed;
+    bottom: 24px;
+    right: 24px;
+    width: 48px;
+    height: 48px;
+    border-radius: 50%;
+    background: var(--button-bg, #4a90d9);
+    color: #fff;
+    border: none;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, .3);
+    z-index: 8000;
+    transition: background .2s, transform .15s;
+}
+
+#dictation-btn:hover {
+    background: var(--button-hover-bg, #357abd);
+    transform: scale(1.08);
+}
+
+#dictation-btn.is-recording {
+    background: #e74c3c;
+    animation: dictation-pulse 1.4s ease-in-out infinite;
+}
+
+@keyframes dictation-pulse {
+    0%   { box-shadow: 0 0 0 0 rgba(231, 76, 60, .55); }
+    70%  { box-shadow: 0 0 0 14px rgba(231, 76, 60, 0); }
+    100% { box-shadow: 0 0 0 0 rgba(231, 76, 60, 0); }
+}
+
+/* Indicateur de transcription intermédiaire */
+#dictation-indicator {
+    position: fixed;
+    bottom: 84px;
+    right: 24px;
+    max-width: 300px;
+    background: rgba(0, 0, 0, .72);
+    color: #fff;
+    font-size: .82rem;
+    line-height: 1.4;
+    padding: 6px 12px;
+    border-radius: 8px;
+    z-index: 8000;
+    word-wrap: break-word;
+    display: none;
+    pointer-events: none;
+}
+
+#dictation-indicator.is-visible {
+    display: block;
+}
