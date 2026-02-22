@@ -211,6 +211,17 @@ class ProjectController extends Controller
         $customElementPanels = [];
         $customElementsByType = [];
         $panelCss = '';
+        $panelLabels = [
+            'section_before' => 'Sections avant les chapitres',
+            'section_after'  => 'Sections après les chapitres',
+            'act'            => ['singular' => 'Acte',       'plural' => 'Actes'],
+            'chapter'        => ['singular' => 'Chapitre',   'plural' => 'Chapitres'],
+            'note'           => ['singular' => 'Note',        'plural' => 'Notes'],
+            'character'      => ['singular' => 'Personnage', 'plural' => 'Personnages'],
+            'file'           => ['singular' => 'Fichier',    'plural' => 'Fichiers'],
+        ];
+        $sectionBeforeConfig = null;
+        $sectionAfterConfig  = null;
         // Default: all standard panels visible (fallback if no template)
         $panelConfig = [
             'section_before' => true,
@@ -219,6 +230,7 @@ class ProjectController extends Controller
             'note'           => true,
             'character'      => true,
             'file'           => true,
+            'has_acts'       => true,
         ];
 
         $db = $this->f3->get('DB');
@@ -246,6 +258,7 @@ class ProjectController extends Controller
                     'note'           => false,
                     'character'      => false,
                     'file'           => false,
+                    'has_acts'       => false,
                 ];
 
                 $customElementsByType = [];
@@ -303,21 +316,61 @@ class ProjectController extends Controller
                     if (!$te['is_enabled']) continue;
 
                     $type = $te['element_type'];
+                    $cfg  = json_decode($te['config_json'] ?? '{}', true);
+
                     if ($type === 'section') {
-                        $key = 'section_' . ($te['section_placement'] ?? 'before');
-                    } elseif ($type === 'act' || $type === 'chapter') {
+                        $placement = $te['section_placement'] ?? 'before';
+                        $subtype   = $te['element_subtype']   ?? '';
+                        $label     = $cfg['label'] ?? \Section::getTypeName($subtype);
+                        if ($placement === 'before') {
+                            if ($sectionBeforeConfig === null) $sectionBeforeConfig = [];
+                            $sectionBeforeConfig[$subtype] = $label;
+                        } else {
+                            if ($sectionAfterConfig === null) $sectionAfterConfig = [];
+                            $sectionAfterConfig[$subtype] = $label;
+                        }
+                        $key = 'section_' . $placement;
+                    } elseif ($type === 'act') {
+                        $panelLabels['act'] = [
+                            'singular' => $cfg['label_singular'] ?? 'Acte',
+                            'plural'   => $cfg['label_plural']   ?? 'Actes',
+                        ];
+                        $panelConfig['has_acts'] = true;
+                        $key = 'content';
+                    } elseif ($type === 'chapter') {
+                        $panelLabels['chapter'] = [
+                            'singular' => $cfg['label_singular'] ?? 'Chapitre',
+                            'plural'   => $cfg['label_plural']   ?? 'Chapitres',
+                        ];
                         $key = 'content';
                     } elseif ($type === 'element') {
                         // Custom element panel
-                        $cfg = json_decode($te['config_json'] ?? '{}', true);
                         $customElementPanels[] = [
-                            'id' => $te['id'],
+                            'id'             => $te['id'],
                             'label_singular' => $cfg['label_singular'] ?? 'élément',
-                            'label_plural' => $cfg['label_plural'] ?? 'Éléments',
-                            'elements' => $customElementsByType[$te['id']] ?? [],
-                            'count' => count($customElementsByType[$te['id']] ?? []),
+                            'label_plural'   => $cfg['label_plural']   ?? 'Éléments',
+                            'elements'       => $customElementsByType[$te['id']] ?? [],
+                            'count'          => count($customElementsByType[$te['id']] ?? []),
                         ];
                         continue;
+                    } elseif ($type === 'note') {
+                        $panelLabels['note'] = [
+                            'singular' => $cfg['label_singular'] ?? 'Note',
+                            'plural'   => $cfg['label_plural']   ?? 'Notes',
+                        ];
+                        $key = 'note';
+                    } elseif ($type === 'character') {
+                        $panelLabels['character'] = [
+                            'singular' => $cfg['label_singular'] ?? 'Personnage',
+                            'plural'   => $cfg['label_plural']   ?? 'Personnages',
+                        ];
+                        $key = 'character';
+                    } elseif ($type === 'file') {
+                        $panelLabels['file'] = [
+                            'singular' => $cfg['label_singular'] ?? 'Fichier',
+                            'plural'   => $cfg['label_plural']   ?? 'Fichiers',
+                        ];
+                        $key = 'file';
                     } else {
                         $key = $type;
                     }
@@ -339,6 +392,12 @@ class ProjectController extends Controller
               ];
           }
         } // end if tables exist
+
+        // Add lowercase variants for view template usage
+        foreach (['act', 'chapter', 'note', 'character', 'file'] as $_pk) {
+            $panelLabels[$_pk]['singular_lc'] = strtolower($panelLabels[$_pk]['singular']);
+            $panelLabels[$_pk]['plural_lc']   = strtolower($panelLabels[$_pk]['plural']);
+        }
 
         $chapterModel = new Chapter();
         $allChapters = $this->supHtml($chapterModel->getAllByProject($pid));
@@ -538,22 +597,33 @@ class ProjectController extends Controller
         ];
 
         // 3. Logic: Group Sections by Type
-        $prepareSectionGroups = function (array $sections, array $typeOrder) {
+        $prepareSectionGroups = function (array $sections, array $typeOrder, ?array $sectionConfig = null) {
             $grouped = [];
             foreach ($sections as $s) {
                 $grouped[$s['type']][] = $s;
             }
-            $orderedTypes = [];
-            $seenTypes = [];
-            foreach ($sections as $s) {
-                if (!in_array($s['type'], $seenTypes)) {
-                    $orderedTypes[] = $s['type'];
-                    $seenTypes[] = $s['type'];
+
+            if ($sectionConfig !== null) {
+                // Template defines which subtypes to show, in order
+                $orderedTypes = array_keys($sectionConfig);
+                // Also include any existing sections not listed in the template
+                foreach ($sections as $s) {
+                    if (!in_array($s['type'], $orderedTypes))
+                        $orderedTypes[] = $s['type'];
                 }
-            }
-            foreach ($typeOrder as $t) {
-                if (!in_array($t, $seenTypes)) {
-                    $orderedTypes[] = $t;
+            } else {
+                $orderedTypes = [];
+                $seenTypes = [];
+                foreach ($sections as $s) {
+                    if (!in_array($s['type'], $seenTypes)) {
+                        $orderedTypes[] = $s['type'];
+                        $seenTypes[] = $s['type'];
+                    }
+                }
+                foreach ($typeOrder as $t) {
+                    if (!in_array($t, $seenTypes)) {
+                        $orderedTypes[] = $t;
+                    }
                 }
             }
 
@@ -562,14 +632,20 @@ class ProjectController extends Controller
                 $isMulti = ($type === 'notes' || $type === 'appendices');
                 $items = $grouped[$type] ?? [];
 
-                // Filter empty singletons (matching view logic)
-                if (!$isMulti && empty($items) && $type !== 'postface' && $type !== 'back_cover' && $type !== 'cover' && $type !== 'preface' && $type !== 'introduction' && $type !== 'prologue') {
+                // Filter empty singletons not explicitly listed in template
+                if (!$isMulti && empty($items) && $sectionConfig === null &&
+                    $type !== 'postface' && $type !== 'back_cover' && $type !== 'cover' &&
+                    $type !== 'preface' && $type !== 'introduction' && $type !== 'prologue') {
                     continue;
                 }
 
+                $name = ($sectionConfig !== null && isset($sectionConfig[$type]))
+                    ? $sectionConfig[$type]
+                    : \Section::getTypeName($type);
+
                 $finalGroups[] = [
                     'type' => $type,
-                    'name' => \Section::getTypeName($type),
+                    'name' => $name,
                     'is_multi' => $isMulti,
                     'items' => $items,
                     'show_create' => (empty($items) && !$isMulti),
@@ -579,23 +655,35 @@ class ProjectController extends Controller
             return $finalGroups;
         };
 
-        $filterBeforeGroups = function ($sections) {
+        $filterBeforeGroups = function ($sections, ?array $sectionConfig = null) {
             $grouped = [];
             foreach ($sections as $s) {
                 $grouped[$s['type']][] = $s;
             }
-            $types = ['cover', 'preface', 'introduction', 'prologue'];
-            foreach ($sections as $s) {
-                if (!in_array($s['type'], $types))
-                    $types[] = $s['type'];
+
+            if ($sectionConfig !== null) {
+                $types = array_keys($sectionConfig);
+                foreach ($sections as $s) {
+                    if (!in_array($s['type'], $types))
+                        $types[] = $s['type'];
+                }
+            } else {
+                $types = ['cover', 'preface', 'introduction', 'prologue'];
+                foreach ($sections as $s) {
+                    if (!in_array($s['type'], $types))
+                        $types[] = $s['type'];
+                }
             }
 
             $final = [];
             foreach ($types as $type) {
                 $items = $grouped[$type] ?? [];
+                $name = ($sectionConfig !== null && isset($sectionConfig[$type]))
+                    ? $sectionConfig[$type]
+                    : \Section::getTypeName($type);
                 $final[] = [
                     'type' => $type,
-                    'name' => \Section::getTypeName($type),
+                    'name' => $name,
                     'is_multi' => false,
                     'items' => $items,
                     'show_create' => empty($items),
@@ -605,8 +693,8 @@ class ProjectController extends Controller
             return $final;
         };
 
-        $beforeGroups = $filterBeforeGroups($sectionsBeforeChapters);
-        $afterGroups = $prepareSectionGroups($sectionsAfterChapters, ['postface', 'appendices', 'back_cover']);
+        $beforeGroups = $filterBeforeGroups($sectionsBeforeChapters, $sectionBeforeConfig);
+        $afterGroups = $prepareSectionGroups($sectionsAfterChapters, ['postface', 'appendices', 'back_cover'], $sectionAfterConfig);
 
         // Enrich Acts with stats
         foreach ($acts as &$act) {
@@ -656,6 +744,7 @@ class ProjectController extends Controller
             'template' => $template,
             'templateElements' => $templateElements,
             'panelConfig' => $panelConfig,
+            'panelLabels' => $panelLabels,
             'customElementPanels' => $customElementPanels,
             'customElementsByType' => $customElementsByType ?? [],
             'panelCss' => $panelCss,

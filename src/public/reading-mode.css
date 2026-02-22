@@ -1,8 +1,8 @@
 /* Reading mode and Quill content display styles */
-   QUILL CONTENT STYLES (for display outside editor)
-   These styles ensure Quill-formatted content displays correctly
-   in modals, reading mode, exports, etc.
-   ======================================== */
+QUILL CONTENT STYLES (for display outside editor) These styles ensure Quill-formatted content displays correctly in modals,
+reading mode,
+exports,
+etc.========================================*/
 
 /* --- Text Alignment --- */
 .modal-body .ql-align-left,
@@ -269,13 +269,10 @@ sup {
 }
 
 .form-actions-right button {
-    padding: 12px 24px !important;
-    font-size: 1rem !important;
     font-weight: 600;
-    border-radius: 8px !important;
     cursor: pointer;
     transition: all 0.2s;
-    height: auto !important;
+    height: auto;
 }
 
 .form-actions-right .button.primary {

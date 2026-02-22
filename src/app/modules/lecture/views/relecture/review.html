@@ -224,22 +224,42 @@
 
     // ── Text selection ────────────────────────────────────────────────────────
 
+    // Distinguer le type de pointeur (souris / stylet / tactile)
+    var _lastPointerType = 'mouse';
+    var _selTimer        = null;
+
+    document.getElementById('reviewContent').addEventListener('pointerup', function (e) {
+        _lastPointerType = e.pointerType; // 'mouse', 'pen' ou 'touch'
+    });
+
+    function _tryShowPopup() {
+        var sel = window.getSelection();
+        if (!sel || !sel.rangeCount) return;
+        var text = sel.toString().trim();
+        if (text.length < 3) return;
+
+        var range    = sel.getRangeAt(0);
+        var ancestor = range.commonAncestorContainer;
+        var el       = ancestor.nodeType === Node.TEXT_NODE ? ancestor.parentElement : ancestor;
+        var block    = el.closest('.review-text');
+        if (!block) return;
+
+        showPopup(text, block.dataset.contentId, block.dataset.contentType, range.getBoundingClientRect());
+    }
+
+    // Souris : déclenchement rapide sur mouseup (comportement existant)
     document.getElementById('reviewContent').addEventListener('mouseup', function (e) {
+        if (_lastPointerType !== 'mouse') return; // stylet/tactile géré par selectionchange
         if (popup.style.display !== 'none' && popup.contains(e.target)) return;
-        setTimeout(function () {
-            var sel = window.getSelection();
-            if (!sel || !sel.rangeCount) return;
-            var text = sel.toString().trim();
-            if (text.length < 3) return;
+        setTimeout(_tryShowPopup, 20);
+    });
 
-            var range    = sel.getRangeAt(0);
-            var ancestor = range.commonAncestorContainer;
-            var el       = ancestor.nodeType === Node.TEXT_NODE ? ancestor.parentElement : ancestor;
-            var block    = el.closest('.review-text');
-            if (!block) return;
-
-            showPopup(text, block.dataset.contentId, block.dataset.contentType, range.getBoundingClientRect());
-        }, 20);
+    // Stylet / tactile : attendre que la sélection soit stable via selectionchange
+    // Le debounce de 500 ms laisse le temps aux poignées de sélection d'être ajustées
+    document.addEventListener('selectionchange', function () {
+        if (_lastPointerType === 'mouse') return;
+        if (_selTimer) clearTimeout(_selTimer);
+        _selTimer = setTimeout(_tryShowPopup, 500);
     });
 
     document.addEventListener('mousedown', function (e) {
