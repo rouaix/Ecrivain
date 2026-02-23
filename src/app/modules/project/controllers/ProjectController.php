@@ -1427,6 +1427,12 @@ class ProjectController extends Controller
         $this->exportFile($pid, 'summaries');
     }
 
+    public function exportMarkdown()
+    {
+        $pid = (int) $this->f3->get('PARAMS.id');
+        $this->exportFile($pid, 'markdown');
+    }
+
     public function generateExportContent($pid, $format)
     {
         $projectModel = new Project();
@@ -1549,6 +1555,13 @@ class ProjectController extends Controller
                 $content .= strip_tags(html_entity_decode($project['description'])) . "\n";
             }
             $content .= trim(strip_tags(html_entity_decode($author))) . "\n\n";
+        } elseif ($format === 'markdown') {
+            $content .= "# " . $project['title'] . "\n\n";
+            $authorMd = strip_tags(html_entity_decode(html_entity_decode($author, ENT_QUOTES | ENT_HTML5), ENT_QUOTES | ENT_HTML5));
+            $content .= "*" . trim($authorMd) . "*\n\n";
+            if (!empty($project['description'])) {
+                $content .= $this->htmlToMarkdown($project['description']) . "\n\n";
+            }
         } else {
             if ($format === 'vector') {
                 // For JSON, we might want to add Project Metadata as the first item or separate field?
@@ -1635,6 +1648,11 @@ class ProjectController extends Controller
                     $content .= "<h2>{$title}</h2>";
                 }
                 $content .= "<div class='" . ($isChapter ? 'chapter-content' : 'section-content') . "'>{$text}</div>";
+            } elseif ($format === 'markdown') {
+                if ($title) {
+                    $content .= "\n\n## " . $title . "\n\n";
+                }
+                $content .= $this->htmlToMarkdown($text) . "\n\n";
             } else {
                 // Convert HTML to Text
                 // 1. Pre-process breaks vs paragraphs
@@ -1779,6 +1797,11 @@ class ProjectController extends Controller
                             if (!empty($act['content'])) {
                                 $content .= "<div class='act-content'>" . $act['content'] . "</div>";
                             }
+                        } elseif ($format === 'markdown') {
+                            $content .= "\n\n# " . $act['title'] . "\n\n";
+                            if (!empty($act['content'])) {
+                                $content .= $this->htmlToMarkdown($act['content']) . "\n\n";
+                            }
                         } else {
                             $content .= "\n\n# " . strtoupper($act['title']) . "\n\n";
                             if (!empty($act['content'])) {
@@ -1875,6 +1898,8 @@ class ProjectController extends Controller
         if ($format === 'vector') {
             $content = json_encode($jsonOutput, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE);
             $ext = 'json';
+        } elseif ($format === 'markdown') {
+            $ext = 'md';
         } else {
             $ext = ($format === 'html') ? 'html' : 'txt';
         }
@@ -1901,6 +1926,8 @@ class ProjectController extends Controller
 
         if ($format === 'vector') {
             header('Content-Type: application/json');
+        } elseif ($format === 'markdown') {
+            header('Content-Type: text/plain; charset=utf-8');
         } else {
             header('Content-Type: ' . ($format === 'html' ? 'text/html' : 'text/plain'));
         }
@@ -1909,6 +1936,66 @@ class ProjectController extends Controller
         header('Content-Disposition: attachment; filename="' . $filename . '"');
         echo $content;
         exit;
+    }
+
+    private function htmlToMarkdown(string $html): string
+    {
+        $md = $html;
+
+        // Headings
+        for ($i = 6; $i >= 1; $i--) {
+            $hashes = str_repeat('#', $i);
+            $md = preg_replace('/<h' . $i . '[^>]*>(.*?)<\/h' . $i . '>/si', "\n{$hashes} \$1\n\n", $md);
+        }
+
+        // Bold
+        $md = preg_replace('/<(strong|b)[^>]*>(.*?)<\/(strong|b)>/si', '**$2**', $md);
+
+        // Italic
+        $md = preg_replace('/<(em|i)[^>]*>(.*?)<\/(em|i)>/si', '*$2*', $md);
+
+        // Strikethrough
+        $md = preg_replace('/<s[^>]*>(.*?)<\/s>/si', '~~$1~~', $md);
+
+        // Underline — no Markdown equivalent, keep text
+        $md = preg_replace('/<u[^>]*>(.*?)<\/u>/si', '$1', $md);
+
+        // Links
+        $md = preg_replace('/<a[^>]*href=["\']([^"\']*)["\'][^>]*>(.*?)<\/a>/si', '[$2]($1)', $md);
+
+        // Blockquotes
+        $md = preg_replace_callback('/<blockquote[^>]*>(.*?)<\/blockquote>/si', function ($m) {
+            $text = strip_tags($m[1]);
+            $text = html_entity_decode($text, ENT_QUOTES | ENT_HTML5);
+            return "\n> " . str_replace("\n", "\n> ", trim($text)) . "\n\n";
+        }, $md);
+
+        // Inline code
+        $md = preg_replace('/<code[^>]*>(.*?)<\/code>/si', '`$1`', $md);
+
+        // List items
+        $md = preg_replace('/<li[^>]*>(.*?)<\/li>/si', "- $1\n", $md);
+        $md = preg_replace('/<\/(ul|ol)>/si', "\n", $md);
+
+        // Line breaks
+        $md = preg_replace('/<br\s*\/?>/i', "\n", $md);
+
+        // Paragraph / div end
+        $md = preg_replace('/<\/(p|div)>/i', "\n\n", $md);
+
+        // Strip remaining tags
+        $md = strip_tags($md);
+
+        // Decode HTML entities (twice for double-encoded)
+        $md = html_entity_decode(html_entity_decode($md, ENT_QUOTES | ENT_HTML5), ENT_QUOTES | ENT_HTML5);
+
+        // Replace non-breaking spaces
+        $md = str_replace("\u{00A0}", ' ', $md);
+
+        // Normalize: max 2 consecutive newlines
+        $md = preg_replace("/\n{3,}/", "\n\n", $md);
+
+        return trim($md);
     }
 
     private function sanitizeToXhtml($html)

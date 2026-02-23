@@ -32,15 +32,48 @@
                     <a class="button" href="{{ @base }}/project/{{ @project.id }}/relecture">Relecture</a>
                 </div>
                 <div class="project-hero__actions-group">
-                    <a class="button" href="{{ @base }}/project/{{ @project.id }}/export">Exporter Texte</a>
-                    <a class="button" href="{{ @base }}/project/{{ @project.id }}/export/vector"
-                        title="Pour vectorisation IA">Exporter JSON</a>
-                    <a class="button" href="{{ @base }}/project/{{ @project.id }}/export/clean"
-                        title="Texte brut minuscule">Exporter Texte Brut</a>
-                    <a class="button" href="{{ @base }}/project/{{ @project.id }}/export/summaries"
-                        title="Exporter uniquement les résumés">Exporter Résumés</a>
-                    <a class="button" href="{{ @base }}/project/{{ @project.id }}/export/html">Exporter HTML</a>
-                    <a class="button" href="{{ @base }}/project/{{ @project.id }}/export/epub">Exporter Epub</a>
+                    <button class="button" id="export-modal-open">Exporter ▾</button>
+                </div>
+
+                <div id="export-modal" class="modal-overlay">
+                    <div class="modal-content" style="max-width:480px">
+                        <div class="modal-header export-modal-header">
+                            <h3>Exporter le projet</h3>
+                            <button class="modal-close button" id="export-modal-close">✕</button>
+                        </div>
+                        <div class="modal-body">
+                            <ul class="export-options-list">
+                                <li>
+                                    <a class="button" href="{{ @base }}/project/{{ @project.id }}/export">Texte (.txt)</a>
+                                    <span class="export-format-desc">Texte brut formaté, titres en majuscules</span>
+                                </li>
+                                <li>
+                                    <a class="button" href="{{ @base }}/project/{{ @project.id }}/export/markdown">Markdown (.md)</a>
+                                    <span class="export-format-desc">Format Markdown avec titres # et mise en forme</span>
+                                </li>
+                                <li>
+                                    <a class="button" href="{{ @base }}/project/{{ @project.id }}/export/html">HTML (.html)</a>
+                                    <span class="export-format-desc">Document web complet avec styles CSS</span>
+                                </li>
+                                <li>
+                                    <a class="button" href="{{ @base }}/project/{{ @project.id }}/export/epub">EPUB (.epub)</a>
+                                    <span class="export-format-desc">Format liseuse numérique</span>
+                                </li>
+                                <li>
+                                    <a class="button" href="{{ @base }}/project/{{ @project.id }}/export/vector">JSON (.json)</a>
+                                    <span class="export-format-desc">Pour vectorisation et traitement IA</span>
+                                </li>
+                                <li>
+                                    <a class="button" href="{{ @base }}/project/{{ @project.id }}/export/clean">Texte brut (.txt)</a>
+                                    <span class="export-format-desc">Tout en minuscules, sans mise en forme</span>
+                                </li>
+                                <li>
+                                    <a class="button" href="{{ @base }}/project/{{ @project.id }}/export/summaries">Résumés (.txt)</a>
+                                    <span class="export-format-desc">Titres et résumés uniquement</span>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
                 </div>
             </div>
             <check if="{{ @stats.has_content }}">
@@ -79,3 +112,17 @@
     </section>
     <div id="saveStatus" class="save-status">Ordre enregistré !</div>
 </div>
+<script nonce="{{ @nonce }}">
+(function () {
+    var modal = document.getElementById('export-modal');
+    document.getElementById('export-modal-open').addEventListener('click', function () {
+        modal.classList.add('is-visible');
+    });
+    document.getElementById('export-modal-close').addEventListener('click', function () {
+        modal.classList.remove('is-visible');
+    });
+    modal.addEventListener('click', function (e) {
+        if (e.target === modal) modal.classList.remove('is-visible');
+    });
+})();
+</script>

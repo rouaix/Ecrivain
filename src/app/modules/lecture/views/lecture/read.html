@@ -613,15 +613,17 @@
             // ── Offline: save reading content to IndexedDB ───────────────────────────
             const offlineBtn = document.getElementById('offlineSaveBtn');
             const projectTitle = {{ json_encode(@project.title) | raw }};
+            const offlineReaderUrl = '{{ @base }}/public/offline.html';
 
             function saveOffline(silent) {
-                if (!window.OfflineReader) return;
+                if (!window.OfflineReader) return Promise.resolve();
                 const html = document.getElementById('readingContent').innerHTML;
                 return OfflineReader.saveProject(projectId, projectTitle, html)
                     .then(function () {
                         if (!silent && offlineBtn) {
-                            offlineBtn.innerHTML = '<i class="fas fa-check"></i> Hors-ligne';
-                            offlineBtn.title = 'Contenu mis a jour — cliquer pour actualiser';
+                            offlineBtn.innerHTML = '<i class="fas fa-check"></i> Sauvegarde';
+                            offlineBtn.title = 'Sauvegarde — cliquer pour ouvrir le lecteur hors-ligne';
+                            offlineBtn.dataset.saved = '1';
                         }
                     })
                     .catch(function () {
@@ -636,14 +638,20 @@
                 if (navigator.onLine) {
                     OfflineReader && OfflineReader.loadProject(projectId).then(function (cached) {
                         if (cached) {
-                            offlineBtn.title = 'Contenu en cache — cliquer pour actualiser';
+                            offlineBtn.title = 'En cache — 1 clic pour actualiser, 2 clics pour ouvrir le lecteur';
                             offlineBtn.innerHTML = '<i class="fas fa-check"></i> Hors-ligne';
+                            offlineBtn.dataset.saved = '1';
                         }
                         saveOffline(true);
                     }).catch(function () { saveOffline(true); });
                 }
 
                 offlineBtn.addEventListener('click', function () {
+                    // Second click after save: open the offline reader
+                    if (offlineBtn.dataset.saved === '1') {
+                        window.location.href = offlineReaderUrl;
+                        return;
+                    }
                     offlineBtn.disabled = true;
                     offlineBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i>';
                     saveOffline(false).finally(function () {
