@@ -84,6 +84,9 @@ FLUSH PRIVILEGES;
 | `templates` | Templates de structure de projet (migration 002) |
 | `template_elements` | Définition des types d'éléments par template (migration 002) |
 | `elements` | Instances d'éléments personnalisés créés par les utilisateurs (migration 002) |
+| `writing_stats` | Statistiques journalières de mots par projet (migration 004) |
+| `chapter_versions` | Historique des versions de chapitres (migration 005) |
+| `annotations` | Annotations du mode relecture (migration 008) |
 
 ### 4. Configurer l'environnement
 
@@ -253,17 +256,20 @@ ecrivain/
 │   │   ├── core/               # Migrations, utilitaires
 │   │   └── modules/            # Modules fonctionnels
 │   │       ├── ai/             # Intégration IA
+│   │       ├── acts/           # Actes
 │   │       ├── auth/           # Authentification
 │   │       ├── chapter/        # Chapitres
 │   │       ├── characters/     # Personnages
 │   │       ├── element/        # Éléments personnalisés
-│   │       ├── lecture/        # Mode lecture
+│   │       ├── lecture/        # Mode lecture / relecture
 │   │       ├── note/           # Notes
 │   │       ├── project/        # Projets (dashboard, export)
+│   │       ├── search/         # Recherche plein texte
 │   │       ├── section/        # Sections metadata
+│   │       ├── stats/          # Statistiques d'écriture
 │   │       └── template/       # Templates de structure
 │   ├── data/
-│   │   └── migrations/         # Migrations SQL numérotées (000, 002, 003…)
+│   │   └── migrations/         # Migrations SQL numérotées (000 → 008)
 │   ├── public/
 │   │   ├── css/                # CSS modulaire (40 fichiers)
 │   │   ├── js/                 # JavaScript
@@ -294,10 +300,15 @@ Le système de migrations (`src/app/core/Migrations.php`) s'exécute automatique
 Regardez les fichiers existants dans `src/data/migrations/` et incrémentez le numéro le plus élevé :
 
 ```
-000_init_schema.sql            ← existe (schéma complet + templates par défaut)
-002_create_template_system.sql ← existe
-003_fix_template_data.sql      ← existe
-004_ma_nouvelle_migration.sql  ← à créer
+000_init_schema.sql            ← schéma complet
+002_create_template_system.sql ← système de templates
+003_fix_template_data.sql      ← correctifs templates
+004_writing_stats.sql          ← statistiques d'écriture
+005_chapter_versions.sql       ← historique des versions
+006_project_dictionary.sql     ← dictionnaire par projet
+007_new_templates.sql          ← nouveaux templates prédéfinis
+008_annotations.sql            ← annotations relecture
+009_ma_nouvelle_migration.sql  ← à créer
 ```
 
 **2. Créer le fichier SQL**
