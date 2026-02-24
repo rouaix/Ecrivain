@@ -430,7 +430,7 @@ img.project-cover {
 }
 
 .export-options-list li a.button {
-    min-width: 110px;
+    width: 40%;
     text-align: center;
 }
 
