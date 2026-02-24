@@ -79,6 +79,9 @@
     font-weight: bold;
     cursor: pointer;
     transition: color 0.2s;
+    background-color: transparent;
+    position: relative;
+    top: -20px;
 }
 
 .popup-close:hover {
