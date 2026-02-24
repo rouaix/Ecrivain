@@ -165,6 +165,17 @@ class ElementController extends Controller
             return empty($e['parent_id']);
         });
 
+        // Load all element types of the same kind for type-switching dropdown
+        $elementTypes = $templateElementModel->findAndCast(
+            ['template_id=? AND element_type=? AND is_enabled=?', $templateElement['template_id'], 'element', 1],
+            ['order' => 'display_order ASC']
+        );
+        foreach ($elementTypes as &$et) {
+            $etConfig = json_decode($et['config_json'] ?? '{}', true);
+            $et['label'] = $etConfig['label_singular'] ?? ucfirst($et['element_type']);
+        }
+        unset($et);
+
         // Check for session success msg
         $success = $this->f3->get('SESSION.success');
         $this->f3->clear('SESSION.success');
@@ -179,6 +190,7 @@ class ElementController extends Controller
             'config' => $config,
             'parentElement' => $parentElement,
             'topElements' => $topLevelElements,
+            'elementTypes' => $elementTypes,
             'errors' => [],
             'success' => $success
         ]);
@@ -209,10 +221,21 @@ class ElementController extends Controller
         $resume = $_POST['resume'] ?? '';
         $resume = $this->cleanQuillHtml($resume);
         $parentId = !empty($_POST['parent_id']) ? (int) $_POST['parent_id'] : null;
+        $newTemplateElementId = !empty($_POST['template_element_id']) ? (int) $_POST['template_element_id'] : null;
 
         $elementModel->title = $title;
         $elementModel->content = $content;
         $elementModel->resume = $resume;
+
+        // Handle type change: update element and all its sub-elements
+        if ($newTemplateElementId && $newTemplateElementId !== (int) $elementModel->template_element_id) {
+            $elementModel->changeType($eid, $newTemplateElementId, $elementModel->project_id);
+            $elementModel->load(['id=?', $eid]);
+            // Re-apply fields set before the reload
+            $elementModel->title = $title;
+            $elementModel->content = $content;
+            $elementModel->resume = $resume;
+        }
 
         // Check if parent changed
         if ($elementModel->parent_id != $parentId) {

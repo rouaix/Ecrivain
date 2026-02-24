@@ -39,18 +39,33 @@
                         class="input-control title-input">
                 </div>
 
-                <div class="form-group">
-                    <label for="parent_id">Sous-élément de</label>
-                    <select id="parent_id" name="parent_id" class="input-control">
-                        <option value="">-- Aucun (élément principal) --</option>
-                        <repeat group="{{ @topElements }}" value="{{ @top }}">
-                            <check if="{{ @top.id != @element.id }}">
-                                <option value="{{ @top.id }}" {{ (@element.parent_id==@top.id) ? 'selected' : '' }}>
-                                    {{ @top.title }}
-                                </option>
-                            </check>
-                        </repeat>
-                    </select>
+                <div style="display: flex; gap: 16px;">
+                    <div class="form-group" style="flex: 1;">
+                        <label for="parent_id">Sous-élément de</label>
+                        <select id="parent_id" name="parent_id" class="input-control">
+                            <option value="">-- Aucun (élément principal) --</option>
+                            <repeat group="{{ @topElements }}" value="{{ @top }}">
+                                <check if="{{ @top.id != @element.id }}">
+                                    <option value="{{ @top.id }}" {{ (@element.parent_id==@top.id) ? 'selected' : '' }}>
+                                        {{ @top.title }}
+                                    </option>
+                                </check>
+                            </repeat>
+                        </select>
+                    </div>
+
+                    <check if="{{ !@element.parent_id && count(@elementTypes) > 1 }}">
+                        <div class="form-group" style="flex: 0 0 200px;">
+                            <label for="template_element_id">Type</label>
+                            <select id="template_element_id" name="template_element_id" class="input-control">
+                                <repeat group="{{ @elementTypes }}" value="{{ @et }}">
+                                    <option value="{{ @et.id }}" {{ (@element.template_element_id==@et.id) ? 'selected' : '' }}>
+                                        {{ @et.label }}
+                                    </option>
+                                </repeat>
+                            </select>
+                        </div>
+                    </check>
                 </div>
             </div>
 
