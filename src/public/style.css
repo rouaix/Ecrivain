@@ -56,3 +56,8 @@
 @import 'css/utilities/helpers.css';
 /* Media Queries - Responsive design */
 @import 'media-queries.css';
+
+.hidden,
+.cacher {
+    display: none !important;
+}
