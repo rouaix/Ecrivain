@@ -196,10 +196,23 @@ class ReviewController extends Controller
             return;
         }
 
-        $annotations = $this->db->exec(
-            'SELECT * FROM annotations WHERE project_id = ? AND user_id = ? ORDER BY created_at DESC',
-            [$pid, $user['id']]
-        ) ?: [];
+        $isOwner = $this->isOwner($pid);
+
+        if ($isOwner) {
+            $annotations = $this->db->exec(
+                'SELECT a.*, u.username AS author_name, u.email AS author_email
+                 FROM annotations a
+                 LEFT JOIN users u ON u.id = a.user_id
+                 WHERE a.project_id = ?
+                 ORDER BY a.created_at DESC',
+                [$pid]
+            ) ?: [];
+        } else {
+            $annotations = $this->db->exec(
+                'SELECT * FROM annotations WHERE project_id = ? AND user_id = ? ORDER BY created_at DESC',
+                [$pid, $user['id']]
+            ) ?: [];
+        }
 
         $this->render('relecture/review.html', [
             'title'           => 'Relecture : ' . $data['project']['title'],
@@ -207,8 +220,8 @@ class ReviewController extends Controller
             'items'           => $data['items'],
             'annotations'     => $annotations,
             'annotationsJson' => json_encode(array_values($annotations)),
-            'projectJson'     => json_encode(['id' => $pid]),
-            'isOwner'         => $this->isOwner($pid),
+            'projectJson'     => json_encode(['id' => $pid, 'currentUserId' => $user['id']]),
+            'isOwner'         => $isOwner,
             'isCollaborator'  => $this->isCollaborator($pid),
         ]);
     }
@@ -299,10 +312,23 @@ class ReviewController extends Controller
         }
         $project = $project[0];
 
-        $rows = $this->db->exec(
-            'SELECT * FROM annotations WHERE project_id = ? AND user_id = ? ORDER BY content_type, content_id, created_at ASC',
-            [$pid, $user['id']]
-        ) ?: [];
+        $isOwner = $this->isOwner($pid);
+
+        if ($isOwner) {
+            $rows = $this->db->exec(
+                'SELECT a.*, u.username AS author_name, u.email AS author_email
+                 FROM annotations a
+                 LEFT JOIN users u ON u.id = a.user_id
+                 WHERE a.project_id = ?
+                 ORDER BY a.content_type, a.content_id, a.created_at ASC',
+                [$pid]
+            ) ?: [];
+        } else {
+            $rows = $this->db->exec(
+                'SELECT * FROM annotations WHERE project_id = ? AND user_id = ? ORDER BY content_type, content_id, created_at ASC',
+                [$pid, $user['id']]
+            ) ?: [];
+        }
 
         // Group by content block and enrich with title
         $grouped      = [];
@@ -340,6 +366,8 @@ class ReviewController extends Controller
             'grouped'         => array_values($grouped),
             'total'           => count($rows),
             'annotationsJson' => json_encode(array_values($rows)),
+            'isOwner'         => $isOwner,
+            'currentUserId'   => $user['id'],
         ]);
     }
 }

@@ -44,6 +44,9 @@
                                     <check if="{{ @ann.comment }}">
                                         <span class="report-comment"> — {{ @ann.comment | esc }}</span>
                                     </check>
+                                    <check if="{{ @isOwner && @ann.user_id != @currentUserId }}">
+                                        <span class="report-annotation-author"><i class="fas fa-user-circle"></i> {{ @ann.author_name | esc }} <span class="report-annotation-author-email">&lt;{{ @ann.author_email | esc }}&gt;</span></span>
+                                    </check>
                                 </div>
                             </repeat>
                         </div>
@@ -100,6 +103,8 @@
 .report-cat-good          { background: #22c55e; }
 .report-selected-text { font-style: italic; color: var(--text-muted, #666); }
 .report-comment { color: var(--text-main, #333); }
+.report-annotation-author { font-size: .7rem; color: var(--text-muted, #888); display: block; margin-top: 3px; }
+.report-annotation-author-email { opacity: .75; }
 @media print {
     .edit-header .header-actions { display: none !important; }
     .report-cat-badge { -webkit-print-color-adjust: exact; print-color-adjust: exact; }

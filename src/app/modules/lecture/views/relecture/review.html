@@ -315,13 +315,16 @@
 
             list.innerHTML = filtered.map(function (ann) {
                 var cat = CATEGORIES[ann.category] || { label: ann.category, color: '#888' };
+                var isOtherUser = projectData.currentUserId && ann.user_id &&
+                    String(ann.user_id) !== String(projectData.currentUserId);
                 return '<div class="annotation-card" id="ann-card-' + ann.id + '">' +
                     '<div class="annotation-card-header">' +
                     '<span class="annotation-cat-badge" style="background:' + cat.color + '">' + escHtml(cat.label) + '</span>' +
-                    '<button class="annotation-delete-btn" data-id="' + ann.id + '" title="Supprimer"><i class="fas fa-times"></i></button>' +
+                    (!isOtherUser ? '<button class="annotation-delete-btn" data-id="' + ann.id + '" title="Supprimer"><i class="fas fa-times"></i></button>' : '') +
                     '</div>' +
                     '<div class="annotation-selected-text">&ldquo;' + escHtml(ann.selected_text) + '&rdquo;</div>' +
                     (ann.comment ? '<div class="annotation-comment">' + escHtml(ann.comment) + '</div>' : '') +
+                    (isOtherUser ? '<div class="annotation-author"><i class="fas fa-user-circle"></i> ' + escHtml(ann.author_name || '') + ' <span class="annotation-author-email">&lt;' + escHtml(ann.author_email || '') + '&gt;</span></div>' : '') +
                     '</div>';
             }).join('');
 
@@ -670,6 +673,19 @@
         font-size: .82rem;
         color: var(--text-main, #333);
         word-break: break-word;
+    }
+
+    .annotation-author {
+        font-size: .72rem;
+        color: var(--text-muted, #888);
+        margin-top: 5px;
+        display: flex;
+        align-items: center;
+        gap: 4px;
+    }
+
+    .annotation-author-email {
+        opacity: .75;
     }
 
     /* Content items */
