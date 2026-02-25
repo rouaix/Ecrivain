@@ -173,20 +173,121 @@ function highlightAnnotations() {
     });
 }
 
+function normalizeWS(s) {
+    return s.replace(/[\s\u00a0]+/g, ' ');
+}
+
 function highlightText(container, text, category) {
     if (!container || !text) return;
+
+    // Collect all text nodes
+    var textNodes = [];
     var walker = document.createTreeWalker(container, NodeFilter.SHOW_TEXT, null, false);
-    var node;
-    while ((node = walker.nextNode())) {
-        var idx = node.nodeValue.indexOf(text);
-        if (idx < 0) continue;
+    var n;
+    while ((n = walker.nextNode())) { textNodes.push(n); }
+    if (!textNodes.length) return;
+
+    var rawValues = textNodes.map(function(nd) { return nd.nodeValue; });
+    var rawFull = rawValues.join('');
+
+    // ── 1. Exact match ──────────────────────────────────────────────────────
+    var idx = rawFull.indexOf(text);
+    var textLen = text.length;
+
+    // ── 2. Normalised whitespace match ──────────────────────────────────────
+    if (idx < 0) {
+        var normSearch = normalizeWS(text);
+        var normFull = '';
+        var normToRaw = [];
+        var prevIsSpace = false;
+        for (var r = 0; r < rawFull.length; r++) {
+            var ch = rawFull[r];
+            var isSpace = /[\s\u00a0]/.test(ch);
+            if (isSpace) {
+                if (!prevIsSpace) { normToRaw.push(r); normFull += ' '; }
+                prevIsSpace = true;
+            } else {
+                normToRaw.push(r); normFull += ch; prevIsSpace = false;
+            }
+        }
+        normToRaw.push(rawFull.length);
+        var normIdx = normFull.indexOf(normSearch);
+        if (normIdx >= 0) {
+            var normEnd = normIdx + normSearch.length;
+            idx = normToRaw[normIdx];
+            var rawEnd = normToRaw[normEnd] !== undefined ? normToRaw[normEnd] : rawFull.length;
+            text = rawFull.substring(idx, rawEnd);
+            textLen = text.length;
+        }
+    }
+
+    // ── 3. Regex match: spaces may correspond to 0 chars at block boundaries ──
+    if (idx < 0) {
+        try {
+            var normForRx = normalizeWS(text)
+                .replace(/[.*+?^${}()|[\]\\]/g, '\\$&')
+                .replace(/ /g, '[\\s\\S]{0,4}');
+            var rx = new RegExp(normForRx);
+            var rxMatch = rx.exec(rawFull);
+            if (rxMatch) { idx = rxMatch.index; text = rxMatch[0]; textLen = text.length; }
+        } catch (rxErr) { /* skip */ }
+    }
+
+    if (idx < 0) return;
+
+    // Resolve start/end nodes and offsets
+    var startNode = null, startOffset = 0, endNode = null, endOffset = 0;
+    var cumulative = 0;
+    for (var i = 0; i < textNodes.length; i++) {
+        var nodeLen = rawValues[i].length;
+        if (!startNode && cumulative + nodeLen > idx) {
+            startNode = textNodes[i]; startOffset = idx - cumulative;
+        }
+        if (startNode && cumulative + nodeLen >= idx + textLen) {
+            endNode = textNodes[i]; endOffset = idx + textLen - cumulative; break;
+        }
+        cumulative += nodeLen;
+    }
+    if (!startNode || !endNode) return;
+
+    // Same-node case
+    if (startNode === endNode) {
         var span = document.createElement('span');
         span.className = 'ann-highlight cat-' + category;
+        var after = startNode.splitText(startOffset);
+        after.nodeValue = after.nodeValue.substring(textLen);
         span.textContent = text;
-        var after = node.splitText(idx);
-        after.nodeValue = after.nodeValue.substring(text.length);
-        node.parentNode.insertBefore(span, after);
+        startNode.parentNode.insertBefore(span, after);
         return;
+    }
+
+    // Cross-node: wrap each fragment individually
+    var markNodes = [];
+    var inRange = false;
+    var walker2 = document.createTreeWalker(container, NodeFilter.SHOW_TEXT, null, false);
+    var nd2;
+    while ((nd2 = walker2.nextNode())) {
+        if (nd2 === startNode) { inRange = true; }
+        if (inRange) { markNodes.push(nd2); }
+        if (nd2 === endNode) { break; }
+    }
+    for (var j = 0; j < markNodes.length; j++) {
+        var nd = markNodes[j];
+        if (!nd.parentNode) { continue; }
+        var spanN = document.createElement('span');
+        spanN.className = 'ann-highlight cat-' + category;
+        if (nd === startNode) {
+            var textAfter = nd.splitText(startOffset);
+            nd.parentNode.insertBefore(spanN, textAfter);
+            spanN.appendChild(textAfter);
+        } else if (nd === endNode) {
+            nd.splitText(endOffset);
+            nd.parentNode.insertBefore(spanN, nd);
+            spanN.appendChild(nd);
+        } else {
+            nd.parentNode.insertBefore(spanN, nd);
+            spanN.appendChild(nd);
+        }
     }
 }
 

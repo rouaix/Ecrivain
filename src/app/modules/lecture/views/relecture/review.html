@@ -17,8 +17,7 @@
 
     <p class="text-muted-para review-hint">
         <i class="fas fa-info-circle"></i>
-        Sélectionnez un passage sans retour à la ligne pour l'annoter. Cliquez sur un surlignage pour retrouver
-        l'annotation dans le panneau.
+        Sélectionnez un passage pour l'annoter. Cliquez sur un surlignage pour retrouver l'annotation dans le panneau.
     </p>
 
     <div class="review-body">
@@ -191,6 +190,22 @@
                 }
             }
 
+            // ── 3. Regex match: spaces in search may map to 0–4 chars at block boundaries ──
+            if (idx < 0) {
+                try {
+                    var normForRx = normalizeWS(text)
+                        .replace(/[.*+?^${}()|[\]\\]/g, '\\$&')
+                        .replace(/ /g, '[\\s\\S]{0,4}');
+                    var rx = new RegExp(normForRx);
+                    var rxMatch = rx.exec(rawFull);
+                    if (rxMatch) {
+                        idx = rxMatch.index;
+                        text = rxMatch[0];
+                        textLen = text.length;
+                    }
+                } catch (rxErr) { /* regex invalide – on abandonne */ }
+            }
+
             if (idx < 0) {
                 console.warn('[Highlight] Texte introuvable dans', containerId,
                     ':', JSON.stringify(text).substring(0, 120));
@@ -233,25 +248,40 @@
                 return true;
             }
 
-            // Cross‑node: use Range API
-            try {
-                var range = document.createRange();
-                range.setStart(startNode, startOffset);
-                range.setEnd(endNode, endOffset);
-
-                var mark2 = document.createElement('mark');
-                mark2.className = 'annotation-mark ann-bg-' + category;
-                mark2.dataset.annotId = String(annotId);
-                mark2.title = CATEGORIES[category] ? CATEGORIES[category].label : category;
-                mark2.addEventListener('click', function () { scrollToCard(this.dataset.annotId); });
-
-                range.surroundContents(mark2);
-                return true;
-            } catch (e) {
-                console.warn('[Highlight] surroundContents échoué pour "'
-                    + text.substring(0, 60) + '":', e.message);
-                return false;
+            // Cross‑node: wrap each text fragment individually to handle <p>/<br> boundaries
+            var markNodes = [];
+            var inRange = false;
+            var walker2 = document.createTreeWalker(container, NodeFilter.SHOW_TEXT, null, false);
+            var nd2;
+            while ((nd2 = walker2.nextNode())) {
+                if (nd2 === startNode) { inRange = true; }
+                if (inRange) { markNodes.push(nd2); }
+                if (nd2 === endNode) { break; }
             }
+
+            for (var j = 0; j < markNodes.length; j++) {
+                var nd = markNodes[j];
+                if (!nd.parentNode) { continue; }
+                var markN = document.createElement('mark');
+                markN.className = 'annotation-mark ann-bg-' + category;
+                markN.dataset.annotId = String(annotId);
+                markN.title = CATEGORIES[category] ? CATEGORIES[category].label : category;
+                markN.addEventListener('click', function () { scrollToCard(this.dataset.annotId); });
+
+                if (nd === startNode) {
+                    var textAfter = nd.splitText(startOffset);
+                    nd.parentNode.insertBefore(markN, textAfter);
+                    markN.appendChild(textAfter);
+                } else if (nd === endNode) {
+                    nd.splitText(endOffset);
+                    nd.parentNode.insertBefore(markN, nd);
+                    markN.appendChild(nd);
+                } else {
+                    nd.parentNode.insertBefore(markN, nd);
+                    markN.appendChild(nd);
+                }
+            }
+            return markNodes.length > 0;
         }
 
         function removeHighlight(annotId) {
