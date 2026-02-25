@@ -82,7 +82,16 @@
 
                     <a href="#" id="aiRequestBtn">Demande IA</a>
 
-                    <button type="button" id="searchToggleBtn" class="nav-search-btn" title="Rechercher (Ctrl+K)" aria-label="Ouvrir la recherche">
+                    <a href="{{ @base }}/collab/invitations" title="Invitations et collaborations"
+                        class="nav-collab-link">
+                        <i class="fas fa-users"></i>
+                        <check if="{{ @pendingCollabCount > 0 }}">
+                            <span class="nav-badge">{{ @pendingCollabCount }}</span>
+                        </check>
+                    </a>
+
+                    <button type="button" id="searchToggleBtn" class="nav-search-btn" title="Rechercher (Ctrl+K)"
+                        aria-label="Ouvrir la recherche">
                         <i class="fas fa-search"></i>
                     </button>
 
@@ -123,13 +132,13 @@
                 <form method="get" action="{{ @base }}/search" id="searchOverlayForm">
                     <div class="search-overlay-input-wrap">
                         <i class="fas fa-search search-overlay-icon"></i>
-                        <input type="text" name="q" id="searchOverlayInput"
-                            placeholder="Rechercher dans vos textes…"
+                        <input type="text" name="q" id="searchOverlayInput" placeholder="Rechercher dans vos textes…"
                             autocomplete="off" spellcheck="false">
                         <kbd class="search-overlay-esc">Esc</kbd>
                     </div>
                 </form>
-                <p class="search-overlay-hint">Appuyez sur <kbd>Entrée</kbd> pour rechercher · <kbd>Esc</kbd> pour fermer</p>
+                <p class="search-overlay-hint">Appuyez sur <kbd>Entrée</kbd> pour rechercher · <kbd>Esc</kbd> pour
+                    fermer</p>
             </div>
         </div>
     </check>
@@ -145,54 +154,121 @@
     <!-- Register service worker for PWA support -->
 
     <style>
+        /* Nav collab badge */
+        .nav-collab-link {
+            position: relative;
+        }
+
+        .nav-badge {
+            position: absolute;
+            top: -6px;
+            right: -8px;
+            background: #ef4444;
+            color: #fff;
+            border-radius: 10px;
+            padding: 1px 5px;
+            font-size: .65rem;
+            font-weight: 700;
+            line-height: 1.4;
+            pointer-events: none;
+        }
+
         /* Nav search button */
         .nav-search-btn {
-            background: none; border: none; cursor: pointer;
-            color: var(--header-text); font-size: 1rem;
-            padding: 4px 8px; border-radius: 4px;
-            opacity: .8; transition: opacity .15s, background .15s;
+            background: none;
+            border: none;
+            cursor: pointer;
+            color: var(--header-text);
+            font-size: 1rem;
+            padding: 4px 8px;
+            border-radius: 4px;
+            opacity: .8;
+            transition: opacity .15s, background .15s;
             margin-right: 20px;
         }
-        .nav-search-btn:hover { opacity: 1; background: rgba(255,255,255,.15); }
+
+        .nav-search-btn:hover {
+            opacity: 1;
+            background: rgba(255, 255, 255, .15);
+        }
 
         /* Search overlay */
         #searchOverlay {
-            display: none; position: fixed; inset: 0;
-            background: rgba(0,0,0,.55); z-index: 9000;
-            align-items: flex-start; justify-content: center;
+            display: none;
+            position: fixed;
+            inset: 0;
+            background: rgba(0, 0, 0, .55);
+            z-index: 9000;
+            align-items: flex-start;
+            justify-content: center;
             padding-top: 15vh;
         }
-        #searchOverlay.is-open { display: flex; }
+
+        #searchOverlay.is-open {
+            display: flex;
+        }
+
         #searchOverlayBox {
-            background: var(--card-bg, #fff); border-radius: 12px;
-            box-shadow: 0 20px 60px rgba(0,0,0,.35);
-            width: min(640px, 92vw); overflow: hidden;
+            background: var(--card-bg, #fff);
+            border-radius: 12px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, .35);
+            width: min(640px, 92vw);
+            overflow: hidden;
         }
+
         .search-overlay-input-wrap {
-            display: flex; align-items: center; gap: 12px;
-            padding: 16px 20px; border-bottom: 1px solid var(--border-color, #e0e0e0);
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 16px 20px;
+            border-bottom: 1px solid var(--border-color, #e0e0e0);
         }
-        .search-overlay-icon { font-size: 1.1rem; color: var(--text-muted, #888); flex-shrink: 0; }
+
+        .search-overlay-icon {
+            font-size: 1.1rem;
+            color: var(--text-muted, #888);
+            flex-shrink: 0;
+        }
+
         #searchOverlayInput {
-            flex: 1; border: none; outline: none; background: transparent;
-            font-size: 1.15rem; color: var(--text-main, #333);
+            flex: 1;
+            border: none;
+            outline: none;
+            background: transparent;
+            font-size: 1.15rem;
+            color: var(--text-main, #333);
             font-family: inherit;
         }
-        #searchOverlayInput::placeholder { color: var(--text-muted, #aaa); }
+
+        #searchOverlayInput::placeholder {
+            color: var(--text-muted, #aaa);
+        }
+
         .search-overlay-esc {
-            font-size: .7rem; padding: 2px 6px; border-radius: 4px;
+            font-size: .7rem;
+            padding: 2px 6px;
+            border-radius: 4px;
             border: 1px solid var(--border-color, #ccc);
-            color: var(--text-muted, #888); background: var(--table-header-bg, #f5f5f5);
-            font-family: inherit; flex-shrink: 0;
+            color: var(--text-muted, #888);
+            background: var(--table-header-bg, #f5f5f5);
+            font-family: inherit;
+            flex-shrink: 0;
         }
+
         .search-overlay-hint {
-            font-size: .78rem; color: var(--text-muted, #999);
-            padding: 10px 20px; margin: 0;
+            font-size: .78rem;
+            color: var(--text-muted, #999);
+            padding: 10px 20px;
+            margin: 0;
         }
+
         .search-overlay-hint kbd {
-            font-size: .75rem; padding: 1px 5px; border-radius: 3px;
+            font-size: .75rem;
+            padding: 1px 5px;
+            border-radius: 3px;
             border: 1px solid var(--border-color, #ccc);
-            background: var(--table-header-bg, #f5f5f5); font-family: inherit;
+            background: var(--table-header-bg, #f5f5f5);
+            font-family: inherit;
         }
     </style>
 
@@ -222,8 +298,8 @@
 
         // Search overlay logic
         var searchOverlay = document.getElementById('searchOverlay');
-        var searchInput   = document.getElementById('searchOverlayInput');
-        var searchToggle  = document.getElementById('searchToggleBtn');
+        var searchInput = document.getElementById('searchOverlayInput');
+        var searchToggle = document.getElementById('searchToggleBtn');
 
         function openSearch() {
             if (!searchOverlay) return;
@@ -288,7 +364,6 @@
                         <label for="aiSystemPrompt">Prompt Système</label>
 
                         <textarea id="aiSystemPrompt" class="input-block" rows="3"
-
                             placeholder="Définissez le rôle de l'IA...">{{ @aiSystemPrompt | esc }}</textarea>
 
                     </div>
@@ -310,7 +385,6 @@
                         </select>
 
                         <textarea id="aiUserPrompt" class="input-block" rows="5" style="margin-top: 10px;"
-
                             placeholder="Votre demande..."></textarea>
 
                     </div>

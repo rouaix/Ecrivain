@@ -123,6 +123,53 @@
     </false>
 </check>
 
+<!-- Invitations en attente -->
+<check if="{{ count(@pendingInvitations) > 0 }}">
+    <div class="alert alert-info" style="margin-bottom:1rem">
+        <i class="fas fa-envelope"></i>
+        Vous avez <strong>{{ count(@pendingInvitations) }}</strong> invitation(s) en attente.
+        <a href="{{ @base }}/collab/invitations" class="button small" style="margin-left:.75rem">Voir les invitations</a>
+    </div>
+</check>
+
+<!-- Projets partagés -->
+<check if="{{ count(@sharedProjects) > 0 }}">
+    <h3 style="margin-top:1.5rem;margin-bottom:.75rem">
+        <i class="fas fa-users"></i> Projets partagés avec moi
+    </h3>
+    <div class="projects-grid">
+        <repeat group="{{ @sharedProjects }}" value="{{ @proj }}">
+            <div class="project-card">
+                <a href="{{ @base }}/project/{{ @proj.id }}" class="project-card-link">
+                    <div class="project-card__cover">
+                        <div class="project-card__title-overlay">{{ @proj.title }}</div>
+                    </div>
+                    <div class="project-card__info">
+                        <h3 class="project-card__title">{{ @proj.title }}</h3>
+                        <div class="project-card__description">
+                            <i class="fas fa-user" style="opacity:.6"></i> {{ @proj.owner_username | esc }}
+                        </div>
+                        <div class="project-card__meta">
+                            <span>Accepté le : {{ date('d/m/Y', strtotime(@proj.accepted_at)) }}</span>
+                        </div>
+                    </div>
+                </a>
+                <div class="project-card__actions">
+                    <a href="{{ @base }}/project/{{ @proj.id }}/relecture" class="button small secondary" title="Relecture">
+                        <i class="fas fa-glasses"></i>
+                    </a>
+                    <a href="{{ @base }}/project/{{ @proj.id }}/collab/mes-demandes" class="button small secondary" title="Mes demandes">
+                        <i class="fas fa-paper-plane"></i>
+                    </a>
+                    <a href="{{ @base }}/project/{{ @proj.id }}/export" class="button small secondary" title="Exporter">
+                        <i class="fas fa-download"></i>
+                    </a>
+                </div>
+            </div>
+        </repeat>
+    </div>
+</check>
+
 <!-- Delete Confirmation Modal -->
 <div id="deleteModal" class="modal-overlay">
     <div class="modal-content">

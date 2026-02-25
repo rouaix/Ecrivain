@@ -922,3 +922,175 @@
 
 </script>
 
+<!-- Propose Modal (collaborateur) -->
+<div id="proposeModal" class="modal-overlay">
+    <div class="modal-content modal-content--wide">
+        <div class="modal-header">
+            <h3 id="proposeModalTitle">Proposer une modification</h3>
+            <button class="modal-close" id="closeProposeModal">&times;</button>
+        </div>
+        <div class="modal-body">
+            <form id="proposeForm">
+                <input type="hidden" id="proposeContentType" name="content_type">
+                <input type="hidden" id="proposeContentId" name="content_id">
+                <input type="hidden" id="proposeContentTitle" name="content_title">
+                <input type="hidden" id="proposeCurrentSnapshot" name="current_snapshot">
+                <input type="hidden" id="proposeProposedContent" name="proposed_content">
+                <input type="hidden" name="csrf_token" value="{{ @csrfToken }}">
+
+                <div class="form-group">
+                    <label>Type de demande</label>
+                    <div class="propose-radio-group">
+                        <label><input type="radio" name="request_type" value="modify" checked> Modifier</label>
+                        <label><input type="radio" name="request_type" value="correct"> Corriger</label>
+                        <label><input type="radio" name="request_type" value="delete"> Supprimer</label>
+                    </div>
+                </div>
+
+                <div id="proposeEditorArea">
+                    <div class="form-group">
+                        <label>Contenu actuel</label>
+                        <div id="proposeCurrentContent" class="propose-current-content typography"></div>
+                    </div>
+                    <div class="form-group">
+                        <label>Contenu proposé</label>
+                        <div id="proposeEditor" style="min-height:150px"></div>
+                    </div>
+                </div>
+
+                <div id="proposeDeleteArea" style="display:none">
+                    <p style="color:#b91c1c;font-weight:600"><i class="fas fa-exclamation-triangle"></i> Vous proposez la suppression de cet élément. Expliquez votre demande ci-dessous.</p>
+                </div>
+
+                <div class="form-group">
+                    <label for="proposeMessage">Message (optionnel)</label>
+                    <textarea id="proposeMessage" name="message" rows="3" class="form-control" placeholder="Explications ou commentaires..."></textarea>
+                </div>
+
+                <div class="form-actions-right mt-20">
+                    <button type="button" class="button secondary" id="cancelProposeBtn">Annuler</button>
+                    <button type="submit" id="proposeSubmitBtn" class="button">Soumettre la demande</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<style nonce="{{ @nonce }}">
+.modal-content--wide { max-width: 800px; width: 95vw; }
+.propose-radio-group { display: flex; gap: 1.5rem; flex-wrap: wrap; margin-top: .5rem; }
+.propose-radio-group label { display: flex; align-items: center; gap: .4rem; cursor: pointer; }
+.propose-current-content { background: var(--input-bg, #f5f5f5); border: 1px solid var(--input-border, #ddd); border-radius: 4px; padding: .75rem 1rem; max-height: 200px; overflow-y: auto; font-size: .9rem; }
+#proposeEditor { border: 1px solid var(--input-border, #ddd); border-top: none; background: var(--card-bg, #fff); }
+.ql-toolbar { border: 1px solid var(--input-border, #ddd) !important; }
+</style>
+
+<script nonce="{{ @nonce }}">
+(function () {
+    var BASE = '{{ @base }}';
+    var PROJECT_ID = '{{ @project.id }}';
+
+    var proposeModal = document.getElementById('proposeModal');
+    var proposeForm  = document.getElementById('proposeForm');
+    var proposeQuill = null;
+    var currentSnapshot = '';
+
+    function initProposeQuill(html) {
+        if (!proposeQuill) {
+            proposeQuill = new Quill(document.getElementById('proposeEditor'), {
+                theme: 'snow',
+                modules: { toolbar: QuillTools.getToolbarOptions() }
+            });
+        }
+        proposeQuill.root.innerHTML = html || '';
+    }
+
+    function setRequestType(type) {
+        var editorArea = document.getElementById('proposeEditorArea');
+        var deleteArea = document.getElementById('proposeDeleteArea');
+        if (type === 'delete') {
+            editorArea.style.display = 'none';
+            deleteArea.style.display = '';
+        } else {
+            editorArea.style.display = '';
+            deleteArea.style.display = 'none';
+        }
+    }
+
+    document.querySelectorAll('.propose-btn').forEach(function (btn) {
+        btn.addEventListener('click', function () {
+            var type  = this.dataset.type;
+            var id    = this.dataset.id;
+            var title = this.dataset.title || '';
+
+            document.getElementById('proposeModalTitle').textContent = 'Proposer — ' + (title || type + ' #' + id);
+            document.getElementById('proposeContentType').value  = type;
+            document.getElementById('proposeContentId').value    = id;
+            document.getElementById('proposeContentTitle').value = title;
+            document.getElementById('proposeCurrentContent').innerHTML = '<em>Chargement...</em>';
+            document.querySelector('input[name="request_type"][value="modify"]').checked = true;
+            document.getElementById('proposeMessage').value = '';
+            currentSnapshot = '';
+            setRequestType('modify');
+            proposeModal.classList.add('is-visible');
+
+            fetch(BASE + '/project/' + PROJECT_ID + '/preview/' + type + '/' + id)
+                .then(function (r) { return r.json(); })
+                .then(function (data) {
+                    currentSnapshot = data.content || '';
+                    document.getElementById('proposeCurrentContent').innerHTML = currentSnapshot;
+                    initProposeQuill(currentSnapshot);
+                })
+                .catch(function () {
+                    document.getElementById('proposeCurrentContent').innerHTML = '<em>Impossible de charger le contenu.</em>';
+                    initProposeQuill('');
+                });
+        });
+    });
+
+    document.querySelectorAll('input[name="request_type"]').forEach(function (radio) {
+        radio.addEventListener('change', function () { setRequestType(this.value); });
+    });
+
+    function closePropose() { proposeModal.classList.remove('is-visible'); }
+    document.getElementById('closeProposeModal').addEventListener('click', closePropose);
+    document.getElementById('cancelProposeBtn').addEventListener('click', closePropose);
+    proposeModal.addEventListener('click', function (e) { if (e.target === proposeModal) closePropose(); });
+
+    proposeForm.addEventListener('submit', function (e) {
+        e.preventDefault();
+        var requestType = document.querySelector('input[name="request_type"]:checked').value;
+
+        document.getElementById('proposeCurrentSnapshot').value = currentSnapshot;
+        if (requestType !== 'delete' && proposeQuill) {
+            document.getElementById('proposeProposedContent').value = proposeQuill.root.innerHTML;
+        } else {
+            document.getElementById('proposeProposedContent').value = '';
+        }
+
+        var fd = new FormData(this);
+        var submitBtn = document.getElementById('proposeSubmitBtn');
+        submitBtn.disabled = true;
+        submitBtn.textContent = 'Envoi...';
+
+        fetch(BASE + '/project/' + PROJECT_ID + '/collab/request/add', { method: 'POST', body: fd })
+            .then(function (r) { return r.json(); })
+            .then(function (data) {
+                if (data.status === 'ok') {
+                    closePropose();
+                    alert('Demande soumise avec succès !');
+                } else {
+                    alert('Erreur : ' + (data.message || 'Erreur inconnue'));
+                    submitBtn.disabled = false;
+                    submitBtn.textContent = 'Soumettre la demande';
+                }
+            })
+            .catch(function () {
+                alert('Erreur de communication avec le serveur.');
+                submitBtn.disabled = false;
+                submitBtn.textContent = 'Soumettre la demande';
+            });
+    });
+})();
+</script>
+

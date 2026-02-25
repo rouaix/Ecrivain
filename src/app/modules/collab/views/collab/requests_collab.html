@@ -1,0 +1,105 @@
+<div class="edit-page-layout">
+    <div class="edit-header">
+        <h2><i class="fas fa-paper-plane"></i> Mes demandes — {{ @project.title | esc }}</h2>
+        <div class="header-actions">
+            <a href="{{ @base }}/project/{{ @project.id }}" class="button secondary">
+                <i class="fas fa-arrow-left"></i> Retour au projet
+            </a>
+        </div>
+    </div>
+
+    <check if="{{ count(@requests) == 0 }}">
+        <div class="card">
+            <p class="text-muted-para" style="text-align:center;padding:2rem 0">
+                <i class="fas fa-paper-plane" style="font-size:2rem;opacity:.3;display:block;margin-bottom:.5rem"></i>
+                Vous n'avez soumis aucune demande sur ce projet.
+            </p>
+        </div>
+    </check>
+
+    <check if="{{ count(@requests) > 0 }}">
+        <repeat group="{{ @requests }}" value="{{ @req }}">
+            <div class="card collab-request-card {{ @req.status }}" id="req-{{ @req.id }}">
+                <div class="collab-req-header">
+                    <div class="collab-req-meta">
+                        <span class="collab-req-type collab-req-type-{{ @req.request_type }}">{{ @req.request_type | esc }}</span>
+                        <span class="collab-req-content-type">{{ @req.content_type | esc }}</span>
+                        <check if="{{ @req.content_title }}">
+                            <strong>{{ @req.content_title | esc }}</strong>
+                        </check>
+                        <span class="text-muted-para" style="font-size:.8rem">{{ @req.created_at }}</span>
+                    </div>
+                    <span class="collab-req-status collab-req-status-{{ @req.status }}">
+                        <check if="{{ @req.status == 'pending' }}"><i class="fas fa-clock"></i> En attente</check>
+                        <check if="{{ @req.status == 'approved' }}"><i class="fas fa-check-circle"></i> Approuvée</check>
+                        <check if="{{ @req.status == 'rejected' }}"><i class="fas fa-times-circle"></i> Refusée</check>
+                    </span>
+                </div>
+
+                <check if="{{ @req.message }}">
+                    <p class="collab-req-message">{{ @req.message | esc }}</p>
+                </check>
+
+                <check if="{{ @req.owner_note }}">
+                    <p class="collab-req-owner-note"><strong>Réponse du propriétaire :</strong> {{ @req.owner_note | esc }}</p>
+                </check>
+
+                <check if="{{ @req.status == 'pending' }}">
+                    <div style="margin-top:.75rem">
+                        <button class="button small danger btn-cancel" data-id="{{ @req.id }}">
+                            <i class="fas fa-trash"></i> Annuler la demande
+                        </button>
+                    </div>
+                </check>
+            </div>
+        </repeat>
+    </check>
+</div>
+
+<style nonce="{{ @nonce }}">
+.collab-request-card { margin-bottom: 1rem; }
+.collab-request-card.approved { border-left: 3px solid #22c55e; }
+.collab-request-card.rejected { border-left: 3px solid #ef4444; opacity: .8; }
+.collab-req-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: .5rem; gap: 1rem; }
+.collab-req-meta { display: flex; flex-wrap: wrap; align-items: center; gap: .5rem; }
+.collab-req-type { padding: 2px 8px; border-radius: 4px; font-size: .72rem; font-weight: 700; text-transform: uppercase; }
+.collab-req-type-modify  { background: #dbeafe; color: #1e40af; }
+.collab-req-type-correct { background: #ede9fe; color: #6d28d9; }
+.collab-req-type-add     { background: #dcfce7; color: #166534; }
+.collab-req-type-delete  { background: #fee2e2; color: #991b1b; }
+.collab-req-content-type { font-size: .78rem; color: var(--text-muted, #777); }
+.collab-req-status { font-size: .82rem; font-weight: 600; white-space: nowrap; }
+.collab-req-status-pending  { color: #d97706; }
+.collab-req-status-approved { color: #16a34a; }
+.collab-req-status-rejected { color: #dc2626; }
+.collab-req-message { font-size: .85rem; font-style: italic; color: var(--text-muted,#555); margin: .4rem 0; }
+.collab-req-owner-note { font-size: .83rem; background: var(--input-bg,#f5f5f5); padding: .5rem .75rem; border-radius: 4px; margin: .4rem 0 0; }
+.button.danger { background: #ef4444; color: #fff; }
+.button.danger:hover { background: #dc2626; }
+</style>
+
+<script nonce="{{ @nonce }}">
+(function() {
+    var BASE = '{{ @base }}';
+    var CSRF = '{{ @csrfToken }}';
+
+    document.querySelectorAll('.btn-cancel').forEach(function(btn) {
+        btn.addEventListener('click', function() {
+            if (!confirm('Annuler cette demande ?')) return;
+            var id = this.dataset.id;
+            var fd = new FormData();
+            fd.append('csrf_token', CSRF);
+            fetch(BASE + '/collab/request/' + id + '/cancel', { method: 'POST', body: fd })
+                .then(function(r) { return r.json(); })
+                .then(function(res) {
+                    if (res.status === 'ok') {
+                        var card = document.getElementById('req-' + id);
+                        if (card) card.remove();
+                    } else {
+                        alert('Erreur : ' + (res.message || ''));
+                    }
+                });
+        });
+    });
+})();
+</script>

@@ -89,10 +89,33 @@ class ProjectController extends Controller
             $proj['pages_count'] = ceil($proj['target_words'] / $wpp);
         }
 
+        // Projets partagés (collaborateur accepté)
+        $sharedProjects = $this->db->exec(
+            'SELECT p.*, pc.accepted_at, u.username AS owner_username
+             FROM projects p
+             JOIN project_collaborators pc ON pc.project_id = p.id
+             JOIN users u ON u.id = p.user_id
+             WHERE pc.user_id = ? AND pc.status = "accepted"
+             ORDER BY p.updated_at DESC',
+            [$user['id']]
+        ) ?: [];
+
+        // Invitations en attente
+        $pendingInvitations = $this->db->exec(
+            'SELECT pc.id, p.title AS project_title, u.username AS owner_username
+             FROM project_collaborators pc
+             JOIN projects p ON p.id = pc.project_id
+             JOIN users u ON u.id = pc.owner_id
+             WHERE pc.user_id = ? AND pc.status = "pending"',
+            [$user['id']]
+        ) ?: [];
+
         $this->render('project/dashboard', [
-            'title' => 'Tableau de bord',
-            'projects' => $projects,
-            'user' => $user,
+            'title'              => 'Tableau de bord',
+            'projects'           => $projects,
+            'user'               => $user,
+            'sharedProjects'     => $sharedProjects,
+            'pendingInvitations' => $pendingInvitations,
         ]);
     }
 
@@ -193,8 +216,17 @@ class ProjectController extends Controller
     public function show()
     {
         $pid = (int) $this->f3->get('PARAMS.id');
+
+        if (!$this->hasProjectAccess($pid)) {
+            $this->f3->error(404, 'Projet introuvable.');
+            return;
+        }
+
+        $isOwner        = $this->isOwner($pid);
+        $isCollaborator = !$isOwner;
+
         $projectModel = new Project();
-        $project = $projectModel->findAndCast(['id=? AND user_id=?', $pid, $this->currentUser()['id']]);
+        $project = $projectModel->findAndCast(['id=?', $pid]);
 
         if (!$project) {
             $this->f3->error(404, 'Projet introuvable.');
@@ -748,6 +780,8 @@ class ProjectController extends Controller
             'customElementPanels' => $customElementPanels,
             'customElementsByType' => $customElementsByType ?? [],
             'panelCss' => $panelCss,
+            'isOwner'        => $isOwner,
+            'isCollaborator' => $isCollaborator,
         ]);
     }
 
@@ -1435,6 +1469,10 @@ class ProjectController extends Controller
 
     public function generateExportContent($pid, $format)
     {
+        if (!$this->hasProjectAccess((int)$pid)) {
+            return null;
+        }
+
         $projectModel = new Project();
         $project = $projectModel->findAndCast(['id=?', $pid]);
         if (!$project) {
@@ -2015,6 +2053,11 @@ class ProjectController extends Controller
 
     private function generateEpub($pid)
     {
+        if (!$this->hasProjectAccess((int)$pid)) {
+            $this->f3->error(403);
+            return;
+        }
+
         $projectModel = new Project();
         $project = $projectModel->findAndCast(['id=?', $pid])[0];
 

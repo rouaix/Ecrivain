@@ -268,6 +268,9 @@ abstract class Controller
             $view .= '.html';
         }
 
+        // Notification counts for the header badge
+        $this->f3->set('pendingCollabCount', $this->pendingCollabCount());
+
         $this->f3->set('content', \Template::instance()->render($view));
         echo \Template::instance()->render('layouts/main.html');
     }
@@ -524,6 +527,60 @@ abstract class Controller
 
         // All checks passed
         return ['success' => true, 'error' => null, 'extension' => $ext];
+    }
+
+    /**
+     * Returns true if the current user owns the given project.
+     */
+    protected function isOwner(int $projectId): bool
+    {
+        $user = $this->currentUser();
+        if (!$user) return false;
+        $rows = $this->db->exec(
+            'SELECT id FROM projects WHERE id = ? AND user_id = ?',
+            [$projectId, $user['id']]
+        );
+        return !empty($rows);
+    }
+
+    /**
+     * Returns true if the current user is an accepted collaborator on the given project.
+     */
+    protected function isCollaborator(int $projectId): bool
+    {
+        $user = $this->currentUser();
+        if (!$user) return false;
+        $rows = $this->db->exec(
+            'SELECT id FROM project_collaborators WHERE project_id = ? AND user_id = ? AND status = "accepted"',
+            [$projectId, $user['id']]
+        );
+        return !empty($rows);
+    }
+
+    /**
+     * Returns true if the current user is owner OR accepted collaborator on the given project.
+     */
+    protected function hasProjectAccess(int $projectId): bool
+    {
+        return $this->isOwner($projectId) || $this->isCollaborator($projectId);
+    }
+
+    /**
+     * Count pending collaboration requests for all projects owned by the current user.
+     * Used to display the notification badge.
+     */
+    protected function pendingCollabCount(): int
+    {
+        $user = $this->currentUser();
+        if (!$user) return 0;
+        $rows = $this->db->exec(
+            'SELECT COUNT(*) AS cnt
+             FROM collaboration_requests cr
+             JOIN projects p ON p.id = cr.project_id
+             WHERE p.user_id = ? AND cr.status = "pending"',
+            [$user['id']]
+        );
+        return (int)($rows[0]['cnt'] ?? 0);
     }
 
     /**

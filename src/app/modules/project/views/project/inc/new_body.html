@@ -48,7 +48,52 @@
   </style>
 </check>
 
-<div class="panels-container">
+<style nonce="{{ @nonce }}">
+  /* ── Mode collaborateur ──────────────────────────────────────────── */
+  /* Masquer tous les contrôles réservés au propriétaire */
+  .collab-mode .export-toggle,
+  .collab-mode .order-input,
+  .collab-mode .act-actions,
+  .collab-mode .panel-actions,
+  .collab-mode .section-group-heading a,
+  .collab-mode #addFileBtn,
+  .collab-mode #sortFilesBtn,
+  .collab-mode .ai-summary-btn,
+  .collab-mode .ai-act-summary-btn,
+  .collab-mode a:has(.fa-edit),
+  .collab-mode a:has(.fa-trash),
+  .collab-mode a:has(.fa-plus),
+  .collab-mode button:has(.fa-trash),
+  .collab-mode button:has(.fa-users-cog),
+  .collab-mode button:has(.fa-sort-alpha-down) { display: none !important; }
+
+  /* Afficher les boutons "Proposer" uniquement en mode collab */
+  .propose-btn { display: none !important; background: var(--link-color, #3f51b5); color: #fff; }
+  .propose-btn:hover { opacity: .85; }
+  .collab-mode .propose-btn { display: inline-flex !important; }
+
+  /* Bandeau collaborateur */
+  .collab-banner {
+    background: #eff6ff; border: 1px solid #bfdbfe;
+    border-radius: 6px; padding: .6rem 1rem;
+    font-size: .85rem; color: #1e40af;
+    display: flex; align-items: center; gap: .6rem;
+    margin-bottom: 1rem;
+  }
+  .collab-banner a { color: #1e40af; font-weight: 600; }
+</style>
+
+<check if="{{ @isCollaborator }}">
+  <div class="collab-banner">
+    <i class="fas fa-users"></i>
+    Vous consultez ce projet en tant que <strong>collaborateur</strong> — lecture seule.
+    <a href="{{ @base }}/project/{{ @project.id }}/collab/mes-demandes">Mes demandes</a>
+    &nbsp;·&nbsp;
+    <a href="{{ @base }}/project/{{ @project.id }}/relecture">Relecture</a>
+  </div>
+</check>
+
+<div class="panels-container {{ @isCollaborator ? 'collab-mode' : '' }}">
 
   <!-- Search Bar -->
   <div class="search-container">
@@ -135,6 +180,8 @@
 
                           <button class="button small preview-btn" data-type="section" data-id="{{ @section.id }}"
                             title="Voir"><i class="fas fa-eye"></i></button>
+
+                          <button class="button small propose-btn" data-type="section" data-id="{{ @section.id }}" data-title="{{ @section.title | esc }}" title="Proposer une modification"><i class="fas fa-paper-plane"></i></button>
 
                           <a class="button small"
                             href="{{ @base }}/project/{{ @project.id }}/section/{{ @group.type }}?id={{ @section.id }}"
@@ -413,6 +460,8 @@
                               <button class="button small preview-btn" data-type="chapter" data-id="{{ @ch.id }}"
                                 title="Voir"><i class="fas fa-eye"></i></button>
 
+                              <button class="button small propose-btn" data-type="chapter" data-id="{{ @ch.id }}" data-title="{{ @ch.title | esc }}" title="Proposer une modification"><i class="fas fa-paper-plane"></i></button>
+
                               <a class="button small" href="{{ @base }}/chapter/{{ @ch.id }}" title="Éditer"><i
                                   class="fas fa-edit"></i></a>
 
@@ -473,6 +522,8 @@
 
                                 <button class="button small preview-btn" data-type="chapter" data-id="{{ @sub.id }}"
                                   title="Voir"><i class="fas fa-eye"></i></button>
+
+                                <button class="button small propose-btn" data-type="chapter" data-id="{{ @sub.id }}" data-title="{{ @sub.title | esc }}" title="Proposer une modification"><i class="fas fa-paper-plane"></i></button>
 
                                 <a class="button small" href="{{ @base }}/chapter/{{ @sub.id }}" title="Éditer"><i
                                     class="fas fa-edit"></i></a>
@@ -570,6 +621,7 @@
                               <a class="button small" href="{{ @base }}/project/{{ @project.id }}/chapter/create?parent_id={{ @ch.id }}&act_id={{ @ch.act_id }}" title="+ Sous-{{ @panelLabels.chapter.singular_lc }}"><i class="fas fa-plus"></i></a>
                               <button class="button small ai-summary-btn" data-id="{{ @ch.id }}" title="Résumé IA"><i class="fas fa-magic"></i></button><br />
                               <button class="button small preview-btn" data-type="chapter" data-id="{{ @ch.id }}" title="Voir"><i class="fas fa-eye"></i></button>
+                              <button class="button small propose-btn" data-type="chapter" data-id="{{ @ch.id }}" data-title="{{ @ch.title | esc }}" title="Proposer une modification"><i class="fas fa-paper-plane"></i></button>
                               <a class="button small" href="{{ @base }}/chapter/{{ @ch.id }}" title="Éditer"><i class="fas fa-edit"></i></a>
                               <a class="button small delete js-confirm" href="{{ @base }}/chapter/{{ @ch.id }}/delete" data-confirm="Supprimer ce {{ @panelLabels.chapter.singular_lc }} ?" title="Supprimer"><i class="fas fa-trash"></i></a>
                             </td>
@@ -585,6 +637,7 @@
                               <td class="stats">{{ @sub.wc }} mots<br>{{ @sub.lines }} lignes<br>{{ @sub.pages }} pages</td>
                               <td class="actions">
                                 <button class="button small preview-btn" data-type="chapter" data-id="{{ @sub.id }}" title="Voir"><i class="fas fa-eye"></i></button>
+                                <button class="button small propose-btn" data-type="chapter" data-id="{{ @sub.id }}" data-title="{{ @sub.title | esc }}" title="Proposer une modification"><i class="fas fa-paper-plane"></i></button>
                                 <a class="button small" href="{{ @base }}/chapter/{{ @sub.id }}" title="Éditer"><i class="fas fa-edit"></i></a>
                                 <a class="button small delete js-confirm" href="{{ @base }}/chapter/{{ @sub.id }}/delete" data-confirm="Supprimer ce sous-{{ @panelLabels.chapter.singular_lc }} ?" title="Supprimer"><i class="fas fa-trash"></i></a>
                               </td>
@@ -632,6 +685,7 @@
                         <a class="button small" href="{{ @base }}/project/{{ @project.id }}/chapter/create?parent_id={{ @ch.id }}" title="+ Sous-{{ @panelLabels.chapter.singular_lc }}"><i class="fas fa-plus"></i></a>
                         <button class="button small ai-summary-btn" data-id="{{ @ch.id }}" title="Résumé IA"><i class="fas fa-magic"></i></button><br />
                         <button class="button small preview-btn" data-type="chapter" data-id="{{ @ch.id }}" title="Voir"><i class="fas fa-eye"></i></button>
+                        <button class="button small propose-btn" data-type="chapter" data-id="{{ @ch.id }}" data-title="{{ @ch.title | esc }}" title="Proposer une modification"><i class="fas fa-paper-plane"></i></button>
                         <a class="button small" href="{{ @base }}/chapter/{{ @ch.id }}" title="Éditer"><i class="fas fa-edit"></i></a>
                         <a class="button small delete js-confirm" href="{{ @base }}/chapter/{{ @ch.id }}/delete" data-confirm="Supprimer ce {{ @panelLabels.chapter.singular_lc }} ?" title="Supprimer"><i class="fas fa-trash"></i></a>
                       </td>
@@ -647,6 +701,7 @@
                         <td class="stats">{{ @sub.wc }} mots<br>{{ @sub.lines }} lignes<br>{{ @sub.pages }} pages</td>
                         <td class="actions">
                           <button class="button small preview-btn" data-type="chapter" data-id="{{ @sub.id }}" title="Voir"><i class="fas fa-eye"></i></button>
+                          <button class="button small propose-btn" data-type="chapter" data-id="{{ @sub.id }}" data-title="{{ @sub.title | esc }}" title="Proposer une modification"><i class="fas fa-paper-plane"></i></button>
                           <a class="button small" href="{{ @base }}/chapter/{{ @sub.id }}" title="Éditer"><i class="fas fa-edit"></i></a>
                           <a class="button small delete js-confirm" href="{{ @base }}/chapter/{{ @sub.id }}/delete" data-confirm="Supprimer ce sous-{{ @panelLabels.chapter.singular_lc }} ?" title="Supprimer"><i class="fas fa-trash"></i></a>
                         </td>
@@ -721,6 +776,7 @@
                         title="Prévisualiser">
                         <i class="fas fa-eye"></i>
                       </button>
+                      <button class="button small propose-btn" data-type="element" data-id="{{ @ce.id }}" data-title="{{ @ce.title | esc }}" title="Proposer une modification"><i class="fas fa-paper-plane"></i></button>
                       <a class="button small" href="{{ @base }}/element/{{ @ce.id }}" title="Éditer">
                         <i class="fas fa-edit"></i>
                       </a>
@@ -748,6 +804,7 @@
                           title="Prévisualiser">
                           <i class="fas fa-eye"></i>
                         </button>
+                        <button class="button small propose-btn" data-type="element" data-id="{{ @sub.id }}" data-title="{{ @sub.title | esc }}" title="Proposer une modification"><i class="fas fa-paper-plane"></i></button>
                         <a class="button small" href="{{ @base }}/element/{{ @sub.id }}" title="Éditer">
                           <i class="fas fa-edit"></i>
                         </a>
@@ -855,6 +912,8 @@
 
                           <button class="button small preview-btn" data-type="section" data-id="{{ @section.id }}"
                             title="Voir"><i class="fas fa-eye"></i></button>
+
+                          <button class="button small propose-btn" data-type="section" data-id="{{ @section.id }}" data-title="{{ @section.title | esc }}" title="Proposer une modification"><i class="fas fa-paper-plane"></i></button>
 
                           <a class="button small"
                             href="{{ @base }}/project/{{ @project.id }}/section/{{ @group.type }}?id={{ @section.id }}"
@@ -1001,6 +1060,8 @@
 
                       <button class="button small preview-btn" data-type="note" data-id="{{ @note.id }}" title="Voir"><i
                           class="fas fa-eye"></i></button>
+
+                      <button class="button small propose-btn" data-type="note" data-id="{{ @note.id }}" data-title="{{ @note.title | esc }}" title="Proposer une modification"><i class="fas fa-paper-plane"></i></button>
 
                       <a class="button small" href="{{ @base }}/project/{{ @project.id }}/note/edit?id={{ @note.id }}"
                         title="Modifier"><i class="fas fa-edit"></i></a>

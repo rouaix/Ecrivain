@@ -251,7 +251,22 @@ Afficher ces projets dans une section distincte (`Projets partagés`) sous les p
 
 ---
 
-## 8. Ordre d'implémentation suggéré
+## 8. État d'avancement
+
+| # | Étape | Statut | Fichiers créés / modifiés |
+|---|-------|--------|--------------------------|
+| 1 | Migrations SQL | ✅ Fait | `011_project_collaborators.sql`, `012_collaboration_requests.sql` |
+| 2 | Helpers accès Controller | ✅ Fait | `Controller.php` — `isOwner()`, `isCollaborator()`, `hasProjectAccess()`, `pendingCollabCount()` |
+| 3 | CollabInviteController | ✅ Fait | `collab/controllers/CollabInviteController.php` + vues `invite.html`, `my_invitations.html` |
+| 4 | Accès lecture collaborateur | ✅ Fait | `ProjectController.show()`, `ReviewController.loadContent()`, `addAnnotation()`, `report()`, export |
+| 5 | Dashboard projets partagés | ✅ Fait | `ProjectController.dashboard()`, `dashboard.html` |
+| 6 | CollabRequestController | ✅ Fait | `collab/controllers/CollabRequestController.php` + vues `requests_owner.html`, `requests_collab.html` |
+| 7 | Routes + badge header | ✅ Fait | `config.ini`, `layouts/main.html` |
+| 8 | Bouton "Proposer" dans show.html | ✅ Fait | `show.html` (modal propose), `inc/new_body.html` (boutons), `inc/header.html` (liens collab) |
+| 9 | Accès collaborateur show.html | ✅ Fait | `inc/new_body.html` — CSS `.collab-mode` masque edit/delete/reorder/IA |
+| 10 | LectureController accès collab | ✅ Fait | `LectureController.read()`, `saveBookmark()`, `getBookmark()` — `hasProjectAccess()` ; `addComment()` reste owner-only |
+
+## 9. Ordre d'implémentation suggéré (historique)
 
 1. **Migrations** `009` et `010` — créer les tables
 2. **Helpers** `isOwner()`, `isCollaborator()`, `hasProjectAccess()` dans `Controller.php`

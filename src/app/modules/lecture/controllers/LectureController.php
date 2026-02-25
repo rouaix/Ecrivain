@@ -13,8 +13,14 @@ class LectureController extends Controller
     public function read()
     {
         $pid = (int) $this->f3->get('PARAMS.id');
+
+        if (!$this->hasProjectAccess($pid)) {
+            $this->f3->error(403);
+            return;
+        }
+
         $projectModel = new Project();
-        $project = $projectModel->findAndCast(['id=? AND user_id=?', $pid, $this->currentUser()['id']]);
+        $project = $projectModel->findAndCast(['id=?', $pid]);
 
         if (!$project) {
             $this->f3->error(404, 'Projet introuvable.');
@@ -469,9 +475,8 @@ class LectureController extends Controller
             return;
         }
 
-        // Verify project ownership
-        $projectModel = new Project();
-        if (!$projectModel->count(['id=? AND user_id=?', $projectId, $this->currentUser()['id']])) {
+        // Verify project access (owner or accepted collaborator)
+        if (!$this->hasProjectAccess($projectId)) {
             http_response_code(403);
             echo json_encode(['status' => 'error', 'message' => 'Unauthorized']);
             return;
@@ -520,9 +525,8 @@ class LectureController extends Controller
             return;
         }
 
-        // Verify project ownership
-        $projectModel = new Project();
-        if (!$projectModel->count(['id=? AND user_id=?', $projectId, $this->currentUser()['id']])) {
+        // Verify project access (owner or accepted collaborator)
+        if (!$this->hasProjectAccess($projectId)) {
             http_response_code(403);
             echo json_encode(['status' => 'error', 'message' => 'Unauthorized']);
             return;

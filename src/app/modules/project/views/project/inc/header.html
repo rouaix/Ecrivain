@@ -27,6 +27,14 @@
             </check>
             <div class="project-hero__actions">
                 <div class="project-hero__actions-group">
+                    <check if="{{ @isCollaborator }}">
+                        <a class="button secondary" href="{{ @base }}/project/{{ @project.id }}/collab/mes-demandes"
+                            title="Mes demandes de modification"><i class="fas fa-paper-plane"></i> Mes demandes</a>
+                    </check>
+                    <check if="{{ @isOwner }}">
+                        <a class="button secondary" href="{{ @base }}/project/{{ @project.id }}/collaborateurs"
+                            title="Gérer les collaborateurs"><i class="fas fa-users"></i> Collaborateurs</a>
+                    </check>
                     <a class="button" href="{{ @base }}/project/{{ @project.id }}/mindmap">Carte mentale</a>
                     <a class="button" href="{{ @base }}/project/{{ @project.id }}/lecture">Lecture</a>
                     <a class="button" href="{{ @base }}/project/{{ @project.id }}/relecture">Relecture</a>
@@ -44,31 +52,39 @@
                         <div class="modal-body">
                             <ul class="export-options-list">
                                 <li>
-                                    <a class="button" href="{{ @base }}/project/{{ @project.id }}/export">Texte (.txt)</a>
+                                    <a class="button" href="{{ @base }}/project/{{ @project.id }}/export">Texte
+                                        (.txt)</a>
                                     <span class="export-format-desc">Texte brut formaté, titres en majuscules</span>
                                 </li>
                                 <li>
-                                    <a class="button" href="{{ @base }}/project/{{ @project.id }}/export/markdown">Markdown (.md)</a>
-                                    <span class="export-format-desc">Format Markdown avec titres # et mise en forme</span>
+                                    <a class="button"
+                                        href="{{ @base }}/project/{{ @project.id }}/export/markdown">Markdown (.md)</a>
+                                    <span class="export-format-desc">Format Markdown avec titres # et mise en
+                                        forme</span>
                                 </li>
                                 <li>
-                                    <a class="button" href="{{ @base }}/project/{{ @project.id }}/export/html">HTML (.html)</a>
+                                    <a class="button" href="{{ @base }}/project/{{ @project.id }}/export/html">HTML
+                                        (.html)</a>
                                     <span class="export-format-desc">Document web complet avec styles CSS</span>
                                 </li>
                                 <li>
-                                    <a class="button" href="{{ @base }}/project/{{ @project.id }}/export/epub">EPUB (.epub)</a>
+                                    <a class="button" href="{{ @base }}/project/{{ @project.id }}/export/epub">EPUB
+                                        (.epub)</a>
                                     <span class="export-format-desc">Format liseuse numérique</span>
                                 </li>
                                 <li>
-                                    <a class="button" href="{{ @base }}/project/{{ @project.id }}/export/vector">JSON (.json)</a>
+                                    <a class="button" href="{{ @base }}/project/{{ @project.id }}/export/vector">JSON
+                                        (.json)</a>
                                     <span class="export-format-desc">Pour vectorisation et traitement IA</span>
                                 </li>
                                 <li>
-                                    <a class="button" href="{{ @base }}/project/{{ @project.id }}/export/clean">Texte brut (.txt)</a>
+                                    <a class="button" href="{{ @base }}/project/{{ @project.id }}/export/clean">Texte
+                                        brut (.txt)</a>
                                     <span class="export-format-desc">Tout en minuscules, sans mise en forme</span>
                                 </li>
                                 <li>
-                                    <a class="button" href="{{ @base }}/project/{{ @project.id }}/export/summaries">Résumés (.txt)</a>
+                                    <a class="button"
+                                        href="{{ @base }}/project/{{ @project.id }}/export/summaries">Résumés (.txt)</a>
                                     <span class="export-format-desc">Titres et résumés uniquement</span>
                                 </li>
                             </ul>
@@ -113,16 +129,16 @@
     <div id="saveStatus" class="save-status">Ordre enregistré !</div>
 </div>
 <script nonce="{{ @nonce }}">
-(function () {
-    var modal = document.getElementById('export-modal');
-    document.getElementById('export-modal-open').addEventListener('click', function () {
-        modal.classList.add('is-visible');
-    });
-    document.getElementById('export-modal-close').addEventListener('click', function () {
-        modal.classList.remove('is-visible');
-    });
-    modal.addEventListener('click', function (e) {
-        if (e.target === modal) modal.classList.remove('is-visible');
-    });
-})();
+    (function () {
+        var modal = document.getElementById('export-modal');
+        document.getElementById('export-modal-open').addEventListener('click', function () {
+            modal.classList.add('is-visible');
+        });
+        document.getElementById('export-modal-close').addEventListener('click', function () {
+            modal.classList.remove('is-visible');
+        });
+        modal.addEventListener('click', function (e) {
+            if (e.target === modal) modal.classList.remove('is-visible');
+        });
+    })();
 </script>

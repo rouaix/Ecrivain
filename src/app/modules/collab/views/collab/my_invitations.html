@@ -1,0 +1,70 @@
+<div class="edit-page-layout">
+    <div class="edit-header">
+        <h2><i class="fas fa-envelope-open-text"></i> Mes invitations &amp; collaborations</h2>
+    </div>
+
+    <check if="{{ count(@invitations) == 0 }}">
+        <div class="card">
+            <p class="text-muted-para" style="text-align:center;padding:2rem 0">
+                <i class="fas fa-inbox" style="font-size:2rem;opacity:.3;display:block;margin-bottom:.5rem"></i>
+                Aucune invitation reçue.
+            </p>
+        </div>
+    </check>
+
+    <check if="{{ count(@invitations) > 0 }}">
+        <div class="card">
+            <table class="data-table">
+                <thead>
+                    <tr>
+                        <th>Projet</th>
+                        <th>Propriétaire</th>
+                        <th>Statut</th>
+                        <th>Date</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <repeat group="{{ @invitations }}" value="{{ @inv }}">
+                        <tr>
+                            <td><strong>{{ @inv.project_title | esc }}</strong></td>
+                            <td>{{ @inv.owner_username | esc }}</td>
+                            <td>
+                                <check if="{{ @inv.status == 'accepted' }}">
+                                    <span class="badge badge-success">Accepté</span>
+                                </check>
+                                <check if="{{ @inv.status == 'pending' }}">
+                                    <span class="badge badge-warning">En attente</span>
+                                </check>
+                                <check if="{{ @inv.status == 'declined' }}">
+                                    <span class="badge badge-error">Refusé</span>
+                                </check>
+                            </td>
+                            <td>{{ @inv.created_at }}</td>
+                            <td>
+                                <check if="{{ @inv.status == 'accepted' }}">
+                                    <a href="{{ @base }}/project/{{ @inv.project_id }}" class="button small">
+                                        <i class="fas fa-eye"></i> Voir
+                                    </a>
+                                    <a href="{{ @base }}/project/{{ @inv.project_id }}/collab/mes-demandes" class="button small secondary">
+                                        <i class="fas fa-paper-plane"></i> Mes demandes
+                                    </a>
+                                </check>
+                                <check if="{{ @inv.status == 'pending' }}">
+                                    <form method="post" action="{{ @base }}/collab/invitation/{{ @inv.id }}/accept" style="display:inline">
+                                        <input type="hidden" name="csrf_token" value="{{ @csrfToken }}">
+                                        <button type="submit" class="button small primary">Accepter</button>
+                                    </form>
+                                    <form method="post" action="{{ @base }}/collab/invitation/{{ @inv.id }}/decline" style="display:inline">
+                                        <input type="hidden" name="csrf_token" value="{{ @csrfToken }}">
+                                        <button type="submit" class="button small">Refuser</button>
+                                    </form>
+                                </check>
+                            </td>
+                        </tr>
+                    </repeat>
+                </tbody>
+            </table>
+        </div>
+    </check>
+</div>

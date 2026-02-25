@@ -16,9 +16,10 @@ class ReviewController extends Controller
      */
     private function loadContent(int $pid): ?array
     {
-        $user = $this->currentUser();
+        if (!$this->hasProjectAccess($pid)) return null;
+
         $projectModel = new Project();
-        $project = $projectModel->findAndCast(['id=? AND user_id=?', $pid, $user['id']]);
+        $project = $projectModel->findAndCast(['id=?', $pid]);
         if (!$project) return null;
         $project = $project[0];
 
@@ -207,6 +208,8 @@ class ReviewController extends Controller
             'annotations'     => $annotations,
             'annotationsJson' => json_encode(array_values($annotations)),
             'projectJson'     => json_encode(['id' => $pid]),
+            'isOwner'         => $this->isOwner($pid),
+            'isCollaborator'  => $this->isCollaborator($pid),
         ]);
     }
 
@@ -235,8 +238,7 @@ class ReviewController extends Controller
             return;
         }
 
-        $projectModel = new Project();
-        if (!$projectModel->count(['id=? AND user_id=?', $pid, $user['id']])) {
+        if (!$this->hasProjectAccess($pid)) {
             echo json_encode(['status' => 'error', 'message' => 'Accès refusé.']);
             return;
         }
@@ -284,8 +286,13 @@ class ReviewController extends Controller
         $pid  = (int) $this->f3->get('PARAMS.id');
         $user = $this->currentUser();
 
+        if (!$this->hasProjectAccess($pid)) {
+            $this->f3->error(404);
+            return;
+        }
+
         $projectModel = new Project();
-        $project = $projectModel->findAndCast(['id=? AND user_id=?', $pid, $user['id']]);
+        $project = $projectModel->findAndCast(['id=?', $pid]);
         if (!$project) {
             $this->f3->error(404);
             return;

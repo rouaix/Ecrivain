@@ -1,0 +1,21 @@
+CREATE TABLE IF NOT EXISTS `collaboration_requests` (
+    `id`               INT NOT NULL AUTO_INCREMENT,
+    `project_id`       INT NOT NULL,
+    `user_id`          INT NOT NULL,
+    `request_type`     ENUM('add','modify','delete','correct') NOT NULL,
+    `content_type`     VARCHAR(20) NOT NULL,
+    `content_id`       INT NULL,
+    `content_title`    VARCHAR(255) NULL,
+    `current_snapshot` LONGTEXT NULL,
+    `proposed_content` LONGTEXT NULL,
+    `message`          TEXT NULL,
+    `status`           ENUM('pending','approved','rejected') NOT NULL DEFAULT 'pending',
+    `owner_note`       TEXT NULL,
+    `created_at`       TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    `reviewed_at`      TIMESTAMP NULL,
+    `reviewed_by`      INT NULL,
+    PRIMARY KEY (`id`),
+    KEY `idx_project` (`project_id`),
+    KEY `idx_user` (`user_id`),
+    KEY `idx_status` (`status`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
