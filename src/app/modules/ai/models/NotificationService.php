@@ -1,9 +1,10 @@
+fromEmail
 <?php
 
 class NotificationService
 {
     private string $fromEmail;
-    private string $fromName = 'Écrivain';
+    private string $fromName = 'Bot Assitant rouaix.com';
 
     public function __construct()
     {
@@ -18,19 +19,19 @@ class NotificationService
     {
         $taskLabels = [
             'summarize_chapter' => 'Résumé de chapitre',
-            'summarize_act'     => "Résumé d'acte",
-            'ask_project'       => 'Question éditoriale',
-            'continue'          => 'Continuation de texte',
-            'rephrase'          => 'Reformulation',
-            'custom'            => 'Génération personnalisée',
+            'summarize_act' => "Résumé d'acte",
+            'ask_project' => 'Question éditoriale',
+            'continue' => 'Continuation de texte',
+            'rephrase' => 'Reformulation',
+            'custom' => 'Génération personnalisée',
         ];
 
-        $label    = $taskLabels[$taskType] ?? ucfirst($taskType);
+        $label = $taskLabels[$taskType] ?? ucfirst($taskType);
         $duration = round($durationSecs);
 
         $subject = "Génération IA terminée — {$label}";
 
-        $body  = "Bonjour,\n\n";
+        $body = "Bonjour,\n\n";
         $body .= "Votre génération IA vient de se terminer.\n\n";
         $body .= "Tâche    : {$label}\n";
         $body .= "Durée    : {$duration} secondes\n\n";
@@ -47,7 +48,7 @@ class NotificationService
     {
         $subject = "Alerte usage IA — Seuil atteint";
 
-        $body  = "Bonjour,\n\n";
+        $body = "Bonjour,\n\n";
         $body .= "Votre consommation de tokens IA a dépassé le seuil configuré.\n\n";
         $body .= "Tokens utilisés aujourd'hui : " . number_format($tokensToday, 0, ',', ' ') . "\n";
         $body .= "Seuil configuré              : " . number_format($threshold, 0, ',', ' ') . " tokens\n\n";
@@ -66,7 +67,7 @@ class NotificationService
     {
         $subject = "Votre bilan d'écriture de la semaine";
 
-        $body  = "Bonjour,\n\n";
+        $body = "Bonjour,\n\n";
         $body .= "Voici votre bilan d'écriture pour les 7 derniers jours.\n\n";
 
         if (!empty($stats['words_this_week'])) {
