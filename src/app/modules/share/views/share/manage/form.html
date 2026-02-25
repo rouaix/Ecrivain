@@ -1,0 +1,50 @@
+<div class="edit-page-layout">
+    <div class="edit-header">
+        <h2><i class="fas fa-share-alt"></i> {{ @title | esc }}</h2>
+        <div class="header-actions">
+            <a href="{{ @base }}/share" class="button secondary">
+                <i class="fas fa-arrow-left"></i> Retour
+            </a>
+        </div>
+    </div>
+
+    <form method="post" action="">
+        <input type="hidden" name="csrf_token" value="{{ @csrfToken }}">
+
+        <div class="form-group">
+            <label for="label">Nom du lien <small>(optionnel)</small></label>
+            <input type="text" id="label" name="label" class="form-control"
+                   value="{{ @link ? @link.label : '' | esc }}"
+                   placeholder="Ex : Mon roman – bêta-lecteurs">
+        </div>
+
+        <div class="form-group">
+            <label>Projets à partager <small>(sélectionnez au moins un)</small></label>
+            <check if="{{ empty(@projects) }}">
+                <p class="text-muted-para">Vous n'avez aucun projet pour l'instant.</p>
+            </check>
+            <repeat group="{{ @projects }}" value="{{ @proj }}">
+                <label class="checkbox-label">
+                    <check if="{{ @link && in_array(@proj.id, @link.project_ids) }}">
+                        <input type="checkbox" name="project_ids[]" value="{{ @proj.id }}" checked>
+                    </check>
+                    <check if="{{ !@link || !in_array(@proj.id, @link.project_ids) }}">
+                        <input type="checkbox" name="project_ids[]" value="{{ @proj.id }}">
+                    </check>
+                    {{ @proj.title | esc }}
+                </label>
+            </repeat>
+        </div>
+
+        <div class="form-actions">
+            <button type="submit" class="button primary">
+                <i class="fas fa-save"></i>&nbsp;Enregistrer
+            </button>
+        </div>
+    </form>
+</div>
+
+<style>
+.checkbox-label { display: flex; align-items: center; gap: .5rem; padding: .4rem 0; cursor: pointer; }
+.checkbox-label input[type="checkbox"] { width: 1rem; height: 1rem; }
+</style>

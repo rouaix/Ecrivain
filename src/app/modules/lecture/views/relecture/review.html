@@ -2,7 +2,8 @@
     <div class="edit-header">
         <h2><i class="fas fa-glasses"></i> Relecture : {{ @project.title | esc }}</h2>
         <div class="header-actions">
-            <a href="{{ @base }}/project/{{ @project.id }}/relecture/rapport" class="button secondary" title="Rapport d'annotations">
+            <a href="{{ @base }}/project/{{ @project.id }}/relecture/rapport" class="button secondary"
+                title="Rapport d'annotations">
                 <i class="fas fa-file-alt"></i> Rapport
             </a>
             <a href="{{ @base }}/project/{{ @project.id }}/lecture" class="button" title="Mode lecture">
@@ -32,10 +33,8 @@
                             <h3 class="review-chapter-title">{{ @item.title | esc }}</h3>
                         </check>
                     </check>
-                    <div class="review-text ql-editor"
-                         data-content-id="{{ @item.id }}"
-                         data-content-type="{{ @item.type }}"
-                         id="content-{{ @item.type }}-{{ @item.id }}">
+                    <div class="review-text ql-editor" data-content-id="{{ @item.id }}"
+                        data-content-type="{{ @item.type }}" id="content-{{ @item.type }}-{{ @item.id }}">
                         {{ @item.content | raw }}
                     </div>
                 </div>
@@ -81,357 +80,669 @@
     </select>
     <textarea id="annotationComment" class="input-control" placeholder="Commentaire (optionnel)" rows="2"></textarea>
     <div class="annotation-popup-actions">
-        <button id="annotationSubmit" class="button primary small"><i class="fas fa-tag" style="margin-right:10px"></i>Annoter</button>
+        <button id="annotationSubmit" class="button primary small"><i class="fas fa-tag"
+                style="margin-right:10px"></i>Annoter</button>
         <button id="annotationCancel" class="button small">Annuler</button>
     </div>
 </div>
 
 <!-- Data passed from PHP -->
 <script id="reviewAnnotationsData" type="application/json">{{ @annotationsJson | raw }}</script>
-<script id="reviewProjectData"     type="application/json">{{ @projectJson | raw }}</script>
+<script id="reviewProjectData" type="application/json">{{ @projectJson | raw }}</script>
 
 <script nonce="{{ @nonce }}">
-(function () {
-    'use strict';
+    (function () {
+        'use strict';
 
-    var CATEGORIES = {
-        to_rewrite:    { label: 'À reformuler', color: '#f97316' },
-        inconsistency: { label: 'Incohérence',  color: '#ef4444' },
-        to_check:      { label: 'À vérifier',   color: '#eab308' },
-        good:          { label: 'Bien',          color: '#22c55e' }
-    };
+        var CATEGORIES = {
+            to_rewrite: { label: 'À reformuler', color: '#f97316' },
+            inconsistency: { label: 'Incohérence', color: '#ef4444' },
+            to_check: { label: 'À vérifier', color: '#eab308' },
+            good: { label: 'Bien', color: '#22c55e' }
+        };
 
-    var BASE_PATH   = '{{ @base }}';
-    var CSRF_TOKEN  = '{{ @csrfToken }}';
+        var BASE_PATH = '{{ @base }}';
+        var CSRF_TOKEN = '{{ @csrfToken }}';
 
-    var projectData  = JSON.parse(document.getElementById('reviewProjectData').textContent  || '{}');
-    var annotations  = JSON.parse(document.getElementById('reviewAnnotationsData').textContent || '[]');
+        var projectData = JSON.parse(document.getElementById('reviewProjectData').textContent || '{}');
+        var annotations = JSON.parse(document.getElementById('reviewAnnotationsData').textContent || '[]');
 
-    var currentFilter  = 'all';
-    var pendingSelection = null; // {text, contentId, contentType}
-    var popup = document.getElementById('annotationPopup');
+        var currentFilter = 'all';
+        var pendingSelection = null; // {text, contentId, contentType}
+        var popup = document.getElementById('annotationPopup');
 
-    // ── Highlights ────────────────────────────────────────────────────────────
+        // ── Highlights ────────────────────────────────────────────────────────────
 
-    function applyHighlights() {
-        annotations.forEach(function (ann) {
-            highlightText(
-                'content-' + ann.content_type + '-' + ann.content_id,
-                ann.selected_text, ann.category, ann.id
-            );
-        });
-    }
-
-    function highlightText(containerId, text, category, annotId) {
-        var container = document.getElementById(containerId);
-        if (!container || !text) return false;
-        var walker = document.createTreeWalker(container, NodeFilter.SHOW_TEXT, null, false);
-        var node;
-        while ((node = walker.nextNode())) {
-            var idx = node.nodeValue.indexOf(text);
-            if (idx < 0) continue;
-            var mark = document.createElement('mark');
-            mark.className   = 'annotation-mark ann-bg-' + category;
-            mark.textContent = text;
-            mark.dataset.annotId = String(annotId);
-            mark.title = CATEGORIES[category] ? CATEGORIES[category].label : category;
-            mark.addEventListener('click', function () { scrollToCard(this.dataset.annotId); });
-            var after = node.splitText(idx);
-            after.nodeValue = after.nodeValue.substring(text.length);
-            node.parentNode.insertBefore(mark, after);
-            return true;
+        function applyHighlights() {
+            annotations.forEach(function (ann) {
+                highlightText(
+                    'content-' + ann.content_type + '-' + ann.content_id,
+                    ann.selected_text, ann.category, ann.id
+                );
+            });
         }
-        return false;
-    }
 
-    function removeHighlight(annotId) {
-        document.querySelectorAll('.annotation-mark[data-annot-id="' + annotId + '"]').forEach(function (mark) {
-            mark.parentNode.replaceChild(document.createTextNode(mark.textContent), mark);
-            mark.parentNode && mark.parentNode.normalize();
-        });
-        // Also try with dataset access pattern
-        document.querySelectorAll('.annotation-mark').forEach(function (mark) {
-            if (mark.dataset.annotId === String(annotId)) {
+        /**
+         * Normalise toutes formes d'espace (insécable, newline, tab, …)
+         * en un unique espace ASCII pour pouvoir comparer texte sélectionné
+         * et texte présent dans les nœuds DOM.
+         */
+        function normalizeWS(s) {
+            return s.replace(/[\s\u00a0]+/g, ' ');
+        }
+
+        function highlightText(containerId, text, category, annotId) {
+            var container = document.getElementById(containerId);
+            if (!container || !text) return false;
+
+            // Collect every text node inside the container
+            var textNodes = [];
+            var walker = document.createTreeWalker(container, NodeFilter.SHOW_TEXT, null, false);
+            var n;
+            while ((n = walker.nextNode())) {
+                textNodes.push(n);
+            }
+            if (!textNodes.length) {
+                console.warn('[Highlight] Aucun nœud texte dans', containerId);
+                return false;
+            }
+
+            // Raw per‑node values
+            var rawValues = textNodes.map(function (nd) { return nd.nodeValue; });
+            var rawFull = rawValues.join('');
+
+            // ── 1. Try exact match first ─────────────────────────────────
+            var idx = rawFull.indexOf(text);
+            var textLen = text.length;
+
+            // ── 2. Normalised‑whitespace match ───────────────────────────
+            // Build mapping  normPos → rawPos  so we can translate back.
+            if (idx < 0) {
+                var normSearch = normalizeWS(text);
+                var normFull = '';
+                var normToRaw = [];   // normToRaw[normPos] = rawPos
+                var prevIsSpace = false;
+                for (var r = 0; r < rawFull.length; r++) {
+                    var ch = rawFull[r];
+                    var isSpace = /[\s\u00a0]/.test(ch);
+                    if (isSpace) {
+                        if (!prevIsSpace) {
+                            normToRaw.push(r);
+                            normFull += ' ';
+                        }
+                        prevIsSpace = true;
+                    } else {
+                        normToRaw.push(r);
+                        normFull += ch;
+                        prevIsSpace = false;
+                    }
+                }
+                // Sentinel for end positions
+                normToRaw.push(rawFull.length);
+
+                var normIdx = normFull.indexOf(normSearch);
+                if (normIdx >= 0) {
+                    var normEnd = normIdx + normSearch.length;
+                    idx = normToRaw[normIdx];
+                    var rawEnd = normToRaw[normEnd] !== undefined ? normToRaw[normEnd] : rawFull.length;
+                    text = rawFull.substring(idx, rawEnd);
+                    textLen = text.length;
+                }
+            }
+
+            if (idx < 0) {
+                console.warn('[Highlight] Texte introuvable dans', containerId,
+                    ':', JSON.stringify(text).substring(0, 120));
+                return false;
+            }
+
+            // Resolve which text nodes / offsets correspond to [idx, idx+textLen]
+            var startNode = null, startOffset = 0;
+            var endNode = null, endOffset = 0;
+            var cumulative = 0;
+
+            for (var i = 0; i < textNodes.length; i++) {
+                var nodeLen = rawValues[i].length;
+                if (!startNode && cumulative + nodeLen > idx) {
+                    startNode = textNodes[i];
+                    startOffset = idx - cumulative;
+                }
+                if (startNode && cumulative + nodeLen >= idx + textLen) {
+                    endNode = textNodes[i];
+                    endOffset = idx + textLen - cumulative;
+                    break;
+                }
+                cumulative += nodeLen;
+            }
+
+            if (!startNode || !endNode) return false;
+
+            // Same‑node: use the robust splitText approach
+            if (startNode === endNode) {
+                var mark = document.createElement('mark');
+                mark.className = 'annotation-mark ann-bg-' + category;
+                mark.dataset.annotId = String(annotId);
+                mark.title = CATEGORIES[category] ? CATEGORIES[category].label : category;
+                mark.addEventListener('click', function () { scrollToCard(this.dataset.annotId); });
+
+                var after = startNode.splitText(startOffset);
+                after.nodeValue = after.nodeValue.substring(textLen);
+                mark.textContent = text;
+                startNode.parentNode.insertBefore(mark, after);
+                return true;
+            }
+
+            // Cross‑node: use Range API
+            try {
+                var range = document.createRange();
+                range.setStart(startNode, startOffset);
+                range.setEnd(endNode, endOffset);
+
+                var mark2 = document.createElement('mark');
+                mark2.className = 'annotation-mark ann-bg-' + category;
+                mark2.dataset.annotId = String(annotId);
+                mark2.title = CATEGORIES[category] ? CATEGORIES[category].label : category;
+                mark2.addEventListener('click', function () { scrollToCard(this.dataset.annotId); });
+
+                range.surroundContents(mark2);
+                return true;
+            } catch (e) {
+                console.warn('[Highlight] surroundContents échoué pour "'
+                    + text.substring(0, 60) + '":', e.message);
+                return false;
+            }
+        }
+
+        function removeHighlight(annotId) {
+            document.querySelectorAll('.annotation-mark[data-annot-id="' + annotId + '"]').forEach(function (mark) {
                 mark.parentNode.replaceChild(document.createTextNode(mark.textContent), mark);
+                mark.parentNode && mark.parentNode.normalize();
+            });
+            // Also try with dataset access pattern
+            document.querySelectorAll('.annotation-mark').forEach(function (mark) {
+                if (mark.dataset.annotId === String(annotId)) {
+                    mark.parentNode.replaceChild(document.createTextNode(mark.textContent), mark);
+                }
+            });
+        }
+
+        // ── Panel ─────────────────────────────────────────────────────────────────
+
+        function renderPanel() {
+            var list = document.getElementById('annotationsList');
+            var filtered = currentFilter === 'all'
+                ? annotations
+                : annotations.filter(function (a) { return a.category === currentFilter; });
+
+            document.getElementById('annotationCount').textContent = annotations.length;
+
+            if (!filtered.length) {
+                list.innerHTML = '<p class="review-empty">Aucune annotation' +
+                    (currentFilter !== 'all' ? ' dans cette catégorie' : '') + '.</p>';
+                return;
+            }
+
+            list.innerHTML = filtered.map(function (ann) {
+                var cat = CATEGORIES[ann.category] || { label: ann.category, color: '#888' };
+                return '<div class="annotation-card" id="ann-card-' + ann.id + '">' +
+                    '<div class="annotation-card-header">' +
+                    '<span class="annotation-cat-badge" style="background:' + cat.color + '">' + escHtml(cat.label) + '</span>' +
+                    '<button class="annotation-delete-btn" data-id="' + ann.id + '" title="Supprimer"><i class="fas fa-times"></i></button>' +
+                    '</div>' +
+                    '<div class="annotation-selected-text">&ldquo;' + escHtml(ann.selected_text) + '&rdquo;</div>' +
+                    (ann.comment ? '<div class="annotation-comment">' + escHtml(ann.comment) + '</div>' : '') +
+                    '</div>';
+            }).join('');
+
+            list.querySelectorAll('.annotation-delete-btn').forEach(function (btn) {
+                btn.addEventListener('click', function () { deleteAnnotation(parseInt(this.dataset.id, 10)); });
+            });
+        }
+
+        function scrollToCard(annotId) {
+            var card = document.getElementById('ann-card-' + annotId);
+            if (card) card.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+        }
+
+        function escHtml(str) {
+            return (str || '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+        }
+
+        // ── Popup ─────────────────────────────────────────────────────────────────
+
+        function showPopup(text, contentId, contentType, rect) {
+            pendingSelection = { text: text, contentId: contentId, contentType: contentType };
+            var preview = text.length > 100 ? text.substring(0, 100) + '\u2026' : text;
+            document.getElementById('annotationPopupText').textContent = '\u00ab ' + preview + ' \u00bb';
+            document.getElementById('annotationComment').value = '';
+
+            var left = Math.min(Math.max(0, rect.left), window.innerWidth - 310);
+            var top = rect.bottom + 8;
+            if (top + 220 > window.innerHeight) { top = rect.top - 228; }
+            popup.style.left = left + 'px';
+            popup.style.top = Math.max(4, top) + 'px';
+            popup.style.display = 'block';
+            document.getElementById('annotationCategory').focus();
+        }
+
+        function hidePopup() {
+            popup.style.display = 'none';
+            pendingSelection = null;
+            if (window.getSelection) window.getSelection().removeAllRanges();
+        }
+
+        // ── Text selection ────────────────────────────────────────────────────────
+
+        // Distinguer le type de pointeur (souris / stylet / tactile)
+        var _lastPointerType = 'mouse';
+        var _selTimer = null;
+
+        document.getElementById('reviewContent').addEventListener('pointerup', function (e) {
+            _lastPointerType = e.pointerType; // 'mouse', 'pen' ou 'touch'
+        });
+
+        function _tryShowPopup() {
+            var sel = window.getSelection();
+            if (!sel || !sel.rangeCount) return;
+            var text = sel.toString().trim();
+            if (text.length < 3) return;
+
+            var range = sel.getRangeAt(0);
+            var ancestor = range.commonAncestorContainer;
+            var el = ancestor.nodeType === Node.TEXT_NODE ? ancestor.parentElement : ancestor;
+            var block = el.closest('.review-text');
+            if (!block) return;
+
+            showPopup(text, block.dataset.contentId, block.dataset.contentType, range.getBoundingClientRect());
+        }
+
+        // Souris : déclenchement rapide sur mouseup (comportement existant)
+        document.getElementById('reviewContent').addEventListener('mouseup', function (e) {
+            if (_lastPointerType !== 'mouse') return; // stylet/tactile géré par selectionchange
+            if (popup.style.display !== 'none' && popup.contains(e.target)) return;
+            setTimeout(_tryShowPopup, 20);
+        });
+
+        // Stylet / tactile : attendre que la sélection soit stable via selectionchange
+        // Le debounce de 500 ms laisse le temps aux poignées de sélection d'être ajustées
+        document.addEventListener('selectionchange', function () {
+            if (_lastPointerType === 'mouse') return;
+            if (_selTimer) clearTimeout(_selTimer);
+            _selTimer = setTimeout(_tryShowPopup, 500);
+        });
+
+        document.addEventListener('mousedown', function (e) {
+            if (popup.style.display !== 'none' && !popup.contains(e.target)) {
+                hidePopup();
             }
         });
-    }
 
-    // ── Panel ─────────────────────────────────────────────────────────────────
+        // ── Submit ────────────────────────────────────────────────────────────────
 
-    function renderPanel() {
-        var list     = document.getElementById('annotationsList');
-        var filtered = currentFilter === 'all'
-            ? annotations
-            : annotations.filter(function (a) { return a.category === currentFilter; });
+        document.getElementById('annotationSubmit').addEventListener('click', function () {
+            if (!pendingSelection) return;
+            var category = document.getElementById('annotationCategory').value;
+            var comment = document.getElementById('annotationComment').value.trim();
 
-        document.getElementById('annotationCount').textContent = annotations.length;
+            var data = new FormData();
+            data.append('project_id', projectData.id);
+            data.append('content_type', pendingSelection.contentType);
+            data.append('content_id', pendingSelection.contentId);
+            data.append('selected_text', pendingSelection.text);
+            data.append('comment', comment);
+            data.append('category', category);
+            data.append('csrf_token', CSRF_TOKEN);
 
-        if (!filtered.length) {
-            list.innerHTML = '<p class="review-empty">Aucune annotation' +
-                (currentFilter !== 'all' ? ' dans cette catégorie' : '') + '.</p>';
-            return;
-        }
+            document.getElementById('annotationSubmit').disabled = true;
 
-        list.innerHTML = filtered.map(function (ann) {
-            var cat = CATEGORIES[ann.category] || { label: ann.category, color: '#888' };
-            return '<div class="annotation-card" id="ann-card-' + ann.id + '">' +
-                '<div class="annotation-card-header">' +
-                '<span class="annotation-cat-badge" style="background:' + cat.color + '">' + escHtml(cat.label) + '</span>' +
-                '<button class="annotation-delete-btn" data-id="' + ann.id + '" title="Supprimer"><i class="fas fa-times"></i></button>' +
-                '</div>' +
-                '<div class="annotation-selected-text">&ldquo;' + escHtml(ann.selected_text) + '&rdquo;</div>' +
-                (ann.comment ? '<div class="annotation-comment">' + escHtml(ann.comment) + '</div>' : '') +
-                '</div>';
-        }).join('');
-
-        list.querySelectorAll('.annotation-delete-btn').forEach(function (btn) {
-            btn.addEventListener('click', function () { deleteAnnotation(parseInt(this.dataset.id, 10)); });
+            fetch(BASE_PATH + '/relecture/annotation/add', { method: 'POST', body: data })
+                .then(function (r) {
+                    if (!r.ok) throw new Error('HTTP ' + r.status);
+                    return r.json();
+                })
+                .then(function (res) {
+                    if (res.status === 'ok') {
+                        var newAnn = {
+                            id: res.id,
+                            project_id: projectData.id,
+                            content_type: pendingSelection.contentType,
+                            content_id: pendingSelection.contentId,
+                            selected_text: pendingSelection.text,
+                            comment: comment,
+                            category: category
+                        };
+                        annotations.unshift(newAnn);
+                        highlightText(
+                            'content-' + newAnn.content_type + '-' + newAnn.content_id,
+                            newAnn.selected_text, newAnn.category, newAnn.id
+                        );
+                        renderPanel();
+                        hidePopup();
+                    } else {
+                        console.error('[Annoter] Erreur serveur:', res.message);
+                        alert('Erreur : ' + (res.message || 'réponse inattendue'));
+                    }
+                })
+                .catch(function (err) {
+                    console.error('[Annoter] Erreur fetch:', err);
+                    alert('Erreur réseau ou serveur : ' + err.message);
+                })
+                .finally(function () {
+                    document.getElementById('annotationSubmit').disabled = false;
+                });
         });
-    }
 
-    function scrollToCard(annotId) {
-        var card = document.getElementById('ann-card-' + annotId);
-        if (card) card.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
-    }
+        document.getElementById('annotationCancel').addEventListener('click', hidePopup);
 
-    function escHtml(str) {
-        return (str || '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
-    }
+        // ── Delete ────────────────────────────────────────────────────────────────
 
-    // ── Popup ─────────────────────────────────────────────────────────────────
-
-    function showPopup(text, contentId, contentType, rect) {
-        pendingSelection = { text: text, contentId: contentId, contentType: contentType };
-        var preview = text.length > 100 ? text.substring(0, 100) + '\u2026' : text;
-        document.getElementById('annotationPopupText').textContent = '\u00ab ' + preview + ' \u00bb';
-        document.getElementById('annotationComment').value = '';
-
-        var left = Math.min(Math.max(0, rect.left), window.innerWidth - 310);
-        var top  = rect.bottom + 8;
-        if (top + 220 > window.innerHeight) { top = rect.top - 228; }
-        popup.style.left    = left + 'px';
-        popup.style.top     = Math.max(4, top) + 'px';
-        popup.style.display = 'block';
-        document.getElementById('annotationCategory').focus();
-    }
-
-    function hidePopup() {
-        popup.style.display = 'none';
-        pendingSelection = null;
-        if (window.getSelection) window.getSelection().removeAllRanges();
-    }
-
-    // ── Text selection ────────────────────────────────────────────────────────
-
-    // Distinguer le type de pointeur (souris / stylet / tactile)
-    var _lastPointerType = 'mouse';
-    var _selTimer        = null;
-
-    document.getElementById('reviewContent').addEventListener('pointerup', function (e) {
-        _lastPointerType = e.pointerType; // 'mouse', 'pen' ou 'touch'
-    });
-
-    function _tryShowPopup() {
-        var sel = window.getSelection();
-        if (!sel || !sel.rangeCount) return;
-        var text = sel.toString().trim();
-        if (text.length < 3) return;
-
-        var range    = sel.getRangeAt(0);
-        var ancestor = range.commonAncestorContainer;
-        var el       = ancestor.nodeType === Node.TEXT_NODE ? ancestor.parentElement : ancestor;
-        var block    = el.closest('.review-text');
-        if (!block) return;
-
-        showPopup(text, block.dataset.contentId, block.dataset.contentType, range.getBoundingClientRect());
-    }
-
-    // Souris : déclenchement rapide sur mouseup (comportement existant)
-    document.getElementById('reviewContent').addEventListener('mouseup', function (e) {
-        if (_lastPointerType !== 'mouse') return; // stylet/tactile géré par selectionchange
-        if (popup.style.display !== 'none' && popup.contains(e.target)) return;
-        setTimeout(_tryShowPopup, 20);
-    });
-
-    // Stylet / tactile : attendre que la sélection soit stable via selectionchange
-    // Le debounce de 500 ms laisse le temps aux poignées de sélection d'être ajustées
-    document.addEventListener('selectionchange', function () {
-        if (_lastPointerType === 'mouse') return;
-        if (_selTimer) clearTimeout(_selTimer);
-        _selTimer = setTimeout(_tryShowPopup, 500);
-    });
-
-    document.addEventListener('mousedown', function (e) {
-        if (popup.style.display !== 'none' && !popup.contains(e.target)) {
-            hidePopup();
+        function deleteAnnotation(annotId) {
+            if (!confirm('Supprimer cette annotation ?')) return;
+            var delData = new FormData();
+            delData.append('csrf_token', CSRF_TOKEN);
+            fetch(BASE_PATH + '/relecture/annotation/' + annotId + '/delete', { method: 'POST', body: delData })
+                .then(function (r) {
+                    if (!r.ok) throw new Error('HTTP ' + r.status);
+                    return r.json();
+                })
+                .then(function (res) {
+                    if (res.status === 'ok') {
+                        annotations = annotations.filter(function (a) { return a.id !== annotId; });
+                        removeHighlight(annotId);
+                        renderPanel();
+                    } else {
+                        console.error('[Annoter] Suppression échouée:', res.message);
+                    }
+                })
+                .catch(function (err) { console.error('[Annoter] Erreur delete:', err); });
         }
-    });
 
-    // ── Submit ────────────────────────────────────────────────────────────────
+        // ── Filters ───────────────────────────────────────────────────────────────
 
-    document.getElementById('annotationSubmit').addEventListener('click', function () {
-        if (!pendingSelection) return;
-        var category = document.getElementById('annotationCategory').value;
-        var comment  = document.getElementById('annotationComment').value.trim();
-
-        var data = new FormData();
-        data.append('project_id',    projectData.id);
-        data.append('content_type',  pendingSelection.contentType);
-        data.append('content_id',    pendingSelection.contentId);
-        data.append('selected_text', pendingSelection.text);
-        data.append('comment',       comment);
-        data.append('category',      category);
-        data.append('csrf_token',    CSRF_TOKEN);
-
-        document.getElementById('annotationSubmit').disabled = true;
-
-        fetch(BASE_PATH + '/relecture/annotation/add', { method: 'POST', body: data })
-            .then(function (r) {
-                if (!r.ok) throw new Error('HTTP ' + r.status);
-                return r.json();
-            })
-            .then(function (res) {
-                if (res.status === 'ok') {
-                    var newAnn = {
-                        id:           res.id,
-                        project_id:   projectData.id,
-                        content_type: pendingSelection.contentType,
-                        content_id:   pendingSelection.contentId,
-                        selected_text:pendingSelection.text,
-                        comment:      comment,
-                        category:     category
-                    };
-                    annotations.unshift(newAnn);
-                    highlightText(
-                        'content-' + newAnn.content_type + '-' + newAnn.content_id,
-                        newAnn.selected_text, newAnn.category, newAnn.id
-                    );
-                    renderPanel();
-                    hidePopup();
-                } else {
-                    console.error('[Annoter] Erreur serveur:', res.message);
-                    alert('Erreur : ' + (res.message || 'réponse inattendue'));
-                }
-            })
-            .catch(function (err) {
-                console.error('[Annoter] Erreur fetch:', err);
-                alert('Erreur réseau ou serveur : ' + err.message);
-            })
-            .finally(function () {
-                document.getElementById('annotationSubmit').disabled = false;
+        document.querySelectorAll('.review-filter').forEach(function (btn) {
+            btn.addEventListener('click', function () {
+                document.querySelectorAll('.review-filter').forEach(function (b) { b.classList.remove('active'); });
+                this.classList.add('active');
+                currentFilter = this.dataset.filter;
+                renderPanel();
             });
-    });
-
-    document.getElementById('annotationCancel').addEventListener('click', hidePopup);
-
-    // ── Delete ────────────────────────────────────────────────────────────────
-
-    function deleteAnnotation(annotId) {
-        if (!confirm('Supprimer cette annotation ?')) return;
-        var delData = new FormData();
-        delData.append('csrf_token', CSRF_TOKEN);
-        fetch(BASE_PATH + '/relecture/annotation/' + annotId + '/delete', { method: 'POST', body: delData })
-            .then(function (r) {
-                if (!r.ok) throw new Error('HTTP ' + r.status);
-                return r.json();
-            })
-            .then(function (res) {
-                if (res.status === 'ok') {
-                    annotations = annotations.filter(function (a) { return a.id !== annotId; });
-                    removeHighlight(annotId);
-                    renderPanel();
-                } else {
-                    console.error('[Annoter] Suppression échouée:', res.message);
-                }
-            })
-            .catch(function (err) { console.error('[Annoter] Erreur delete:', err); });
-    }
-
-    // ── Filters ───────────────────────────────────────────────────────────────
-
-    document.querySelectorAll('.review-filter').forEach(function (btn) {
-        btn.addEventListener('click', function () {
-            document.querySelectorAll('.review-filter').forEach(function (b) { b.classList.remove('active'); });
-            this.classList.add('active');
-            currentFilter = this.dataset.filter;
-            renderPanel();
         });
-    });
 
-    // ── Init ──────────────────────────────────────────────────────────────────
-    applyHighlights();
-    renderPanel();
+        // ── Init ──────────────────────────────────────────────────────────────────
+        applyHighlights();
+        renderPanel();
 
-})();
+    })();
 </script>
 
 <style nonce="{{ @nonce }}">
-/* Layout */
-.review-hint { font-size: .83rem; margin-bottom: 1rem; }
-.review-body { display: flex; gap: 1.5rem; align-items: flex-start; }
-.review-content { flex: 2; min-width: 0; }
-.review-panel {
-    flex: 0 0 290px; position: sticky; top: 70px;
-    max-height: calc(100vh - 90px); overflow-y: auto;
-    background: var(--card-bg, #fff);
-    border: 1px solid var(--border-color, #e0e0e0); border-radius: 10px;
-}
+    /* Layout */
+    .review-hint {
+        font-size: .83rem;
+        margin-bottom: 1rem;
+    }
 
-/* Panel header */
-.review-panel-header { padding: 12px 14px; border-bottom: 1px solid var(--border-color, #e0e0e0); }
-.review-panel-title { font-size: .9rem; font-weight: 600; color: var(--text-main, #333); display: flex; align-items: center; gap: 6px; margin-bottom: 8px; }
-.review-panel-count { background: var(--link-color, #3f51b5); color: #fff; border-radius: 10px; padding: 1px 7px; font-size: .72rem; font-weight: 700; }
+    .review-body {
+        display: flex;
+        gap: 1.5rem;
+        align-items: flex-start;
+    }
 
-/* Filters */
-.review-filters { display: flex; gap: 5px; flex-wrap: wrap; }
-.review-filter { background: var(--border-color, #e5e7eb); border: none; border-radius: 20px; padding: 3px 10px; font-size: .72rem; cursor: pointer; color: var(--text-main, #333); line-height: 1.6; }
-.review-filter.active { background: var(--link-color, #3f51b5); color: #fff; }
-.ann-dot { display: inline-block; width: 10px; height: 10px; border-radius: 50%; vertical-align: middle; }
-.ann-dot.ann-to_rewrite    { background: #f97316; }
-.ann-dot.ann-inconsistency { background: #ef4444; }
-.ann-dot.ann-to_check      { background: #eab308; }
-.ann-dot.ann-good          { background: #22c55e; }
+    .review-content {
+        flex: 2;
+        min-width: 0;
+    }
 
-/* Annotations list */
-.review-annotations-list { padding: 10px; }
-.review-empty { font-size: .83rem; color: var(--text-muted, #777); text-align: center; padding: 16px 0; }
-.annotation-card { background: var(--card-bg, #fff); border: 1px solid var(--border-color, #e0e0e0); border-radius: 8px; padding: 10px; margin-bottom: 8px; }
-.annotation-card-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 6px; }
-.annotation-cat-badge { color: #fff; border-radius: 12px; padding: 2px 8px; font-size: .7rem; font-weight: 700; }
-.annotation-delete-btn { background: none; border: none; cursor: pointer; color: var(--text-muted, #999); padding: 2px 4px; font-size: .8rem; border-radius: 4px; }
-.annotation-delete-btn:hover { color: #ef4444; background: rgba(239,68,68,.08); }
-.annotation-selected-text { font-size: .8rem; color: var(--text-muted, #666); font-style: italic; margin-bottom: 4px; word-break: break-word; line-height: 1.4; }
-.annotation-comment { font-size: .82rem; color: var(--text-main, #333); word-break: break-word; }
+    .review-panel {
+        flex: 0 0 290px;
+        position: sticky;
+        top: 70px;
+        max-height: calc(100vh - 90px);
+        overflow-y: auto;
+        background: var(--card-bg, #fff);
+        border: 1px solid var(--border-color, #e0e0e0);
+        border-radius: 10px;
+    }
 
-/* Content items */
-.review-item { margin-bottom: 2.5rem; }
-.review-act-title { font-size: 1.3rem; font-weight: 700; text-align: center; padding: 1rem 0; border-bottom: 2px solid var(--border-color, #e0e0e0); color: var(--text-main, #333); text-transform: uppercase; letter-spacing: 1px; }
-.review-chapter-title { font-size: 1.1rem; font-weight: 600; margin-bottom: .75rem; color: var(--text-main, #333); }
-.review-text { font-size: 1rem; line-height: 1.75; color: var(--text-main, #333); cursor: text; user-select: text; }
+    /* Panel header */
+    .review-panel-header {
+        padding: 12px 14px;
+        border-bottom: 1px solid var(--border-color, #e0e0e0);
+    }
 
-/* Annotation highlights */
-mark.annotation-mark { border-radius: 2px; padding: 0 1px; cursor: pointer; }
-mark.ann-bg-to_rewrite    { background: rgba(249,115,22,.28); }
-mark.ann-bg-inconsistency { background: rgba(239,68,68,.28); }
-mark.ann-bg-to_check      { background: rgba(234,179,8,.28); }
-mark.ann-bg-good          { background: rgba(34,197,94,.28); }
-mark.annotation-mark:hover { filter: brightness(.9); }
+    .review-panel-title {
+        font-size: .9rem;
+        font-weight: 600;
+        color: var(--text-main, #333);
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        margin-bottom: 8px;
+    }
 
-/* Annotation popup */
-.annotation-popup {
-    position: fixed; z-index: 9000;
-    background: var(--card-bg, #fff);
-    border: 1px solid var(--border-color, #ddd);
-    border-radius: 10px; padding: 12px; width: 300px;
-    box-shadow: 0 4px 24px rgba(0,0,0,.15);
-}
-.annotation-popup-text { font-size: .8rem; color: var(--text-muted, #666); font-style: italic; margin-bottom: 8px; max-height: 52px; overflow: hidden; line-height: 1.4; }
-.annotation-popup .input-control { width: 100%; margin-bottom: 8px; font-size: .85rem; box-sizing: border-box; }
-.annotation-popup-actions { display: flex; gap: 6px; }
+    .review-panel-count {
+        background: var(--link-color, #3f51b5);
+        color: #fff;
+        border-radius: 10px;
+        padding: 1px 7px;
+        font-size: .72rem;
+        font-weight: 700;
+    }
 
-@media (max-width: 768px) {
-    .review-body { flex-direction: column-reverse; }
-    .review-panel { position: static; flex: none; width: 100%; max-height: 280px; }
-}
+    /* Filters */
+    .review-filters {
+        display: flex;
+        gap: 5px;
+        flex-wrap: wrap;
+    }
+
+    .review-filter {
+        background: var(--border-color, #e5e7eb);
+        border: none;
+        border-radius: 20px;
+        padding: 3px 10px;
+        font-size: .72rem;
+        cursor: pointer;
+        color: var(--text-main, #333);
+        line-height: 1.6;
+    }
+
+    .review-filter.active {
+        background: var(--link-color, #3f51b5);
+        color: #fff;
+    }
+
+    .ann-dot {
+        display: inline-block;
+        width: 10px;
+        height: 10px;
+        border-radius: 50%;
+        vertical-align: middle;
+    }
+
+    .ann-dot.ann-to_rewrite {
+        background: #f97316;
+    }
+
+    .ann-dot.ann-inconsistency {
+        background: #ef4444;
+    }
+
+    .ann-dot.ann-to_check {
+        background: #eab308;
+    }
+
+    .ann-dot.ann-good {
+        background: #22c55e;
+    }
+
+    /* Annotations list */
+    .review-annotations-list {
+        padding: 10px;
+    }
+
+    .review-empty {
+        font-size: .83rem;
+        color: var(--text-muted, #777);
+        text-align: center;
+        padding: 16px 0;
+    }
+
+    .annotation-card {
+        background: var(--card-bg, #fff);
+        border: 1px solid var(--border-color, #e0e0e0);
+        border-radius: 8px;
+        padding: 10px;
+        margin-bottom: 8px;
+    }
+
+    .annotation-card-header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        margin-bottom: 6px;
+    }
+
+    .annotation-cat-badge {
+        color: #fff;
+        border-radius: 12px;
+        padding: 2px 8px;
+        font-size: .7rem;
+        font-weight: 700;
+    }
+
+    .annotation-delete-btn {
+        background: none;
+        border: none;
+        cursor: pointer;
+        color: var(--text-muted, #999);
+        padding: 2px 4px;
+        font-size: .8rem;
+        border-radius: 4px;
+    }
+
+    .annotation-delete-btn:hover {
+        color: #ef4444;
+        background: rgba(239, 68, 68, .08);
+    }
+
+    .annotation-selected-text {
+        font-size: .8rem;
+        color: var(--text-muted, #666);
+        font-style: italic;
+        margin-bottom: 4px;
+        word-break: break-word;
+        line-height: 1.4;
+    }
+
+    .annotation-comment {
+        font-size: .82rem;
+        color: var(--text-main, #333);
+        word-break: break-word;
+    }
+
+    /* Content items */
+    .review-item {
+        margin-bottom: 2.5rem;
+    }
+
+    .review-act-title {
+        font-size: 1.3rem;
+        font-weight: 700;
+        text-align: center;
+        padding: 1rem 0;
+        border-bottom: 2px solid var(--border-color, #e0e0e0);
+        color: var(--text-main, #333);
+        text-transform: uppercase;
+        letter-spacing: 1px;
+    }
+
+    .review-chapter-title {
+        font-size: 1.1rem;
+        font-weight: 600;
+        margin-bottom: .75rem;
+        color: var(--text-main, #333);
+    }
+
+    .review-text {
+        font-size: 1rem;
+        line-height: 1.75;
+        color: var(--text-main, #333);
+        cursor: text;
+        user-select: text;
+    }
+
+    /* Annotation highlights */
+    mark.annotation-mark {
+        border-radius: 2px;
+        padding: 0 1px;
+        cursor: pointer;
+    }
+
+    mark.ann-bg-to_rewrite {
+        background: rgba(249, 115, 22, .28);
+    }
+
+    mark.ann-bg-inconsistency {
+        background: rgba(239, 68, 68, .28);
+    }
+
+    mark.ann-bg-to_check {
+        background: rgba(234, 179, 8, .28);
+    }
+
+    mark.ann-bg-good {
+        background: rgba(34, 197, 94, .28);
+    }
+
+    mark.annotation-mark:hover {
+        filter: brightness(.9);
+    }
+
+    /* Annotation popup */
+    .annotation-popup {
+        position: fixed;
+        z-index: 9000;
+        background: var(--card-bg, #fff);
+        border: 1px solid var(--border-color, #ddd);
+        border-radius: 10px;
+        padding: 12px;
+        width: 300px;
+        box-shadow: 0 4px 24px rgba(0, 0, 0, .15);
+    }
+
+    .annotation-popup-text {
+        font-size: .8rem;
+        color: var(--text-muted, #666);
+        font-style: italic;
+        margin-bottom: 8px;
+        max-height: 52px;
+        overflow: hidden;
+        line-height: 1.4;
+    }
+
+    .annotation-popup .input-control {
+        width: 100%;
+        margin-bottom: 8px;
+        font-size: .85rem;
+        box-sizing: border-box;
+    }
+
+    .annotation-popup-actions {
+        display: flex;
+        gap: 6px;
+    }
+
+    @media (max-width: 768px) {
+        .review-body {
+            flex-direction: column-reverse;
+        }
+
+        .review-panel {
+            position: static;
+            flex: none;
+            width: 100%;
+            max-height: 280px;
+        }
+    }
 </style>

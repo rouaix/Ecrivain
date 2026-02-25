@@ -139,13 +139,14 @@ class Migrations
                     try {
                         $this->pdo->exec($statement);
                     } catch (\PDOException $pe) {
-                        // Tolerate common idempotent migration errors:
-                        // 1060 = Duplicate column, 1061 = Duplicate key
-                        // 1050 = Table already exists, 1452 = FK constraint
-                        // 1005 = Can't create table (FK error), 1215 = Cannot add FK constraint
+                        // Tolerate truly idempotent errors only:
+                        // 1060 = Duplicate column (ALTER TABLE ADD COLUMN already exists)
+                        // 1061 = Duplicate key name (ALTER TABLE ADD INDEX already exists)
                         // 1062 = Duplicate entry (INSERT IGNORE equivalent)
+                        // NOTE: 1005/1215 (FK errors) and 1050 (table exists) are NOT tolerated —
+                        // they indicate the statement actually failed and the table was not created.
                         $code = (int) ($pe->errorInfo[1] ?? 0);
-                        if (in_array($code, [1060, 1061, 1050, 1452, 1005, 1215, 1062])) {
+                        if (in_array($code, [1060, 1061, 1062])) {
                             error_log("Migration warning (ignored): " . $pe->getMessage());
                             continue;
                         }

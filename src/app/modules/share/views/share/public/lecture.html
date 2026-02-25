@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="robots" content="noindex">
+    <title>{{ @title | esc }}</title>
+    <link rel="stylesheet" href="{{ @base }}/public/style.css?v=28">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="{{ @base }}/public/theme-default.css">
+    <link rel="stylesheet" href="{{ @base }}/public/reading.css?v=10">
+    <style>
+        body.reading-mode header, body.reading-mode footer, body.reading-mode nav:not(.reading-toolbar *) { display: none !important; }
+        body.reading-mode main.reading-content { padding: 0 !important; max-width: 100% !important; }
+        body.reading-mode .container { max-width: 100% !important; width: 100% !important; padding: 0 !important; }
+        body.reading-mode .reading-container { max-width: 100% !important; width: 100vw !important; margin: 0 !important; padding: 0 !important; }
+        .reading-toolbar { background: var(--header-bg) !important; color: var(--header-text) !important; display: flex !important; flex-direction: row !important; align-items: center !important; padding: 12px 20px !important; gap: 15px !important; min-height: 50px !important; max-height: 100px !important; box-sizing: border-box !important; flex-shrink: 0 !important; position: sticky !important; top: 0 !important; left: 0 !important; right: 0 !important; width: 100% !important; margin: 0 !important; z-index: 100 !important; }
+        .reading-toolbar .toolbar-title { color: var(--header-text) !important; font-size: 1.2rem !important; font-weight: 600 !important; flex: 1 !important; }
+        .reading-toolbar .toolbar-btn { background: rgba(255,255,255,.1) !important; color: var(--header-text) !important; border: 1px solid rgba(255,255,255,.2) !important; padding: 8px 12px !important; border-radius: 4px !important; font-size: .85rem !important; font-family: inherit !important; height: 36px !important; display: inline-flex !important; align-items: center !important; gap: 4px !important; text-decoration: none !important; cursor: pointer !important; box-sizing: border-box !important; white-space: nowrap !important; }
+        .share-readonly-badge { background: rgba(255,193,7,.2); border: 1px solid rgba(255,193,7,.5); color: #fff; border-radius: 4px; padding: 4px 10px; font-size: .75rem; display: inline-flex; align-items: center; gap: 4px; flex-shrink: 0; }
+        @media (max-width: 768px) { .reading-toolbar { flex-wrap: nowrap !important; padding: 8px 10px !important; overflow-x: auto !important; overflow-y: hidden !important; } .reading-toolbar .toolbar-title { font-size: .9rem !important; white-space: nowrap !important; overflow: hidden !important; text-overflow: ellipsis !important; max-width: 160px !important; } .reading-toolbar .toolbar-btn { font-size: .75rem !important; padding: 6px 10px !important; height: 32px !important; } }
+    </style>
+</head>
+
+<body class="reading-mode theme-default">
+
+<div class="reading-toolbar">
+    <div class="toolbar-title">{{ @project.title | esc }}</div>
+    <span class="share-readonly-badge"><i class="fas fa-lock"></i> Lecture seule</span>
+    <button class="toolbar-btn" id="toggleToc"><i class="fas fa-list"></i> Table</button>
+    <button class="toolbar-btn" id="toggleFullscreen"><i class="fas fa-expand"></i></button>
+    <a href="{{ @base }}/s/{{ @token }}/{{ @project.id }}/relecture" class="toolbar-btn" title="Mode relecture">
+        <i class="fas fa-glasses"></i>
+    </a>
+    <a href="{{ @base }}/s/{{ @token }}/{{ @project.id }}/mindmap" class="toolbar-btn" title="Carte mentale">
+        <i class="fas fa-project-diagram"></i>
+    </a>
+    <a href="{{ @base }}/s/{{ @token }}" class="toolbar-btn" title="Retour à la liste">
+        <i class="fas fa-arrow-left"></i>
+    </a>
+</div>
+
+<div class="reading-container">
+    <aside class="reading-toc" id="readingToc">
+        <h2>Table des matières</h2>
+        <div class="toc-list">
+            <repeat group="{{ @tocItems }}" value="{{ @item }}">
+                <div class="toc-item level-{{ @item.level }}" data-page="{{ @item.page }}">
+                    <span class="toc-page">p. {{ @item.page }}</span>
+                    {{ @item.title | esc }}
+                </div>
+            </repeat>
+        </div>
+    </aside>
+
+    <main class="reading-content" id="readingContent">
+        <div class="lecture-content">
+            <div class="reading-cover-page">
+                <check if="{{ @coverImage }}">
+                    <img src="{{ @coverImage }}" alt="Couverture" class="cover-image">
+                </check>
+                <h1 class="cover-title">{{ @project.title | esc }}</h1>
+                <p class="cover-pages">{{ @totalPages }} page(s) estimée(s)</p>
+            </div>
+
+            <repeat group="{{ @readingContent }}" value="{{ @item }}">
+                <div class="reading-section" data-page="{{ @item.page_start }}" data-content-id="{{ @item.id }}" data-content-type="{{ @item.type }}">
+                    <check if="{{ @item.title }}">
+                        <check if="{{ @item.type == 'act' }}">
+                            <h2 class="reading-act-title">{{ @item.title | esc }}</h2>
+                        </check>
+                        <check if="{{ @item.type == 'chapter' || @item.type == 'subchapter' }}">
+                            <h3 class="reading-chapter-title">{{ @item.title | esc }}</h3>
+                        </check>
+                        <check if="{{ @item.type != 'act' && @item.type != 'chapter' && @item.type != 'subchapter' }}">
+                            <h3 class="reading-section-title">{{ @item.title | esc }}</h3>
+                        </check>
+                    </check>
+                    <div class="reading-text ql-editor">{{ @item.content | raw }}</div>
+                    <div class="reading-page-indicator">p. {{ @item.page_start }}</div>
+                </div>
+            </repeat>
+        </div>
+    </main>
+</div>
+
+<script nonce="{{ @nonce }}">
+// TOC toggle
+document.getElementById('toggleToc').addEventListener('click', function() {
+    document.getElementById('readingToc').classList.toggle('hidden');
+});
+
+// TOC navigation
+document.querySelectorAll('.toc-item').forEach(function(item) {
+    item.addEventListener('click', function() {
+        var page = this.dataset.page;
+        var target = document.querySelector('.reading-section[data-page="' + page + '"]');
+        if (target) {
+            target.scrollIntoView({behavior: 'smooth'});
+            document.getElementById('readingToc').classList.add('hidden');
+        }
+    });
+});
+
+// Fullscreen
+document.getElementById('toggleFullscreen').addEventListener('click', function() {
+    if (!document.fullscreenElement) {
+        document.documentElement.requestFullscreen && document.documentElement.requestFullscreen();
+        this.innerHTML = '<i class="fas fa-compress"></i>';
+    } else {
+        document.exitFullscreen && document.exitFullscreen();
+        this.innerHTML = '<i class="fas fa-expand"></i>';
+    }
+});
+</script>
+</body>
+</html>
