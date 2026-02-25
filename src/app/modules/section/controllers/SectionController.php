@@ -159,7 +159,7 @@ class SectionController extends Controller
      */
     public function deleteImage()
     {
-        $pid  = (int) $this->f3->get('PARAMS.pid');
+        $pid = (int) $this->f3->get('PARAMS.pid');
         $type = $this->f3->get('PARAMS.type');
         $user = $this->currentUser();
 
@@ -195,18 +195,23 @@ class SectionController extends Controller
      */
     public function image()
     {
-        $pid  = (int) $this->f3->get('PARAMS.pid');
+        $pid = (int) $this->f3->get('PARAMS.pid');
         $type = $this->f3->get('PARAMS.type');
-        $user = $this->currentUser();
 
-        // Verify project ownership
-        $projectModel = new Project();
-        if (!$projectModel->count(['id=? AND user_id=?', $pid, $user['id']])) {
+        // Allow access for owner OR collaborator
+        if (!$this->hasProjectAccess($pid)) {
             $this->f3->error(403);
             return;
         }
 
-        $dir = 'data/' . $user['email'] . '/projects/' . $pid . '/sections/';
+        // Use project OWNER's email to build the correct path
+        $ownerEmail = $this->getProjectOwnerEmail($pid);
+        if (!$ownerEmail) {
+            $this->f3->error(404);
+            return;
+        }
+
+        $dir = 'data/' . $this->sanitizeEmailForPath($ownerEmail) . '/projects/' . $pid . '/sections/';
         $filePath = null;
         foreach (glob($dir . $type . '.*') ?: [] as $f) {
             $filePath = $f;
@@ -220,10 +225,10 @@ class SectionController extends Controller
 
         $ext = strtolower(pathinfo($filePath, PATHINFO_EXTENSION));
         $mimeTypes = [
-            'jpg'  => 'image/jpeg',
+            'jpg' => 'image/jpeg',
             'jpeg' => 'image/jpeg',
-            'png'  => 'image/png',
-            'gif'  => 'image/gif',
+            'png' => 'image/png',
+            'gif' => 'image/gif',
             'webp' => 'image/webp',
         ];
         $mime = $mimeTypes[$ext] ?? 'application/octet-stream';
@@ -250,7 +255,7 @@ class SectionController extends Controller
             $projectModel = new Project();
             $user = $this->currentUser();
             if ($projectModel->count(['id=? AND user_id=?', $sectionModel->project_id, $user['id']])) {
-                $pid  = $sectionModel->project_id;
+                $pid = $sectionModel->project_id;
                 $type = $sectionModel->type;
 
                 // Delete associated image file if any

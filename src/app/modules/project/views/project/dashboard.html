@@ -128,7 +128,8 @@
     <div class="alert alert-info" style="margin-bottom:1rem">
         <i class="fas fa-envelope"></i>
         Vous avez <strong>{{ count(@pendingInvitations) }}</strong> invitation(s) en attente.
-        <a href="{{ @base }}/collab/invitations" class="button small" style="margin-left:.75rem">Voir les invitations</a>
+        <a href="{{ @base }}/collab/invitations" class="button small" style="margin-left:.75rem">Voir les
+            invitations</a>
     </div>
 </check>
 
@@ -141,9 +142,18 @@
         <repeat group="{{ @sharedProjects }}" value="{{ @proj }}">
             <div class="project-card">
                 <a href="{{ @base }}/project/{{ @proj.id }}" class="project-card-link">
-                    <div class="project-card__cover">
-                        <div class="project-card__title-overlay">{{ @proj.title }}</div>
-                    </div>
+                    <check if="{{ @proj.cover_image }}">
+                        <true>
+                            <div class="project-card__cover"
+                                style="background-image: url('{{ @base }}/project/{{ @proj.id }}/cover');">
+                            </div>
+                        </true>
+                        <false>
+                            <div class="project-card__cover">
+                                <div class="project-card__title-overlay">{{ @proj.title }}</div>
+                            </div>
+                        </false>
+                    </check>
                     <div class="project-card__info">
                         <h3 class="project-card__title">{{ @proj.title }}</h3>
                         <div class="project-card__description">
@@ -155,10 +165,12 @@
                     </div>
                 </a>
                 <div class="project-card__actions">
-                    <a href="{{ @base }}/project/{{ @proj.id }}/relecture" class="button small secondary" title="Relecture">
+                    <a href="{{ @base }}/project/{{ @proj.id }}/relecture" class="button small secondary"
+                        title="Relecture">
                         <i class="fas fa-glasses"></i>
                     </a>
-                    <a href="{{ @base }}/project/{{ @proj.id }}/collab/mes-demandes" class="button small secondary" title="Mes demandes">
+                    <a href="{{ @base }}/project/{{ @proj.id }}/collab/mes-demandes" class="button small secondary"
+                        title="Mes demandes">
                         <i class="fas fa-paper-plane"></i>
                     </a>
                     <a href="{{ @base }}/project/{{ @proj.id }}/export" class="button small secondary" title="Exporter">

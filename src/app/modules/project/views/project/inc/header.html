@@ -28,12 +28,11 @@
             <div class="project-hero__actions">
                 <div class="project-hero__actions-group">
                     <check if="{{ @isCollaborator }}">
-                        <a class="button secondary cacher"
-                            href="{{ @base }}/project/{{ @project.id }}/collab/mes-demandes"
+                        <a class="button secondary" href="{{ @base }}/project/{{ @project.id }}/collab/mes-demandes"
                             title="Mes demandes de modification"><i class="fas fa-paper-plane"></i> Mes demandes</a>
                     </check>
                     <check if="{{ @isOwner }}">
-                        <a class="button secondary cacher" href="{{ @base }}/project/{{ @project.id }}/collaborateurs"
+                        <a class="button secondary" href="{{ @base }}/project/{{ @project.id }}/collaborateurs"
                             title="Gérer les collaborateurs"><i class="fas fa-users"></i> Collaborateurs</a>
                     </check>
                     <a class="button" href="{{ @base }}/project/{{ @project.id }}/mindmap">Carte mentale</a>

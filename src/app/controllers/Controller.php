@@ -566,6 +566,21 @@ abstract class Controller
     }
 
     /**
+     * Get the email of the project's owner (creator).
+     * Used to build the correct data path for images/files,
+     * especially in shared/collaborative mode where the current user
+     * is not the owner.
+     */
+    protected function getProjectOwnerEmail(int $projectId): ?string
+    {
+        $rows = $this->db->exec(
+            'SELECT u.email FROM projects p JOIN users u ON u.id = p.user_id WHERE p.id = ?',
+            [$projectId]
+        );
+        return !empty($rows) ? $rows[0]['email'] : null;
+    }
+
+    /**
      * Count pending collaboration requests for all projects owned by the current user.
      * Used to display the notification badge.
      */

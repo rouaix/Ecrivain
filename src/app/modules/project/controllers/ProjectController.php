@@ -964,9 +964,15 @@ class ProjectController extends Controller
     public function cover()
     {
         $pid = (int) $this->f3->get('PARAMS.id');
-        $user = $this->currentUser();
+        
+        // Check project access (owner, collaborator, or share link)
+        if (!$this->canAccessProject($pid)) {
+            $this->f3->error(404);
+            return;
+        }
+        
         $projectModel = new Project();
-        $project = $projectModel->findAndCast(['id=? AND user_id=?', $pid, $user['id']]);
+        $project = $projectModel->findAndCast(['id=?', $pid]);
 
         if (!$project || empty($project[0]['cover_image'])) {
             error_log("Cover not found - Project: {$pid}, Cover: " . ($project[0]['cover_image'] ?? 'none'));
@@ -976,9 +982,9 @@ class ProjectController extends Controller
 
         $projectData = $project[0];
         $coverImage = $projectData['cover_image'];
-        $userEmail = $user['email'];
+        $projectDataDir = $this->getProjectDataDir($pid);
 
-        $filePath = 'data/' . $userEmail . '/projects/' . $pid . '/' . $coverImage;
+        $filePath = $projectDataDir . '/projects/' . $pid . '/' . $coverImage;
 
         if (!file_exists($filePath)) {
             error_log("Cover file not found at path: {$filePath}");
@@ -1003,11 +1009,57 @@ class ProjectController extends Controller
         exit;
     }
 
+    /**
+     * Get the correct data directory for a project, respecting collaborative/share modes.
+     * Returns the project owner's data directory path.
+     */
+    private function getProjectDataDir(int $projectId): string
+    {
+        $ownerEmail = $this->getProjectOwnerEmail($projectId);
+        return $this->getUserDataDir($ownerEmail);
+    }
+
+    /**
+     * Check if current user can access a project (owner, collaborator, or via share link).
+     * For public share routes, the token must be provided in PARAMS.token.
+     */
+    private function canAccessProject(int $projectId): bool
+    {
+        // 1. Check if user is authenticated and has direct access (owner or collaborator)
+        $user = $this->currentUser();
+        if ($user && $this->hasProjectAccess($projectId)) {
+            return true;
+        }
+        
+        // 2. Check if access is via a valid share link (public access)
+        $token = $this->f3->get('PARAMS.token');
+        if ($token) {
+            $shareLink = new ShareLink();
+            $link = $shareLink->findByToken($token);
+            
+            if ($link && $link['is_active']) {
+                $projectIds = $shareLink->getProjectIds((int)$link['id']);
+                if (in_array($projectId, array_map('intval', $projectIds))) {
+                    return true;
+                }
+            }
+        }
+        
+        return false;
+    }
+
     public function mindmap()
     {
         $pid = (int) $this->f3->get('PARAMS.id');
+        
+        // Check project access (owner, collaborator, or share link)
+        if (!$this->canAccessProject($pid)) {
+            $this->f3->error(404);
+            return;
+        }
+        
         $projectModel = new Project();
-        $project = $projectModel->findAndCast(['id=? AND user_id=?', $pid, $this->currentUser()['id']]);
+        $project = $projectModel->findAndCast(['id=?', $pid]);
 
         if (!$project) {
             $this->f3->error(404);
