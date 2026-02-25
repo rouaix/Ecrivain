@@ -15,6 +15,10 @@ class ComposerStaticInitd751713988987e9331980363e24189ce
         array (
             'Spipu\\Html2Pdf\\' => 15,
         ),
+        'P' => 
+        array (
+            'PHPMailer\\PHPMailer\\' => 20,
+        ),
         'L' => 
         array (
             'League\\Csv\\' => 11,
@@ -33,6 +37,10 @@ class ComposerStaticInitd751713988987e9331980363e24189ce
         'Spipu\\Html2Pdf\\' => 
         array (
             0 => __DIR__ . '/..' . '/spipu/html2pdf/src',
+        ),
+        'PHPMailer\\PHPMailer\\' => 
+        array (
+            0 => __DIR__ . '/..' . '/phpmailer/phpmailer/src',
         ),
         'League\\Csv\\' => 
         array (

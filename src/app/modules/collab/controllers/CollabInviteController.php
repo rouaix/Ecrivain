@@ -84,6 +84,21 @@ class CollabInviteController extends Controller
                         'INSERT INTO project_collaborators (project_id, owner_id, user_id) VALUES (?, ?, ?)',
                         [$pid, $user['id'], $targetId]
                     );
+
+                    // Envoyer l'email de notification
+                    $projectRow = $this->db->exec('SELECT title FROM projects WHERE id = ?', [$pid]);
+                    $projectTitle = $projectRow[0]['title'] ?? 'un projet';
+                    $scheme = (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off') ? 'https' : 'http';
+                    $invitationsUrl = $scheme . '://' . ($_SERVER['HTTP_HOST'] ?? 'localhost')
+                        . $this->f3->get('BASE') . '/collab/invitations';
+
+                    (new NotificationService())->sendCollabInvitationEmail(
+                        $email,
+                        $user['username'],
+                        $projectTitle,
+                        $invitationsUrl
+                    );
+
                     $this->f3->reroute('/project/' . $pid . '/collaborateurs');
                     return;
                 }

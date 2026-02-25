@@ -7,6 +7,7 @@ $baseDir = dirname($vendorDir);
 
 return array(
     'Spipu\\Html2Pdf\\' => array($vendorDir . '/spipu/html2pdf/src'),
+    'PHPMailer\\PHPMailer\\' => array($vendorDir . '/phpmailer/phpmailer/src'),
     'League\\Csv\\' => array($vendorDir . '/league/csv/src'),
     'KS\\' => array($vendorDir . '/kalao/libs/libs'),
     'Firebase\\JWT\\' => array($vendorDir . '/firebase/php-jwt/src'),

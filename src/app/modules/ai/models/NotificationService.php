@@ -1,5 +1,7 @@
-fromEmail
 <?php
+
+use PHPMailer\PHPMailer\PHPMailer;
+use PHPMailer\PHPMailer\Exception as PHPMailerException;
 
 class NotificationService
 {
@@ -9,7 +11,11 @@ class NotificationService
     public function __construct()
     {
         $host = $_SERVER['HTTP_HOST'] ?? 'localhost';
-        $this->fromEmail = 'noreply@' . $host;
+        $this->fromEmail = getenv('SMTP_FROM') ?: ($_ENV['SMTP_FROM'] ?? ('noreply@' . $host));
+        $fromName = getenv('SMTP_FROM_NAME') ?: ($_ENV['SMTP_FROM_NAME'] ?? '');
+        if ($fromName !== '') {
+            $this->fromName = $fromName;
+        }
     }
 
     /**
@@ -31,7 +37,7 @@ class NotificationService
 
         $subject = "Génération IA terminée — {$label}";
 
-        $body = "Bonjour,\n\n";
+        $body  = "Bonjour,\n\n";
         $body .= "Votre génération IA vient de se terminer.\n\n";
         $body .= "Tâche    : {$label}\n";
         $body .= "Durée    : {$duration} secondes\n\n";
@@ -48,7 +54,7 @@ class NotificationService
     {
         $subject = "Alerte usage IA — Seuil atteint";
 
-        $body = "Bonjour,\n\n";
+        $body  = "Bonjour,\n\n";
         $body .= "Votre consommation de tokens IA a dépassé le seuil configuré.\n\n";
         $body .= "Tokens utilisés aujourd'hui : " . number_format($tokensToday, 0, ',', ' ') . "\n";
         $body .= "Seuil configuré              : " . number_format($threshold, 0, ',', ' ') . " tokens\n\n";
@@ -67,7 +73,7 @@ class NotificationService
     {
         $subject = "Votre bilan d'écriture de la semaine";
 
-        $body = "Bonjour,\n\n";
+        $body  = "Bonjour,\n\n";
         $body .= "Voici votre bilan d'écriture pour les 7 derniers jours.\n\n";
 
         if (!empty($stats['words_this_week'])) {
@@ -90,6 +96,26 @@ class NotificationService
         return $this->send($toEmail, $subject, $body);
     }
 
+    /**
+     * Notify a user that they have been invited to collaborate on a project.
+     */
+    public function sendCollabInvitationEmail(
+        string $toEmail,
+        string $inviterName,
+        string $projectTitle,
+        string $invitationsUrl
+    ): bool {
+        $subject = "Invitation à collaborer — {$projectTitle}";
+
+        $body  = "Bonjour,\n\n";
+        $body .= "{$inviterName} vous invite à collaborer sur le projet « {$projectTitle} ».\n\n";
+        $body .= "Vous pouvez accepter ou décliner cette invitation en vous connectant à votre compte :\n";
+        $body .= "{$invitationsUrl}\n\n";
+        $body .= $this->signature();
+
+        return $this->send($toEmail, $subject, $body);
+    }
+
     // ── Private ─────────────────────────────────────────────────────────────
 
     private function signature(): string
@@ -98,7 +124,55 @@ class NotificationService
         return "— L'application {$host}\n";
     }
 
+    /**
+     * Send an email via SMTP (PHPMailer) if configured, otherwise fall back to mail().
+     */
     private function send(string $to, string $subject, string $body): bool
+    {
+        $smtpHost = getenv('SMTP_HOST') ?: ($_ENV['SMTP_HOST'] ?? '');
+
+        if ($smtpHost !== '') {
+            return $this->sendSmtp($to, $subject, $body, $smtpHost);
+        }
+
+        return $this->sendNative($to, $subject, $body);
+    }
+
+    private function sendSmtp(string $to, string $subject, string $body, string $smtpHost): bool
+    {
+        $smtpPort     = (int)(getenv('SMTP_PORT') ?: ($_ENV['SMTP_PORT'] ?? 587));
+        $smtpUser     = getenv('SMTP_USER') ?: ($_ENV['SMTP_USER'] ?? '');
+        $smtpPass     = getenv('SMTP_PASS') ?: ($_ENV['SMTP_PASS'] ?? '');
+        $smtpSecure   = (getenv('SMTP_SECURE') ?: ($_ENV['SMTP_SECURE'] ?? '')) ?: ($smtpPort === 465 ? PHPMailer::ENCRYPTION_SMTPS : PHPMailer::ENCRYPTION_STARTTLS);
+
+        try {
+            $mail = new PHPMailer(true);
+            $mail->isSMTP();
+            $mail->Host       = $smtpHost;
+            $mail->Port       = $smtpPort;
+            $mail->SMTPSecure = $smtpSecure;
+
+            if ($smtpUser !== '') {
+                $mail->SMTPAuth = true;
+                $mail->Username = $smtpUser;
+                $mail->Password = $smtpPass;
+            }
+
+            $mail->CharSet = PHPMailer::CHARSET_UTF8;
+            $mail->setFrom($this->fromEmail, $this->fromName);
+            $mail->addAddress($to);
+            $mail->Subject = $subject;
+            $mail->Body    = $body;
+
+            $mail->send();
+            return true;
+        } catch (PHPMailerException $e) {
+            error_log("NotificationService SMTP: échec envoi à {$to} — " . $e->getMessage());
+            return false;
+        }
+    }
+
+    private function sendNative(string $to, string $subject, string $body): bool
     {
         if (!function_exists('mail')) {
             error_log("NotificationService: mail() indisponible");
