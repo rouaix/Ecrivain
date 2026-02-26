@@ -96,7 +96,7 @@ label {
 
 .input-control {
     width: 100%;
-    padding: 10px 15px;
+    padding: 4px 10px;
     border: 1px solid var(--input-border);
     border-radius: 8px;
     background: var(--input-bg);

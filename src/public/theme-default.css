@@ -91,7 +91,11 @@ body.theme-default a.button.small:hover {
     background: var(--button-hover-bg);
 }
 
-body.theme-default .button.delete:hover {
+body.theme-default .button.delete:hover,
+.button.delete:hover,
+body.theme-default a.button.small.delete:hover,
+a.button.delete:hover,
+.delete:hover .small.delete:hover {
     background: var(--button-delete-hover-bg);
 }
 

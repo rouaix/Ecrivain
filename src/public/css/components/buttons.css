@@ -29,6 +29,15 @@ button:not(.ql-toolbar button),
     margin: 2px;
 }
 
+button:not(.ql-toolbar button):hover,
+.button:not(.ql-toolbar button):hover {
+    background-color: var(--button-hover-bg);
+}
+
+.button.delete:hover {
+    background-color: var(--button-delete-hover-bg);
+}
+
 /* Ensure specific input types also follow suit if they aren't covered by .button */
 input[type="submit"] {
     background: var(--button-primary-bg);
@@ -143,4 +152,10 @@ a.button i {
 
 #searchToggleBtn {
     margin-right: 15px;
+}
+
+.button i::before,
+button i::after {
+    margin: 0 5px;
+    padding: 0;
 }
