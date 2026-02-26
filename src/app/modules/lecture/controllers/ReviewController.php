@@ -220,7 +220,7 @@ class ReviewController extends Controller
             'items'           => $data['items'],
             'annotations'     => $annotations,
             'annotationsJson' => json_encode(array_values($annotations)),
-            'projectJson'     => json_encode(['id' => $pid, 'currentUserId' => $user['id']]),
+            'projectJson'     => json_encode(['id' => $pid, 'currentUserId' => $user['id'], 'isOwner' => $isOwner]),
             'isOwner'         => $isOwner,
             'isCollaborator'  => $this->isCollaborator($pid),
         ]);
@@ -278,12 +278,22 @@ class ReviewController extends Controller
         $aid  = (int) $this->f3->get('PARAMS.aid');
 
         $rows = $this->db->exec(
-            'SELECT id FROM annotations WHERE id = ? AND user_id = ?',
-            [$aid, $user['id']]
+            'SELECT id, project_id FROM annotations WHERE id = ?',
+            [$aid]
         );
 
         if (empty($rows)) {
             echo json_encode(['status' => 'error', 'message' => 'Annotation introuvable.']);
+            return;
+        }
+
+        $annotation = $rows[0];
+
+        // Autoriser : auteur de l'annotation OU propriétaire du projet
+        if ((int)$annotation['project_id'] !== 0 && $this->isOwner((int)$annotation['project_id'])) {
+            // Propriétaire du projet : peut supprimer toute annotation
+        } elseif (!$this->db->exec('SELECT id FROM annotations WHERE id = ? AND user_id = ?', [$aid, $user['id']])) {
+            echo json_encode(['status' => 'error', 'message' => 'Non autorisé.']);
             return;
         }
 
