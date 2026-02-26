@@ -588,14 +588,25 @@ abstract class Controller
     {
         $user = $this->currentUser();
         if (!$user) return 0;
-        $rows = $this->db->exec(
+
+        // Demandes de modification en attente sur les projets dont l'utilisateur est propriétaire
+        $requests = $this->db->exec(
             'SELECT COUNT(*) AS cnt
              FROM collaboration_requests cr
              JOIN projects p ON p.id = cr.project_id
              WHERE p.user_id = ? AND cr.status = "pending"',
             [$user['id']]
         );
-        return (int)($rows[0]['cnt'] ?? 0);
+
+        // Invitations reçues en attente
+        $invitations = $this->db->exec(
+            'SELECT COUNT(*) AS cnt
+             FROM project_collaborators
+             WHERE user_id = ? AND status = "pending"',
+            [$user['id']]
+        );
+
+        return (int)($requests[0]['cnt'] ?? 0) + (int)($invitations[0]['cnt'] ?? 0);
     }
 
     /**

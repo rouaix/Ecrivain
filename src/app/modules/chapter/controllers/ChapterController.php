@@ -441,6 +441,71 @@ class ChapterController extends Controller
         ]);
     }
 
+    public function previewVersion()
+    {
+        $cid = (int) $this->f3->get('PARAMS.id');
+        $vid = (int) $this->f3->get('PARAMS.vid');
+
+        $chapterModel = new Chapter();
+        $chapterModel->load(['id=?', $cid]);
+        if ($chapterModel->dry()) {
+            http_response_code(404);
+            echo json_encode(['error' => 'Chapitre introuvable']);
+            exit;
+        }
+
+        $projectModel = new Project();
+        if (!$projectModel->count(['id=? AND user_id=?', $chapterModel->project_id, $this->currentUser()['id']])) {
+            http_response_code(403);
+            echo json_encode(['error' => 'Accès refusé']);
+            exit;
+        }
+
+        $rows = $this->db->exec(
+            'SELECT content, word_count, created_at FROM chapter_versions WHERE id = ? AND chapter_id = ?',
+            [$vid, $cid]
+        );
+        if (!$rows) {
+            http_response_code(404);
+            echo json_encode(['error' => 'Version introuvable']);
+            exit;
+        }
+
+        header('Content-Type: application/json');
+        echo json_encode([
+            'content'    => $rows[0]['content'],
+            'word_count' => (int) $rows[0]['word_count'],
+            'created_at' => $rows[0]['created_at'],
+        ]);
+        exit;
+    }
+
+    public function deleteVersion()
+    {
+        $cid = (int) $this->f3->get('PARAMS.id');
+        $vid = (int) $this->f3->get('PARAMS.vid');
+
+        $chapterModel = new Chapter();
+        $chapterModel->load(['id=?', $cid]);
+        if ($chapterModel->dry()) {
+            $this->f3->error(404);
+            return;
+        }
+
+        $projectModel = new Project();
+        if (!$projectModel->count(['id=? AND user_id=?', $chapterModel->project_id, $this->currentUser()['id']])) {
+            $this->f3->error(403);
+            return;
+        }
+
+        $this->db->exec(
+            'DELETE FROM chapter_versions WHERE id = ? AND chapter_id = ?',
+            [$vid, $cid]
+        );
+
+        $this->f3->reroute('/chapter/' . $cid . '/versions');
+    }
+
     public function restore()
     {
         $cid = (int) $this->f3->get('PARAMS.id');

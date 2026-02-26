@@ -64,7 +64,7 @@
                                 <form method="post" action="{{ @base }}/project/{{ @project.id }}/collaborateurs/{{ @c.user_id }}/remove"
                                       onsubmit="return confirm('Retirer ce collaborateur ?')">
                                     <input type="hidden" name="csrf_token" value="{{ @csrfToken }}">
-                                    <button type="submit" class="button small danger">Retirer</button>
+                                    <button type="submit" class="button small delete">Retirer</button>
                                 </form>
                             </td>
                         </tr>

@@ -63,7 +63,7 @@ class SharePublicController extends Controller
 
         $coverImage = null;
         if (!empty($project['cover_image'])) {
-            $coverImage = $this->f3->get('BASE') . '/project/' . $pid . '/cover';
+            $coverImage = $this->f3->get('BASE') . '/s/' . $token . '/' . $pid . '/cover';
         }
 
         $this->renderPublic('share/public/project.html', [
@@ -130,7 +130,7 @@ class SharePublicController extends Controller
 
         $coverImage = null;
         if (!empty($data['project']['cover_image'])) {
-            $coverImage = $this->f3->get('BASE') . '/project/' . $pid . '/cover';
+            $coverImage = $this->f3->get('BASE') . '/s/' . $token . '/' . $pid . '/cover';
         }
 
         $this->renderPublic('share/public/lecture.html', [
@@ -189,6 +189,55 @@ class SharePublicController extends Controller
     /**
      * Validate token and project membership. Returns link array or null.
      */
+    /**
+     * Serve the project cover image publicly (no auth required, token validated).
+     */
+    public function cover()
+    {
+        $token = $this->f3->get('PARAMS.token');
+        $pid   = (int)$this->f3->get('PARAMS.pid');
+        $link  = $this->resolveLink($token, $pid);
+
+        if (!$link) {
+            $this->f3->error(403);
+            return;
+        }
+
+        $rows = $this->db->exec(
+            'SELECT p.cover_image, u.email FROM projects p JOIN users u ON u.id = p.user_id WHERE p.id = ?',
+            [$pid]
+        );
+
+        if (!$rows || empty($rows[0]['cover_image'])) {
+            $this->f3->error(404);
+            return;
+        }
+
+        $coverImage = $rows[0]['cover_image'];
+        $ownerDir   = $this->getUserDataDir($rows[0]['email']);
+        $filePath   = $ownerDir . '/projects/' . $pid . '/' . $coverImage;
+
+        if (!file_exists($filePath)) {
+            $this->f3->error(404);
+            return;
+        }
+
+        $ext = strtolower(pathinfo($filePath, PATHINFO_EXTENSION));
+        $mimeTypes = [
+            'jpg'  => 'image/jpeg',
+            'jpeg' => 'image/jpeg',
+            'png'  => 'image/png',
+            'gif'  => 'image/gif',
+            'webp' => 'image/webp',
+        ];
+        $mime = $mimeTypes[$ext] ?? 'application/octet-stream';
+
+        header('Content-Type: ' . $mime);
+        header('Cache-Control: public, max-age=31536000');
+        readfile($filePath);
+        exit;
+    }
+
     private function resolveLink(string $token, int $pid): ?array
     {
         $shareLink = new ShareLink();

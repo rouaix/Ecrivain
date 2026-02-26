@@ -235,8 +235,7 @@ class ProjectContentController extends ProjectBaseController
         $type = $this->f3->get('PARAMS.type');
         $id   = (int) $this->f3->get('PARAMS.id');
 
-        $projectModel = new Project();
-        if (!$projectModel->count(['id=? AND user_id=?', $pid, $this->currentUser()['id']])) {
+        if (!$this->hasProjectAccess($pid)) {
             $this->f3->error(403);
             return;
         }

@@ -446,9 +446,8 @@ class LectureController extends Controller
             return;
         }
 
-        // Verify ownership
-        $projectModel = new Project();
-        if (!$projectModel->count(['id=? AND user_id=?', $model->project_id, $this->currentUser()['id']])) {
+        // Verify access (owner or collaborator)
+        if (!$this->hasProjectAccess($model->project_id)) {
             http_response_code(403);
             echo json_encode(['status' => 'error', 'message' => 'Unauthorized']);
             return;
