@@ -1142,6 +1142,7 @@ class AuthController extends Controller
 
     }
 
+
     /**
      * Send the weekly writing stats email if the user has opted in and 7 days have passed.
      */

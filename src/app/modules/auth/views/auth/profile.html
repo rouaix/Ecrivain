@@ -45,9 +45,7 @@
             <div class="profile-photo-section">
 
                 <img id="profile-photo-img" src="{{ @base }}/profile/photo/{{ @user.username }}" alt=""
-
                     class="profile-photo"
-
                     data-fallback="https://ui-avatars.com/api/?name={{ urlencode(@user.username) }}&size=150">
 
                 <div class="photo-actions">
@@ -125,7 +123,6 @@
                     <label for="password">Nouveau mot de passe</label>
 
                     <input type="password" id="password" name="password"
-
                         placeholder="Laisser vide pour conserver l'actuel">
 
                 </div>
@@ -139,6 +136,194 @@
     </div>
 
 </div>
+
+<!-- ── Section MCP ──────────────────────────────────────────────────────── -->
+
+<div class="profile-card" style="margin-top: 2rem;">
+
+    <div class="profile-card-header">
+
+        <h2><i class="fas fa-robot"></i> Accès IA — MCP</h2>
+
+        <p>Connectez une IA à vos projets via le protocole MCP</p>
+
+    </div>
+
+    <div class="mcp-explainer">
+
+        <p>
+            Le <strong>Model Context Protocol (MCP)</strong> permet à une IA comme
+            <strong>Claude Desktop</strong> d'interagir directement avec vos projets :
+            lire vos chapitres, créer du contenu, rechercher dans votre texte&hellip;
+            depuis une conversation IA, sans passer par le navigateur.
+        </p>
+
+        <div class="mcp-steps">
+
+            <div class="mcp-step">
+                <span class="mcp-step-num">1</span>
+                <span>Cliquez sur <strong>Générer un token</strong> ci-dessous.</span>
+            </div>
+
+            <div class="mcp-step">
+                <span class="mcp-step-num">2</span>
+                <span>Copiez la configuration qui apparaît et collez-la dans les paramètres de <strong>Claude Desktop</strong>.</span>
+            </div>
+
+        </div>
+
+        <p class="mcp-note">
+            <i class="fas fa-shield-alt"></i>
+            Un token donne un <strong>accès complet</strong> à vos projets.
+            Ne le partagez pas. Révoquez-le immédiatement s'il est compromis.
+        </p>
+
+    </div>
+
+    <div class="section-divider">Tokens actifs</div>
+
+    <div id="mcp-tokens-list">
+        <p class="mcp-loading"><i class="fas fa-spinner fa-spin"></i> Chargement…</p>
+    </div>
+
+    <div id="mcp-new-token" class="mcp-new-token" style="display:none;">
+
+        <label>Configuration Claude Desktop — copiez-la dans <code>claude_desktop_config.json</code> :</label>
+
+        <pre id="mcp-config-block" class="mcp-config-block"></pre>
+
+        <div style="margin-top: .75rem;">
+            <button type="button" class="button secondary small" id="mcp-copy-btn">
+                <i class="fas fa-copy"></i> Copier la configuration
+            </button>
+        </div>
+
+    </div>
+
+    <div style="margin-top: 1.5rem;">
+
+        <button type="button" class="button primary" id="mcp-generate-btn">
+            <i class="fas fa-key"></i> Générer un token
+        </button>
+
+    </div>
+
+</div>
+
+<script nonce="{{ @nonce }}">
+    (function () {
+
+        const BASE = '{{ @base }}';
+        const CSRF_TOKEN = '{{ @csrfToken }}';
+
+        // ── Charger les tokens existants ────────────────────────────────────────
+
+        function loadTokens() {
+            fetch(BASE + '/auth/tokens', { headers: { 'Accept': 'application/json' } })
+                .then(r => r.json())
+                .then(data => renderTokens(data.tokens || []))
+                .catch(() => {
+                    document.getElementById('mcp-tokens-list').innerHTML =
+                        '<p class="form-alert error">Impossible de charger les tokens.</p>';
+                });
+        }
+
+        function renderTokens(tokens) {
+            const el = document.getElementById('mcp-tokens-list');
+            if (!tokens.length) {
+                el.innerHTML = '<p style="color:var(--text-muted);font-size:.9rem;">Aucun token actif.</p>';
+                return;
+            }
+            el.innerHTML = tokens.map(t => `
+            <div class="mcp-token-row">
+                <div class="mcp-token-meta">
+                    <i class="fas fa-key"></i>
+                    <span>Créé le ${t.created_at ? t.created_at.substring(0, 10) : '—'}</span>
+                    <code class="mcp-token-id">${t.token_id.substring(0, 8)}…</code>
+                </div>
+                <button class="button danger small mcp-revoke-btn"
+                        data-id="${t.token_id}" data-token="${t.token || ''}">
+                    <i class="fas fa-trash"></i> Révoquer
+                </button>
+            </div>
+        `).join('');
+
+            el.querySelectorAll('.mcp-revoke-btn').forEach(btn => {
+                btn.addEventListener('click', () => revokeToken(btn.dataset.id, btn.dataset.token));
+            });
+        }
+
+        // ── Générer un token ────────────────────────────────────────────────────
+
+        document.getElementById('mcp-generate-btn').addEventListener('click', function () {
+            this.disabled = true;
+            this.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Génération…';
+
+            fetch(BASE + '/auth/token/generate', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRF-TOKEN': CSRF_TOKEN,
+                },
+            })
+                .then(r => r.json())
+                .then(data => {
+                    const config = {
+                        mcpServers: {
+                            ecrivain: {
+                                url: BASE + '/mcp',
+                                headers: { Authorization: 'Bearer ' + data.token }
+                            }
+                        }
+                    };
+                    document.getElementById('mcp-config-block').textContent =
+                        JSON.stringify(config, null, 2);
+                    document.getElementById('mcp-new-token').style.display = 'block';
+                    this.innerHTML = '<i class="fas fa-key"></i> Générer un token';
+                    this.disabled = false;
+                    loadTokens();
+                })
+                .catch(() => {
+                    alert('Erreur lors de la génération du token.');
+                    this.innerHTML = '<i class="fas fa-key"></i> Générer un token';
+                    this.disabled = false;
+                });
+        });
+
+        // ── Copier la configuration ──────────────────────────────────────────────
+
+        document.getElementById('mcp-copy-btn').addEventListener('click', function () {
+            const text = document.getElementById('mcp-config-block').textContent;
+            navigator.clipboard.writeText(text).then(() => {
+                this.innerHTML = '<i class="fas fa-check"></i> Copié !';
+                setTimeout(() => { this.innerHTML = '<i class="fas fa-copy"></i> Copier la configuration'; }, 2000);
+            });
+        });
+
+        // ── Révoquer un token ───────────────────────────────────────────────────
+
+        function revokeToken(tokenId, tokenRaw) {
+            if (!confirm('Révoquer ce token ? Les IA qui l\'utilisent perdront leur accès immédiatement.')) return;
+
+            fetch(BASE + '/auth/token/revoke', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRF-TOKEN': CSRF_TOKEN,
+                },
+                body: JSON.stringify({ token_id: tokenId, token: tokenRaw }),
+            })
+                .then(r => r.json())
+                .then(() => loadTokens())
+                .catch(() => alert('Erreur lors de la révocation.'));
+        }
+
+        // ── Init ────────────────────────────────────────────────────────────────
+
+        loadTokens();
+
+    }());
+</script>
 
 <script nonce="{{ @nonce }}">
 

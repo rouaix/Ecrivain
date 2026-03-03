@@ -179,3 +179,136 @@
 .form-alert li {
     margin: 3px 0;
 }
+
+/* ==========================================
+   MCP TOKEN SECTION
+   ========================================== */
+
+.mcp-explainer {
+    padding: 0 0 1rem;
+    font-size: .95rem;
+    line-height: 1.7;
+    color: var(--text-secondary);
+}
+
+.mcp-explainer p {
+    margin-bottom: .75rem;
+}
+
+.mcp-steps {
+    display: flex;
+    flex-direction: column;
+    gap: .5rem;
+    margin: 1rem 0;
+}
+
+.mcp-step {
+    display: flex;
+    align-items: baseline;
+    gap: .75rem;
+}
+
+.mcp-step-num {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 1.5rem;
+    height: 1.5rem;
+    border-radius: 50%;
+    background: var(--primary);
+    color: #fff;
+    font-size: .75rem;
+    font-weight: 700;
+    flex-shrink: 0;
+}
+
+.mcp-config-block {
+    background: var(--code-bg, #1e1e2e);
+    color: var(--code-text, #cdd6f4);
+    border-radius: 8px;
+    padding: 1rem 1.25rem;
+    font-size: .82rem;
+    line-height: 1.6;
+    overflow-x: auto;
+    margin: 1rem 0;
+    white-space: pre;
+}
+
+.mcp-note {
+    font-size: .85rem;
+    color: var(--warning-text, #b45309);
+    background: var(--warning-bg, #fef3c7);
+    border-radius: 6px;
+    padding: .6rem .9rem;
+    margin-top: .75rem;
+    display: flex;
+    align-items: center;
+    gap: .5rem;
+}
+
+.mcp-loading {
+    color: var(--text-muted);
+    font-size: .9rem;
+}
+
+.mcp-token-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+    padding: .65rem .75rem;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    margin-bottom: .5rem;
+    background: var(--surface-alt, var(--surface));
+}
+
+.mcp-token-meta {
+    display: flex;
+    align-items: center;
+    gap: .6rem;
+    font-size: .88rem;
+    color: var(--text-secondary);
+}
+
+.mcp-token-id {
+    font-family: monospace;
+    font-size: .8rem;
+    background: var(--code-bg, #f3f4f6);
+    color: var(--code-text, #374151);
+    padding: .1rem .4rem;
+    border-radius: 4px;
+}
+
+.mcp-new-token {
+    margin-top: 1.25rem;
+    padding: 1rem;
+    border: 2px solid var(--success-text, #16a34a);
+    border-radius: 8px;
+    background: var(--success-bg, #f0fdf4);
+}
+
+.mcp-new-token label {
+    display: block;
+    font-size: .85rem;
+    font-weight: 600;
+    color: var(--success-text, #16a34a);
+    margin-bottom: .5rem;
+}
+
+.mcp-token-copy-row {
+    display: flex;
+    gap: .5rem;
+    align-items: center;
+}
+
+.mcp-token-input {
+    flex: 1;
+    font-family: monospace;
+    font-size: .82rem;
+    padding: .5rem .75rem;
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    background: var(--surface);
+    color: var(--text-primary);
+}

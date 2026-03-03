@@ -230,6 +230,66 @@ abstract class Controller
         return $decrypted;
     }
     /**
+     * Validate a Bearer token (or ?token= fallback) for API routes.
+     * Returns the user ID on success, null on failure.
+     * Does NOT start a session or redirect.
+     */
+    protected function authenticateApiRequest(): ?int
+    {
+        $authHeader = $_SERVER['HTTP_AUTHORIZATION'] ?? '';
+        if (empty($authHeader) && function_exists('apache_request_headers')) {
+            $headers = apache_request_headers();
+            $authHeader = $headers['Authorization'] ?? '';
+        }
+
+        $token = null;
+        if (preg_match('/^Bearer\s+(.+)$/i', trim($authHeader), $m)) {
+            $token = trim($m[1]);
+        }
+
+        if (!$token) {
+            $token = $this->f3->get('GET.token');
+        }
+
+        if (!$token) {
+            return null;
+        }
+
+        $jwtSecret = getenv('JWT_SECRET') ?: $_ENV['JWT_SECRET'] ?? null;
+
+        if ($jwtSecret && substr_count($token, '.') === 2) {
+            try {
+                $decoded = \Firebase\JWT\JWT::decode($token, new \Firebase\JWT\Key($jwtSecret, 'HS256'));
+                if (isset($decoded->type) && $decoded->type === 'auth_token') {
+                    $uid     = (int) $decoded->sub;
+                    $tokenId = $decoded->jti ?? null;
+                    if ($tokenId && $uid) {
+                        $userModel = new User();
+                        $userModel->load(['id=?', $uid]);
+                        if (!$userModel->dry()) {
+                            $checkFile = $this->getUserDataDir($userModel->email) . '/tokens.json';
+                            if (file_exists($checkFile)) {
+                                try {
+                                    $data = json_decode($this->decryptData(file_get_contents($checkFile)), true);
+                                } catch (Exception $e) {
+                                    $data = json_decode(file_get_contents($checkFile), true);
+                                }
+                                if (json_last_error() === JSON_ERROR_NONE && isset($data['tokens'][$tokenId])) {
+                                    return $uid;
+                                }
+                            }
+                        }
+                    }
+                }
+            } catch (Exception $e) {
+                // Invalid or expired token
+            }
+        }
+
+        return null;
+    }
+
+    /**
      * Verify CSRF token.
      */
     protected function requireCsrf(): void
