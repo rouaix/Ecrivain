@@ -103,6 +103,16 @@ class McpController extends Controller
         ]];
     }
 
+    private function htmlToText(string $html): string
+    {
+        $text = preg_replace('/<br\s*\/?>/i', "\n", $html);
+        $text = preg_replace('/<\/p>/i', "\n\n", $text);
+        $text = strip_tags($text);
+        $text = html_entity_decode($text, ENT_QUOTES | ENT_HTML5, 'UTF-8');
+        $text = preg_replace("/\n{3,}/", "\n\n", $text);
+        return trim($text);
+    }
+
     private function ok(string $text): array
     {
         return ['content' => [['type' => 'text', 'text' => $text]], 'isError' => false];
@@ -143,6 +153,8 @@ class McpController extends Controller
             // Actes
             $this->tool('list_acts',       'Liste les actes d\'un projet.',
                 ['project_id' => $int], ['project_id']),
+            $this->tool('get_act',         'Contenu complet d\'un acte avec tous ses chapitres et sous-chapitres.',
+                ['id' => $int], ['id']),
             $this->tool('create_act',      'Crée un acte dans un projet.',
                 ['project_id' => $int, 'title' => $str, 'description' => $str], ['project_id', 'title']),
             $this->tool('update_act',      'Modifie un acte.',
@@ -151,11 +163,13 @@ class McpController extends Controller
                 ['id' => $int], ['id']),
 
             // Chapitres
+            $this->tool('list_chapters',   'Liste les chapitres d\'un projet, optionnellement filtrés par acte.',
+                ['project_id' => $int, 'act_id' => $int], ['project_id']),
             $this->tool('get_chapter',     'Contenu complet d\'un chapitre.',
                 ['id' => $int], ['id']),
-            $this->tool('create_chapter',  'Crée un chapitre dans un projet.',
-                ['project_id' => $int, 'act_id' => $int, 'title' => $str, 'content' => $str],
-                ['project_id', 'title', 'act_id']),
+            $this->tool('create_chapter',  'Crée un chapitre dans un projet. Utiliser parent_id pour créer un sous-chapitre.',
+                ['project_id' => $int, 'act_id' => $int, 'parent_id' => $int, 'title' => $str, 'content' => $str],
+                ['project_id', 'title']),
             $this->tool('update_chapter',  'Modifie titre et/ou contenu d\'un chapitre.',
                 ['id' => $int, 'title' => $str, 'content' => $str], ['id']),
             $this->tool('delete_chapter',  'Supprime un chapitre.',
@@ -236,10 +250,12 @@ class McpController extends Controller
                 'delete_project'   => $this->toolDeleteProject($uid, (int) ($a['id'] ?? 0)),
 
                 'list_acts'        => $this->toolListActs($uid, (int) ($a['project_id'] ?? 0)),
+                'get_act'          => $this->toolGetAct($uid, (int) ($a['id'] ?? 0)),
                 'create_act'       => $this->toolCreateAct($uid, $a),
                 'update_act'       => $this->toolUpdateAct($uid, $a),
                 'delete_act'       => $this->toolDeleteAct($uid, (int) ($a['id'] ?? 0)),
 
+                'list_chapters'    => $this->toolListChapters($uid, (int) ($a['project_id'] ?? 0), isset($a['act_id']) ? (int) $a['act_id'] : null),
                 'get_chapter'      => $this->toolGetChapter($uid, (int) ($a['id'] ?? 0)),
                 'create_chapter'   => $this->toolCreateChapter($uid, $a),
                 'update_chapter'   => $this->toolUpdateChapter($uid, $a),
@@ -288,7 +304,7 @@ class McpController extends Controller
         $md = "# Vos projets\n\n";
         foreach ($rows as $r) {
             $md .= "## {$r['title']} (ID: {$r['id']})\n";
-            if ($r['description']) $md .= strip_tags($r['description']) . "\n";
+            if ($r['description']) $md .= $this->htmlToText($r['description']) . "\n";
             $md .= "_Modifié : {$r['updated_at']}_\n\n";
         }
         return $this->ok(trim($md));
@@ -303,7 +319,7 @@ class McpController extends Controller
         if (!$rows) return $this->fail("Projet $pid introuvable.");
         $p  = $rows[0];
         $md = "# {$p['title']} (ID: {$p['id']})\n\n";
-        if ($p['description']) $md .= strip_tags($p['description']) . "\n\n";
+        if ($p['description']) $md .= $this->htmlToText($p['description']) . "\n\n";
         $md .= "_Créé : {$p['created_at']} · Modifié : {$p['updated_at']}_";
         return $this->ok($md);
     }
@@ -349,15 +365,50 @@ class McpController extends Controller
         $rows = $this->db->exec(
             'SELECT a.id, a.title, a.description, COUNT(c.id) as nb
              FROM acts a LEFT JOIN chapters c ON c.act_id=a.id
-             WHERE a.project_id=? GROUP BY a.id ORDER BY a.position ASC, a.id ASC',
+             WHERE a.project_id=? GROUP BY a.id ORDER BY a.order_index ASC, a.id ASC',
             [$pid]
         );
         if (!$rows) return $this->ok("Aucun acte.");
         $md = "# Actes du projet $pid\n\n";
         foreach ($rows as $r) {
             $md .= "## {$r['title']} (ID: {$r['id']}) — {$r['nb']} chapitre(s)\n";
-            if ($r['description']) $md .= strip_tags($r['description']) . "\n";
+            if ($r['description']) $md .= $this->htmlToText($r['description']) . "\n";
             $md .= "\n";
+        }
+        return $this->ok(trim($md));
+    }
+
+    private function toolGetAct(int $uid, int $id): array
+    {
+        $acts = $this->db->exec(
+            'SELECT a.id, a.title, a.description, p.user_id
+             FROM acts a JOIN projects p ON p.id=a.project_id
+             WHERE a.id=?',
+            [$id]
+        );
+        if (!$acts || $acts[0]['user_id'] != $uid) return $this->fail("Acte $id introuvable.");
+        $act = $acts[0];
+
+        $rows = $this->db->exec(
+            'SELECT id, title, content, parent_id FROM chapters WHERE act_id=? ORDER BY order_index ASC, id ASC',
+            [$id]
+        );
+
+        $md = "# {$act['title']}\n";
+        if ($act['description']) $md .= $this->htmlToText($act['description']) . "\n";
+        $md .= "\n";
+
+        foreach ($rows as $c) {
+            if ($c['parent_id']) continue;
+            $md .= "## {$c['title']} (ID: {$c['id']})\n\n";
+            $text = $this->htmlToText($c['content'] ?? '');
+            if ($text) $md .= $text . "\n\n";
+            foreach ($rows as $sub) {
+                if ($sub['parent_id'] != $c['id']) continue;
+                $md .= "### {$sub['title']} (ID: {$sub['id']})\n\n";
+                $subText = $this->htmlToText($sub['content'] ?? '');
+                if ($subText) $md .= $subText . "\n\n";
+            }
         }
         return $this->ok(trim($md));
     }
@@ -368,9 +419,9 @@ class McpController extends Controller
         if (!$this->ownsProject($uid, $pid)) return $this->fail("Projet $pid introuvable.");
         $title = trim($a['title'] ?? '');
         if (!$title) return $this->fail('Titre requis.');
-        $pos = $this->db->exec('SELECT COALESCE(MAX(position),0)+1 as p FROM acts WHERE project_id=?', [$pid])[0]['p'];
+        $pos = $this->db->exec('SELECT COALESCE(MAX(order_index),0)+1 as p FROM acts WHERE project_id=?', [$pid])[0]['p'];
         $this->db->exec(
-            'INSERT INTO acts (project_id, title, description, position, created_at, updated_at) VALUES (?,?,?,?,NOW(),NOW())',
+            'INSERT INTO acts (project_id, title, description, order_index, created_at, updated_at) VALUES (?,?,?,?,NOW(),NOW())',
             [$pid, $title, trim($a['description'] ?? ''), $pos]
         );
         $id = $this->db->exec('SELECT LAST_INSERT_ID() as id')[0]['id'];
@@ -407,19 +458,68 @@ class McpController extends Controller
 
     // ── CHAPITRES ────────────────────────────────────────────────────────────
 
+    private function toolListChapters(int $uid, int $pid, ?int $actId): array
+    {
+        if (!$this->ownsProject($uid, $pid)) return $this->fail("Projet $pid introuvable.");
+        $params = [$pid];
+        $where  = 'c.project_id=?';
+        if ($actId) { $where .= ' AND c.act_id=?'; $params[] = $actId; }
+        $rows = $this->db->exec(
+            "SELECT c.id, c.title, c.parent_id, a.title as act_title, a.id as act_id
+             FROM chapters c LEFT JOIN acts a ON a.id=c.act_id
+             WHERE $where ORDER BY a.order_index ASC, a.id ASC, c.order_index ASC, c.id ASC",
+            $params
+        );
+        if (!$rows) return $this->ok("Aucun chapitre.");
+
+        // Indexer par id et regrouper enfants sous parents
+        $byId = []; foreach ($rows as $r) $byId[$r['id']] = $r;
+        $md   = "# Chapitres du projet $pid\n\n";
+        $currentAct = null;
+        foreach ($rows as $r) {
+            if ($r['parent_id']) continue; // traités sous leur parent
+            $act = $r['act_title'] ?? null;
+            if ($act !== $currentAct) {
+                $md .= "\n## " . ($act ?? 'Sans acte') . "\n";
+                $currentAct = $act;
+            }
+            $md .= "- **{$r['title']}** (ID: {$r['id']})\n";
+            // sous-chapitres
+            foreach ($rows as $child) {
+                if ($child['parent_id'] == $r['id']) {
+                    $md .= "  - {$child['title']} (ID: {$child['id']})\n";
+                }
+            }
+        }
+        return $this->ok(trim($md));
+    }
+
     private function toolGetChapter(int $uid, int $id): array
     {
         $rows = $this->db->exec(
-            'SELECT c.id, c.title, c.content, c.word_count, c.updated_at, p.title as pt
+            'SELECT c.id, c.title, c.content, c.updated_at, p.title as pt
              FROM chapters c JOIN projects p ON p.id=c.project_id
              WHERE c.id=? AND p.user_id=?',
             [$id, $uid]
         );
         if (!$rows) return $this->fail("Chapitre $id introuvable.");
-        $c  = $rows[0];
-        $md = "# {$c['title']}\n_Projet : {$c['pt']} · {$c['word_count']} mots · Modifié : {$c['updated_at']}_\n\n";
-        $md .= strip_tags($c['content'] ?? '');
-        return $this->ok($md);
+        $c    = $rows[0];
+        $text = $this->htmlToText($c['content'] ?? '');
+        $wc   = str_word_count($text);
+        $md   = "# {$c['title']}\n_Projet : {$c['pt']} · {$wc} mots · Modifié : {$c['updated_at']}_\n\n";
+        if ($text) $md .= $text . "\n\n";
+
+        // Sous-chapitres
+        $subs = $this->db->exec(
+            'SELECT id, title, content FROM chapters WHERE parent_id=? ORDER BY order_index ASC, id ASC',
+            [$id]
+        );
+        foreach ($subs as $sub) {
+            $subText = $this->htmlToText($sub['content'] ?? '');
+            $md .= "## {$sub['title']} (ID: {$sub['id']})\n\n";
+            if ($subText) $md .= $subText . "\n\n";
+        }
+        return $this->ok(trim($md));
     }
 
     private function toolCreateChapter(int $uid, array $a): array
@@ -428,18 +528,19 @@ class McpController extends Controller
         if (!$this->ownsProject($uid, $pid)) return $this->fail("Projet $pid introuvable.");
         $title = trim($a['title'] ?? '');
         if (!$title) return $this->fail('Titre requis.');
-        $content = $a['content'] ?? '';
-        $wc      = str_word_count(strip_tags($content));
-        $actId   = ($a['act_id'] ?? 0) ?: null;
-        $pos     = $this->db->exec(
-            'SELECT COALESCE(MAX(position),0)+1 as p FROM chapters WHERE project_id=?', [$pid]
+        $content  = $a['content'] ?? '';
+        $actId    = ($a['act_id'] ?? 0) ?: null;
+        $parentId = ($a['parent_id'] ?? 0) ?: null;
+        $pos      = $this->db->exec(
+            'SELECT COALESCE(MAX(order_index),0)+1 as p FROM chapters WHERE project_id=?', [$pid]
         )[0]['p'];
         $this->db->exec(
-            'INSERT INTO chapters (project_id, act_id, title, content, word_count, position, created_at, updated_at)
+            'INSERT INTO chapters (project_id, act_id, parent_id, title, content, order_index, created_at, updated_at)
              VALUES (?,?,?,?,?,?,NOW(),NOW())',
-            [$pid, $actId, $title, $content, $wc, $pos]
+            [$pid, $actId, $parentId, $title, $content, $pos]
         );
         $id = $this->db->exec('SELECT LAST_INSERT_ID() as id')[0]['id'];
+        $wc = str_word_count(strip_tags($content));
         return $this->ok("Chapitre **{$title}** créé (ID: $id, $wc mots).");
     }
 
@@ -454,9 +555,7 @@ class McpController extends Controller
         $fields = []; $vals = [];
         if (isset($a['title']))   { $fields[] = 'title=?';      $vals[] = trim($a['title']); }
         if (isset($a['content'])) {
-            $wc = str_word_count(strip_tags($a['content']));
-            $fields[] = 'content=?';    $vals[] = $a['content'];
-            $fields[] = 'word_count=?'; $vals[] = $wc;
+            $fields[] = 'content=?'; $vals[] = $a['content'];
         }
         if (!$fields) return $this->fail('Rien à modifier.');
         $fields[] = 'updated_at=NOW()'; $vals[] = $id;
@@ -481,7 +580,7 @@ class McpController extends Controller
     {
         if (!$this->ownsProject($uid, $pid)) return $this->fail("Projet $pid introuvable.");
         $rows = $this->db->exec(
-            'SELECT id, title, updated_at FROM sections WHERE project_id=? ORDER BY position ASC, id ASC',
+            'SELECT id, title, updated_at FROM sections WHERE project_id=? ORDER BY order_index ASC, id ASC',
             [$pid]
         );
         if (!$rows) return $this->ok("Aucune section.");
@@ -497,10 +596,10 @@ class McpController extends Controller
         $title = trim($a['title'] ?? '');
         if (!$title) return $this->fail('Titre requis.');
         $pos = $this->db->exec(
-            'SELECT COALESCE(MAX(position),0)+1 as p FROM sections WHERE project_id=?', [$pid]
+            'SELECT COALESCE(MAX(order_index),0)+1 as p FROM sections WHERE project_id=?', [$pid]
         )[0]['p'];
         $this->db->exec(
-            'INSERT INTO sections (project_id, title, content, position, created_at, updated_at) VALUES (?,?,?,?,NOW(),NOW())',
+            'INSERT INTO sections (project_id, title, content, order_index, created_at, updated_at) VALUES (?,?,?,?,NOW(),NOW())',
             [$pid, $title, $a['content'] ?? '', $pos]
         );
         $id = $this->db->exec('SELECT LAST_INSERT_ID() as id')[0]['id'];
@@ -605,7 +704,7 @@ class McpController extends Controller
         $md = "# Personnages du projet $pid\n\n";
         foreach ($rows as $r) {
             $md .= "## {$r['name']} (ID: {$r['id']})\n";
-            if ($r['description']) $md .= strip_tags($r['description']) . "\n";
+            if ($r['description']) $md .= $this->htmlToText($r['description']) . "\n";
             $md .= "\n";
         }
         return $this->ok(trim($md));
@@ -720,30 +819,42 @@ class McpController extends Controller
             'SELECT title, description FROM projects WHERE id=?', [$pid]
         )[0];
         $md = "# {$p['title']}\n\n";
-        if ($p['description']) $md .= strip_tags($p['description']) . "\n\n";
+        if ($p['description']) $md .= $this->htmlToText($p['description']) . "\n\n";
 
         $acts = $this->db->exec(
-            'SELECT id, title FROM acts WHERE project_id=? ORDER BY position ASC, id ASC', [$pid]
+            'SELECT id, title FROM acts WHERE project_id=? ORDER BY order_index ASC, id ASC', [$pid]
         );
         foreach ($acts as $act) {
             $md .= "## {$act['title']}\n\n";
             $chapters = $this->db->exec(
-                'SELECT title, content FROM chapters WHERE act_id=? ORDER BY position ASC, id ASC',
+                'SELECT id, title, content, parent_id FROM chapters WHERE act_id=? ORDER BY order_index ASC, id ASC',
                 [$act['id']]
             );
             foreach ($chapters as $c) {
-                $md .= "### {$c['title']}\n\n" . strip_tags($c['content'] ?? '') . "\n\n";
+                if ($c['parent_id']) continue;
+                $md .= "### {$c['title']}\n\n" . $this->htmlToText($c['content'] ?? '') . "\n\n";
+                foreach ($chapters as $sub) {
+                    if ($sub['parent_id'] == $c['id']) {
+                        $md .= "#### {$sub['title']}\n\n" . $this->htmlToText($sub['content'] ?? '') . "\n\n";
+                    }
+                }
             }
         }
 
         // Chapitres sans acte
         $orphans = $this->db->exec(
-            'SELECT title, content FROM chapters WHERE project_id=? AND (act_id IS NULL OR act_id=0)
-             ORDER BY position ASC, id ASC',
+            'SELECT id, title, content, parent_id FROM chapters WHERE project_id=? AND (act_id IS NULL OR act_id=0)
+             ORDER BY order_index ASC, id ASC',
             [$pid]
         );
         foreach ($orphans as $c) {
-            $md .= "### {$c['title']}\n\n" . strip_tags($c['content'] ?? '') . "\n\n";
+            if ($c['parent_id']) continue;
+            $md .= "### {$c['title']}\n\n" . $this->htmlToText($c['content'] ?? '') . "\n\n";
+            foreach ($orphans as $sub) {
+                if ($sub['parent_id'] == $c['id']) {
+                    $md .= "#### {$sub['title']}\n\n" . $this->htmlToText($sub['content'] ?? '') . "\n\n";
+                }
+            }
         }
 
         return $this->ok(trim($md));

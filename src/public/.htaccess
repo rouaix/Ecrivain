@@ -1,0 +1,4 @@
+Options -Indexes
+
+# Les fichiers statiques (CSS, JS, images) restent accessibles
+# Seul le listing du dossier est interdit

@@ -139,7 +139,9 @@
 
 <!-- ── Section MCP ──────────────────────────────────────────────────────── -->
 
-<div class="profile-card cacher" style="margin-top: 2rem;">
+<div class="profile-container" style="padding-top: 0;">
+
+<div class="profile-card">
 
     <div class="profile-card-header">
 
@@ -211,10 +213,13 @@
 
 </div>
 
+</div>
+
 <script nonce="{{ @nonce }}">
     (function () {
 
         const BASE = '{{ @base }}';
+        const MCP_URL = '{{ @mcpUrl }}';
         const CSRF_TOKEN = '{{ @csrfToken }}';
 
         // ── Charger les tokens existants ────────────────────────────────────────
@@ -227,6 +232,17 @@
                     document.getElementById('mcp-tokens-list').innerHTML =
                         '<p class="form-alert error">Impossible de charger les tokens.</p>';
                 });
+        }
+
+        function buildConfig(jwt) {
+            return JSON.stringify({
+                mcpServers: {
+                    ecrivain: {
+                        command: 'cmd',
+                        args: ['/c', 'npx', '-y', 'mcp-remote', MCP_URL, '--header', 'Authorization: Bearer ' + jwt]
+                    }
+                }
+            }, null, 2);
         }
 
         function renderTokens(tokens) {
@@ -242,12 +258,51 @@
                     <span>Créé le ${t.created_at ? t.created_at.substring(0, 10) : '—'}</span>
                     <code class="mcp-token-id">${t.token_id.substring(0, 8)}…</code>
                 </div>
-                <button class="button danger small mcp-revoke-btn"
-                        data-id="${t.token_id}" data-token="${t.token || ''}">
-                    <i class="fas fa-trash"></i> Révoquer
+                <div class="mcp-token-actions">
+                    ${t.token ? `<button class="button secondary small mcp-showconfig-btn" data-token="${t.token}">
+                        <i class="fas fa-eye"></i> Voir config
+                    </button>` : ''}
+                    <button class="button danger small mcp-revoke-btn"
+                            data-id="${t.token_id}" data-token="${t.token || ''}">
+                        <i class="fas fa-trash"></i> Révoquer
+                    </button>
+                </div>
+            </div>
+            <div class="mcp-inline-config" id="config-${t.token_id}" style="display:none;">
+                <pre class="mcp-config-block"></pre>
+                <button type="button" class="button secondary small mcp-inline-copy-btn">
+                    <i class="fas fa-copy"></i> Copier
                 </button>
             </div>
         `).join('');
+
+            el.querySelectorAll('.mcp-showconfig-btn').forEach(btn => {
+                btn.addEventListener('click', function () {
+                    const row = this.closest('.mcp-token-row');
+                    const configEl = row.nextElementSibling;
+                    const pre = configEl.querySelector('pre');
+                    if (configEl.style.display === 'none') {
+                        pre.textContent = buildConfig(this.dataset.token);
+                        configEl.style.display = 'block';
+                        row.style.borderRadius = '8px 8px 0 0';
+                        this.innerHTML = '<i class="fas fa-eye-slash"></i> Masquer';
+                    } else {
+                        configEl.style.display = 'none';
+                        row.style.borderRadius = '';
+                        this.innerHTML = '<i class="fas fa-eye"></i> Voir config';
+                    }
+                });
+            });
+
+            el.querySelectorAll('.mcp-inline-copy-btn').forEach(btn => {
+                btn.addEventListener('click', function () {
+                    const text = this.previousElementSibling.textContent;
+                    navigator.clipboard.writeText(text).then(() => {
+                        this.innerHTML = '<i class="fas fa-check"></i> Copié !';
+                        setTimeout(() => { this.innerHTML = '<i class="fas fa-copy"></i> Copier'; }, 2000);
+                    });
+                });
+            });
 
             el.querySelectorAll('.mcp-revoke-btn').forEach(btn => {
                 btn.addEventListener('click', () => revokeToken(btn.dataset.id, btn.dataset.token));
@@ -269,16 +324,8 @@
             })
                 .then(r => r.json())
                 .then(data => {
-                    const config = {
-                        mcpServers: {
-                            ecrivain: {
-                                url: BASE + '/mcp',
-                                headers: { Authorization: 'Bearer ' + data.token }
-                            }
-                        }
-                    };
                     document.getElementById('mcp-config-block').textContent =
-                        JSON.stringify(config, null, 2);
+                        buildConfig(data.token);
                     document.getElementById('mcp-new-token').style.display = 'block';
                     this.innerHTML = '<i class="fas fa-key"></i> Générer un token';
                     this.disabled = false;

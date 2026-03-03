@@ -25,10 +25,16 @@ class ProfileController extends Controller
 
         $data = array_merge($user, $profileData);
 
+        $scheme = $this->f3->get('SCHEME') ?: 'https';
+        $host   = $this->f3->get('HOST');
+        $base   = rtrim($this->f3->get('BASE') ?? '', '/');
+        $mcpUrl = $scheme . '://' . $host . $base . '/mcp';
+
         $this->render('auth/profile.html', [
-            'title' => 'Mon Profil',
-            'user' => $data,
-            'errors' => [],
+            'title'   => 'Mon Profil',
+            'user'    => $data,
+            'mcpUrl'  => $mcpUrl,
+            'errors'  => [],
             'success' => $this->f3->get('GET.success')
         ]);
     }

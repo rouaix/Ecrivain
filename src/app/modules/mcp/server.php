@@ -15,27 +15,22 @@ declare(strict_types=1);
 // 1. Configuration
 // ──────────────────────────────────────────────────────────────────────────────
 
-function loadEnv(string $dir): void
-{
-    $file = $dir . '/.env';
-    if (!file_exists($file))
-        return;
-    foreach (file($file, FILE_IGNORE_NEW_LINES | FILE_SKIP_EMPTY_LINES) as $line) {
-        $line = trim($line);
-        if ($line === '' || str_starts_with($line, '#'))
-            continue;
-        [$key, $val] = array_map('trim', explode('=', $line, 2));
-        if (!isset($_ENV[$key])) {
-            $_ENV[$key] = $val;
-            putenv("$key=$val");
-        }
-    }
-}
-
-loadEnv(__DIR__);
-
-$API_URL = rtrim($_ENV['API_URL'] ?? getenv('API_URL') ?: '', '/');
-$API_TOKEN = trim($_ENV['API_TOKEN'] ?? getenv('API_TOKEN') ?: '');
+// API_URL et API_TOKEN sont passés par Claude Desktop via "env" dans la config MCP.
+// Exemple de configuration Claude Desktop :
+//   {
+//     "mcpServers": {
+//       "ecrivain": {
+//         "command": "php",
+//         "args": ["/chemin/vers/server.php"],
+//         "env": {
+//           "API_URL": "https://monsite.com",
+//           "API_TOKEN": "token_jwt_utilisateur"
+//         }
+//       }
+//     }
+//   }
+$API_URL   = rtrim((string) getenv('API_URL'), '/');
+$API_TOKEN = trim((string) getenv('API_TOKEN'));
 
 if (!$API_URL || !$API_TOKEN) {
     fwrite(STDERR, "Erreur : API_URL et API_TOKEN doivent être définis dans .env\n");
@@ -742,7 +737,7 @@ function handle(array $message, array $tools): void
 
         case 'initialize':
             mcpRespond($id, [
-                'protocolVersion' => '2024-11-05',
+                'protocolVersion' => '2025-03-26',
                 'capabilities' => ['tools' => new stdClass()],
                 'serverInfo' => ['name' => 'ecrivain', 'version' => '1.0.0'],
             ]);
