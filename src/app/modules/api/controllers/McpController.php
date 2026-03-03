@@ -206,10 +206,12 @@ class McpController extends Controller
                 ['id' => $int], ['id']),
 
             // Éléments
-            $this->tool('list_elements',   'Liste les éléments d\'un projet.',
+            $this->tool('list_elements',   'Liste les éléments d\'un projet (hiérarchie parent/enfant).',
                 ['project_id' => $int], ['project_id']),
-            $this->tool('create_element',  'Crée un élément.',
-                ['project_id' => $int, 'title' => $str, 'content' => $str], ['project_id', 'title']),
+            $this->tool('get_element',     'Contenu complet d\'un élément avec ses sous-éléments.',
+                ['id' => $int], ['id']),
+            $this->tool('create_element',  'Crée un élément. Utiliser parent_id pour créer un sous-élément.',
+                ['project_id' => $int, 'parent_id' => $int, 'title' => $str, 'content' => $str], ['project_id', 'title']),
             $this->tool('update_element',  'Modifie un élément.',
                 ['id' => $int, 'title' => $str, 'content' => $str], ['id']),
             $this->tool('delete_element',  'Supprime un élément.',
@@ -277,6 +279,7 @@ class McpController extends Controller
                 'delete_character' => $this->toolDeleteCharacter($uid, (int) ($a['id'] ?? 0)),
 
                 'list_elements'    => $this->toolListElements($uid, (int) ($a['project_id'] ?? 0)),
+                'get_element'      => $this->toolGetElement($uid, (int) ($a['id'] ?? 0)),
                 'create_element'   => $this->toolCreateElement($uid, $a),
                 'update_element'   => $this->toolUpdateElement($uid, $a),
                 'delete_element'   => $this->toolDeleteElement($uid, (int) ($a['id'] ?? 0)),
@@ -758,24 +761,62 @@ class McpController extends Controller
     {
         if (!$this->ownsProject($uid, $pid)) return $this->fail("Projet $pid introuvable.");
         $rows = $this->db->exec(
-            'SELECT id, title, updated_at FROM elements WHERE project_id=? ORDER BY title ASC',
+            'SELECT id, title, parent_id FROM elements WHERE project_id=? ORDER BY order_index ASC, id ASC',
             [$pid]
         );
         if (!$rows) return $this->ok("Aucun élément.");
         $md = "# Éléments du projet $pid\n\n";
-        foreach ($rows as $r) $md .= "- **{$r['title']}** (ID: {$r['id']}) — {$r['updated_at']}\n";
+        foreach ($rows as $r) {
+            if ($r['parent_id']) continue;
+            $md .= "- **{$r['title']}** (ID: {$r['id']})\n";
+            foreach ($rows as $sub) {
+                if ($sub['parent_id'] == $r['id']) {
+                    $md .= "  - {$sub['title']} (ID: {$sub['id']})\n";
+                }
+            }
+        }
         return $this->ok($md);
+    }
+
+    private function toolGetElement(int $uid, int $id): array
+    {
+        $rows = $this->db->exec(
+            'SELECT e.id, e.title, e.content, e.updated_at, p.title as pt
+             FROM elements e JOIN projects p ON p.id=e.project_id
+             WHERE e.id=? AND p.user_id=?',
+            [$id, $uid]
+        );
+        if (!$rows) return $this->fail("Élément $id introuvable.");
+        $e    = $rows[0];
+        $text = $this->htmlToText($e['content'] ?? '');
+        $md   = "# {$e['title']}\n_Projet : {$e['pt']} · Modifié : {$e['updated_at']}_\n\n";
+        if ($text) $md .= $text . "\n\n";
+
+        $subs = $this->db->exec(
+            'SELECT id, title, content FROM elements WHERE parent_id=? ORDER BY order_index ASC, id ASC',
+            [$id]
+        );
+        foreach ($subs as $sub) {
+            $subText = $this->htmlToText($sub['content'] ?? '');
+            $md .= "## {$sub['title']} (ID: {$sub['id']})\n\n";
+            if ($subText) $md .= $subText . "\n\n";
+        }
+        return $this->ok(trim($md));
     }
 
     private function toolCreateElement(int $uid, array $a): array
     {
         $pid = (int) ($a['project_id'] ?? 0);
         if (!$this->ownsProject($uid, $pid)) return $this->fail("Projet $pid introuvable.");
-        $title = trim($a['title'] ?? '');
+        $title    = trim($a['title'] ?? '');
         if (!$title) return $this->fail('Titre requis.');
+        $parentId = ($a['parent_id'] ?? 0) ?: null;
+        $pos      = $this->db->exec(
+            'SELECT COALESCE(MAX(order_index),0)+1 as p FROM elements WHERE project_id=?', [$pid]
+        )[0]['p'];
         $this->db->exec(
-            'INSERT INTO elements (project_id, title, content, created_at, updated_at) VALUES (?,?,?,NOW(),NOW())',
-            [$pid, $title, $a['content'] ?? '']
+            'INSERT INTO elements (project_id, parent_id, title, content, order_index, created_at, updated_at) VALUES (?,?,?,?,?,NOW(),NOW())',
+            [$pid, $parentId, $title, $a['content'] ?? '', $pos]
         );
         $id = $this->db->exec('SELECT LAST_INSERT_ID() as id')[0]['id'];
         return $this->ok("Élément **{$title}** créé (ID: $id).");
