@@ -31,10 +31,10 @@
     font-size: 0.95rem;
 }
 .ai-config-section {
-    background: #f9f9f9;
+    background: var(--table-row-hover-bg);
     padding: 15px;
     border-radius: 4px;
-    border: 1px solid #eee;
+    border: 1px solid var(--border-light);
     margin-bottom: 20px;
 }
 .ai-config-label {
@@ -45,7 +45,7 @@
 .ai-config-input {
     width: 100%;
     padding: 8px;
-    border: 1px solid #ccc;
+    border: 1px solid var(--input-border);
     border-radius: 4px;
     box-sizing: border-box;
 }
@@ -103,9 +103,21 @@
     font-size: 1rem !important;
     font-weight: 600;
     text-align: center;
+    background: var(--button-bg);
+    color: var(--button-text);
+    border: 1px solid var(--border-color);
+    border-radius: 4px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.ai-config-actions button:hover,
+.ai-config-actions a:hover {
+    background: var(--button-hover-bg);
+}
 }
 .ai-config-save {
-    background-color: #673ab7 !important;
+    background-color: var(--button-primary-bg) !important;
     color: white !important;
     padding: 10px 20px !important;
     border: none !important;
@@ -115,8 +127,8 @@
 .ai-config-back {
     padding: 10px 20px !important;
     text-decoration: none !important;
-    color: #333 !important;
-    border: 1px solid #ccc !important;
+    color: var(--text-main) !important;
+    border: 1px solid var(--border-color) !important;
     border-radius: 4px !important;
     height: auto !important;
     background: transparent !important;

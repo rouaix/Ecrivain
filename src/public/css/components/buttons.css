@@ -95,7 +95,7 @@ input[type="submit"]:hover {
 
 /* Specific AI Buttons */
 .button-ai-purple {
-    background-color: #673AB7;
+    background-color: var(--button-primary-bg);
     color: white;
     border: none;
     padding: 4px 8px;
@@ -103,7 +103,7 @@ input[type="submit"]:hover {
 }
 
 .button-ai-green {
-    background-color: #4CAF50;
+    background-color: var(--button-bg);
     color: white;
     border: none;
     padding: 4px 8px;
@@ -111,7 +111,7 @@ input[type="submit"]:hover {
 }
 
 .button-ai-orange {
-    background-color: #FF9800;
+    background-color: var(--button-secondary-bg);
     color: white;
     border: none;
     padding: 4px 8px;
@@ -137,13 +137,14 @@ a.button i {
 }
 
 .btn-purple {
-    background-color: #7c4dff;
+    background-color: var(--button-primary-bg);
     color: white;
     border: none;
 }
 
 .btn-purple:hover {
-    background-color: #6c3ce8;
+    background-color: var(--button-primary-bg);
+    filter: brightness(0.9);
 }
 
 #btn-generate-token {

@@ -109,4 +109,16 @@ table.compact-table.data-table.notes {
     padding: 12px 24px !important;
     font-size: 1rem !important;
     font-weight: 600;
+    background: var(--button-bg);
+    color: var(--button-text);
+    border: 1px solid var(--border-color);
+    border-radius: 4px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    text-decoration: none;
+}
+
+.back-button a:hover {
+    background: var(--button-hover-bg);
+}
 }

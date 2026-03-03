@@ -1,0 +1,110 @@
+/* Text styles */
+/* ==========================================
+   TEXT
+   ========================================== */
+.text-main {
+    color: var(--text-main);
+}
+
+.text-muted {
+    color: var(--text-muted);
+}
+
+.text-primary {
+    color: var(--text-primary);
+}
+
+.text-secondary {
+    color: var(--text-secondary);
+}
+
+.text-link {
+    color: var(--link-color);
+}
+
+.text-header {
+    color: var(--header-text);
+}
+
+.text-footer {
+    color: var(--footer-text);
+}
+
+.text-success {
+    color: var(--success-text, #3c3);
+}
+
+.text-error {
+    color: var(--error-text, #c33);
+}
+
+.text-warning {
+    color: var(--warning-text, #d32f2f);
+}
+
+/* Text alignment */
+.text-left {
+    text-align: left;
+}
+
+.text-center {
+    text-align: center;
+}
+
+.text-right {
+    text-align: right;
+}
+
+/* Text size */
+.text-small {
+    font-size: 0.85rem;
+}
+
+.text-medium {
+    font-size: 1rem;
+}
+
+.text-large {
+    font-size: 1.2rem;
+}
+
+.text-xlarge {
+    font-size: 1.5rem;
+}
+
+/* Text weight */
+.text-light {
+    font-weight: 300;
+}
+
+.text-regular {
+    font-weight: 400;
+}
+
+.text-bold {
+    font-weight: 700;
+}
+
+/* Text decoration */
+.text-underline {
+    text-decoration: underline;
+}
+
+.text-italic {
+    font-style: italic;
+}
+
+/* Text spacing */
+.text-truncate {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.text-wrap {
+    white-space: normal;
+}
+
+.text-nowrap {
+    white-space: nowrap;
+}

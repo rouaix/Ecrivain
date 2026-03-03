@@ -26,7 +26,7 @@
 }
 
 #dictation-btn.is-recording {
-    background: #e74c3c;
+    background: var(--button-delete-bg);
     animation: dictation-pulse 1.4s ease-in-out infinite;
 }
 

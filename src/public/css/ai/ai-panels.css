@@ -31,12 +31,19 @@
     color: var(--text-main);
 }
 .grammar-close-btn {
-    background: none;
-    border: none;
+    background: var(--button-secondary-bg);
+    color: var(--button-text);
+    border: 1px solid var(--border-color);
+    border-radius: 4px;
     cursor: pointer;
     font-size: 1.5rem;
-    color: var(--text-muted);
     line-height: 1;
+    padding: 4px 8px;
+    transition: all 0.2s ease;
+}
+
+.grammar-close-btn:hover {
+    background: var(--button-hover-bg);
 }
 .grammar-results-placeholder {
     font-style: italic;
@@ -45,7 +52,7 @@
 }
 .grammar-error-card {
     background: white;
-    border: 1px solid #eee;
+    border: 1px solid var(--border-light);
     border-radius: 6px;
     padding: 10px;
     margin-bottom: 10px;
@@ -53,12 +60,12 @@
 }
 .grammar-error-title {
     font-weight: bold;
-    color: #d32f2f;
+    color: var(--error-text);
     margin-bottom: 5px;
     font-size: 0.9em;
 }
 .grammar-error-snippet {
-    background: #fff8f8;
+    background: var(--warning-bg);
     padding: 5px;
     border-radius: 4px;
     margin-bottom: 8px;
@@ -66,15 +73,26 @@
     font-size: 0.9em;
 }
 .grammar-error-highlight {
-    background: #ffcccc;
-    color: #b71c1c;
+    background: var(--error-bg);
+    color: var(--error-text);
 }
 .grammar-error-message {
     font-size: 0.85em;
-    color: #333;
+    color: var(--text-main);
     margin-bottom: 8px;
 }
 .suggestion-button {
     margin-right: 5px;
     margin-top: 5px;
+    background: var(--button-bg);
+    color: var(--button-text);
+    border: 1px solid var(--border-color);
+    border-radius: 4px;
+    padding: 4px 8px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.suggestion-button:hover {
+    background: var(--button-hover-bg);
 }

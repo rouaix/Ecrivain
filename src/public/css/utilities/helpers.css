@@ -239,7 +239,7 @@
 /* Sortable.js styles */
 .sortable-ghost {
     opacity: 0.4;
-    background-color: #e1f5fe !important;
+    background-color: var(--table-row-bg) !important;
 }
 /* Dashboard header styles */
 div.dashboard-header > h2 {
@@ -260,10 +260,10 @@ div.dashboard-header > p {
     color: red;
 }
 .status--info {
-    color: #1e88e5;
+    color: var(--link-color);
 }
 .status--muted {
-    color: #666;
+    color: var(--text-muted);
 }
 /* Order cell for sortable items */
 .order-cell {

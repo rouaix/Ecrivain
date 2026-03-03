@@ -104,9 +104,9 @@ details.act-chapters[open]>summary::before {
 .chapter-resume {
     text-align: justify;
     font-style: italic;
-    color: #555;
+    color: var(--text-muted);
     margin-left: 10px;
-    border-left: 3px solid #ccc;
+    border-left: 3px solid var(--border-color);
     padding-left: 10px;
     padding-right: 10px;
     font-size: 0.9em;
@@ -115,7 +115,7 @@ details.act-chapters[open]>summary::before {
 .act-meta {
     font-weight: normal;
     font-size: 0.75rem;
-    color: #777;
+    color: var(--text-muted);
     margin-left: 0.5rem;
 }
 

@@ -28,6 +28,13 @@
     --border-color: #dddddd;
     --border-light: #eeeeee;
 
+    --success-bg: #efe;
+    --success-text: #3c3;
+    --error-bg: #fee;
+    --error-text: #c33;
+    --warning-bg: #fff8f8;
+    --warning-text: #d32f2f;
+
     --table-header-bg: #f0f0f0;
     --table-row-bg: #f9f9f9;
     --table-row-hover-bg: #f0f4f8;

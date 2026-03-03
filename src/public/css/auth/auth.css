@@ -111,16 +111,16 @@
 }
 
 .auth-alert.error {
-    background: #fee;
-    border: 1px solid #fcc;
-    color: #c33;
+    background: var(--error-bg);
+    border: 1px solid var(--error-text);
+    color: var(--error-text);
 }
 
 .auth-alert.success {
-    background: #efe;
-    border: 1px solid #cfc;
-    color: #3c3;
-    ;
+    background: var(--success-bg);
+    border: 1px solid var(--success-text);
+    color: var(--success-text);
+}
 }
 
 .auth-alert ul {

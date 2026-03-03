@@ -191,9 +191,11 @@
                           <button class="button small preview-btn" data-type="section" data-id="{{ @section.id }}"
                             title="Voir"><i class="fas fa-eye"></i></button>
 
-                          <button class="button small propose-btn" data-type="section" data-id="{{ @section.id }}"
-                            data-title="{{ @section.title | esc }}" title="Proposer une modification"><i
-                              class="fas fa-paper-plane"></i></button>
+                          <check if="{{ !@isOwner }}">
+                            <button class="button small propose-btn" data-type="section" data-id="{{ @section.id }}"
+                              data-title="{{ @section.title | esc }}" title="Proposer une modification"><i
+                                class="fas fa-paper-plane"></i></button>
+                          </check>
 
                           <a class="button small"
                             href="{{ @base }}/project/{{ @project.id }}/section/{{ @group.type }}?id={{ @section.id }}"
@@ -480,9 +482,11 @@
                                 <button class="button small preview-btn" data-type="chapter" data-id="{{ @ch.id }}"
                                   title="Voir"><i class="fas fa-eye"></i></button>
 
-                                <button class="button small propose-btn" data-type="chapter" data-id="{{ @ch.id }}"
-                                  data-title="{{ @ch.title | esc }}" title="Proposer une modification"><i
-                                    class="fas fa-paper-plane"></i></button>
+                                <check if="{{ !@isOwner }}">
+                                  <button class="button small propose-btn" data-type="chapter" data-id="{{ @ch.id }}"
+                                    data-title="{{ @ch.title | esc }}" title="Proposer une modification"><i
+                                      class="fas fa-paper-plane"></i></button>
+                                </check>
 
                                 <a class="button small" href="{{ @base }}/chapter/{{ @ch.id }}" title="Éditer"><i
                                     class="fas fa-edit"></i></a>
@@ -545,9 +549,11 @@
                                   <button class="button small preview-btn" data-type="chapter" data-id="{{ @sub.id }}"
                                     title="Voir"><i class="fas fa-eye"></i></button>
 
-                                  <button class="button small propose-btn" data-type="chapter" data-id="{{ @sub.id }}"
-                                    data-title="{{ @sub.title | esc }}" title="Proposer une modification"><i
-                                      class="fas fa-paper-plane"></i></button>
+                                  <check if="{{ !@isOwner }}">
+                                    <button class="button small propose-btn" data-type="chapter" data-id="{{ @sub.id }}"
+                                      data-title="{{ @sub.title | esc }}" title="Proposer une modification"><i
+                                        class="fas fa-paper-plane"></i></button>
+                                  </check>
 
                                   <a class="button small" href="{{ @base }}/chapter/{{ @sub.id }}" title="Éditer"><i
                                       class="fas fa-edit"></i></a>
@@ -658,9 +664,11 @@
                                   class="fas fa-magic"></i></button><br />
                               <button class="button small preview-btn" data-type="chapter" data-id="{{ @ch.id }}"
                                 title="Voir"><i class="fas fa-eye"></i></button>
-                              <button class="button small propose-btn" data-type="chapter" data-id="{{ @ch.id }}"
-                                data-title="{{ @ch.title | esc }}" title="Proposer une modification"><i
+                              <check if="{{ !@isOwner }}">
+                                <button class="button small propose-btn" data-type="chapter" data-id="{{ @ch.id }}"
+                                  data-title="{{ @ch.title | esc }}" title="Proposer une modification"><i
                                   class="fas fa-paper-plane"></i></button>
+                              </check>
                               <a class="button small" href="{{ @base }}/chapter/{{ @ch.id }}" title="Éditer"><i
                                   class="fas fa-edit"></i></a>
                               <a class="button small delete js-confirm" href="{{ @base }}/chapter/{{ @ch.id }}/delete"
@@ -687,9 +695,11 @@
                               <td class="actions">
                                 <button class="button small preview-btn" data-type="chapter" data-id="{{ @sub.id }}"
                                   title="Voir"><i class="fas fa-eye"></i></button>
-                                <button class="button small propose-btn" data-type="chapter" data-id="{{ @sub.id }}"
-                                  data-title="{{ @sub.title | esc }}" title="Proposer une modification"><i
-                                    class="fas fa-paper-plane"></i></button>
+                                <check if="{{ !@isOwner }}">
+                                  <button class="button small propose-btn" data-type="chapter" data-id="{{ @sub.id }}"
+                                    data-title="{{ @sub.title | esc }}" title="Proposer une modification"><i
+                                      class="fas fa-paper-plane"></i></button>
+                                </check>
                                 <a class="button small" href="{{ @base }}/chapter/{{ @sub.id }}" title="Éditer"><i
                                     class="fas fa-edit"></i></a>
                                 <a class="button small delete js-confirm"
@@ -752,9 +762,11 @@
                             class="fas fa-magic"></i></button><br />
                         <button class="button small preview-btn" data-type="chapter" data-id="{{ @ch.id }}"
                           title="Voir"><i class="fas fa-eye"></i></button>
-                        <button class="button small propose-btn" data-type="chapter" data-id="{{ @ch.id }}"
-                          data-title="{{ @ch.title | esc }}" title="Proposer une modification"><i
-                            class="fas fa-paper-plane"></i></button>
+                        <check if="{{ !@isOwner }}">
+                          <button class="button small propose-btn" data-type="chapter" data-id="{{ @ch.id }}"
+                            data-title="{{ @ch.title | esc }}" title="Proposer une modification"><i
+                              class="fas fa-paper-plane"></i></button>
+                        </check>
                         <a class="button small" href="{{ @base }}/chapter/{{ @ch.id }}" title="Éditer"><i
                             class="fas fa-edit"></i></a>
                         <a class="button small delete js-confirm" href="{{ @base }}/chapter/{{ @ch.id }}/delete"
@@ -778,9 +790,11 @@
                         <td class="actions">
                           <button class="button small preview-btn" data-type="chapter" data-id="{{ @sub.id }}"
                             title="Voir"><i class="fas fa-eye"></i></button>
-                          <button class="button small propose-btn" data-type="chapter" data-id="{{ @sub.id }}"
-                            data-title="{{ @sub.title | esc }}" title="Proposer une modification"><i
-                              class="fas fa-paper-plane"></i></button>
+                          <check if="{{ !@isOwner }}">
+                            <button class="button small propose-btn" data-type="chapter" data-id="{{ @sub.id }}"
+                              data-title="{{ @sub.title | esc }}" title="Proposer une modification"><i
+                                class="fas fa-paper-plane"></i></button>
+                          </check>
                           <a class="button small" href="{{ @base }}/chapter/{{ @sub.id }}" title="Éditer"><i
                               class="fas fa-edit"></i></a>
                           <a class="button small delete js-confirm" href="{{ @base }}/chapter/{{ @sub.id }}/delete"
@@ -858,9 +872,11 @@
                         title="Prévisualiser">
                         <i class="fas fa-eye"></i>
                       </button>
-                      <button class="button small propose-btn" data-type="element" data-id="{{ @ce.id }}"
-                        data-title="{{ @ce.title | esc }}" title="Proposer une modification"><i
-                          class="fas fa-paper-plane"></i></button>
+                      <check if="{{ !@isOwner }}">
+                        <button class="button small propose-btn" data-type="element" data-id="{{ @ce.id }}"
+                          data-title="{{ @ce.title | esc }}" title="Proposer une modification"><i
+                            class="fas fa-paper-plane"></i></button>
+                      </check>
                       <a class="button small" href="{{ @base }}/element/{{ @ce.id }}" title="Éditer">
                         <i class="fas fa-edit"></i>
                       </a>
@@ -888,9 +904,11 @@
                           title="Prévisualiser">
                           <i class="fas fa-eye"></i>
                         </button>
-                        <button class="button small propose-btn" data-type="element" data-id="{{ @sub.id }}"
-                          data-title="{{ @sub.title | esc }}" title="Proposer une modification"><i
-                            class="fas fa-paper-plane"></i></button>
+                        <check if="{{ !@isOwner }}">
+                          <button class="button small propose-btn" data-type="element" data-id="{{ @sub.id }}"
+                            data-title="{{ @sub.title | esc }}" title="Proposer une modification"><i
+                              class="fas fa-paper-plane"></i></button>
+                        </check>
                         <a class="button small" href="{{ @base }}/element/{{ @sub.id }}" title="Éditer">
                           <i class="fas fa-edit"></i>
                         </a>
@@ -999,9 +1017,11 @@
                           <button class="button small preview-btn" data-type="section" data-id="{{ @section.id }}"
                             title="Voir"><i class="fas fa-eye"></i></button>
 
-                          <button class="button small propose-btn" data-type="section" data-id="{{ @section.id }}"
-                            data-title="{{ @section.title | esc }}" title="Proposer une modification"><i
-                              class="fas fa-paper-plane"></i></button>
+                          <check if="{{ !@isOwner }}">
+                            <button class="button small propose-btn" data-type="section" data-id="{{ @section.id }}"
+                              data-title="{{ @section.title | esc }}" title="Proposer une modification"><i
+                                class="fas fa-paper-plane"></i></button>
+                          </check>
 
                           <a class="button small"
                             href="{{ @base }}/project/{{ @project.id }}/section/{{ @group.type }}?id={{ @section.id }}"
@@ -1150,9 +1170,11 @@
                       <button class="button small preview-btn" data-type="note" data-id="{{ @note.id }}" title="Voir"><i
                           class="fas fa-eye"></i></button>
 
-                      <button class="button small propose-btn" data-type="note" data-id="{{ @note.id }}"
-                        data-title="{{ @note.title | esc }}" title="Proposer une modification"><i
-                          class="fas fa-paper-plane"></i></button>
+                      <check if="{{ !@isOwner }}">
+                        <button class="button small propose-btn" data-type="note" data-id="{{ @note.id }}"
+                          data-title="{{ @note.title | esc }}" title="Proposer une modification"><i
+                            class="fas fa-paper-plane"></i></button>
+                      </check>
 
                       <a class="button small" href="{{ @base }}/project/{{ @project.id }}/note/edit?id={{ @note.id }}"
                         title="Modifier"><i class="fas fa-edit"></i></a>

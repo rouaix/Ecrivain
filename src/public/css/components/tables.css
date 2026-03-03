@@ -54,12 +54,12 @@ tr:last-child td {
 }
 
 .compact-table tr td:first-child {
-    border-left: 1px solid #eee;
+    border-left: 1px solid var(--border-light);
     border-radius: 4px 0 0 4px;
 }
 
 .compact-table tr td:last-child {
-    border-right: 1px solid #eee;
+    border-right: 1px solid var(--border-light);
     border-radius: 0 4px 4px 0;
     text-align: right;
 }
