@@ -2,24 +2,12 @@
 <div class="edit-page-layout">
     <div class="edit-header">
         <h2>Modifier le chapitre</h2>
-        <div class="editor-top-bar">
-            <span id="autosave-indicator" class="autosave-indicator"></span>
-            <div id="sessionGoalWidget" class="session-goal-widget" title="Cliquer pour définir un objectif de session" style="display:none;">
-                <span id="sessionGoalText" class="session-goal-text"></span>
-                <div id="sessionGoalTrack" class="session-goal-track" style="display:none;">
-                    <div id="sessionGoalFill" class="session-goal-fill"></div>
-                </div>
-            </div>
-        </div>
         <div style="display: flex; gap: 10px;">
             <button type="button" id="openAiModal" class="button secondary cache" title="Ouvrir l'assistant narratif">
                 <i class="fas fa-magic"></i>&nbsp;Assistant IA
             </button>
             <button type="button" id="btnContinuity" class="button secondary" title="Suggestions d'ouverture IA">
                 <i class="fas fa-forward"></i>&nbsp;Continuité
-            </button>
-            <button type="button" id="btnInconsistency" class="button secondary" title="Détecter les incohérences avec les fiches personnages">
-                <i class="fas fa-search"></i>&nbsp;Incohérences
             </button>
             <button type="button" id="btnGlossary" class="button secondary" title="Lexique du projet">
                 <i class="fas fa-book"></i>&nbsp;Lexique
@@ -33,6 +21,15 @@
             <a href="{{ @base }}/project/{{ @project.id }}" class="button" title="Retour au projet">
                 <i class="fas fa-arrow-left"></i>
             </a>
+        </div>
+    </div>
+    <div class="editor-top-bar">
+        <span id="autosave-indicator" class="autosave-indicator"></span>
+        <div id="sessionGoalWidget" class="session-goal-widget" title="Cliquer pour définir un objectif de session" style="display:none;">
+            <span id="sessionGoalText" class="session-goal-text"></span>
+            <div id="sessionGoalTrack" class="session-goal-track" style="display:none;">
+                <div id="sessionGoalFill" class="session-goal-fill"></div>
+            </div>
         </div>
     </div>
 
