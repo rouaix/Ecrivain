@@ -340,6 +340,12 @@ class TemplateController extends Controller
             return;
         }
 
+        // Delete elements referencing this template_element before deleting it (FK constraint)
+        $this->db->exec(
+            'DELETE FROM elements WHERE template_element_id = ?',
+            [$elemId]
+        );
+
         $this->db->exec(
             'DELETE FROM template_elements WHERE id = ? AND template_id = ?',
             [$elemId, $templateId]

@@ -822,6 +822,8 @@ class ProjectController extends ProjectBaseController
                 }
             }
 
+            $oldTemplateId = (int)($projectModel->template_id ?? 0);
+
             $projectModel->title          = $title;
             $projectModel->description    = $description;
             $projectModel->comment        = $comment;
@@ -841,6 +843,12 @@ class ProjectController extends ProjectBaseController
             error_log("Settings JSON: " . $projectModel->settings);
 
             $projectModel->save();
+
+            // Migrate elements to new template if template changed
+            if ($templateId && $templateId !== $oldTemplateId && $oldTemplateId > 0) {
+                $this->migrateElementsOnTemplateChange($pid, $oldTemplateId, $templateId);
+            }
+
             $this->f3->reroute('/project/' . $pid);
         }
 

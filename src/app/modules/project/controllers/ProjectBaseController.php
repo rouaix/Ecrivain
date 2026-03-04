@@ -141,4 +141,64 @@ class ProjectBaseController extends Controller
 
         return implode("\n", $rules);
     }
+
+    /**
+     * When a project changes template, migrate elements.template_element_id
+     * from the old template's element types to the new template's, matching by label.
+     * Unmatched elements are left untouched (data preserved, just not visible until remapped).
+     */
+    protected function migrateElementsOnTemplateChange(int $projectId, int $oldTemplateId, int $newTemplateId): void
+    {
+        // Get 'element'-type entries from both templates
+        $oldTypes = $this->db->exec(
+            "SELECT id, config_json FROM template_elements WHERE template_id = ? AND element_type = 'element' ORDER BY display_order ASC",
+            [$oldTemplateId]
+        );
+        $newTypes = $this->db->exec(
+            "SELECT id, config_json FROM template_elements WHERE template_id = ? AND element_type = 'element' ORDER BY display_order ASC",
+            [$newTemplateId]
+        );
+
+        if (empty($oldTypes) || empty($newTypes)) {
+            return;
+        }
+
+        // Index new types by normalized label_plural for matching
+        $newByLabel = [];
+        $newByPos   = [];
+        foreach ($newTypes as $i => $nt) {
+            $cfg   = json_decode($nt['config_json'] ?? '{}', true);
+            $label = strtolower(trim($cfg['label_plural'] ?? ''));
+            if ($label && !isset($newByLabel[$label])) {
+                $newByLabel[$label] = (int)$nt['id'];
+            }
+            $newByPos[$i] = (int)$nt['id'];
+        }
+
+        foreach ($oldTypes as $i => $ot) {
+            $cfg      = json_decode($ot['config_json'] ?? '{}', true);
+            $label    = strtolower(trim($cfg['label_plural'] ?? ''));
+            $oldId    = (int)$ot['id'];
+
+            // Match by label first, then by position
+            $newId = $newByLabel[$label] ?? $newByPos[$i] ?? null;
+            if (!$newId) {
+                continue;
+            }
+
+            // Check if project has elements of this old type
+            $count = $this->db->exec(
+                'SELECT COUNT(*) AS n FROM elements WHERE project_id = ? AND template_element_id = ?',
+                [$projectId, $oldId]
+            );
+            if (empty($count[0]['n'])) {
+                continue;
+            }
+
+            $this->db->exec(
+                'UPDATE elements SET template_element_id = ? WHERE project_id = ? AND template_element_id = ?',
+                [$newId, $projectId, $oldId]
+            );
+        }
+    }
 }
