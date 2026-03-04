@@ -1,4 +1,4 @@
-const CACHE_NAME = 'ecrivain-cache-v3';
+const CACHE_NAME = 'ecrivain-cache-v4';
 const urlsToCache = [
     '/public/manifest.json',
     '/public/icons/icon-192.png',
@@ -23,6 +23,24 @@ self.addEventListener('activate', event => {
             }))
         ).then(() => self.clients.claim())
     );
+});
+
+self.addEventListener('push', event => {
+    const data = event.data ? event.data.json() : {};
+    const title = data.title || 'Rappel d\u2019\u00e9criture';
+    const options = {
+        body: data.body || 'N\u2019oubliez pas d\u2019\u00e9crire aujourd\u2019hui\u00a0!',
+        icon: '/public/icons/icon-192.png',
+        badge: '/public/icons/icon-192.png',
+        tag: 'writing-reminder',
+        data: { url: data.url || '/' }
+    };
+    event.waitUntil(self.registration.showNotification(title, options));
+});
+
+self.addEventListener('notificationclick', event => {
+    event.notification.close();
+    event.waitUntil(clients.openWindow(event.notification.data.url || '/'));
 });
 
 self.addEventListener('fetch', event => {

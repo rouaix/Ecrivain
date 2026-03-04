@@ -132,6 +132,45 @@
 
             </div>
 
+            <div class="section-divider">Rappels d'écriture</div>
+
+            <div class="form-group notif-settings-group">
+
+                <label class="toggle-label">
+                    <input type="checkbox" id="reminder_enabled" name="reminder_enabled" value="1"
+                        <check if="{{ @user.reminder_enabled }}">checked</check>>
+                    <span>Activer le rappel quotidien</span>
+                </label>
+
+                <small>Reçois une notification si tu n'as pas atteint ton objectif à l'heure choisie.</small>
+
+            </div>
+
+            <div class="form-row notif-time-row">
+
+                <div class="form-group">
+
+                    <label for="reminder_time">Heure du rappel</label>
+
+                    <input type="time" id="reminder_time" name="reminder_time"
+                        value="{{ @user.reminder_time ?: '20:00' }}" class="input-max-200">
+
+                </div>
+
+                <div class="form-group notif-permission-group">
+
+                    <label>&nbsp;</label>
+
+                    <button type="button" id="btnRequestNotif" class="button secondary">
+                        <i class="fas fa-bell"></i> Autoriser les notifications
+                    </button>
+
+                    <small id="notifPermStatus"></small>
+
+                </div>
+
+            </div>
+
             <div class="section-divider">Paramètres du Compte</div>
 
             <div class="form-row">
@@ -595,5 +634,44 @@
         });
 
     });
+
+    // Notification permission button
+    (function () {
+        var btn = document.getElementById('btnRequestNotif');
+        var status = document.getElementById('notifPermStatus');
+        if (!btn) return;
+
+        function updateStatus() {
+            if (!('Notification' in window)) {
+                status.textContent = 'Non supporté par ce navigateur.';
+                btn.disabled = true;
+                return;
+            }
+            if (Notification.permission === 'granted') {
+                status.textContent = 'Notifications autorisées.';
+                btn.disabled = true;
+            } else if (Notification.permission === 'denied') {
+                status.textContent = 'Notifications bloquées. Modifiez les paramètres du navigateur.';
+                btn.disabled = true;
+            } else {
+                status.textContent = '';
+                btn.disabled = false;
+            }
+        }
+
+        btn.addEventListener('click', function () {
+            Notification.requestPermission().then(function (perm) {
+                updateStatus();
+                if (perm === 'granted') {
+                    new Notification('Notifications activées', {
+                        body: 'Vous recevrez des rappels si votre objectif quotidien n\'est pas atteint.',
+                        icon: '{{ @base }}/public/icons/icon-192.png'
+                    });
+                }
+            });
+        });
+
+        updateStatus();
+    })();
 
 </script>

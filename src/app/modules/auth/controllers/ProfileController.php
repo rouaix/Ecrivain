@@ -16,12 +16,14 @@ class ProfileController extends Controller
         // Merge with user data (but priority to JSON for extended fields if any conflict, though keys should be distinct)
         // Ensure defaults for extended fields to avoid Undefined Index with DEBUG=3
         $defaults = [
-            'lastname'    => '',
-            'firstname'   => '',
-            'dob'         => '',
-            'bio'         => '',
-            'daily_goal'  => 0,
-            'weekly_goal' => 0,
+            'lastname'         => '',
+            'firstname'        => '',
+            'dob'              => '',
+            'bio'              => '',
+            'daily_goal'       => 0,
+            'weekly_goal'      => 0,
+            'reminder_enabled' => false,
+            'reminder_time'    => '20:00',
         ];
         $profileData = array_merge($defaults, $profileData);
 
@@ -60,8 +62,12 @@ class ProfileController extends Controller
         $firstname   = trim($_POST['firstname'] ?? '');
         $dob         = $_POST['dob'] ?? '';
         $bio         = $_POST['bio'] ?? '';
-        $daily_goal  = max(0, (int) ($_POST['daily_goal'] ?? 0));
-        $weekly_goal = max(0, (int) ($_POST['weekly_goal'] ?? 0));
+        $daily_goal       = max(0, (int) ($_POST['daily_goal'] ?? 0));
+        $weekly_goal      = max(0, (int) ($_POST['weekly_goal'] ?? 0));
+        $reminder_enabled = !empty($_POST['reminder_enabled']);
+        $reminder_time    = preg_match('/^\d{2}:\d{2}$/', $_POST['reminder_time'] ?? '')
+            ? $_POST['reminder_time']
+            : '20:00';
 
         $errors = [];
 
@@ -102,12 +108,14 @@ class ProfileController extends Controller
         // 3. Update Extended Profile Data (JSON)
         if (empty($errors)) {
             $this->saveProfileData($email, [
-                'lastname'    => $lastname,
-                'firstname'   => $firstname,
-                'dob'         => $dob,
-                'bio'         => $bio,
-                'daily_goal'  => $daily_goal,
-                'weekly_goal' => $weekly_goal,
+                'lastname'         => $lastname,
+                'firstname'        => $firstname,
+                'dob'              => $dob,
+                'bio'              => $bio,
+                'daily_goal'       => $daily_goal,
+                'weekly_goal'      => $weekly_goal,
+                'reminder_enabled' => $reminder_enabled,
+                'reminder_time'    => $reminder_time,
             ]);
 
             $this->f3->reroute('/profile?success=1');

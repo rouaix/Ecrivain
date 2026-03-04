@@ -10,6 +10,54 @@ class StatsController extends Controller
         }
     }
 
+    /**
+     * AJAX: return today's word count + notification settings for the reminder JS.
+     */
+    public function notifStatus()
+    {
+        header('Content-Type: application/json');
+        $user = $this->currentUser();
+        if (!$user) {
+            echo json_encode(['error' => 'unauthenticated']);
+            return;
+        }
+
+        $uid = $user['id'];
+        $today = date('Y-m-d');
+
+        // Today's word delta from writing_stats
+        $prevDate = date('Y-m-d', strtotime('-1 day'));
+        $rows = $this->db->exec(
+            'SELECT chapter_id, word_count FROM writing_stats WHERE user_id = ? AND stat_date = ?',
+            [$uid, $today]
+        ) ?: [];
+        $prevRows = $this->db->exec(
+            'SELECT chapter_id, word_count FROM writing_stats WHERE user_id = ? AND stat_date = ?',
+            [$uid, $prevDate]
+        ) ?: [];
+
+        $prevMap = [];
+        foreach ($prevRows as $r) {
+            $prevMap[$r['chapter_id']] = (int) $r['word_count'];
+        }
+        $wordsToday = 0;
+        foreach ($rows as $r) {
+            $delta = (int) $r['word_count'] - ($prevMap[$r['chapter_id']] ?? 0);
+            if ($delta > 0) $wordsToday += $delta;
+        }
+
+        // Profile settings
+        $profileFile = $this->getUserDataDir($user['email']) . 'profile.json';
+        $profile = file_exists($profileFile) ? (json_decode(file_get_contents($profileFile), true) ?: []) : [];
+
+        echo json_encode([
+            'wordsToday'      => $wordsToday,
+            'dailyGoal'       => (int) ($profile['daily_goal'] ?? 0),
+            'reminderEnabled' => !empty($profile['reminder_enabled']),
+            'reminderTime'    => $profile['reminder_time'] ?? '20:00',
+        ]);
+    }
+
     public function index()
     {
         $user      = $this->currentUser();
@@ -140,7 +188,7 @@ class StatsController extends Controller
         $chartData   = array_values($dailyWords);
 
         $this->render('stats/index.html', [
-            'title'        => 'Statistiques d\'écriture',
+            'title'        => "Statistiques d'écriture",
             'projects'     => $projects,
             'projectId'    => $projectId,
             'totalWords'   => $totalWords,

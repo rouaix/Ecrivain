@@ -127,7 +127,7 @@ Suivi des fonctionnalités proposées. Statuts : `[ ]` à faire · `[~]` en cour
 ---
 
 ### 15. Notifications / rappels
-**Statut** : `[ ]`
+**Statut** : `[x]`
 **Description** : Notification push PWA (manifest déjà présent) ou email si l'objectif du jour n'est pas atteint.
 **Fichiers concernés** : `public/manifest.json`, `public/js/`, service worker, module `notifications/`
 **Notes** :
