@@ -30,25 +30,53 @@ class TimelineController extends Controller
         $actModel = new Act();
         $acts     = $actModel->getAllByProject($pid);
 
-        // Load top-level chapters grouped by act_id
-        $rows = $this->db->exec(
-            'SELECT id, title, act_id, order_index, content
+        // Load all chapters (top-level + sub) to compute total wc per top-level chapter
+        $allChapters = $this->db->exec(
+            'SELECT id, title, act_id, order_index, parent_id, content
              FROM chapters
-             WHERE project_id = ? AND parent_id IS NULL
-             ORDER BY (act_id IS NULL) ASC,
-                      act_id ASC,
-                      order_index ASC,
-                      id ASC',
+             WHERE project_id = ?',
             [$pid]
         );
 
-        // Compute word count in PHP (no wc column in DB)
-        foreach ($rows as &$row) {
-            $clean     = strip_tags(html_entity_decode($row['content'] ?? ''));
-            $row['wc'] = str_word_count($clean);
-            unset($row['content']);
+        // Build wc map and sub-chapter wc map
+        $contentByid = [];
+        foreach ($allChapters as $ch) {
+            $clean = strip_tags(html_entity_decode($ch['content'] ?? ''));
+            $contentByid[$ch['id']] = ['wc' => str_word_count($clean), 'parent_id' => $ch['parent_id']];
         }
-        unset($row);
+
+        // Sum sub-chapter wc into their top-level parent
+        $subWc = [];
+        foreach ($contentByid as $id => $data) {
+            if ($data['parent_id']) {
+                $pid2 = $data['parent_id'];
+                // Walk up to top-level
+                while (isset($contentByid[$pid2]) && $contentByid[$pid2]['parent_id']) {
+                    $pid2 = $contentByid[$pid2]['parent_id'];
+                }
+                $subWc[$pid2] = ($subWc[$pid2] ?? 0) + $data['wc'];
+            }
+        }
+
+        // Extract top-level chapters in correct order
+        $rows = [];
+        foreach ($allChapters as $ch) {
+            if ($ch['parent_id'] !== null) continue;
+            $ownWc      = $contentByid[$ch['id']]['wc'] ?? 0;
+            $ch['wc']   = $ownWc + ($subWc[$ch['id']] ?? 0);
+            unset($ch['content'], $ch['parent_id']);
+            $rows[] = $ch;
+        }
+
+        // Sort: chapters without act last, then by act_id, then order_index
+        usort($rows, function ($a, $b) {
+            $aNull = ($a['act_id'] === null) ? 1 : 0;
+            $bNull = ($b['act_id'] === null) ? 1 : 0;
+            if ($aNull !== $bNull) return $aNull - $bNull;
+            if ($a['act_id'] !== $b['act_id']) return ($a['act_id'] ?? 0) - ($b['act_id'] ?? 0);
+            if ($a['order_index'] !== $b['order_index']) return $a['order_index'] - $b['order_index'];
+            return $a['id'] - $b['id'];
+        });
 
         // Group chapters by act_id (null = no act)
         $byAct = ['__none__' => []];
