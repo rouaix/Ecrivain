@@ -3,10 +3,10 @@
     <div class="edit-header">
         <h2><i class="fas fa-project-diagram"></i> Relations — {{ @project.title | esc }}</h2>
         <div style="display:flex;gap:8px;">
-            <a href="{{ @base }}/project/{{ @project.id }}/characters" class="button secondary" title="Liste des personnages">
+            <a href="{{ @base }}/project/{{ @project.id }}/characters" class="button secondary" title="Liste des personnages" data-tooltip="Liste des personnages">
                 <i class="fas fa-users"></i>
             </a>
-            <a href="{{ @base }}/project/{{ @project.id }}" class="button" title="Retour au projet">
+            <a href="{{ @base }}/project/{{ @project.id }}" class="button" title="Retour au projet" data-tooltip="Retour au projet">
                 <i class="fas fa-arrow-left"></i>
             </a>
         </div>
@@ -62,19 +62,19 @@
                     <div class="form-group">
                         <label>Couleur du lien</label>
                         <div class="color-presets">
-                            <button type="button" class="color-preset active" data-color="#94a3b8" style="background:#94a3b8" title="Neutre"></button>
-                            <button type="button" class="color-preset" data-color="#ef4444" style="background:#ef4444" title="Conflit"></button>
-                            <button type="button" class="color-preset" data-color="#f97316" style="background:#f97316" title="Tension"></button>
-                            <button type="button" class="color-preset" data-color="#eab308" style="background:#eab308" title="Alliance"></button>
-                            <button type="button" class="color-preset" data-color="#22c55e" style="background:#22c55e" title="Amitié"></button>
-                            <button type="button" class="color-preset" data-color="#ec4899" style="background:#ec4899" title="Amour"></button>
-                            <button type="button" class="color-preset" data-color="#3b82f6" style="background:#3b82f6" title="Famille"></button>
-                            <button type="button" class="color-preset" data-color="#8b5cf6" style="background:#8b5cf6" title="Magie/Lien spirituel"></button>
+                            <button type="button" class="color-preset active" data-color="#94a3b8" style="background:#94a3b8" title="Neutre" data-tooltip="Neutre"></button>
+                            <button type="button" class="color-preset" data-color="#ef4444" style="background:#ef4444" title="Conflit" data-tooltip="Conflit"></button>
+                            <button type="button" class="color-preset" data-color="#f97316" style="background:#f97316" title="Tension" data-tooltip="Tension"></button>
+                            <button type="button" class="color-preset" data-color="#eab308" style="background:#eab308" title="Alliance" data-tooltip="Alliance"></button>
+                            <button type="button" class="color-preset" data-color="#22c55e" style="background:#22c55e" title="Amitié" data-tooltip="Amitié"></button>
+                            <button type="button" class="color-preset" data-color="#ec4899" style="background:#ec4899" title="Amour" data-tooltip="Amour"></button>
+                            <button type="button" class="color-preset" data-color="#3b82f6" style="background:#3b82f6" title="Famille" data-tooltip="Famille"></button>
+                            <button type="button" class="color-preset" data-color="#8b5cf6" style="background:#8b5cf6" title="Magie/Lien spirituel" data-tooltip="Magie/Lien spirituel"></button>
                         </div>
                         <input type="color" id="relColor" value="#94a3b8" class="color-custom-input">
                     </div>
 
-                    <button type="button" id="btnAddRelation" class="button primary">
+                    <button type="button" id="btnAddRelation" class="button primary" data-tooltip="Créer le lien entre personnages" title="Créer le lien entre personnages">
                         <i class="fas fa-link"></i> Créer le lien
                     </button>
 
@@ -98,7 +98,7 @@
                                         <strong>{{ @r.name_to | esc }}</strong>
                                     </span>
                                     <span class="rel-label-badge">{{ @r.label | esc }}</span>
-                                    <button type="button" class="button small delete btn-delete-rel" data-rid="{{ @r.id }}" title="Supprimer">
+                                    <button type="button" class="button small delete btn-delete-rel" data-rid="{{ @r.id }}" title="Supprimer" data-tooltip="Supprimer ce lien">
                                         <i class="fas fa-trash"></i>
                                     </button>
                                 </div>

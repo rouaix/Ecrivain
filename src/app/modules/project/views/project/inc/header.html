@@ -29,25 +29,25 @@
                 <div class="project-hero__actions-group">
                     <check if="{{ @isCollaborator }}">
                         <a class="button secondary" href="{{ @base }}/project/{{ @project.id }}/collab/mes-demandes"
-                            title="Mes demandes de modification"><i class="fas fa-paper-plane"></i> Mes demandes</a>
+                            title="Mes demandes de modification" data-tooltip="Mes demandes de modification"><i class="fas fa-paper-plane"></i> Mes demandes</a>
                     </check>
                     <check if="{{ @isOwner }}">
                         <a class="button secondary" href="{{ @base }}/project/{{ @project.id }}/collaborateurs"
-                            title="Gérer les collaborateurs"><i class="fas fa-users"></i> Collaborateurs</a>
+                            title="Gérer les collaborateurs" data-tooltip="Gérer les collaborateurs"><i class="fas fa-users"></i> Collaborateurs</a>
                     </check>
 <a class="button" href="{{ @base }}/project/{{ @project.id }}/mindmap">Carte mentale</a>
                     <a class="button" href="{{ @base }}/project/{{ @project.id }}/lecture">Lecture</a>
                     <a class="button" href="{{ @base }}/project/{{ @project.id }}/relecture">Relecture</a>
                 </div>
                 <div class="project-hero__actions-group">
-                    <button class="button" id="export-modal-open">Exporter ▾</button>
+                    <button class="button" id="export-modal-open" data-tooltip="Exporter le projet" title="Exporter le projet">Exporter ▾</button>
                 </div>
 
                 <div id="export-modal" class="modal-overlay">
                     <div class="modal-content" style="max-width:480px">
                         <div class="modal-header export-modal-header">
                             <h3>Exporter le projet</h3>
-                            <button class="modal-close button" id="export-modal-close">✕</button>
+                            <button class="modal-close button" id="export-modal-close" data-tooltip="Fermer" title="Fermer">✕</button>
                         </div>
                         <div class="modal-body">
                             <ul class="export-options-list">

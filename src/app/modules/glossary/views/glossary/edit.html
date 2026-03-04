@@ -4,7 +4,7 @@
 
     <span>
 
-        <a href="{{ @base }}/project/{{ @project.id }}/glossary" class="button" title="Retour au lexique"><i class="fas fa-arrow-left"></i></a>
+        <a href="{{ @base }}/project/{{ @project.id }}/glossary" class="button" title="Retour au lexique" data-tooltip="Retour au lexique"><i class="fas fa-arrow-left"></i></a>
 
     </span>
 
@@ -66,9 +66,9 @@
 
     <div class="form-actions">
 
-        <button type="submit" class="button">Enregistrer</button>
+        <button type="submit" class="button" data-tooltip="Enregistrer le terme" title="Enregistrer le terme">Enregistrer</button>
 
-        <a href="{{ @base }}/project/{{ @project.id }}/glossary" class="button secondary">Annuler</a>
+        <a href="{{ @base }}/project/{{ @project.id }}/glossary" class="button secondary" data-tooltip="Annuler les modifications" title="Annuler les modifications">Annuler</a>
 
     </div>
 

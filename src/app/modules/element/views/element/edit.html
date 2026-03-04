@@ -8,7 +8,7 @@
                 <i class="fas fa-magic"></i>&nbsp;Assistant IA
             </button>
             -->
-            <a href="{{ @base }}/project/{{ @project.id }}" class="button" title="Retour au projet">
+            <a href="{{ @base }}/project/{{ @project.id }}" class="button" title="Retour au projet" data-tooltip="Retour au projet">
                 <i class="fas fa-arrow-left"></i>
             </a>
         </div>
@@ -101,7 +101,7 @@
 
             <!-- Actions -->
             <div class="edit-actions">
-                <input type="submit" value="Enregistrer" class="button primary large">
+                <input type="submit" value="Enregistrer" class="button primary large" data-tooltip="Enregistrer l'élément" title="Enregistrer l'élément">
             </div>
         </div>
     </form>

@@ -2,10 +2,10 @@
     <div class="edit-header">
         <h2><i class="fas fa-file-alt"></i> Rapport de relecture — {{ @project.title | esc }}</h2>
         <div class="header-actions">
-            <button id="printBtn" class="button secondary" title="Imprimer">
+            <button id="printBtn" class="button secondary" title="Imprimer" data-tooltip="Imprimer le rapport">
                 <i class="fas fa-print" style="margin-right:8px"></i>Imprimer
             </button>
-            <a href="{{ @base }}/project/{{ @project.id }}/relecture" class="button" title="Retour à la relecture">
+            <a href="{{ @base }}/project/{{ @project.id }}/relecture" class="button" title="Retour à la relecture" data-tooltip="Retour à la relecture">
                 <i class="fas fa-arrow-left" style="margin-right:8px"></i>Relecture
             </a>
         </div>

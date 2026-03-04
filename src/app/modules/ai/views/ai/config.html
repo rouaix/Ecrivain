@@ -202,7 +202,7 @@
 
                                 placeholder="Consigne / prompt">{{ @p.prompt | esc }}</textarea>
 
-                            <button type="button" class="button small delete ai-custom-prompt-remove">Supprimer</button>
+                            <button type="button" class="button small delete ai-custom-prompt-remove" data-tooltip="Supprimer ce prompt" title="Supprimer ce prompt">Supprimer</button>
 
                         </div>
 
@@ -212,7 +212,7 @@
 
                 <div>
 
-                    <button type="button" class="button small" id="addCustomPrompt">+ Ajouter un prompt</button>
+                    <button type="button" class="button small" id="addCustomPrompt" data-tooltip="Ajouter un prompt personnalisé" title="Ajouter un prompt personnalisé">+ Ajouter un prompt</button>
 
                 </div>
 
@@ -288,9 +288,9 @@
 
             <div class="ai-config-actions">
 
-                <button type="submit" class="button primary">Enregistrer</button>
+                <button type="submit" class="button primary" data-tooltip="Enregistrer la configuration IA">Enregistrer</button>
 
-                <a href="{{ @base }}/dashboard" class="button secondary"><i class="fas fa-arrow-left"></i> Retour</a>
+                <a href="{{ @base }}/dashboard" class="button secondary" data-tooltip="Retour au tableau de bord"><i class="fas fa-arrow-left"></i> Retour</a>
 
             </div>
 

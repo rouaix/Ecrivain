@@ -105,7 +105,7 @@
   <div class="search-container">
     <input type="text" id="globalSearchInput" class="search-input" placeholder="Filtrer le projet..."
       autocomplete="off">
-    <button type="button" id="clearSearchBtn" class="button small" title="Effacer la recherche" style="display: none;">
+    <button type="button" id="clearSearchBtn" class="button small" title="Effacer la recherche" data-tooltip="Effacer la recherche" style="display: none;">
       <i class="fas fa-times"></i>
     </button>
   </div>
@@ -133,7 +133,7 @@
               <check if="{{ @group.show_create }}">
 
                 <a class="button small" href="{{ @base }}/project/{{ @project.id }}/section/{{ @group.type }}"
-                  title="Créer"><i class="fas fa-plus"></i></a>
+                  title="Créer" data-tooltip="Créer"><i class="fas fa-plus"></i></a>
 
               </check>
 
@@ -156,7 +156,7 @@
                           <div class="section-actions">
 
                             <input type="checkbox" class="export-toggle" data-type="section" data-id="{{ @section.id }}"
-                              {{ @section.is_exported_attr }} title="Inclure dans l'export"
+                              {{ @section.is_exported_attr }} title="Inclure dans l'export" data-tooltip="Inclure dans l'export"
                               data-tooltip="Inclure dans l'export">
 
                             <input type="number" class="order-input" data-type="section" data-id="{{ @section.id }}"
@@ -185,20 +185,20 @@
                         <td class="compact-actions actions">
 
                           <button class="button small preview-btn" data-type="section" data-id="{{ @section.id }}"
-                            title="Voir"><i class="fas fa-eye"></i></button>
+                            title="Voir" data-tooltip="Prévisualiser le contenu"><i class="fas fa-eye"></i></button>
 
                           <check if="{{ !@isOwner }}">
                             <button class="button small propose-btn" data-type="section" data-id="{{ @section.id }}"
-                              data-title="{{ @section.title | esc }}" title="Proposer une modification"><i
+                              data-title="{{ @section.title | esc }}" title="Proposer une modification" data-tooltip="Proposer une modification"><i
                                 class="fas fa-paper-plane"></i></button>
                           </check>
 
                           <a class="button small"
                             href="{{ @base }}/project/{{ @project.id }}/section/{{ @group.type }}?id={{ @section.id }}"
-                            title="Modifier"><i class="fas fa-edit"></i></a>
+                            title="Modifier" data-tooltip="Modifier"><i class="fas fa-edit"></i></a>
 
                           <a class="button small delete js-confirm" href="{{ @base }}/section/{{ @section.id }}/delete"
-                            data-confirm="Supprimer cette section ?" title="Supprimer"><i class="fas fa-trash"></i></a>
+                            data-confirm="Supprimer cette section ?" title="Supprimer" data-tooltip="Supprimer"><i class="fas fa-trash"></i></a>
 
                         </td>
 
@@ -292,7 +292,7 @@
                   <h4>
 
                     <input type="checkbox" class="export-toggle js-stop-propagation" data-type="act"
-                      data-id="{{ @act.id }}" {{ @act.is_exported_attr }} title="Inclure dans l'export"
+                      data-id="{{ @act.id }}" {{ @act.is_exported_attr }} title="Inclure dans l'export" data-tooltip="Inclure dans l'export"
                       data-tooltip="Inclure dans l'export">
 
                     <input type="number" class="order-input js-stop-propagation" data-type="act" data-id="{{ @act.id }}"
@@ -311,15 +311,15 @@
                   <div class="act-actions">
 
                     <button class="button small ai-act-summary-btn js-stop-propagation" data-id="{{ @act.id }}"
-                      title="Résumé IA"><i class="fas fa-magic"></i></button>
+                      title="Résumé IA" data-tooltip="Résumé IA"><i class="fas fa-magic"></i></button>
 
                     <a class="button small js-stop-propagation" href="{{ @base }}/act/{{ @act.id }}/edit"
-                      title="Modifier ce {{ @panelLabels.act.singular_lc }}"><i class="fas fa-edit"></i></a>
+                      title="Modifier ce {{ @panelLabels.act.singular_lc }}" data-tooltip="Modifier"><i class="fas fa-edit"></i></a>
 
                     <a class="button small delete js-confirm js-stop-propagation"
                       href="{{ @base }}/act/{{ @act.id }}/delete"
                       data-confirm="Supprimer ce {{ @panelLabels.act.singular_lc }} et tous ses {{ @panelLabels.chapter.plural_lc }} ?"
-                      title="Supprimer"><i class="fas fa-trash"></i></a>
+                      title="Supprimer" data-tooltip="Supprimer"><i class="fas fa-trash"></i></a>
 
                   </div>
 
@@ -398,7 +398,7 @@
                               <td class="chapter-actions">
 
                                 <input type="checkbox" class="export-toggle" data-type="chapter" data-id="{{ @ch.id }}"
-                                  {{ @ch.is_exported_attr }} title="Inclure dans l'export"
+                                  {{ @ch.is_exported_attr }} title="Inclure dans l'export" data-tooltip="Inclure dans l'export"
                                   data-tooltip="Inclure dans l'export">
 
                                 <input type="number" class="order-input" data-type="chapter" data-id="{{ @ch.id }}"
@@ -468,28 +468,28 @@
 
                                 <a class="button small"
                                   href="{{ @base }}/project/{{ @project.id }}/chapter/create?parent_id={{ @ch.id }}&act_id={{ @ch.act_id }}"
-                                  title="+ Sous-{{ @panelLabels.chapter.singular_lc }}">
+                                  title="+ Sous-{{ @panelLabels.chapter.singular_lc }}" data-tooltip="Ajouter un sous-chapitre">
 
                                   <i class="fas fa-plus"></i></a>
 
-                                <button class="button small ai-summary-btn" data-id="{{ @ch.id }}" title="Résumé IA"><i
+                                <button class="button small ai-summary-btn" data-id="{{ @ch.id }}" title="Résumé IA" data-tooltip="Résumé IA"><i
                                     class="fas fa-magic"></i></button><br />
 
                                 <button class="button small preview-btn" data-type="chapter" data-id="{{ @ch.id }}"
-                                  title="Voir"><i class="fas fa-eye"></i></button>
+                                  title="Voir" data-tooltip="Prévisualiser le contenu"><i class="fas fa-eye"></i></button>
 
                                 <check if="{{ !@isOwner }}">
                                   <button class="button small propose-btn" data-type="chapter" data-id="{{ @ch.id }}"
-                                    data-title="{{ @ch.title | esc }}" title="Proposer une modification"><i
+                                    data-title="{{ @ch.title | esc }}" title="Proposer une modification" data-tooltip="Proposer une modification"><i
                                       class="fas fa-paper-plane"></i></button>
                                 </check>
 
-                                <a class="button small" href="{{ @base }}/chapter/{{ @ch.id }}" title="Éditer"><i
+                                <a class="button small" href="{{ @base }}/chapter/{{ @ch.id }}" title="Éditer" data-tooltip="Éditer"><i
                                     class="fas fa-edit"></i></a>
 
                                 <a class="button small delete js-confirm" href="{{ @base }}/chapter/{{ @ch.id }}/delete"
                                   data-confirm="Supprimer ce {{ @panelLabels.chapter.singular_lc }} ?"
-                                  title="Supprimer"><i class="fas fa-trash"></i></a>
+                                  title="Supprimer" data-tooltip="Supprimer"><i class="fas fa-trash"></i></a>
 
                               </td>
 
@@ -502,7 +502,7 @@
                                 <td class="sous-chapitre">
 
                                   <input type="checkbox" class="export-toggle" data-type="chapter"
-                                    data-id="{{ @sub.id }}" {{ @sub.is_exported_attr }} title="Inclure dans l'export"
+                                    data-id="{{ @sub.id }}" {{ @sub.is_exported_attr }} title="Inclure dans l'export" data-tooltip="Inclure dans l'export"
                                     data-tooltip="Inclure dans l'export">
 
                                   <input type="number" class="order-input" data-type="chapter" data-id="{{ @sub.id }}"
@@ -543,21 +543,21 @@
                                 <td class="actions">
 
                                   <button class="button small preview-btn" data-type="chapter" data-id="{{ @sub.id }}"
-                                    title="Voir"><i class="fas fa-eye"></i></button>
+                                    title="Voir" data-tooltip="Prévisualiser le contenu"><i class="fas fa-eye"></i></button>
 
                                   <check if="{{ !@isOwner }}">
                                     <button class="button small propose-btn" data-type="chapter" data-id="{{ @sub.id }}"
-                                      data-title="{{ @sub.title | esc }}" title="Proposer une modification"><i
+                                      data-title="{{ @sub.title | esc }}" title="Proposer une modification" data-tooltip="Proposer une modification"><i
                                         class="fas fa-paper-plane"></i></button>
                                   </check>
 
-                                  <a class="button small" href="{{ @base }}/chapter/{{ @sub.id }}" title="Éditer"><i
+                                  <a class="button small" href="{{ @base }}/chapter/{{ @sub.id }}" title="Éditer" data-tooltip="Éditer"><i
                                       class="fas fa-edit"></i></a>
 
                                   <a class="button small delete js-confirm"
                                     href="{{ @base }}/chapter/{{ @sub.id }}/delete"
                                     data-confirm="Supprimer ce sous-{{ @panelLabels.chapter.singular_lc }} ?"
-                                    title="Supprimer"><i class="fas fa-trash"></i></a>
+                                    title="Supprimer" data-tooltip="Supprimer"><i class="fas fa-trash"></i></a>
 
                                 </td>
 
@@ -634,7 +634,7 @@
                           <tr data-id="{{ @ch.id }}">
                             <td class="chapter-actions">
                               <input type="checkbox" class="export-toggle" data-type="chapter" data-id="{{ @ch.id }}" {{
-                                @ch.is_exported_attr }} title="Inclure dans l'export"
+                                @ch.is_exported_attr }} title="Inclure dans l'export" data-tooltip="Inclure dans l'export"
                                 data-tooltip="Inclure dans l'export">
                               <input type="number" class="order-input" data-type="chapter" data-id="{{ @ch.id }}"
                                 value="{{ @ch.order_index + 1 }}">
@@ -655,28 +655,28 @@
                             <td class="actions">
                               <a class="button small"
                                 href="{{ @base }}/project/{{ @project.id }}/chapter/create?parent_id={{ @ch.id }}&act_id={{ @ch.act_id }}"
-                                title="+ Sous-{{ @panelLabels.chapter.singular_lc }}"><i class="fas fa-plus"></i></a>
-                              <button class="button small ai-summary-btn" data-id="{{ @ch.id }}" title="Résumé IA"><i
+                                title="+ Sous-{{ @panelLabels.chapter.singular_lc }}" data-tooltip="Ajouter un sous-chapitre"><i class="fas fa-plus"></i></a>
+                              <button class="button small ai-summary-btn" data-id="{{ @ch.id }}" title="Résumé IA" data-tooltip="Résumé IA"><i
                                   class="fas fa-magic"></i></button><br />
                               <button class="button small preview-btn" data-type="chapter" data-id="{{ @ch.id }}"
-                                title="Voir"><i class="fas fa-eye"></i></button>
+                                title="Voir" data-tooltip="Prévisualiser le contenu"><i class="fas fa-eye"></i></button>
                               <check if="{{ !@isOwner }}">
                                 <button class="button small propose-btn" data-type="chapter" data-id="{{ @ch.id }}"
-                                  data-title="{{ @ch.title | esc }}" title="Proposer une modification"><i
+                                  data-title="{{ @ch.title | esc }}" title="Proposer une modification" data-tooltip="Proposer une modification"><i
                                   class="fas fa-paper-plane"></i></button>
                               </check>
-                              <a class="button small" href="{{ @base }}/chapter/{{ @ch.id }}" title="Éditer"><i
+                              <a class="button small" href="{{ @base }}/chapter/{{ @ch.id }}" title="Éditer" data-tooltip="Éditer"><i
                                   class="fas fa-edit"></i></a>
                               <a class="button small delete js-confirm" href="{{ @base }}/chapter/{{ @ch.id }}/delete"
                                 data-confirm="Supprimer ce {{ @panelLabels.chapter.singular_lc }} ?"
-                                title="Supprimer"><i class="fas fa-trash"></i></a>
+                                title="Supprimer" data-tooltip="Supprimer"><i class="fas fa-trash"></i></a>
                             </td>
                           </tr>
                           <repeat group="{{ @ch.subs }}" value="{{ @sub }}">
                             <tr data-id="{{ @sub.id }}" class="sub-chapter sub-of-{{ @ch.id }}">
                               <td class="sous-chapitre">
                                 <input type="checkbox" class="export-toggle" data-type="chapter" data-id="{{ @sub.id }}"
-                                  {{ @sub.is_exported_attr }} title="Inclure dans l'export"
+                                  {{ @sub.is_exported_attr }} title="Inclure dans l'export" data-tooltip="Inclure dans l'export"
                                   data-tooltip="Inclure dans l'export">
                                 <input type="number" class="order-input" data-type="chapter" data-id="{{ @sub.id }}"
                                   value="{{ @sub.order_index + 1 }}">
@@ -690,18 +690,18 @@
                               </td>
                               <td class="actions">
                                 <button class="button small preview-btn" data-type="chapter" data-id="{{ @sub.id }}"
-                                  title="Voir"><i class="fas fa-eye"></i></button>
+                                  title="Voir" data-tooltip="Prévisualiser le contenu"><i class="fas fa-eye"></i></button>
                                 <check if="{{ !@isOwner }}">
                                   <button class="button small propose-btn" data-type="chapter" data-id="{{ @sub.id }}"
-                                    data-title="{{ @sub.title | esc }}" title="Proposer une modification"><i
+                                    data-title="{{ @sub.title | esc }}" title="Proposer une modification" data-tooltip="Proposer une modification"><i
                                       class="fas fa-paper-plane"></i></button>
                                 </check>
-                                <a class="button small" href="{{ @base }}/chapter/{{ @sub.id }}" title="Éditer"><i
+                                <a class="button small" href="{{ @base }}/chapter/{{ @sub.id }}" title="Éditer" data-tooltip="Éditer"><i
                                     class="fas fa-edit"></i></a>
                                 <a class="button small delete js-confirm"
                                   href="{{ @base }}/chapter/{{ @sub.id }}/delete"
                                   data-confirm="Supprimer ce sous-{{ @panelLabels.chapter.singular_lc }} ?"
-                                  title="Supprimer"><i class="fas fa-trash"></i></a>
+                                  title="Supprimer" data-tooltip="Supprimer"><i class="fas fa-trash"></i></a>
                               </td>
                             </tr>
                           </repeat>
@@ -753,20 +753,20 @@
                       <td class="actions">
                         <a class="button small"
                           href="{{ @base }}/project/{{ @project.id }}/chapter/create?parent_id={{ @ch.id }}"
-                          title="+ Sous-{{ @panelLabels.chapter.singular_lc }}"><i class="fas fa-plus"></i></a>
-                        <button class="button small ai-summary-btn" data-id="{{ @ch.id }}" title="Résumé IA"><i
+                          title="+ Sous-{{ @panelLabels.chapter.singular_lc }}" data-tooltip="Ajouter un sous-chapitre"><i class="fas fa-plus"></i></a>
+                        <button class="button small ai-summary-btn" data-id="{{ @ch.id }}" title="Résumé IA" data-tooltip="Résumé IA"><i
                             class="fas fa-magic"></i></button><br />
                         <button class="button small preview-btn" data-type="chapter" data-id="{{ @ch.id }}"
-                          title="Voir"><i class="fas fa-eye"></i></button>
+                          title="Voir" data-tooltip="Prévisualiser le contenu"><i class="fas fa-eye"></i></button>
                         <check if="{{ !@isOwner }}">
                           <button class="button small propose-btn" data-type="chapter" data-id="{{ @ch.id }}"
-                            data-title="{{ @ch.title | esc }}" title="Proposer une modification"><i
+                            data-title="{{ @ch.title | esc }}" title="Proposer une modification" data-tooltip="Proposer une modification"><i
                               class="fas fa-paper-plane"></i></button>
                         </check>
-                        <a class="button small" href="{{ @base }}/chapter/{{ @ch.id }}" title="Éditer"><i
+                        <a class="button small" href="{{ @base }}/chapter/{{ @ch.id }}" title="Éditer" data-tooltip="Éditer"><i
                             class="fas fa-edit"></i></a>
                         <a class="button small delete js-confirm" href="{{ @base }}/chapter/{{ @ch.id }}/delete"
-                          data-confirm="Supprimer ce {{ @panelLabels.chapter.singular_lc }} ?" title="Supprimer"><i
+                          data-confirm="Supprimer ce {{ @panelLabels.chapter.singular_lc }} ?" title="Supprimer" data-tooltip="Supprimer"><i
                             class="fas fa-trash"></i></a>
                       </td>
                     </tr>
@@ -785,17 +785,17 @@
                         <td class="stats">{{ @sub.wc }} mots<br>{{ @sub.lines }} lignes<br>{{ @sub.pages }} pages</td>
                         <td class="actions">
                           <button class="button small preview-btn" data-type="chapter" data-id="{{ @sub.id }}"
-                            title="Voir"><i class="fas fa-eye"></i></button>
+                            title="Voir" data-tooltip="Prévisualiser le contenu"><i class="fas fa-eye"></i></button>
                           <check if="{{ !@isOwner }}">
                             <button class="button small propose-btn" data-type="chapter" data-id="{{ @sub.id }}"
-                              data-title="{{ @sub.title | esc }}" title="Proposer une modification"><i
+                              data-title="{{ @sub.title | esc }}" title="Proposer une modification" data-tooltip="Proposer une modification"><i
                                 class="fas fa-paper-plane"></i></button>
                           </check>
-                          <a class="button small" href="{{ @base }}/chapter/{{ @sub.id }}" title="Éditer"><i
+                          <a class="button small" href="{{ @base }}/chapter/{{ @sub.id }}" title="Éditer" data-tooltip="Éditer"><i
                               class="fas fa-edit"></i></a>
                           <a class="button small delete js-confirm" href="{{ @base }}/chapter/{{ @sub.id }}/delete"
                             data-confirm="Supprimer ce sous-{{ @panelLabels.chapter.singular_lc }} ?"
-                            title="Supprimer"><i class="fas fa-trash"></i></a>
+                            title="Supprimer" data-tooltip="Supprimer"><i class="fas fa-trash"></i></a>
                         </td>
                       </tr>
                     </repeat>
@@ -861,23 +861,23 @@
                     <td class="compact-actions actions">
                       <a class="button small"
                         href="{{ @base }}/project/{{ @project.id }}/element/create?type={{ @cep.id }}&parent_id={{ @ce.id }}"
-                        title="+ Sous-élément">
+                        title="+ Sous-élément" data-tooltip="Ajouter un sous-élément">
                         <i class="fas fa-plus"></i>
                       </a>
                       <button class="button small preview-btn" data-type="element" data-id="{{ @ce.id }}"
-                        title="Prévisualiser">
+                        title="Prévisualiser" data-tooltip="Prévisualiser">
                         <i class="fas fa-eye"></i>
                       </button>
                       <check if="{{ !@isOwner }}">
                         <button class="button small propose-btn" data-type="element" data-id="{{ @ce.id }}"
-                          data-title="{{ @ce.title | esc }}" title="Proposer une modification"><i
+                          data-title="{{ @ce.title | esc }}" title="Proposer une modification" data-tooltip="Proposer une modification"><i
                             class="fas fa-paper-plane"></i></button>
                       </check>
-                      <a class="button small" href="{{ @base }}/element/{{ @ce.id }}" title="Éditer">
+                      <a class="button small" href="{{ @base }}/element/{{ @ce.id }}" title="Éditer" data-tooltip="Éditer">
                         <i class="fas fa-edit"></i>
                       </a>
                       <a class="button small delete js-confirm" href="{{ @base }}/element/{{ @ce.id }}/delete"
-                        data-confirm="Supprimer cet élément ?" title="Supprimer">
+                        data-confirm="Supprimer cet élément ?" title="Supprimer" data-tooltip="Supprimer">
                         <i class="fas fa-trash"></i>
                       </a>
                     </td>
@@ -897,19 +897,19 @@
                       <td class="compact-meta stats">{{ @sub.wc }} mots</td>
                       <td class="compact-actions actions">
                         <button class="button small preview-btn" data-type="element" data-id="{{ @sub.id }}"
-                          title="Prévisualiser">
+                          title="Prévisualiser" data-tooltip="Prévisualiser">
                           <i class="fas fa-eye"></i>
                         </button>
                         <check if="{{ !@isOwner }}">
                           <button class="button small propose-btn" data-type="element" data-id="{{ @sub.id }}"
-                            data-title="{{ @sub.title | esc }}" title="Proposer une modification"><i
+                            data-title="{{ @sub.title | esc }}" title="Proposer une modification" data-tooltip="Proposer une modification"><i
                               class="fas fa-paper-plane"></i></button>
                         </check>
-                        <a class="button small" href="{{ @base }}/element/{{ @sub.id }}" title="Éditer">
+                        <a class="button small" href="{{ @base }}/element/{{ @sub.id }}" title="Éditer" data-tooltip="Éditer">
                           <i class="fas fa-edit"></i>
                         </a>
                         <a class="button small delete js-confirm" href="{{ @base }}/element/{{ @sub.id }}/delete"
-                          data-confirm="Supprimer ce sous-élément ?" title="Supprimer">
+                          data-confirm="Supprimer ce sous-élément ?" title="Supprimer" data-tooltip="Supprimer">
                           <i class="fas fa-trash"></i>
                         </a>
                       </td>
@@ -952,14 +952,14 @@
               <check if="{{ @group.show_add }}">
 
                 <a class="button small" href="{{ @base }}/project/{{ @project.id }}/section/{{ @group.type }}"
-                  title="+ Ajouter une annexe"><i class="fas fa-plus"></i></a>
+                  title="+ Ajouter une annexe" data-tooltip="+ Ajouter une annexe"><i class="fas fa-plus"></i></a>
 
               </check>
 
               <check if="{{ @group.show_create }}">
 
                 <a class="button small" href="{{ @base }}/project/{{ @project.id }}/section/{{ @group.type }}"
-                  title="Créer"><i class="fas fa-plus"></i></a>
+                  title="Créer" data-tooltip="Créer"><i class="fas fa-plus"></i></a>
 
               </check>
 
@@ -982,7 +982,7 @@
                           <div class="section-actions">
 
                             <input type="checkbox" class="export-toggle" data-type="section" data-id="{{ @section.id }}"
-                              {{ @section.is_exported_attr }} title="Inclure dans l'export"
+                              {{ @section.is_exported_attr }} title="Inclure dans l'export" data-tooltip="Inclure dans l'export"
                               data-tooltip="Inclure dans l'export">
 
                             <input type="number" class="order-input" data-type="section" data-id="{{ @section.id }}"
@@ -1011,20 +1011,20 @@
                         <td class="compact-actions compact-actions--wide">
 
                           <button class="button small preview-btn" data-type="section" data-id="{{ @section.id }}"
-                            title="Voir"><i class="fas fa-eye"></i></button>
+                            title="Voir" data-tooltip="Prévisualiser le contenu"><i class="fas fa-eye"></i></button>
 
                           <check if="{{ !@isOwner }}">
                             <button class="button small propose-btn" data-type="section" data-id="{{ @section.id }}"
-                              data-title="{{ @section.title | esc }}" title="Proposer une modification"><i
+                              data-title="{{ @section.title | esc }}" title="Proposer une modification" data-tooltip="Proposer une modification"><i
                                 class="fas fa-paper-plane"></i></button>
                           </check>
 
                           <a class="button small"
                             href="{{ @base }}/project/{{ @project.id }}/section/{{ @group.type }}?id={{ @section.id }}"
-                            title="Modifier"><i class="fas fa-edit"></i></a>
+                            title="Modifier" data-tooltip="Modifier"><i class="fas fa-edit"></i></a>
 
                           <a class="button small delete js-confirm" href="{{ @base }}/section/{{ @section.id }}/delete"
-                            data-confirm="Supprimer cette section ?" title="Supprimer"><i class="fas fa-trash"></i></a>
+                            data-confirm="Supprimer cette section ?" title="Supprimer" data-tooltip="Supprimer"><i class="fas fa-trash"></i></a>
 
                         </td>
 
@@ -1100,7 +1100,7 @@
 
       <div class="panel-actions panel-actions-row">
 
-        <a class="button small" href="{{ @base }}/project/{{ @project.id }}/characters" title="Gérer les personnages"><i
+        <a class="button small" href="{{ @base }}/project/{{ @project.id }}/characters" title="Gérer les personnages" data-tooltip="Gérer les personnages"><i
             class="fas fa-users-cog"></i></a>
 
       </div>
@@ -1117,7 +1117,7 @@
       <div class="section-group-block" data-type="notes">
 
         <div class="section-group-heading">
-          <a class="button small" href="{{ @base }}/project/{{ @project.id }}/note/edit" title="+ Ajouter une note"><i
+          <a class="button small" href="{{ @base }}/project/{{ @project.id }}/note/edit" title="+ Ajouter une note" data-tooltip="Ajouter une note"><i
               class="fas fa-plus"></i></a>
         </div>
 
@@ -1168,15 +1168,15 @@
 
                       <check if="{{ !@isOwner }}">
                         <button class="button small propose-btn" data-type="note" data-id="{{ @note.id }}"
-                          data-title="{{ @note.title | esc }}" title="Proposer une modification"><i
+                          data-title="{{ @note.title | esc }}" title="Proposer une modification" data-tooltip="Proposer une modification"><i
                             class="fas fa-paper-plane"></i></button>
                       </check>
 
                       <a class="button small" href="{{ @base }}/project/{{ @project.id }}/note/edit?id={{ @note.id }}"
-                        title="Modifier"><i class="fas fa-edit"></i></a>
+                        title="Modifier" data-tooltip="Modifier"><i class="fas fa-edit"></i></a>
 
                       <a class="button small delete js-confirm" href="{{ @base }}/note/{{ @note.id }}/delete"
-                        data-confirm="Supprimer cette note ?" title="Supprimer"><i class="fas fa-trash"></i></a>
+                        data-confirm="Supprimer cette note ?" title="Supprimer" data-tooltip="Supprimer"><i class="fas fa-trash"></i></a>
 
                     </td>
 
@@ -1212,9 +1212,9 @@
       <div class="section-group-block" data-type="files">
 
         <div class="section-group-heading">
-          <button type="button" class="button small" id="addFileBtn" title="+ Ajouter un fichier"><i
+          <button type="button" class="button small" id="addFileBtn" title="+ Ajouter un fichier" data-tooltip="Ajouter un fichier"><i
               class="fas fa-plus"></i></button>
-          <button type="button" class="button small" id="sortFilesBtn" title="Trier par ordre alphabétique"><i
+          <button type="button" class="button small" id="sortFilesBtn" title="Trier par ordre alphabétique" data-tooltip="Trier alphabétiquement"><i
               class="fas fa-sort-alpha-down"></i></button>
         </div>
 
@@ -1257,15 +1257,15 @@
                     <td class="compact-actions compact-actions--wide actions">
 
                       <button class="button small preview-file-btn" data-id="{{ @file.id }}"
-                        data-filename="{{ @file.filename }}" data-type="{{ @file.filetype }}" title="Prévisualiser"><i
+                        data-filename="{{ @file.filename }}" data-type="{{ @file.filetype }}" title="Prévisualiser" data-tooltip="Prévisualiser"><i
                           class="fas fa-eye"></i></button>
 
                       <a class="button small" href="{{ @base }}/project/{{ @project.id }}/file/{{ @file.id }}/download"
-                        title="Télécharger" download><i class="fas fa-download"></i></a>
+                        title="Télécharger" data-tooltip="Télécharger" download><i class="fas fa-download"></i></a>
 
                       <a class="button small delete js-confirm"
                         href="{{ @base }}/project/{{ @project.id }}/file/{{ @file.id }}/delete"
-                        data-confirm="Supprimer ce fichier ?" title="Supprimer"><i class="fas fa-trash"></i></a>
+                        data-confirm="Supprimer ce fichier ?" title="Supprimer" data-tooltip="Supprimer"><i class="fas fa-trash"></i></a>
 
                     </td>
 

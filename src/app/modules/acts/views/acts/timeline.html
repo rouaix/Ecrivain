@@ -93,9 +93,9 @@
 <div class="edit-header">
     <h2>Timeline &mdash; {{ @project.title }}</h2>
     <span>
-        <a href="{{ @base }}/project/{{ @project.id }}/act/create" class="button secondary" title="Nouvel acte"><i class="fas fa-layer-group"></i> Acte</a>
-        <a href="{{ @base }}/project/{{ @project.id }}/chapter/create" class="button secondary" title="Nouveau chapitre"><i class="fas fa-plus"></i> Chapitre</a>
-        <a href="{{ @base }}/project/{{ @project.id }}" class="button" title="Retour au projet"><i class="fas fa-arrow-left"></i></a>
+        <a href="{{ @base }}/project/{{ @project.id }}/act/create" class="button secondary" title="Nouvel acte" data-tooltip="Créer un nouvel acte"><i class="fas fa-layer-group"></i> Acte</a>
+        <a href="{{ @base }}/project/{{ @project.id }}/chapter/create" class="button secondary" title="Nouveau chapitre" data-tooltip="Créer un nouveau chapitre"><i class="fas fa-plus"></i> Chapitre</a>
+        <a href="{{ @base }}/project/{{ @project.id }}" class="button" title="Retour au projet" data-tooltip="Retour au projet"><i class="fas fa-arrow-left"></i></a>
     </span>
 </div>
 
@@ -124,7 +124,7 @@
                     {{ @actStats[@act.id]['count'] }} ch. &bull; {{ number_format(@actStats[@act.id]['wc']) }} mots
                 </span>
                 <div class="act-actions">
-                    <a class="button small secondary" href="{{ @base }}/act/{{ @act.id }}/edit" title="Modifier l'acte"><i class="fas fa-edit"></i></a>
+                    <a class="button small secondary" href="{{ @base }}/act/{{ @act.id }}/edit" title="Modifier l'acte" data-tooltip="Modifier l'acte"><i class="fas fa-edit"></i></a>
                 </div>
             </div>
 
@@ -142,7 +142,7 @@
                     <div class="chapter-card-title">{{ @ch.title }}</div>
                     <div class="chapter-card-wc">{{ number_format(@ch.wc) }} mots</div>
                     <div class="chapter-card-actions">
-                        <a class="button small" href="{{ @base }}/chapter/{{ @ch.id }}" title="Écrire"><i class="fas fa-pen"></i></a>
+                        <a class="button small" href="{{ @base }}/chapter/{{ @ch.id }}" title="Écrire" data-tooltip="Ouvrir l'éditeur"><i class="fas fa-pen"></i></a>
                     </div>
                 </div>
                 </repeat>
@@ -174,7 +174,7 @@
                     <div class="chapter-card-title">{{ @ch.title }}</div>
                     <div class="chapter-card-wc">{{ number_format(@ch.wc) }} mots</div>
                     <div class="chapter-card-actions">
-                        <a class="button small" href="{{ @base }}/chapter/{{ @ch.id }}" title="Écrire"><i class="fas fa-pen"></i></a>
+                        <a class="button small" href="{{ @base }}/chapter/{{ @ch.id }}" title="Écrire" data-tooltip="Ouvrir l'éditeur"><i class="fas fa-pen"></i></a>
                     </div>
                 </div>
                 </repeat>

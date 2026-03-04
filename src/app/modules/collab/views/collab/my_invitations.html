@@ -43,21 +43,21 @@
                             <td>{{ @inv.created_at }}</td>
                             <td>
                                 <check if="{{ @inv.status == 'accepted' }}">
-                                    <a href="{{ @base }}/project/{{ @inv.project_id }}" class="button small">
+                                    <a href="{{ @base }}/project/{{ @inv.project_id }}" class="button small" data-tooltip="Voir le projet" title="Voir le projet">
                                         <i class="fas fa-eye"></i> Voir
                                     </a>
-                                    <a href="{{ @base }}/project/{{ @inv.project_id }}/collab/mes-demandes" class="button small secondary">
+                                    <a href="{{ @base }}/project/{{ @inv.project_id }}/collab/mes-demandes" class="button small secondary" data-tooltip="Voir mes demandes" title="Voir mes demandes">
                                         <i class="fas fa-paper-plane"></i> Mes demandes
                                     </a>
                                 </check>
                                 <check if="{{ @inv.status == 'pending' }}">
                                     <form method="post" action="{{ @base }}/collab/invitation/{{ @inv.id }}/accept" style="display:inline">
                                         <input type="hidden" name="csrf_token" value="{{ @csrfToken }}">
-                                        <button type="submit" class="button small primary">Accepter</button>
+                                        <button type="submit" class="button small primary" data-tooltip="Accepter l'invitation" title="Accepter l'invitation">Accepter</button>
                                     </form>
                                     <form method="post" action="{{ @base }}/collab/invitation/{{ @inv.id }}/decline" style="display:inline">
                                         <input type="hidden" name="csrf_token" value="{{ @csrfToken }}">
-                                        <button type="submit" class="button small">Refuser</button>
+                                        <button type="submit" class="button small" data-tooltip="Refuser l'invitation" title="Refuser l'invitation">Refuser</button>
                                     </form>
                                 </check>
                             </td>

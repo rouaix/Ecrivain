@@ -3,23 +3,23 @@
     <div class="edit-header">
         <h2>Modifier le chapitre</h2>
         <div style="display: flex; gap: 10px;">
-            <button type="button" id="openAiModal" class="button secondary cache" title="Ouvrir l'assistant narratif">
+            <button type="button" id="openAiModal" class="button secondary cache" title="Ouvrir l'assistant narratif" data-tooltip="Ouvrir l'assistant narratif">
                 <i class="fas fa-magic"></i>&nbsp;Assistant IA
             </button>
-            <button type="button" id="btnContinuity" class="button secondary" title="Suggestions d'ouverture IA">
+            <button type="button" id="btnContinuity" class="button secondary" title="Suggestions d'ouverture IA" data-tooltip="Suggestions d'ouverture IA">
                 <i class="fas fa-forward"></i>&nbsp;Continuité
             </button>
-            <button type="button" id="btnGlossary" class="button secondary" title="Lexique du projet">
+            <button type="button" id="btnGlossary" class="button secondary" title="Lexique du projet" data-tooltip="Lexique du projet">
                 <i class="fas fa-book"></i>&nbsp;Lexique
             </button>
             <a href="{{ @base }}/chapter/{{ @chapter.id }}/versions" class="button secondary"
-                title="Historique des versions">
+                title="Historique des versions" data-tooltip="Historique des versions">
                 <i class="fas fa-history"></i>
             </a>
-            <button type="button" id="btnFocusMode" class="button secondary" title="Mode focus (F11)">
+            <button type="button" id="btnFocusMode" class="button secondary" title="Mode focus (F11)" data-tooltip="Mode focus plein écran">
                 <i class="fas fa-expand"></i>
             </button>
-            <a href="{{ @base }}/project/{{ @project.id }}" class="button" title="Retour au projet">
+            <a href="{{ @base }}/project/{{ @project.id }}" class="button" title="Retour au projet" data-tooltip="Retour au projet">
                 <i class="fas fa-arrow-left"></i>
             </a>
         </div>
@@ -113,7 +113,7 @@
                     <label>Vérification grammaticale</label>
                     <div class="grammar-header-actions">
                         <span id="grammarStatus" class="grammar-status"></span>
-                        <button type="button" id="btnGrammarCheck" class="button secondary">
+                        <button type="button" id="btnGrammarCheck" class="button secondary" data-tooltip="Vérifier la grammaire" title="Vérifier la grammaire">
                             <i class="fas fa-spell-check" style="margin-right: 10px;"></i>Vérifier
                         </button>
                     </div>
@@ -127,7 +127,7 @@
                     <div class="form-group">
                         <div class="resume-label-row">
                             <label for="resume">Résumé (IA ou Manuel)</label>
-                            <button type="button" id="btnSummarizeAI" class="button secondary small">
+                            <button type="button" id="btnSummarizeAI" class="button secondary small" data-tooltip="Résumer le chapitre avec l'IA" title="Résumer le chapitre avec l'IA">
                                 <i class="fas fa-robot"></i> Résumer avec l'IA
                             </button>
                         </div>
@@ -153,19 +153,19 @@
 
             <!-- Actions -->
             <div class="edit-actions">
-                <input type="submit" value="Enregistrer" class="button primary large">
+                <input type="submit" value="Enregistrer" class="button primary large" data-tooltip="Enregistrer le chapitre" title="Enregistrer le chapitre">
             </div>
         </div>
     </form>
 </div>
 
 <!-- Mobile FAB Save Button (visible on mobile only) -->
-<button type="button" class="mobile-fab-save" id="mobileSaveBtn" title="Enregistrer">
+<button type="button" class="mobile-fab-save" id="mobileSaveBtn" title="Enregistrer" data-tooltip="Enregistrer le chapitre">
     <i class="fas fa-save"></i>
 </button>
 
 <!-- Focus mode exit button (fixed, only visible in focus mode) -->
-<button type="button" id="focusExitBtn" class="focus-exit-btn" title="Quitter le mode focus (Échap)">
+<button type="button" id="focusExitBtn" class="focus-exit-btn" title="Quitter le mode focus (Échap)" data-tooltip="Quitter le mode focus">
     <i class="fas fa-compress"></i> Quitter le focus
 </button>
 
@@ -174,7 +174,7 @@
     <div class="modal-content" style="max-width: 600px;">
         <div class="modal-header">
             <h3><i class="fas fa-forward"></i> Suggestions d'ouverture</h3>
-            <button type="button" class="modal-close" id="closeContinuityModal">&times;</button>
+            <button type="button" class="modal-close" id="closeContinuityModal" data-tooltip="Fermer" title="Fermer">&times;</button>
         </div>
         <div class="modal-body">
             <p class="continuity-hint">Sélectionnez une suggestion pour l'insérer au début du chapitre.</p>
@@ -192,7 +192,7 @@
     <div class="modal-content" style="max-width: 660px; max-height: 80vh; display: flex; flex-direction: column;">
         <div class="modal-header">
             <h3><i class="fas fa-search"></i> Détection d'incohérences</h3>
-            <button type="button" class="modal-close" id="closeInconsistencyModal">&times;</button>
+            <button type="button" class="modal-close" id="closeInconsistencyModal" data-tooltip="Fermer" title="Fermer">&times;</button>
         </div>
         <div class="modal-body" style="flex:1; overflow-y:auto;">
             <div id="inconsistencyLoading" style="display:none; text-align:center; padding:32px 0;">
@@ -202,7 +202,7 @@
             <div id="inconsistencyResult" style="display:none;"></div>
         </div>
         <div class="modal-footer" style="padding:12px 20px; border-top:1px solid var(--border); text-align:right;">
-            <button type="button" id="closeInconsistencyModalBtn" class="button secondary">Fermer</button>
+            <button type="button" id="closeInconsistencyModalBtn" class="button secondary" data-tooltip="Fermer la fenêtre" title="Fermer la fenêtre">Fermer</button>
         </div>
     </div>
 </div>
@@ -212,7 +212,7 @@
     <div class="modal-content" style="max-width: 680px; max-height: 80vh; display: flex; flex-direction: column;">
         <div class="modal-header">
             <h3><i class="fas fa-book"></i> Lexique du projet</h3>
-            <button type="button" class="modal-close" id="closeGlossaryModal">&times;</button>
+            <button type="button" class="modal-close" id="closeGlossaryModal" data-tooltip="Fermer" title="Fermer">&times;</button>
         </div>
         <div class="modal-body" style="flex:1; overflow:hidden; display:flex; flex-direction:column;">
             <div class="glossary-modal-search">
@@ -227,10 +227,10 @@
         </div>
         <div class="modal-footer" style="padding:12px 20px; border-top:1px solid var(--border); text-align:right;">
             <a id="glossaryManageLink" href="{{ @base }}/project/{{ @project.id }}/glossary" class="button secondary"
-                style="margin-right:8px;">
+                style="margin-right:8px;" data-tooltip="Gérer le lexique" title="Gérer le lexique">
                 <i class="fas fa-cog"></i> Gérer
             </a>
-            <button type="button" id="closeGlossaryModalBtn" class="button secondary">Fermer</button>
+            <button type="button" id="closeGlossaryModalBtn" class="button secondary" data-tooltip="Fermer le lexique" title="Fermer le lexique">Fermer</button>
         </div>
     </div>
 </div>
@@ -240,7 +240,7 @@
     <div class="modal-content" style="max-width: 900px; max-height: 80vh; display: flex; flex-direction: column;">
         <div class="modal-header">
             <h3><i class="fas fa-magic"></i> Assistant Narratif</h3>
-            <button type="button" class="modal-close" id="closeAiAssistantModal">&times;</button>
+            <button type="button" class="modal-close" id="closeAiAssistantModal" data-tooltip="Fermer" title="Fermer">&times;</button>
         </div>
         <div class="modal-body" style="flex: 1; display: flex; flex-direction: column; overflow: hidden;">
             <div class="ai-panel" style="height: 100%; display: flex; flex-direction: column;">
@@ -260,7 +260,7 @@
                         placeholder="Ex: Que fait Sage au chapitre 3 ? Est-ce cohérent avec son histoire personnelle ?"></textarea>
                     <div class="ai-actions">
                         <span></span>
-                        <button type="button" id="btnAiAsk" class="button secondary">
+                        <button type="button" id="btnAiAsk" class="button secondary" data-tooltip="Envoyer la question à l'IA" title="Envoyer la question à l'IA">
                             <i class="fas fa-paper-plane"></i> Envoyer
                         </button>
                     </div>

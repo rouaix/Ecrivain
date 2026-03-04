@@ -2,7 +2,7 @@
     <div class="edit-header">
         <h2><i class="fas fa-share-alt"></i> {{ @title | esc }}</h2>
         <div class="header-actions">
-            <a href="{{ @base }}/share" class="button secondary">
+            <a href="{{ @base }}/share" class="button secondary" data-tooltip="Retour aux liens partagés" title="Retour aux liens partagés">
                 <i class="fas fa-arrow-left"></i> Retour
             </a>
         </div>
@@ -37,7 +37,7 @@
         </div>
 
         <div class="form-actions">
-            <button type="submit" class="button primary">
+            <button type="submit" class="button primary" data-tooltip="Enregistrer le lien de partage" title="Enregistrer le lien de partage">
                 <i class="fas fa-save"></i>&nbsp;Enregistrer
             </button>
         </div>

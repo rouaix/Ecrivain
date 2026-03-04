@@ -2,7 +2,7 @@
     <div class="edit-header">
         <h2><i class="fas fa-layer-group"></i> {{ @template.name }}</h2>
         <div class="header-actions">
-            <a href="{{ @base }}/templates" class="button" title="Retour aux templates">
+            <a href="{{ @base }}/templates" class="button" title="Retour aux templates" data-tooltip="Retour aux templates">
                 <i class="fas fa-arrow-left"></i>
             </a>
         </div>
@@ -63,8 +63,8 @@
                             <repeat group="{{ @elements }}" value="{{ @elem }}">
                                 <tr data-id="{{ @elem.id }}">
                                     <td class="order-cell">
-                                        <button type="button" class="button small move-up" title="Monter"><i class="fas fa-arrow-up"></i></button>
-                                        <button type="button" class="button small move-down" title="Descendre"><i class="fas fa-arrow-down"></i></button>
+                                        <button type="button" class="button small move-up" title="Monter" data-tooltip="Monter"><i class="fas fa-arrow-up"></i></button>
+                                        <button type="button" class="button small move-down" title="Descendre" data-tooltip="Descendre"><i class="fas fa-arrow-down"></i></button>
                                     </td>
                                     <td>
                                         {{ @elem.type_label }}
@@ -96,11 +96,11 @@
                                                 data-placement="{{ @elem.section_placement }}"
                                                 data-label="{{ @elem.main_label | esc }}"
                                                 data-label-plural="{{ @elem.plural_label | esc }}"
-                                                title="Modifier">
+                                                title="Modifier" data-tooltip="Modifier cet élément">
                                             <i class="fas fa-pencil-alt"></i>
                                         </button>
                                         <button type="button" class="button small delete delete-elem-btn"
-                                                data-id="{{ @elem.id }}" title="Supprimer">
+                                                data-id="{{ @elem.id }}" title="Supprimer" data-tooltip="Supprimer cet élément">
                                             <i class="fas fa-trash"></i>
                                         </button>
                                     </td>
@@ -116,7 +116,7 @@
             </div>
 
             <div class="edit-actions">
-                <input type="submit" value="Enregistrer" class="button primary large">
+                <input type="submit" value="Enregistrer" class="button primary large" title="Enregistrer le template" data-tooltip="Enregistrer le template">
             </div>
         </div>
     </form>

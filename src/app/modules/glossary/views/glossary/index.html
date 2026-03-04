@@ -4,9 +4,9 @@
 
     <span>
 
-        <a href="{{ @base }}/project/{{ @project.id }}/glossary/create" class="button" title="Nouveau terme"><i class="fas fa-plus"></i></a>
+        <a href="{{ @base }}/project/{{ @project.id }}/glossary/create" class="button" title="Nouveau terme" data-tooltip="Nouveau terme"><i class="fas fa-plus"></i></a>
 
-        <a href="{{ @base }}/project/{{ @project.id }}" class="button" title="Retour au projet"><i class="fas fa-arrow-left"></i></a>
+        <a href="{{ @base }}/project/{{ @project.id }}" class="button" title="Retour au projet" data-tooltip="Retour au projet"><i class="fas fa-arrow-left"></i></a>
 
     </span>
 
@@ -66,12 +66,12 @@
 
                                         <td class="compact-actions compact-actions--wide">
 
-                                            <a class="button small" href="{{ @base }}/project/{{ @project.id }}/glossary/{{ @entry.id }}/edit" title="Modifier"><i class="fas fa-edit"></i></a>
+                                            <a class="button small" href="{{ @base }}/project/{{ @project.id }}/glossary/{{ @entry.id }}/edit" title="Modifier" data-tooltip="Modifier le terme"><i class="fas fa-edit"></i></a>
 
                                             <a class="button small delete js-confirm"
                                                 href="{{ @base }}/project/{{ @project.id }}/glossary/{{ @entry.id }}/delete"
                                                 data-confirm="Supprimer le terme « {{ @entry.term }} » ?"
-                                                title="Supprimer"><i class="fas fa-trash"></i></a>
+                                                title="Supprimer" data-tooltip="Supprimer le terme"><i class="fas fa-trash"></i></a>
 
                                         </td>
 

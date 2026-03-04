@@ -124,13 +124,13 @@
     <!-- Toolbar -->
     <div class="reading-toolbar">
         <div class="toolbar-title">{{ @project.title | esc }}</div>
-        <button class="toolbar-btn" id="toggleToc"><i class="fas fa-list"></i> Table des matieres</button>
-        <button class="toolbar-btn" id="toggleFullscreen"><i class="fas fa-expand"></i> Plein ecran</button>
-        <button class="toolbar-btn" id="saveBookmark" title="Enregistrer la position"><i class="fas fa-bookmark"></i>
+        <button class="toolbar-btn" id="toggleToc" data-tooltip="Afficher la table des matières" title="Afficher la table des matières"><i class="fas fa-list"></i> Table des matieres</button>
+        <button class="toolbar-btn" id="toggleFullscreen" data-tooltip="Basculer en plein écran" title="Basculer en plein écran"><i class="fas fa-expand"></i> Plein ecran</button>
+        <button class="toolbar-btn" id="saveBookmark" title="Enregistrer la position" data-tooltip="Enregistrer la position"><i class="fas fa-bookmark"></i>
             Marque-page</button>
-        <button class="toolbar-btn" id="offlineSaveBtn" title="Enregistrer pour lecture hors-ligne"><i class="fas fa-download"></i>
+        <button class="toolbar-btn" id="offlineSaveBtn" title="Enregistrer pour lecture hors-ligne" data-tooltip="Enregistrer pour lecture hors-ligne"><i class="fas fa-download"></i>
             Hors-ligne</button>
-        <a href="{{ @base }}/project/{{ @project.id }}" class="toolbar-btn button" title="Retour au projet"><i
+        <a href="{{ @base }}/project/{{ @project.id }}" class="toolbar-btn button" title="Retour au projet" data-tooltip="Retour au projet"><i
                 class="fas fa-arrow-left"></i></a>
     </div>
 

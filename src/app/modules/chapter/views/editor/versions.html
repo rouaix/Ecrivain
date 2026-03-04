@@ -1,7 +1,7 @@
 <div class="edit-page-layout">
     <div class="edit-header">
         <h2><i class="fas fa-history"></i> Historique des versions</h2>
-        <a href="{{ @base }}/chapter/{{ @chapter.id }}" class="button" title="Retour à l'éditeur">
+        <a href="{{ @base }}/chapter/{{ @chapter.id }}" class="button" title="Retour à l'éditeur" data-tooltip="Retour à l'éditeur">
             <i class="fas fa-arrow-left"></i>
         </a>
     </div>
@@ -29,20 +29,21 @@
                             <button type="button" class="button secondary btn-preview"
                                 data-vid="{{ @v.id }}"
                                 data-cid="{{ @chapter.id }}"
-                                data-label="Version {{ @i }} — {{ @v.created_at }}">
+                                data-label="Version {{ @i }} — {{ @v.created_at }}"
+                                data-tooltip="Prévisualiser cette version" title="Prévisualiser cette version">
                                 <i class="fas fa-eye"></i>
                             </button>
                             <form method="post" action="{{ @base }}/chapter/{{ @chapter.id }}/restore/{{ @v.id }}"
                                   onsubmit="return confirm('Restaurer cette version ? Le contenu actuel sera remplacé.');">
                                 <input type="hidden" name="csrf_token" value="{{ @csrfToken }}">
-                                <button type="submit" class="button secondary">
+                                <button type="submit" class="button secondary" data-tooltip="Restaurer cette version" title="Restaurer cette version">
                                     <i class="fas fa-undo" style="margin-right: 6px;"></i>Restaurer
                                 </button>
                             </form>
                             <form method="post" action="{{ @base }}/chapter/{{ @chapter.id }}/version/{{ @v.id }}/delete"
                                   onsubmit="return confirm('Supprimer définitivement cette version ?');">
                                 <input type="hidden" name="csrf_token" value="{{ @csrfToken }}">
-                                <button type="submit" class="button small delete" title="Supprimer">
+                                <button type="submit" class="button small delete" title="Supprimer" data-tooltip="Supprimer cette version">
                                     <i class="fas fa-trash"></i>
                                 </button>
                             </form>
@@ -59,7 +60,7 @@
     <div class="modal-content" style="max-width: 800px; max-height: 85vh; display: flex; flex-direction: column;">
         <div class="modal-header">
             <h3 id="versionPreviewTitle"><i class="fas fa-eye"></i> Prévisualisation</h3>
-            <button type="button" class="modal-close" id="closeVersionPreview">&times;</button>
+            <button type="button" class="modal-close" id="closeVersionPreview" data-tooltip="Fermer" title="Fermer">&times;</button>
         </div>
         <div class="modal-body" style="flex: 1; overflow-y: auto;">
             <div id="versionPreviewMeta" style="margin-bottom: 12px; font-size: .85rem; color: var(--text-muted, #777);"></div>
