@@ -75,7 +75,7 @@ Suivi des fonctionnalités proposées. Statuts : `[ ]` à faire · `[~]` en cour
 ---
 
 ### 9. Détection d'incohérences
-**Statut** : `[ ]`
+**Statut** : `[x]`
 **Description** : Analyse IA comparant le contenu des chapitres aux fiches personnages pour signaler les contradictions.
 **Fichiers concernés** : `ai/controllers/AiController.php`, `characters/models/`
 **Notes** :

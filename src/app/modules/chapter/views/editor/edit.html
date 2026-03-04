@@ -18,6 +18,9 @@
             <button type="button" id="btnContinuity" class="button secondary" title="Suggestions d'ouverture IA">
                 <i class="fas fa-forward"></i>&nbsp;Continuité
             </button>
+            <button type="button" id="btnInconsistency" class="button secondary" title="Détecter les incohérences avec les fiches personnages">
+                <i class="fas fa-search"></i>&nbsp;Incohérences
+            </button>
             <button type="button" id="btnGlossary" class="button secondary" title="Lexique du projet">
                 <i class="fas fa-book"></i>&nbsp;Lexique
             </button>
@@ -181,6 +184,26 @@
             </div>
             <div id="continuityError" class="continuity-error" style="display:none;"></div>
             <ul id="continuityList" class="continuity-list"></ul>
+        </div>
+    </div>
+</div>
+
+<!-- Inconsistency Detection Modal -->
+<div class="modal-overlay" id="inconsistencyModal">
+    <div class="modal-content" style="max-width: 660px; max-height: 80vh; display: flex; flex-direction: column;">
+        <div class="modal-header">
+            <h3><i class="fas fa-search"></i> Détection d'incohérences</h3>
+            <button type="button" class="modal-close" id="closeInconsistencyModal">&times;</button>
+        </div>
+        <div class="modal-body" style="flex:1; overflow-y:auto;">
+            <div id="inconsistencyLoading" style="display:none; text-align:center; padding:32px 0;">
+                <i class="fas fa-spinner fa-spin fa-2x"></i>
+                <p style="margin-top:12px; color:var(--text-muted,#777);">Analyse en cours…</p>
+            </div>
+            <div id="inconsistencyResult" style="display:none;"></div>
+        </div>
+        <div class="modal-footer" style="padding:12px 20px; border-top:1px solid var(--border); text-align:right;">
+            <button type="button" id="closeInconsistencyModalBtn" class="button secondary">Fermer</button>
         </div>
     </div>
 </div>
@@ -378,6 +401,12 @@ body.focus-mode .focus-exit-btn { display: flex; }
 }
 .summarize-status--ok  { color: #15803d; background: #f0fdf4; }
 .summarize-status--err { color: #b91c1c; background: #fef2f2; }
+/* Inconsistency modal */
+.inconsistency-clean { display:flex; align-items:center; gap:10px; padding:16px; background:#f0fdf4; border:1px solid #86efac; border-radius:8px; color:#15803d; font-weight:600; }
+.inconsistency-issues { display:flex; flex-direction:column; gap:8px; }
+.inconsistency-issue { padding:10px 14px; background:#fef9ec; border:1px solid #fcd34d; border-radius:8px; font-size:.88rem; line-height:1.55; color:#78350f; }
+.inconsistency-issue::before { content:"⚠ "; }
+.inconsistency-count { font-size:.82rem; color:var(--text-muted,#777); margin-bottom:8px; }
 /* Glossary modal */
 .glossary-modal-search { margin-bottom: 10px; }
 .glossary-modal-list { display: flex; flex-direction: column; gap: 8px; padding-right: 4px; }
@@ -705,6 +734,68 @@ body.focus-mode .focus-exit-btn { display: flex; }
             function escHtml(s) {
                 return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
             }
+        }());
+
+        // Inconsistency detection
+        (function () {
+            var btn      = document.getElementById('btnInconsistency');
+            var modal    = document.getElementById('inconsistencyModal');
+            var closeBtn = document.getElementById('closeInconsistencyModal');
+            var closeFt  = document.getElementById('closeInconsistencyModalBtn');
+            var loading  = document.getElementById('inconsistencyLoading');
+            var result   = document.getElementById('inconsistencyResult');
+
+            function openModal()  { modal.style.display = 'flex'; }
+            function closeModal() { modal.style.display = 'none'; }
+
+            function escHtml(s) {
+                return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+            }
+
+            if (btn) {
+                btn.addEventListener('click', function () {
+                    openModal();
+                    result.style.display = 'none';
+                    loading.style.display = 'block';
+
+                    fetch('{{ @base }}/ai/detect-inconsistencies', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json', 'X-CSRF-Token': window.CSRF_TOKEN },
+                        body: JSON.stringify({ chapter_id: parseInt(chapterId) })
+                    })
+                    .then(function (r) { return r.json(); })
+                    .then(function (data) {
+                        loading.style.display = 'none';
+                        result.style.display = 'block';
+
+                        if (!data.success) {
+                            result.innerHTML = '<div class="continuity-error">' + escHtml(data.error || 'Erreur inconnue') + '</div>';
+                            return;
+                        }
+
+                        if (data.clean) {
+                            result.innerHTML = '<div class="inconsistency-clean"><i class="fas fa-check-circle fa-lg"></i> Aucune incohérence détectée — le chapitre est cohérent avec les fiches personnages.</div>';
+                        } else {
+                            var html = '<p class="inconsistency-count">' + data.issues.length + ' incohérence(s) détectée(s)</p>';
+                            html += '<div class="inconsistency-issues">';
+                            data.issues.forEach(function (issue) {
+                                html += '<div class="inconsistency-issue">' + escHtml(issue) + '</div>';
+                            });
+                            html += '</div>';
+                            result.innerHTML = html;
+                        }
+                    })
+                    .catch(function (e) {
+                        loading.style.display = 'none';
+                        result.style.display = 'block';
+                        result.innerHTML = '<div class="continuity-error">Erreur réseau : ' + escHtml(e.message) + '</div>';
+                    });
+                });
+            }
+
+            if (closeBtn) closeBtn.addEventListener('click', closeModal);
+            if (closeFt)  closeFt.addEventListener('click', closeModal);
+            modal.addEventListener('click', function (e) { if (e.target === modal) closeModal(); });
         }());
 
         // Glossary modal

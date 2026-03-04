@@ -1188,4 +1188,140 @@ class AiController extends Controller
             'has_previous' => $prevEndText !== '',
         ]);
     }
+
+    /**
+     * Detect narrative inconsistencies in a chapter by comparing it to character sheets.
+     * POST /ai/detect-inconsistencies
+     */
+    public function detectInconsistencies()
+    {
+        $json      = json_decode($this->f3->get('BODY'), true);
+        $chapterId = (int) ($json['chapter_id'] ?? 0);
+
+        if (!$chapterId) {
+            http_response_code(400);
+            echo json_encode(['success' => false, 'error' => 'ID de chapitre requis']);
+            return;
+        }
+
+        $db      = $this->f3->get('DB');
+        $chapter = new \Chapter($db);
+        $chapter->load(['id=?', $chapterId]);
+
+        if ($chapter->dry()) {
+            http_response_code(404);
+            echo json_encode(['success' => false, 'error' => 'Chapitre introuvable']);
+            return;
+        }
+
+        // Security: verify ownership
+        $projectModel = new \Project($db);
+        $projectModel->load(['id=? AND user_id=?', $chapter->project_id, $this->currentUser()['id']]);
+        if ($projectModel->dry()) {
+            http_response_code(403);
+            echo json_encode(['success' => false, 'error' => 'Accès non autorisé']);
+            return;
+        }
+
+        if (!$this->checkRateLimit('ai_gen', 10, 60)) {
+            http_response_code(429);
+            echo json_encode(['success' => false, 'error' => 'Trop de requêtes IA. Attendez quelques secondes.']);
+            return;
+        }
+
+        // Load characters for this project
+        $characters = $db->exec(
+            'SELECT name, description FROM characters WHERE project_id = ? ORDER BY name ASC',
+            [$chapter->project_id]
+        ) ?: [];
+
+        if (empty($characters)) {
+            echo json_encode(['success' => false, 'error' => 'Aucune fiche personnage dans ce projet. Créez des personnages d\'abord.']);
+            return;
+        }
+
+        // Build characters context (truncated to keep prompt manageable)
+        $charContext = '';
+        foreach ($characters as $char) {
+            $desc = trim(strip_tags(html_entity_decode($char['description'] ?? '')));
+            $desc = mb_substr($desc, 0, 600);
+            $charContext .= "— {$char['name']} : " . ($desc ?: '(pas de description)') . "\n";
+        }
+
+        // Build chapter content: own text + sub-chapters
+        $subChapters = $db->exec(
+            'SELECT title, content FROM chapters WHERE parent_id = ? ORDER BY order_index ASC, id ASC',
+            [$chapterId]
+        ) ?: [];
+
+        if ($subChapters) {
+            $chapterText = '';
+            foreach ($subChapters as $sub) {
+                $text = mb_substr(trim(strip_tags(html_entity_decode($sub['content'] ?? ''))), 0, 1500);
+                $chapterText .= "\n[" . $sub['title'] . "]\n" . $text;
+            }
+        } else {
+            $chapterText = mb_substr(trim(strip_tags(html_entity_decode($chapter->content ?? ''))), 0, 4000);
+        }
+
+        if (trim($chapterText) === '') {
+            echo json_encode(['success' => false, 'error' => 'Le chapitre est vide.']);
+            return;
+        }
+
+        // Build prompt
+        $taskPrompt =
+            "Tu es un assistant éditorial. Analyse le chapitre ci-dessous en le comparant aux fiches personnages fournies.\n"
+          . "Identifie toutes les incohérences, contradictions ou erreurs de continuité : "
+          . "caractéristiques physiques incorrectes, traits de personnalité contradictoires, "
+          . "connaissances que le personnage ne devrait pas avoir, anachronismes, etc.\n"
+          . "Si tu ne trouves aucune incohérence, réponds exactement : \"Aucune incohérence détectée.\"\n"
+          . "Sinon, liste chaque problème sous forme de puces courtes (une par ligne, commençant par « - »). "
+          . "Sois précis et cite le passage concerné entre guillemets si possible.\n\n"
+          . "### Fiches personnages\n"
+          . $charContext . "\n"
+          . "### Chapitre : « " . $chapter->title . " »\n"
+          . $chapterText;
+
+        $userConfig   = $this->getUserConfig();
+        $provider     = $userConfig['active_provider'] ?? 'openai';
+        $apiKey       = $userConfig['providers'][$provider]['api_key'] ?? $this->f3->get('OPENAI_API_KEY');
+        $model        = $userConfig['providers'][$provider]['model'] ?? ($this->f3->get('OPENAI_MODEL') ?: 'gpt-4o');
+        $systemPrompt = $this->compressPrompt($userConfig['prompts']['system'] ?? "Tu es un assistant d'écriture créative expert en narration française.");
+
+        $service = new AiService($provider, $apiKey, $model);
+        $t0      = microtime(true);
+        $result  = $service->generate($systemPrompt, $taskPrompt, 0.3, 600);
+        $elapsed = microtime(true) - $t0;
+
+        if (!$result['success']) {
+            echo json_encode(['success' => false, 'error' => $result['error']]);
+            return;
+        }
+
+        $raw  = trim($result['text']);
+        $clean = (stripos($raw, 'Aucune incohérence') !== false);
+
+        // Parse bullet lines
+        $issues = [];
+        if (!$clean) {
+            foreach (preg_split('/\r?\n/', $raw) as $line) {
+                $line = trim($line);
+                if ($line === '') continue;
+                $line = preg_replace('/^[-•*]\s*/', '', $line);
+                if ($line !== '') $issues[] = $line;
+            }
+        }
+
+        $this->logAiUsage($model, $result['prompt_tokens'] ?? 0, $result['completion_tokens'] ?? 0, 'detect_inconsistencies');
+        $this->notifyAiCompletionIfNeeded($elapsed, 'detect_inconsistencies');
+
+        header('Content-Type: application/json');
+        echo json_encode([
+            'success' => true,
+            'clean'   => $clean,
+            'issues'  => $issues,
+            'raw'     => $raw,
+        ]);
+    }
 }
