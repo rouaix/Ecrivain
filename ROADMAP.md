@@ -39,7 +39,7 @@ Suivi des fonctionnalités proposées. Statuts : `[ ]` à faire · `[~]` en cour
 ---
 
 ### 5. Timeline des événements
-**Statut** : `[ ]`
+**Statut** : `[x]`
 **Description** : Vue chronologique des scènes/actes avec glisser-déposer pour réorganiser la structure.
 **Fichiers concernés** : nouveau module ou vue dans `acts/`, `section/`
 **Notes** :

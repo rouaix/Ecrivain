@@ -1,0 +1,375 @@
+<style nonce="{{ @nonce }}">
+/* ── Timeline layout ─────────────────────────────────────────────────────── */
+.timeline-page { padding: 0 0 60px; }
+.timeline-toolbar {
+    display: flex; align-items: center; gap: 12px; flex-wrap: wrap;
+    margin-bottom: 24px; padding-bottom: 16px; border-bottom: 1px solid var(--border);
+}
+.timeline-legend { font-size: .82rem; color: var(--text-muted,#777); margin-left: auto; }
+
+/* ── Stats bar ───────────────────────────────────────────────────────────── */
+.timeline-stats {
+    display: flex; gap: 20px; margin-bottom: 20px; flex-wrap: wrap;
+}
+.timeline-stat {
+    background: var(--card-bg,#fff); border: 1px solid var(--border); border-radius: 8px;
+    padding: 8px 18px; font-size: .88rem; color: var(--text-muted,#555);
+}
+.timeline-stat strong { color: var(--text-main,#222); font-size: 1.05rem; display: block; }
+
+/* ── Acts ────────────────────────────────────────────────────────────────── */
+.timeline-acts { display: flex; flex-direction: column; gap: 16px; }
+
+.timeline-act {
+    background: var(--card-bg,#fff);
+    border: 2px solid var(--border);
+    border-radius: 12px;
+    transition: border-color .15s;
+}
+.timeline-act.drag-over-act { border-color: var(--primary,#3f51b5); border-style: dashed; }
+.timeline-act.dragging-act  { opacity: .5; }
+
+.act-header {
+    display: flex; align-items: center; gap: 12px;
+    padding: 12px 16px; cursor: grab; user-select: none;
+    border-bottom: 1px solid var(--border);
+}
+.act-header:active { cursor: grabbing; }
+.act-drag-handle { color: var(--text-muted,#bbb); font-size: 1rem; flex-shrink: 0; }
+.act-title { font-weight: 600; font-size: 1rem; flex: 1; color: var(--text-main,#222); }
+.act-meta  { font-size: .8rem; color: var(--text-muted,#888); white-space: nowrap; }
+.act-actions { display: flex; gap: 6px; flex-shrink: 0; }
+
+/* ── Chapter cards ───────────────────────────────────────────────────────── */
+.chapter-drop-zone {
+    min-height: 56px; padding: 10px 14px;
+    display: flex; flex-direction: row; flex-wrap: wrap; gap: 10px;
+    align-items: flex-start;
+}
+.chapter-drop-zone.empty-zone { align-items: center; }
+.drop-placeholder {
+    display: none; width: 180px; min-height: 52px;
+    border: 2px dashed var(--primary,#3f51b5); border-radius: 8px;
+    background: rgba(63,81,181,.06); flex-shrink: 0;
+}
+.chapter-drop-zone.drag-over .drop-placeholder { display: flex; }
+
+.chapter-card {
+    background: var(--bg,#f7f8fc); border: 1px solid var(--border); border-radius: 8px;
+    padding: 10px 14px; min-width: 160px; max-width: 240px; flex: 1;
+    cursor: grab; position: relative; transition: box-shadow .15s, border-color .15s;
+    user-select: none;
+}
+.chapter-card:hover { box-shadow: 0 2px 8px rgba(0,0,0,.1); border-color: var(--primary-light,#7986cb); }
+.chapter-card:active { cursor: grabbing; }
+.chapter-card.dragging-card { opacity: .4; box-shadow: none; }
+
+.chapter-card-handle { position: absolute; top: 8px; right: 8px; color: var(--text-muted,#ccc); font-size: .75rem; }
+.chapter-card-title { font-size: .88rem; font-weight: 600; color: var(--text-main,#333); margin: 0 20px 4px 0; word-break: break-word; }
+.chapter-card-wc { font-size: .75rem; color: var(--text-muted,#999); }
+.chapter-card-actions { display: flex; gap: 6px; margin-top: 8px; }
+
+/* ── Empty chapter zone hint ─────────────────────────────────────────────── */
+.zone-hint {
+    font-size: .82rem; color: var(--text-muted,#bbb); font-style: italic; padding: 6px 0;
+    pointer-events: none;
+}
+
+/* ── No-act group ────────────────────────────────────────────────────────── */
+.timeline-act--none { border-color: var(--border); border-style: dashed; }
+.timeline-act--none .act-header { background: transparent; }
+.timeline-act--none .act-title { color: var(--text-muted,#888); font-weight: 400; }
+
+/* ── Toast ───────────────────────────────────────────────────────────────── */
+.timeline-toast {
+    position: fixed; bottom: 24px; right: 24px; z-index: 9999;
+    background: #1e293b; color: #fff; border-radius: 8px;
+    padding: 10px 18px; font-size: .88rem; opacity: 0;
+    transition: opacity .25s; pointer-events: none;
+}
+.timeline-toast.show { opacity: 1; }
+</style>
+
+<div class="edit-header">
+    <h2>Timeline &mdash; {{ @project.title }}</h2>
+    <span>
+        <a href="{{ @base }}/project/{{ @project.id }}/act/create" class="button secondary" title="Nouvel acte"><i class="fas fa-layer-group"></i> Acte</a>
+        <a href="{{ @base }}/project/{{ @project.id }}/chapter/create" class="button secondary" title="Nouveau chapitre"><i class="fas fa-plus"></i> Chapitre</a>
+        <a href="{{ @base }}/project/{{ @project.id }}" class="button" title="Retour au projet"><i class="fas fa-arrow-left"></i></a>
+    </span>
+</div>
+
+<div class="timeline-page">
+
+    <!-- Stats bar -->
+    <div class="timeline-stats">
+        <div class="timeline-stat"><strong>{{ @totalCh }}</strong>chapitre(s)</div>
+        <div class="timeline-stat"><strong>{{ number_format(@totalWc) }}</strong>mots au total</div>
+        <div class="timeline-stat"><strong>{{ count(@acts) }}</strong>acte(s)</div>
+        <div class="timeline-legend"><i class="fas fa-grip-vertical"></i> Glisser-déposer pour réorganiser</div>
+    </div>
+
+    <!-- Acts list (draggable) -->
+    <div class="timeline-acts" id="actsList">
+
+        <repeat group="{{ @acts }}" value="{{ @act }}">
+        <div class="timeline-act"
+             data-act-id="{{ @act.id }}"
+             draggable="true">
+
+            <div class="act-header">
+                <i class="fas fa-grip-vertical act-drag-handle"></i>
+                <span class="act-title"><i class="fas fa-layer-group" style="font-size:.8em;opacity:.6;margin-right:6px;"></i>{{ @act.title }}</span>
+                <span class="act-meta">
+                    {{ @actStats[@act.id]['count'] }} ch. &bull; {{ number_format(@actStats[@act.id]['wc']) }} mots
+                </span>
+                <div class="act-actions">
+                    <a class="button small secondary" href="{{ @base }}/act/{{ @act.id }}/edit" title="Modifier l'acte"><i class="fas fa-edit"></i></a>
+                </div>
+            </div>
+
+            <div class="chapter-drop-zone" data-act-id="{{ @act.id }}">
+                <div class="drop-placeholder"></div>
+                <check if="{{ empty(@byAct[@act.id]) }}">
+                    <true><span class="zone-hint">Déposez un chapitre ici</span></true>
+                </check>
+                <repeat group="{{ @byAct[@act.id] }}" value="{{ @ch }}">
+                <div class="chapter-card"
+                     data-chapter-id="{{ @ch.id }}"
+                     data-act-id="{{ @act.id }}"
+                     draggable="true">
+                    <i class="fas fa-grip-dots-vertical chapter-card-handle"></i>
+                    <div class="chapter-card-title">{{ @ch.title }}</div>
+                    <div class="chapter-card-wc">{{ number_format(@ch.wc) }} mots</div>
+                    <div class="chapter-card-actions">
+                        <a class="button small" href="{{ @base }}/chapter/{{ @ch.id }}" title="Écrire"><i class="fas fa-pen"></i></a>
+                    </div>
+                </div>
+                </repeat>
+            </div>
+
+        </div>
+        </repeat>
+
+        <!-- Chapters without act -->
+        <check if="{{ !empty(@byAct['__none__']) }}">
+        <true>
+        <div class="timeline-act timeline-act--none" data-act-id="">
+
+            <div class="act-header">
+                <i class="fas fa-grip-vertical act-drag-handle" style="visibility:hidden"></i>
+                <span class="act-title">Sans acte</span>
+                <span class="act-meta">{{ @actStats['__none__']['count'] }} ch. &bull; {{ number_format(@actStats['__none__']['wc']) }} mots</span>
+                <div class="act-actions"></div>
+            </div>
+
+            <div class="chapter-drop-zone" data-act-id="">
+                <div class="drop-placeholder"></div>
+                <repeat group="{{ @byAct['__none__'] }}" value="{{ @ch }}">
+                <div class="chapter-card"
+                     data-chapter-id="{{ @ch.id }}"
+                     data-act-id=""
+                     draggable="true">
+                    <i class="fas fa-grip-dots-vertical chapter-card-handle"></i>
+                    <div class="chapter-card-title">{{ @ch.title }}</div>
+                    <div class="chapter-card-wc">{{ number_format(@ch.wc) }} mots</div>
+                    <div class="chapter-card-actions">
+                        <a class="button small" href="{{ @base }}/chapter/{{ @ch.id }}" title="Écrire"><i class="fas fa-pen"></i></a>
+                    </div>
+                </div>
+                </repeat>
+            </div>
+
+        </div>
+        </true>
+        </check>
+
+    </div><!-- /actsList -->
+
+</div><!-- /timeline-page -->
+
+<div class="timeline-toast" id="timelineToast"></div>
+
+<script nonce="{{ @nonce }}">
+(function () {
+    var BASE       = '{{ @base }}';
+    var PID        = {{ @project.id }};
+    var CSRF       = document.querySelector('meta[name="csrf-token"]')?.content || '';
+
+    // ── Utilities ──────────────────────────────────────────────────────────
+    function toast(msg, ok) {
+        var el = document.getElementById('timelineToast');
+        el.textContent = msg;
+        el.style.background = ok === false ? '#b91c1c' : '#1e293b';
+        el.classList.add('show');
+        setTimeout(function () { el.classList.remove('show'); }, 2200);
+    }
+
+    function postJson(url, body) {
+        return fetch(url, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json', 'X-CSRF-Token': CSRF },
+            body: JSON.stringify(body)
+        }).then(function (r) { return r.json(); });
+    }
+
+    // ── Chapter drag-and-drop ──────────────────────────────────────────────
+    var dragCard      = null; // currently dragged card element
+    var dragCardActId = null;
+
+    function getZones() { return document.querySelectorAll('.chapter-drop-zone'); }
+    function getActEls() { return document.querySelectorAll('.timeline-act[data-act-id]'); }
+
+    // Bind chapter card events
+    function bindCard(card) {
+        card.addEventListener('dragstart', function (e) {
+            dragCard      = card;
+            dragCardActId = card.dataset.actId;
+            card.classList.add('dragging-card');
+            e.dataTransfer.effectAllowed = 'move';
+            e.dataTransfer.setData('text/plain', card.dataset.chapterId);
+        });
+        card.addEventListener('dragend', function () {
+            card.classList.remove('dragging-card');
+            document.querySelectorAll('.chapter-drop-zone').forEach(function (z) {
+                z.classList.remove('drag-over');
+            });
+            dragCard = null;
+        });
+    }
+
+    document.querySelectorAll('.chapter-card').forEach(bindCard);
+
+    // Drop zones
+    getZones().forEach(function (zone) {
+        zone.addEventListener('dragover', function (e) {
+            if (!dragCard) return;
+            e.preventDefault();
+            e.dataTransfer.dropEffect = 'move';
+            zone.classList.add('drag-over');
+        });
+        zone.addEventListener('dragleave', function (e) {
+            if (!zone.contains(e.relatedTarget)) {
+                zone.classList.remove('drag-over');
+            }
+        });
+        zone.addEventListener('drop', function (e) {
+            e.preventDefault();
+            zone.classList.remove('drag-over');
+            if (!dragCard) return;
+
+            var targetActId = zone.dataset.actId; // "" = no act
+            var chapterId   = parseInt(dragCard.dataset.chapterId);
+
+            // Determine drop position based on cursor
+            var cards = Array.from(zone.querySelectorAll('.chapter-card:not(.dragging-card)'));
+            var position = cards.length; // default: end
+            for (var i = 0; i < cards.length; i++) {
+                var rect = cards[i].getBoundingClientRect();
+                if (e.clientX < rect.left + rect.width / 2) {
+                    position = i;
+                    break;
+                }
+            }
+
+            // Move card in DOM immediately for responsiveness
+            var placeholder = zone.querySelector('.drop-placeholder');
+            if (placeholder) {
+                if (position < cards.length) {
+                    zone.insertBefore(dragCard, cards[position]);
+                } else {
+                    zone.appendChild(dragCard);
+                }
+            }
+            dragCard.dataset.actId = targetActId;
+
+            // Remove hint if present
+            var hint = zone.querySelector('.zone-hint');
+            if (hint) hint.remove();
+
+            // Persist
+            postJson(BASE + '/project/' + PID + '/timeline/reorder', {
+                chapter_id: chapterId,
+                act_id:     targetActId !== '' ? parseInt(targetActId) : '',
+                position:   position
+            }).then(function (data) {
+                toast(data.status === 'ok' ? 'Ordre sauvegardé' : 'Erreur', data.status === 'ok');
+            }).catch(function () { toast('Erreur réseau', false); });
+        });
+    });
+
+    // ── Act drag-and-drop ──────────────────────────────────────────────────
+    var dragAct = null;
+
+    getActEls().forEach(function (actEl) {
+        var header = actEl.querySelector('.act-header');
+        if (!header || actEl.classList.contains('timeline-act--none')) return;
+
+        header.addEventListener('dragstart', function (e) {
+            // Only fire when dragging the act header (not a chapter card)
+            if (e.target.closest('.chapter-card')) return;
+            dragAct = actEl;
+            actEl.classList.add('dragging-act');
+            e.dataTransfer.effectAllowed = 'move';
+            e.dataTransfer.setData('text/x-act', actEl.dataset.actId);
+            e.stopPropagation();
+        });
+
+        header.addEventListener('dragend', function () {
+            if (dragAct) { dragAct.classList.remove('dragging-act'); }
+            document.querySelectorAll('.timeline-act').forEach(function (a) { a.classList.remove('drag-over-act'); });
+            dragAct = null;
+        });
+
+        actEl.addEventListener('dragover', function (e) {
+            if (!dragAct || dragAct === actEl) return;
+            if (e.dataTransfer.types.includes('text/x-act')) {
+                e.preventDefault();
+                actEl.classList.add('drag-over-act');
+            }
+        });
+
+        actEl.addEventListener('dragleave', function (e) {
+            if (!actEl.contains(e.relatedTarget)) {
+                actEl.classList.remove('drag-over-act');
+            }
+        });
+
+        actEl.addEventListener('drop', function (e) {
+            e.preventDefault();
+            actEl.classList.remove('drag-over-act');
+            if (!dragAct || dragAct === actEl) return;
+            if (!e.dataTransfer.types.includes('text/x-act')) return;
+
+            var list      = document.getElementById('actsList');
+            var actEls    = Array.from(list.querySelectorAll('.timeline-act[data-act-id]:not(.timeline-act--none)'));
+            var targetIdx = actEls.indexOf(actEl);
+
+            // Move in DOM
+            list.insertBefore(dragAct, actEl);
+
+            // Compute new position
+            actEls = Array.from(list.querySelectorAll('.timeline-act[data-act-id]:not(.timeline-act--none)'));
+            var newPos = actEls.indexOf(dragAct);
+
+            postJson(BASE + '/project/' + PID + '/timeline/reorder-acts', {
+                act_id:   parseInt(dragAct.dataset.actId),
+                position: newPos
+            }).then(function (data) {
+                toast(data.status === 'ok' ? 'Actes réorganisés' : 'Erreur', data.status === 'ok');
+            }).catch(function () { toast('Erreur réseau', false); });
+        });
+    });
+
+    // Make act headers draggable (but not chapter-card children)
+    document.querySelectorAll('.act-header').forEach(function (h) {
+        h.setAttribute('draggable', 'true');
+    });
+    // Chapter cards must not propagate act drag events
+    document.querySelectorAll('.chapter-card').forEach(function (card) {
+        card.addEventListener('dragstart', function (e) { e.stopPropagation(); });
+    });
+
+}());
+</script>
+</content>
