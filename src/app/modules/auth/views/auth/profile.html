@@ -215,6 +215,145 @@
 
 </div>
 
+<!-- ── Section Accès rapide ──────────────────────────────────────────────── -->
+
+<div class="profile-container" style="padding-top: 0;">
+
+<div class="profile-card">
+
+    <div class="profile-card-header">
+
+        <h2><i class="fas fa-link"></i> Accès rapide</h2>
+
+        <p>Générez des liens d'auto-login pour accéder rapidement à votre compte</p>
+
+    </div>
+
+    <button id="btn-generate-token" class="button primary">
+        <i class="fas fa-plus"></i> Générer un lien d'auto-login pour votre compte
+    </button>
+
+    <div class="mt-20">
+        <div class="section-divider">Vos liens actifs</div>
+        <div id="token-list" class="mt-10">
+            <p class="mcp-loading"><i class="fas fa-spinner fa-spin"></i> Chargement…</p>
+        </div>
+    </div>
+
+</div>
+
+</div>
+
+<script nonce="{{ @nonce }}">
+(function () {
+    const BASE_AL = '{{ @base }}';
+    const CSRF_AL = '{{ @csrfToken }}';
+
+    async function loadAutoLoginTokens() {
+        const listDiv = document.getElementById('token-list');
+        try {
+            const response = await fetch(BASE_AL + '/auth/tokens');
+            const data = await response.json();
+
+            if (!data.tokens || data.tokens.length === 0) {
+                listDiv.innerHTML = '<p style="color:var(--text-muted);font-size:.9rem;">Aucun lien actif.</p>';
+                return;
+            }
+
+            let html = '<ul class="token-list">';
+            data.tokens.forEach(t => {
+                const tokenValue = t.token ?? '';
+                const hasLink = tokenValue !== '';
+                const encoded = hasLink ? encodeURIComponent(tokenValue) : '';
+                const link = hasLink ? `${window.location.origin}${BASE_AL}/?token=${encoded}` : '';
+                const createdAt = t.created_at ?? '–';
+
+                const tokenInput = hasLink
+                    ? `<input type="text" value="${link}" readonly class="token-input">`
+                    : '<div class="token-input token-input--missing" aria-label="Lien indisponible" tabindex="0">Lien indisponible</div>';
+
+                const copyButton = hasLink
+                    ? `<button type="button" data-link="${link}" class="button token-button js-copy-token">Copier</button>`
+                    : '';
+
+                const revokeButton = `<button type="button" data-id="${t.token_id}" class="button delete token-button js-revoke-token">Supprimer</button>`;
+
+                html += `
+                <li class="token-item">
+                    <div class="token-info">
+                        ${tokenInput}
+                        <div class="token-meta">Créé le ${createdAt}</div>
+                    </div>
+                    <div class="token-actions">
+                        ${copyButton}
+                        ${revokeButton}
+                    </div>
+                </li>`;
+            });
+            html += '</ul>';
+            listDiv.innerHTML = html;
+
+        } catch (e) {
+            listDiv.innerHTML = '<p class="text-error">Erreur de chargement.</p>';
+            console.error(e);
+        }
+    }
+
+    async function generateAutoLoginToken() {
+        const btn = document.getElementById('btn-generate-token');
+        btn.disabled = true;
+        btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Génération…';
+
+        try {
+            const response = await fetch(BASE_AL + '/auth/token/generate', {
+                method: 'POST',
+                headers: { 'X-CSRF-TOKEN': CSRF_AL }
+            });
+            if (!response.ok) throw new Error('Erreur');
+            await loadAutoLoginTokens();
+        } catch (e) {
+            alert('Erreur : ' + e.message);
+        } finally {
+            btn.disabled = false;
+            btn.innerHTML = '<i class="fas fa-plus"></i> Générer un lien d\'auto-login pour votre compte';
+        }
+    }
+
+    async function revokeAutoLoginToken(tokenId) {
+        if (!confirm('Supprimer ce lien ?')) return;
+        try {
+            const response = await fetch(BASE_AL + '/auth/token/revoke', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRF-TOKEN': CSRF_AL
+                },
+                body: JSON.stringify({ token_id: tokenId })
+            });
+            if (!response.ok) throw new Error('Erreur');
+            await loadAutoLoginTokens();
+        } catch (e) {
+            alert('Impossible de supprimer : ' + e.message);
+        }
+    }
+
+    document.getElementById('btn-generate-token').addEventListener('click', generateAutoLoginToken);
+
+    const tokenList = document.getElementById('token-list');
+    tokenList.addEventListener('click', function (e) {
+        if (e.target.matches('.token-input')) { e.target.select(); }
+        if (e.target.matches('.js-copy-token')) {
+            navigator.clipboard.writeText(e.target.dataset.link);
+        }
+        if (e.target.matches('.js-revoke-token')) {
+            revokeAutoLoginToken(e.target.dataset.id);
+        }
+    });
+
+    loadAutoLoginTokens();
+}());
+</script>
+
 <script nonce="{{ @nonce }}">
     (function () {
 
