@@ -32,9 +32,7 @@ class TimelineController extends Controller
 
         // Load top-level chapters grouped by act_id
         $rows = $this->db->exec(
-            'SELECT id, title, act_id, order_index,
-                    COALESCE(wc, 0) as wc,
-                    COALESCE(resume, "") as resume
+            'SELECT id, title, act_id, order_index, content
              FROM chapters
              WHERE project_id = ? AND parent_id IS NULL
              ORDER BY (act_id IS NULL) ASC,
@@ -43,6 +41,14 @@ class TimelineController extends Controller
                       id ASC',
             [$pid]
         );
+
+        // Compute word count in PHP (no wc column in DB)
+        foreach ($rows as &$row) {
+            $clean     = strip_tags(html_entity_decode($row['content'] ?? ''));
+            $row['wc'] = str_word_count($clean);
+            unset($row['content']);
+        }
+        unset($row);
 
         // Group chapters by act_id (null = no act)
         $byAct = ['__none__' => []];
