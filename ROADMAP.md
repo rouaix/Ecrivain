@@ -101,7 +101,7 @@ Suivi des fonctionnalités proposées. Statuts : `[ ]` à faire · `[~]` en cour
 ---
 
 ### 12. Export EPUB
-**Statut** : `[ ]`
+**Statut** : `[x]`
 **Description** : Export EPUB avec couverture, métadonnées, table des matières auto-générée. Complète l'export existant.
 **Fichiers concernés** : `project/controllers/ProjectExportController.php`, lib PHP EPUB (ex : `PHPePub`)
 **Notes** :

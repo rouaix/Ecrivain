@@ -12,7 +12,8 @@
             <button type="button" id="btnGlossary" class="button secondary" title="Lexique du projet">
                 <i class="fas fa-book"></i>&nbsp;Lexique
             </button>
-            <a href="{{ @base }}/chapter/{{ @chapter.id }}/versions" class="button secondary" title="Historique des versions">
+            <a href="{{ @base }}/chapter/{{ @chapter.id }}/versions" class="button secondary"
+                title="Historique des versions">
                 <i class="fas fa-history"></i>
             </a>
             <button type="button" id="btnFocusMode" class="button secondary" title="Mode focus (F11)">
@@ -25,7 +26,8 @@
     </div>
     <div class="editor-top-bar">
         <span id="autosave-indicator" class="autosave-indicator"></span>
-        <div id="sessionGoalWidget" class="session-goal-widget" title="Cliquer pour définir un objectif de session" style="display:none;">
+        <div id="sessionGoalWidget" class="session-goal-widget" title="Cliquer pour définir un objectif de session"
+            style="display:none;">
             <span id="sessionGoalText" class="session-goal-text"></span>
             <div id="sessionGoalTrack" class="session-goal-track" style="display:none;">
                 <div id="sessionGoalFill" class="session-goal-fill"></div>
@@ -214,7 +216,8 @@
         </div>
         <div class="modal-body" style="flex:1; overflow:hidden; display:flex; flex-direction:column;">
             <div class="glossary-modal-search">
-                <input type="text" id="glossarySearch" placeholder="Rechercher un terme…" class="input-full" autocomplete="off">
+                <input type="text" id="glossarySearch" placeholder="Rechercher un terme…" class="input-full"
+                    autocomplete="off">
             </div>
             <div id="glossaryLoading" style="display:none; text-align:center; padding:24px 0;">
                 <i class="fas fa-spinner fa-spin"></i> Chargement…
@@ -223,7 +226,8 @@
             <div id="glossaryList" class="glossary-modal-list" style="flex:1; overflow-y:auto; margin-top:8px;"></div>
         </div>
         <div class="modal-footer" style="padding:12px 20px; border-top:1px solid var(--border); text-align:right;">
-            <a id="glossaryManageLink" href="{{ @base }}/project/{{ @project.id }}/glossary" class="button secondary" style="margin-right:8px;">
+            <a id="glossaryManageLink" href="{{ @base }}/project/{{ @project.id }}/glossary" class="button secondary"
+                style="margin-right:8px;">
                 <i class="fas fa-cog"></i> Gérer
             </a>
             <button type="button" id="closeGlossaryModalBtn" class="button secondary">Fermer</button>
@@ -267,166 +271,579 @@
 </div>
 
 <style>
-.autosave-indicator {
-    display: inline-flex;
-    align-items: center;
-    gap: 6px;
-    font-size: 0.78rem;
-    padding: 4px 12px;
-    border-radius: 20px;
-    transition: background 0.3s, color 0.3s;
-    white-space: nowrap;
-}
-.autosave-indicator:empty { display: none; }
-.autosave-indicator::before {
-    content: '';
-    width: 7px;
-    height: 7px;
-    border-radius: 50%;
-    display: inline-block;
-    flex-shrink: 0;
-}
-.autosave-indicator.dirty  { background: rgba(245,158,11,.12); color: #b07000; }
-.autosave-indicator.dirty::before  { background: #f59e0b; }
-.autosave-indicator.saving { background: rgba(59,130,246,.12);  color: #1d4ed8; }
-.autosave-indicator.saving::before { background: #3b82f6; animation: as-pulse .8s ease-in-out infinite; }
-.autosave-indicator.saved  { background: rgba(34,197,94,.12);   color: #15803d; }
-.autosave-indicator.saved::before  { background: #22c55e; }
-.autosave-indicator.error  { background: rgba(239,68,68,.12);   color: #b91c1c; }
-.autosave-indicator.error::before  { background: #ef4444; }
-@keyframes as-pulse { 0%,100%{opacity:1} 50%{opacity:.25} }
+    .autosave-indicator {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        font-size: 0.78rem;
+        padding: 4px 12px;
+        border-radius: 20px;
+        transition: background 0.3s, color 0.3s;
+        white-space: nowrap;
+    }
 
-/* Editor top bar (autosave + session goal) */
-.editor-top-bar { display: flex; align-items: center; justify-content: flex-start; gap: 12px; margin-bottom: 10px; }
-.session-goal-widget { display: flex; align-items: center; gap: 8px; cursor: pointer; }
-.session-goal-text { font-size: .75rem; color: var(--text-muted, #777); white-space: nowrap; }
-.session-goal-text:empty { display: none; }
-.session-goal-track { width: 80px; height: 5px; background: var(--border-color, #e0e0e0); border-radius: 3px; overflow: hidden; }
-.session-goal-fill { height: 100%; border-radius: 3px; background: var(--link-color, #3f51b5); transition: width .3s; }
-.session-goal-fill.done { background: #22c55e; }
+    .autosave-indicator:empty {
+        display: none;
+    }
 
-/* Focus mode */
-body.focus-mode header,
-body.focus-mode footer,
-body.focus-mode .edit-header,
-body.focus-mode .edit-card > .edit-card-section:not(.focus-content),
-body.focus-mode .edit-actions,
-body.focus-mode .error,
-body.focus-mode .alert-success { display: none !important; }
+    .autosave-indicator::before {
+        content: '';
+        width: 7px;
+        height: 7px;
+        border-radius: 5px;
+        display: inline-block;
+        flex-shrink: 0;
+    }
 
-body.focus-mode { background: #f5f4f0; }
-body.focus-mode main { display: flex; align-items: flex-start; justify-content: center; min-height: 100vh; padding: 60px 20px; }
-body.focus-mode .container { max-width: none; width: 100%; padding: 0; }
-body.focus-mode .edit-page-layout { width: 100%; }
-body.focus-mode .edit-card { background: transparent; border: none; box-shadow: none; max-width: 900px; margin: 0 auto; padding: 0; }
-body.focus-mode .edit-card-section.focus-content { display: block !important; }
-body.focus-mode .form-group label { display: none; }
-body.focus-mode .ql-container { border: none !important; font-size: 1.15rem; line-height: 1.85; }
-body.focus-mode .ql-editor { min-height: 80vh; padding: 20px 0; color: #2d2d2d; caret-color: #3f51b5; }
-body.focus-mode .editor-surface { border: none; box-shadow: none; }
-body.focus-mode .editor-height-300 { height: auto; }
-body.focus-mode .word-count { display: none; }
+    .autosave-indicator.dirty {
+        /*background: rgba(245, 158, 11, .12);*/
+        color: #b07000;
+    }
 
-.focus-exit-btn {
-    display: none;
-    position: fixed; top: 18px; right: 20px; z-index: 9999;
-    background: rgba(60,60,60,.7); border: 1px solid rgba(255,255,255,.15);
-    color: #fff; border-radius: 8px; padding: 7px 14px; gap: 7px;
-    cursor: pointer; font-size: .8rem; backdrop-filter: blur(6px);
-    transition: background .15s; align-items: center;
-}
-.focus-exit-btn:hover { background: rgba(60,60,60,.9); }
-body.focus-mode .focus-exit-btn { display: flex; }
+    .autosave-indicator.dirty::before {
+        background: #f59e0b;
+    }
 
-/* Grammar panel */
-.grammar-header {
-    display: flex; align-items: center; justify-content: space-between; margin-bottom: 8px;
-}
-.grammar-header-actions { display: flex; align-items: center; gap: 10px; }
-.grammar-status { font-size: .78rem; padding: 2px 8px; border-radius: 10px; }
-.grammar-status--checking { background: rgba(59,130,246,.12); color: #1d4ed8; }
-.grammar-status--ok  { background: rgba(34,197,94,.12); color: #15803d; }
-.grammar-status--warn { background: rgba(245,158,11,.12); color: #b07000; }
-.grammar-status--error { background: rgba(239,68,68,.12); color: #b91c1c; }
-.grammar-results { display: flex; flex-direction: column; gap: 8px; margin-top: 8px; }
-.grammar-none { color: var(--text-muted, #777); font-size: .85rem; margin: 0; }
-.grammar-count { color: var(--text-muted, #777); font-size: .82rem; margin: 0 0 4px; }
-.grammar-item {
-    border: 1px solid var(--border-color, #e0e0e0); border-radius: 7px;
-    padding: 10px 12px; background: var(--card-bg, #fff);
-}
-.grammar-item-top { display: flex; flex-wrap: wrap; align-items: baseline; gap: 8px; margin-bottom: 6px; }
-.grammar-word { font-weight: 600; color: #b91c1c; font-size: .88rem; }
-.grammar-msg  { color: var(--text-muted, #666); font-size: .82rem; }
-.grammar-item-actions { display: flex; flex-wrap: wrap; align-items: center; gap: 6px; }
-.grammar-suggestions-label { font-size: .78rem; color: var(--text-muted, #888); }
-.grammar-fix-btn {
-    font-size: .78rem; padding: 2px 8px; border-radius: 4px; cursor: pointer;
-    background: var(--link-color, #3f51b5); color: #fff; border: none;
-}
-.grammar-fix-btn:hover { opacity: .85; }
-.grammar-ignore-btn, .grammar-dict-btn {
-    font-size: .78rem; padding: 2px 8px; border-radius: 4px; cursor: pointer;
-    background: none; border: 1px solid var(--border-color, #ccc);
-    color: var(--text-muted, #666);
-}
-.grammar-ignore-btn:hover, .grammar-dict-btn:hover {
-    background: var(--table-header-bg, #f5f5f5);
-}
-.continuity-hint { font-size: .85rem; color: var(--text-muted,#777); margin: 0 0 12px; }
-.continuity-note { font-size: .82rem; color: var(--text-muted,#888); margin-bottom: 8px; }
-.continuity-error { color: #b91c1c; background: #fef2f2; border-radius: 6px; padding: 8px 12px; font-size: .85rem; }
-.continuity-list { list-style: none; padding: 0; margin: 0; display: flex; flex-direction: column; gap: 10px; }
-.continuity-item { display: flex; align-items: flex-start; gap: 10px; padding: 12px 14px; border: 1px solid var(--border-color,#e0e0e0); border-radius: 8px; background: var(--card-bg,#fff); }
-.continuity-item:hover { border-color: var(--link-color,#3f51b5); }
-.continuity-text { flex: 1; font-size: .9rem; line-height: 1.55; color: var(--text-main,#333); font-style: italic; }
-.continuity-insert-btn { flex-shrink: 0; }
-.resume-label-row {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    flex-wrap: wrap;
-    gap: 8px;
-    margin-bottom: 6px;
-}
-.resume-label-row label { margin-bottom: 0; }
-.summarize-status {
-    margin-top: 6px;
-    font-size: .82rem;
-    padding: 4px 8px;
-    border-radius: 4px;
-}
-.summarize-status--ok  { color: #15803d; background: #f0fdf4; }
-.summarize-status--err { color: #b91c1c; background: #fef2f2; }
-/* Inconsistency modal */
-.inconsistency-clean { display:flex; align-items:center; gap:10px; padding:16px; background:#f0fdf4; border:1px solid #86efac; border-radius:8px; color:#15803d; font-weight:600; }
-.inconsistency-issues { display:flex; flex-direction:column; gap:8px; }
-.inconsistency-issue { padding:10px 14px; background:#fef9ec; border:1px solid #fcd34d; border-radius:8px; font-size:.88rem; line-height:1.55; color:#78350f; }
-.inconsistency-issue::before { content:"⚠ "; }
-.inconsistency-count { font-size:.82rem; color:var(--text-muted,#777); margin-bottom:8px; }
-/* Glossary modal */
-.glossary-modal-search { margin-bottom: 10px; }
-.glossary-modal-list { display: flex; flex-direction: column; gap: 8px; padding-right: 4px; }
-.glossary-modal-entry { padding: 10px 14px; border: 1px solid var(--border-color,#e0e0e0); border-radius: 8px; background: var(--card-bg,#fff); }
-.glossary-modal-entry:hover { border-color: var(--link-color,#3f51b5); }
-.glossary-modal-term { font-weight: 600; font-size: .95rem; display: block; color: var(--text-main,#333); }
-.glossary-modal-def { font-size: .85rem; color: var(--text-muted,#666); margin: 4px 0 0; line-height: 1.5; white-space: pre-wrap; }
-/* Glossary index page */
-.glossary-meta { font-size: .85rem; color: var(--text-muted,#777); margin-bottom: 20px; }
-.glossary-category { margin-bottom: 28px; }
-.glossary-category-title { font-size: 1rem; font-weight: 600; color: var(--text-muted,#555); text-transform: uppercase; letter-spacing: .05em; margin-bottom: 8px; padding-bottom: 4px; border-bottom: 1px solid var(--border,#e0e0e0); }
-.glossary-table .glossary-term { font-weight: 600; white-space: nowrap; }
-.glossary-table .glossary-definition { font-size: .88rem; color: var(--text-muted,#555); }
-/* Glossary project panel */
-.glossary-list { list-style: none; padding: 0; margin: 0 0 8px; display: flex; flex-direction: column; gap: 4px; }
-.glossary-list li { font-size: .88rem; display: flex; flex-direction: column; gap: 1px; }
-.glossary-list-term { font-weight: 600; color: var(--text-main,#333); }
-.glossary-list-def { color: var(--text-muted,#777); font-size: .82rem; }
+    .autosave-indicator.saving {
+        /*background: rgba(59, 130, 246, .12);*/
+        color: #1d4ed8;
+    }
+
+    .autosave-indicator.saving::before {
+        background: #3b82f6;
+        animation: as-pulse .8s ease-in-out infinite;
+    }
+
+    .autosave-indicator.saved {
+        /*background: rgba(34, 197, 94, .12);*/
+        color: #15803d;
+    }
+
+    .autosave-indicator.saved::before {
+        background: #22c55e;
+    }
+
+    .autosave-indicator.error {
+        /*background: rgba(239, 68, 68, .12);*/
+        color: #b91c1c;
+    }
+
+    .autosave-indicator.error::before {
+        background: #ef4444;
+    }
+
+    @keyframes as-pulse {
+
+        0%,
+        100% {
+            opacity: 1
+        }
+
+        50% {
+            opacity: .25
+        }
+    }
+
+    /* Editor top bar (autosave + session goal) */
+    .editor-top-bar {
+        display: flex;
+        align-items: center;
+        justify-content: flex-start;
+        gap: 12px;
+        margin-bottom: 10px;
+    }
+
+    .session-goal-widget {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        cursor: pointer;
+    }
+
+    .session-goal-text {
+        font-size: .75rem;
+        color: var(--text-muted, #777);
+        white-space: nowrap;
+    }
+
+    .session-goal-text:empty {
+        display: none;
+    }
+
+    .session-goal-track {
+        width: 80px;
+        height: 5px;
+        background: var(--border-color, #e0e0e0);
+        border-radius: 3px;
+        overflow: hidden;
+    }
+
+    .session-goal-fill {
+        height: 100%;
+        border-radius: 3px;
+        background: var(--link-color, #3f51b5);
+        transition: width .3s;
+    }
+
+    .session-goal-fill.done {
+        background: #22c55e;
+    }
+
+    /* Focus mode */
+    body.focus-mode header,
+    body.focus-mode footer,
+    body.focus-mode .edit-header,
+    body.focus-mode .edit-card>.edit-card-section:not(.focus-content),
+    body.focus-mode .edit-actions,
+    body.focus-mode .error,
+    body.focus-mode .alert-success {
+        display: none !important;
+    }
+
+    body.focus-mode {
+        background: #f5f4f0;
+    }
+
+    body.focus-mode main {
+        display: flex;
+        align-items: flex-start;
+        justify-content: center;
+        min-height: 100vh;
+        padding: 60px 20px;
+    }
+
+    body.focus-mode .container {
+        max-width: none;
+        width: 100%;
+        padding: 0;
+    }
+
+    body.focus-mode .edit-page-layout {
+        width: 100%;
+    }
+
+    body.focus-mode .edit-card {
+        background: transparent;
+        border: none;
+        box-shadow: none;
+        max-width: 900px;
+        margin: 0 auto;
+        padding: 0;
+    }
+
+    body.focus-mode .edit-card-section.focus-content {
+        display: block !important;
+    }
+
+    body.focus-mode .form-group label {
+        display: none;
+    }
+
+    body.focus-mode .ql-container {
+        border: none !important;
+        font-size: 1.15rem;
+        line-height: 1.85;
+    }
+
+    body.focus-mode .ql-editor {
+        min-height: 80vh;
+        padding: 20px 0;
+        color: #2d2d2d;
+        caret-color: #3f51b5;
+    }
+
+    body.focus-mode .editor-surface {
+        border: none;
+        box-shadow: none;
+    }
+
+    body.focus-mode .editor-height-300 {
+        height: auto;
+    }
+
+    body.focus-mode .word-count {
+        display: none;
+    }
+
+    .focus-exit-btn {
+        display: none;
+        position: fixed;
+        top: 18px;
+        right: 20px;
+        z-index: 9999;
+        background: rgba(60, 60, 60, .7);
+        border: 1px solid rgba(255, 255, 255, .15);
+        color: #fff;
+        border-radius: 8px;
+        padding: 7px 14px;
+        gap: 7px;
+        cursor: pointer;
+        font-size: .8rem;
+        backdrop-filter: blur(6px);
+        transition: background .15s;
+        align-items: center;
+    }
+
+    .focus-exit-btn:hover {
+        background: rgba(60, 60, 60, .9);
+    }
+
+    body.focus-mode .focus-exit-btn {
+        display: flex;
+    }
+
+    /* Grammar panel */
+    .grammar-header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        margin-bottom: 8px;
+    }
+
+    .grammar-header-actions {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+    }
+
+    .grammar-status {
+        font-size: .78rem;
+        padding: 2px 8px;
+        border-radius: 10px;
+    }
+
+    .grammar-status--checking {
+        background: rgba(59, 130, 246, .12);
+        color: #1d4ed8;
+    }
+
+    .grammar-status--ok {
+        background: rgba(34, 197, 94, .12);
+        color: #15803d;
+    }
+
+    .grammar-status--warn {
+        background: rgba(245, 158, 11, .12);
+        color: #b07000;
+    }
+
+    .grammar-status--error {
+        background: rgba(239, 68, 68, .12);
+        color: #b91c1c;
+    }
+
+    .grammar-results {
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+        margin-top: 8px;
+    }
+
+    .grammar-none {
+        color: var(--text-muted, #777);
+        font-size: .85rem;
+        margin: 0;
+    }
+
+    .grammar-count {
+        color: var(--text-muted, #777);
+        font-size: .82rem;
+        margin: 0 0 4px;
+    }
+
+    .grammar-item {
+        border: 1px solid var(--border-color, #e0e0e0);
+        border-radius: 7px;
+        padding: 10px 12px;
+        background: var(--card-bg, #fff);
+    }
+
+    .grammar-item-top {
+        display: flex;
+        flex-wrap: wrap;
+        align-items: baseline;
+        gap: 8px;
+        margin-bottom: 6px;
+    }
+
+    .grammar-word {
+        font-weight: 600;
+        color: #b91c1c;
+        font-size: .88rem;
+    }
+
+    .grammar-msg {
+        color: var(--text-muted, #666);
+        font-size: .82rem;
+    }
+
+    .grammar-item-actions {
+        display: flex;
+        flex-wrap: wrap;
+        align-items: center;
+        gap: 6px;
+    }
+
+    .grammar-suggestions-label {
+        font-size: .78rem;
+        color: var(--text-muted, #888);
+    }
+
+    .grammar-fix-btn {
+        font-size: .78rem;
+        padding: 2px 8px;
+        border-radius: 4px;
+        cursor: pointer;
+        background: var(--link-color, #3f51b5);
+        color: #fff;
+        border: none;
+    }
+
+    .grammar-fix-btn:hover {
+        opacity: .85;
+    }
+
+    .grammar-ignore-btn,
+    .grammar-dict-btn {
+        font-size: .78rem;
+        padding: 2px 8px;
+        border-radius: 4px;
+        cursor: pointer;
+        background: none;
+        border: 1px solid var(--border-color, #ccc);
+        color: var(--text-muted, #666);
+    }
+
+    .grammar-ignore-btn:hover,
+    .grammar-dict-btn:hover {
+        background: var(--table-header-bg, #f5f5f5);
+    }
+
+    .continuity-hint {
+        font-size: .85rem;
+        color: var(--text-muted, #777);
+        margin: 0 0 12px;
+    }
+
+    .continuity-note {
+        font-size: .82rem;
+        color: var(--text-muted, #888);
+        margin-bottom: 8px;
+    }
+
+    .continuity-error {
+        color: #b91c1c;
+        background: #fef2f2;
+        border-radius: 6px;
+        padding: 8px 12px;
+        font-size: .85rem;
+    }
+
+    .continuity-list {
+        list-style: none;
+        padding: 0;
+        margin: 0;
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+    }
+
+    .continuity-item {
+        display: flex;
+        align-items: flex-start;
+        gap: 10px;
+        padding: 12px 14px;
+        border: 1px solid var(--border-color, #e0e0e0);
+        border-radius: 8px;
+        background: var(--card-bg, #fff);
+    }
+
+    .continuity-item:hover {
+        border-color: var(--link-color, #3f51b5);
+    }
+
+    .continuity-text {
+        flex: 1;
+        font-size: .9rem;
+        line-height: 1.55;
+        color: var(--text-main, #333);
+        font-style: italic;
+    }
+
+    .continuity-insert-btn {
+        flex-shrink: 0;
+    }
+
+    .resume-label-row {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        flex-wrap: wrap;
+        gap: 8px;
+        margin-bottom: 6px;
+    }
+
+    .resume-label-row label {
+        margin-bottom: 0;
+    }
+
+    .summarize-status {
+        margin-top: 6px;
+        font-size: .82rem;
+        padding: 4px 8px;
+        border-radius: 4px;
+    }
+
+    .summarize-status--ok {
+        color: #15803d;
+        background: #f0fdf4;
+    }
+
+    .summarize-status--err {
+        color: #b91c1c;
+        background: #fef2f2;
+    }
+
+    /* Inconsistency modal */
+    .inconsistency-clean {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        padding: 16px;
+        background: #f0fdf4;
+        border: 1px solid #86efac;
+        border-radius: 8px;
+        color: #15803d;
+        font-weight: 600;
+    }
+
+    .inconsistency-issues {
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+    }
+
+    .inconsistency-issue {
+        padding: 10px 14px;
+        background: #fef9ec;
+        border: 1px solid #fcd34d;
+        border-radius: 8px;
+        font-size: .88rem;
+        line-height: 1.55;
+        color: #78350f;
+    }
+
+    .inconsistency-issue::before {
+        content: "⚠ ";
+    }
+
+    .inconsistency-count {
+        font-size: .82rem;
+        color: var(--text-muted, #777);
+        margin-bottom: 8px;
+    }
+
+    /* Glossary modal */
+    .glossary-modal-search {
+        margin-bottom: 10px;
+    }
+
+    .glossary-modal-list {
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+        padding-right: 4px;
+    }
+
+    .glossary-modal-entry {
+        padding: 10px 14px;
+        border: 1px solid var(--border-color, #e0e0e0);
+        border-radius: 8px;
+        background: var(--card-bg, #fff);
+    }
+
+    .glossary-modal-entry:hover {
+        border-color: var(--link-color, #3f51b5);
+    }
+
+    .glossary-modal-term {
+        font-weight: 600;
+        font-size: .95rem;
+        display: block;
+        color: var(--text-main, #333);
+    }
+
+    .glossary-modal-def {
+        font-size: .85rem;
+        color: var(--text-muted, #666);
+        margin: 4px 0 0;
+        line-height: 1.5;
+        white-space: pre-wrap;
+    }
+
+    /* Glossary index page */
+    .glossary-meta {
+        font-size: .85rem;
+        color: var(--text-muted, #777);
+        margin-bottom: 20px;
+    }
+
+    .glossary-category {
+        margin-bottom: 28px;
+    }
+
+    .glossary-category-title {
+        font-size: 1rem;
+        font-weight: 600;
+        color: var(--text-muted, #555);
+        text-transform: uppercase;
+        letter-spacing: .05em;
+        margin-bottom: 8px;
+        padding-bottom: 4px;
+        border-bottom: 1px solid var(--border, #e0e0e0);
+    }
+
+    .glossary-table .glossary-term {
+        font-weight: 600;
+        white-space: nowrap;
+    }
+
+    .glossary-table .glossary-definition {
+        font-size: .88rem;
+        color: var(--text-muted, #555);
+    }
+
+    /* Glossary project panel */
+    .glossary-list {
+        list-style: none;
+        padding: 0;
+        margin: 0 0 8px;
+        display: flex;
+        flex-direction: column;
+        gap: 4px;
+    }
+
+    .glossary-list li {
+        font-size: .88rem;
+        display: flex;
+        flex-direction: column;
+        gap: 1px;
+    }
+
+    .glossary-list-term {
+        font-weight: 600;
+        color: var(--text-main, #333);
+    }
+
+    .glossary-list-def {
+        color: var(--text-muted, #777);
+        font-size: .82rem;
+    }
 </style>
 
 <script nonce="{{ @nonce }}">
     // ─── Auto-save ────────────────────────────────────────────────────────────
-    var _asDirty  = false;
+    var _asDirty = false;
     var _asSaving = false;
     var _lastSavedTime = null;
 
@@ -629,39 +1046,39 @@ body.focus-mode .focus-exit-btn { display: flex; }
                     },
                     body: JSON.stringify({ chapter_id: parseInt(chapterId) })
                 })
-                .then(function (r) { return r.json(); })
-                .then(function (data) {
-                    if (data.success && resumeQuill) {
-                        resumeQuill.clipboard.dangerouslyPasteHTML(data.summary);
-                        document.querySelector('input[name="resume"]').value = data.summary;
-                        statusEl.className = 'summarize-status summarize-status--ok';
-                        statusEl.textContent = 'Résumé généré. N\'oubliez pas d\'enregistrer.';
-                    } else {
+                    .then(function (r) { return r.json(); })
+                    .then(function (data) {
+                        if (data.success && resumeQuill) {
+                            resumeQuill.clipboard.dangerouslyPasteHTML(data.summary);
+                            document.querySelector('input[name="resume"]').value = data.summary;
+                            statusEl.className = 'summarize-status summarize-status--ok';
+                            statusEl.textContent = 'Résumé généré. N\'oubliez pas d\'enregistrer.';
+                        } else {
+                            statusEl.className = 'summarize-status summarize-status--err';
+                            statusEl.textContent = 'Erreur : ' + (data.error || 'inconnue');
+                        }
+                        statusEl.style.display = 'block';
+                    })
+                    .catch(function (e) {
                         statusEl.className = 'summarize-status summarize-status--err';
-                        statusEl.textContent = 'Erreur : ' + (data.error || 'inconnue');
-                    }
-                    statusEl.style.display = 'block';
-                })
-                .catch(function (e) {
-                    statusEl.className = 'summarize-status summarize-status--err';
-                    statusEl.textContent = 'Erreur réseau : ' + e.message;
-                    statusEl.style.display = 'block';
-                })
-                .finally(function () {
-                    btnSummarizeAI.disabled = false;
-                    btnSummarizeAI.innerHTML = '<i class="fas fa-robot"></i> Résumer avec l\'IA';
-                });
+                        statusEl.textContent = 'Erreur réseau : ' + e.message;
+                        statusEl.style.display = 'block';
+                    })
+                    .finally(function () {
+                        btnSummarizeAI.disabled = false;
+                        btnSummarizeAI.innerHTML = '<i class="fas fa-robot"></i> Résumer avec l\'IA';
+                    });
             });
         }
 
         // Continuity suggestions
         (function () {
-            var btn       = document.getElementById('btnContinuity');
-            var modal     = document.getElementById('continuityModal');
-            var closeBtn  = document.getElementById('closeContinuityModal');
-            var loading   = document.getElementById('continuityLoading');
-            var errEl     = document.getElementById('continuityError');
-            var list      = document.getElementById('continuityList');
+            var btn = document.getElementById('btnContinuity');
+            var modal = document.getElementById('continuityModal');
+            var closeBtn = document.getElementById('closeContinuityModal');
+            var loading = document.getElementById('continuityLoading');
+            var errEl = document.getElementById('continuityError');
+            var list = document.getElementById('continuityList');
 
             if (!btn || !modal) return;
 
@@ -685,68 +1102,68 @@ body.focus-mode .focus-exit-btn { display: flex; }
                     headers: { 'Content-Type': 'application/json', 'X-CSRF-Token': window.CSRF_TOKEN },
                     body: JSON.stringify({ chapter_id: parseInt(chapterId) })
                 })
-                .then(function (r) { return r.json(); })
-                .then(function (data) {
-                    loading.style.display = 'none';
-                    if (!data.success) {
-                        errEl.textContent = data.error || 'Erreur inconnue.';
-                        errEl.style.display = 'block';
-                        return;
-                    }
-                    if (!data.suggestions || !data.suggestions.length) {
-                        errEl.textContent = 'Aucune suggestion retournée.';
-                        errEl.style.display = 'block';
-                        return;
-                    }
-                    if (!data.has_previous) {
-                        var note = document.createElement('p');
-                        note.className = 'continuity-note';
-                        note.innerHTML = '<i class="fas fa-info-circle"></i> Aucun chapitre précédent — suggestions basées sur le titre uniquement.';
-                        list.appendChild(note);
-                    }
-                    data.suggestions.forEach(function (text) {
-                        var li = document.createElement('li');
-                        li.className = 'continuity-item';
-                        li.innerHTML =
-                            '<span class="continuity-text">' + escHtml(text) + '</span>' +
-                            '<button type="button" class="button secondary small continuity-insert-btn">Insérer</button>';
-                        li.querySelector('.continuity-insert-btn').addEventListener('click', function () {
-                            // Insert at beginning of main Quill editor
-                            var q = QuillTools.quill;
-                            if (!q) return;
-                            q.insertText(0, text + '\n', 'user');
-                            q.setSelection(0, 0);
-                            closeModal();
+                    .then(function (r) { return r.json(); })
+                    .then(function (data) {
+                        loading.style.display = 'none';
+                        if (!data.success) {
+                            errEl.textContent = data.error || 'Erreur inconnue.';
+                            errEl.style.display = 'block';
+                            return;
+                        }
+                        if (!data.suggestions || !data.suggestions.length) {
+                            errEl.textContent = 'Aucune suggestion retournée.';
+                            errEl.style.display = 'block';
+                            return;
+                        }
+                        if (!data.has_previous) {
+                            var note = document.createElement('p');
+                            note.className = 'continuity-note';
+                            note.innerHTML = '<i class="fas fa-info-circle"></i> Aucun chapitre précédent — suggestions basées sur le titre uniquement.';
+                            list.appendChild(note);
+                        }
+                        data.suggestions.forEach(function (text) {
+                            var li = document.createElement('li');
+                            li.className = 'continuity-item';
+                            li.innerHTML =
+                                '<span class="continuity-text">' + escHtml(text) + '</span>' +
+                                '<button type="button" class="button secondary small continuity-insert-btn">Insérer</button>';
+                            li.querySelector('.continuity-insert-btn').addEventListener('click', function () {
+                                // Insert at beginning of main Quill editor
+                                var q = QuillTools.quill;
+                                if (!q) return;
+                                q.insertText(0, text + '\n', 'user');
+                                q.setSelection(0, 0);
+                                closeModal();
+                            });
+                            list.appendChild(li);
                         });
-                        list.appendChild(li);
+                    })
+                    .catch(function (e) {
+                        loading.style.display = 'none';
+                        errEl.textContent = 'Erreur réseau : ' + e.message;
+                        errEl.style.display = 'block';
                     });
-                })
-                .catch(function (e) {
-                    loading.style.display = 'none';
-                    errEl.textContent = 'Erreur réseau : ' + e.message;
-                    errEl.style.display = 'block';
-                });
             });
 
             function escHtml(s) {
-                return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+                return String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
             }
         }());
 
         // Inconsistency detection
         (function () {
-            var btn      = document.getElementById('btnInconsistency');
-            var modal    = document.getElementById('inconsistencyModal');
+            var btn = document.getElementById('btnInconsistency');
+            var modal = document.getElementById('inconsistencyModal');
             var closeBtn = document.getElementById('closeInconsistencyModal');
-            var closeFt  = document.getElementById('closeInconsistencyModalBtn');
-            var loading  = document.getElementById('inconsistencyLoading');
-            var result   = document.getElementById('inconsistencyResult');
+            var closeFt = document.getElementById('closeInconsistencyModalBtn');
+            var loading = document.getElementById('inconsistencyLoading');
+            var result = document.getElementById('inconsistencyResult');
 
-            function openModal()  { modal.style.display = 'flex'; }
+            function openModal() { modal.style.display = 'flex'; }
             function closeModal() { modal.style.display = 'none'; }
 
             function escHtml(s) {
-                return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+                return String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
             }
 
             if (btn) {
@@ -760,55 +1177,55 @@ body.focus-mode .focus-exit-btn { display: flex; }
                         headers: { 'Content-Type': 'application/json', 'X-CSRF-Token': window.CSRF_TOKEN },
                         body: JSON.stringify({ chapter_id: parseInt(chapterId) })
                     })
-                    .then(function (r) { return r.json(); })
-                    .then(function (data) {
-                        loading.style.display = 'none';
-                        result.style.display = 'block';
+                        .then(function (r) { return r.json(); })
+                        .then(function (data) {
+                            loading.style.display = 'none';
+                            result.style.display = 'block';
 
-                        if (!data.success) {
-                            result.innerHTML = '<div class="continuity-error">' + escHtml(data.error || 'Erreur inconnue') + '</div>';
-                            return;
-                        }
+                            if (!data.success) {
+                                result.innerHTML = '<div class="continuity-error">' + escHtml(data.error || 'Erreur inconnue') + '</div>';
+                                return;
+                            }
 
-                        if (data.clean) {
-                            result.innerHTML = '<div class="inconsistency-clean"><i class="fas fa-check-circle fa-lg"></i> Aucune incohérence détectée — le chapitre est cohérent avec les fiches personnages.</div>';
-                        } else {
-                            var html = '<p class="inconsistency-count">' + data.issues.length + ' incohérence(s) détectée(s)</p>';
-                            html += '<div class="inconsistency-issues">';
-                            data.issues.forEach(function (issue) {
-                                html += '<div class="inconsistency-issue">' + escHtml(issue) + '</div>';
-                            });
-                            html += '</div>';
-                            result.innerHTML = html;
-                        }
-                    })
-                    .catch(function (e) {
-                        loading.style.display = 'none';
-                        result.style.display = 'block';
-                        result.innerHTML = '<div class="continuity-error">Erreur réseau : ' + escHtml(e.message) + '</div>';
-                    });
+                            if (data.clean) {
+                                result.innerHTML = '<div class="inconsistency-clean"><i class="fas fa-check-circle fa-lg"></i> Aucune incohérence détectée — le chapitre est cohérent avec les fiches personnages.</div>';
+                            } else {
+                                var html = '<p class="inconsistency-count">' + data.issues.length + ' incohérence(s) détectée(s)</p>';
+                                html += '<div class="inconsistency-issues">';
+                                data.issues.forEach(function (issue) {
+                                    html += '<div class="inconsistency-issue">' + escHtml(issue) + '</div>';
+                                });
+                                html += '</div>';
+                                result.innerHTML = html;
+                            }
+                        })
+                        .catch(function (e) {
+                            loading.style.display = 'none';
+                            result.style.display = 'block';
+                            result.innerHTML = '<div class="continuity-error">Erreur réseau : ' + escHtml(e.message) + '</div>';
+                        });
                 });
             }
 
             if (closeBtn) closeBtn.addEventListener('click', closeModal);
-            if (closeFt)  closeFt.addEventListener('click', closeModal);
+            if (closeFt) closeFt.addEventListener('click', closeModal);
             modal.addEventListener('click', function (e) { if (e.target === modal) closeModal(); });
         }());
 
         // Glossary modal
         (function () {
-            var btn        = document.getElementById('btnGlossary');
-            var modal      = document.getElementById('glossaryModal');
-            var closeBtn   = document.getElementById('closeGlossaryModal');
+            var btn = document.getElementById('btnGlossary');
+            var modal = document.getElementById('glossaryModal');
+            var closeBtn = document.getElementById('closeGlossaryModal');
             var closeBtnFt = document.getElementById('closeGlossaryModalBtn');
-            var searchEl   = document.getElementById('glossarySearch');
-            var loading    = document.getElementById('glossaryLoading');
-            var emptyEl    = document.getElementById('glossaryEmpty');
-            var listEl     = document.getElementById('glossaryList');
-            var terms      = null; // cached
+            var searchEl = document.getElementById('glossarySearch');
+            var loading = document.getElementById('glossaryLoading');
+            var emptyEl = document.getElementById('glossaryEmpty');
+            var listEl = document.getElementById('glossaryList');
+            var terms = null; // cached
 
             function escHtml(s) {
-                return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+                return String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
             }
 
             function renderTerms(filter) {
@@ -845,20 +1262,20 @@ body.focus-mode .focus-exit-btn { display: flex; }
                     fetch('{{ @base }}/project/{{ @project.id }}/glossary/terms', {
                         headers: { 'X-CSRF-Token': window.CSRF_TOKEN }
                     })
-                    .then(function (r) { return r.json(); })
-                    .then(function (data) {
-                        loading.style.display = 'none';
-                        terms = data;
-                        renderTerms('');
-                    })
-                    .catch(function () {
-                        loading.style.display = 'none';
-                        listEl.innerHTML = '<p class="continuity-error">Erreur lors du chargement.</p>';
-                    });
+                        .then(function (r) { return r.json(); })
+                        .then(function (data) {
+                            loading.style.display = 'none';
+                            terms = data;
+                            renderTerms('');
+                        })
+                        .catch(function () {
+                            loading.style.display = 'none';
+                            listEl.innerHTML = '<p class="continuity-error">Erreur lors du chargement.</p>';
+                        });
                 });
             }
 
-            if (closeBtn)   closeBtn.addEventListener('click', closeModal);
+            if (closeBtn) closeBtn.addEventListener('click', closeModal);
             if (closeBtnFt) closeBtnFt.addEventListener('click', closeModal);
             modal.addEventListener('click', function (e) { if (e.target === modal) closeModal(); });
             searchEl.addEventListener('input', function () { if (terms) renderTerms(this.value); });
@@ -1105,7 +1522,7 @@ body.focus-mode .focus-exit-btn { display: flex; }
                 e.returnValue = '';
             }
             // Remove all event listeners from secondary Quill instances to free memory
-            if (resumeQuill)  { resumeQuill.off('text-change');  resumeQuill.off('selection-change');  }
+            if (resumeQuill) { resumeQuill.off('text-change'); resumeQuill.off('selection-change'); }
             if (typeof commentQuill !== 'undefined' && commentQuill) {
                 commentQuill.off('text-change');
                 commentQuill.off('selection-change');
@@ -1142,217 +1559,217 @@ body.focus-mode .focus-exit-btn { display: flex; }
 <script id="grammarIgnoredWords" type="application/json">{{ @ignoredWords | raw }}</script>
 
 <script nonce="{{ @nonce }}">
-(function () {
-    var grammarBtn     = document.getElementById('btnGrammarCheck');
-    var grammarStatus  = document.getElementById('grammarStatus');
-    var grammarResults = document.getElementById('grammarResults');
-    var projectId      = '{{ @project.id }}';
-    var baseUrl        = '{{ @base }}';
+    (function () {
+        var grammarBtn = document.getElementById('btnGrammarCheck');
+        var grammarStatus = document.getElementById('grammarStatus');
+        var grammarResults = document.getElementById('grammarResults');
+        var projectId = '{{ @project.id }}';
+        var baseUrl = '{{ @base }}';
 
-    var ignoredWords = [];
-    try {
-        ignoredWords = JSON.parse(document.getElementById('grammarIgnoredWords').textContent || '[]');
-    } catch (e) {}
+        var ignoredWords = [];
+        try {
+            ignoredWords = JSON.parse(document.getElementById('grammarIgnoredWords').textContent || '[]');
+        } catch (e) { }
 
-    function setGrammarStatus(msg, cls) {
-        if (!grammarStatus) return;
-        grammarStatus.textContent = msg;
-        grammarStatus.className = 'grammar-status' + (cls ? ' grammar-status--' + cls : '');
-    }
-
-    function renderGrammarResults(matches) {
-        if (!grammarResults) return;
-        if (matches.length === 0) {
-            grammarResults.innerHTML = '<p class="grammar-none">Aucun problème détecté.</p>';
-            return;
+        function setGrammarStatus(msg, cls) {
+            if (!grammarStatus) return;
+            grammarStatus.textContent = msg;
+            grammarStatus.className = 'grammar-status' + (cls ? ' grammar-status--' + cls : '');
         }
-        var html = '<p class="grammar-count">' + matches.length + ' problème(s) détecté(s)</p>';
-        matches.forEach(function (m, idx) {
-            var word = (QuillTools && QuillTools.quill) ? QuillTools.quill.getText(m.offset, m.length) : '';
-            var wordEsc = word.replace(/</g, '&lt;').replace(/"/g, '&quot;');
-            var suggestions = (m.replacements || []).slice(0, 4).map(function (r) {
-                var vEsc = r.value.replace(/"/g, '&quot;').replace(/</g, '&lt;');
-                return '<button type="button" class="grammar-fix-btn"'
-                    + ' data-offset="' + m.offset + '" data-length="' + m.length + '" data-value="' + vEsc + '">'
-                    + vEsc + '</button>';
-            }).join('');
-            html += '<div class="grammar-item">'
-                + '<div class="grammar-item-top">'
-                + '<span class="grammar-word">' + wordEsc + '</span>'
-                + '<span class="grammar-msg">' + m.message.replace(/</g, '&lt;') + '</span>'
-                + '</div>'
-                + '<div class="grammar-item-actions">'
-                + (suggestions ? '<span class="grammar-suggestions-label">Suggestions\u00a0:</span> ' + suggestions : '')
-                + '<button type="button" class="grammar-ignore-btn" data-word="' + wordEsc + '">Ignorer</button>'
-                + '<button type="button" class="grammar-dict-btn" data-word="' + wordEsc + '">+ Dictionnaire</button>'
-                + '</div></div>';
-        });
-        grammarResults.innerHTML = html;
 
-        grammarResults.querySelectorAll('.grammar-fix-btn').forEach(function (btn) {
-            btn.addEventListener('click', function () {
-                if (QuillTools && QuillTools.quill) {
-                    QuillTools.applyGrammarFix(parseInt(btn.dataset.offset), parseInt(btn.dataset.length), btn.dataset.value);
-                }
-                btn.closest('.grammar-item').remove();
+        function renderGrammarResults(matches) {
+            if (!grammarResults) return;
+            if (matches.length === 0) {
+                grammarResults.innerHTML = '<p class="grammar-none">Aucun problème détecté.</p>';
+                return;
+            }
+            var html = '<p class="grammar-count">' + matches.length + ' problème(s) détecté(s)</p>';
+            matches.forEach(function (m, idx) {
+                var word = (QuillTools && QuillTools.quill) ? QuillTools.quill.getText(m.offset, m.length) : '';
+                var wordEsc = word.replace(/</g, '&lt;').replace(/"/g, '&quot;');
+                var suggestions = (m.replacements || []).slice(0, 4).map(function (r) {
+                    var vEsc = r.value.replace(/"/g, '&quot;').replace(/</g, '&lt;');
+                    return '<button type="button" class="grammar-fix-btn"'
+                        + ' data-offset="' + m.offset + '" data-length="' + m.length + '" data-value="' + vEsc + '">'
+                        + vEsc + '</button>';
+                }).join('');
+                html += '<div class="grammar-item">'
+                    + '<div class="grammar-item-top">'
+                    + '<span class="grammar-word">' + wordEsc + '</span>'
+                    + '<span class="grammar-msg">' + m.message.replace(/</g, '&lt;') + '</span>'
+                    + '</div>'
+                    + '<div class="grammar-item-actions">'
+                    + (suggestions ? '<span class="grammar-suggestions-label">Suggestions\u00a0:</span> ' + suggestions : '')
+                    + '<button type="button" class="grammar-ignore-btn" data-word="' + wordEsc + '">Ignorer</button>'
+                    + '<button type="button" class="grammar-dict-btn" data-word="' + wordEsc + '">+ Dictionnaire</button>'
+                    + '</div></div>';
             });
-        });
+            grammarResults.innerHTML = html;
 
-        grammarResults.querySelectorAll('.grammar-ignore-btn').forEach(function (btn) {
-            btn.addEventListener('click', function () {
-                ignoredWords.push(btn.dataset.word);
-                btn.closest('.grammar-item').remove();
-            });
-        });
-
-        grammarResults.querySelectorAll('.grammar-dict-btn').forEach(function (btn) {
-            btn.addEventListener('click', function () {
-                var word = btn.dataset.word;
-                fetch(baseUrl + '/project/' + projectId + '/dictionary/add', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json', 'X-CSRF-Token': window.CSRF_TOKEN },
-                    body: JSON.stringify({ word: word })
-                }).then(function (r) { return r.json(); }).then(function (data) {
-                    if (data.words) ignoredWords = data.words;
+            grammarResults.querySelectorAll('.grammar-fix-btn').forEach(function (btn) {
+                btn.addEventListener('click', function () {
+                    if (QuillTools && QuillTools.quill) {
+                        QuillTools.applyGrammarFix(parseInt(btn.dataset.offset), parseInt(btn.dataset.length), btn.dataset.value);
+                    }
                     btn.closest('.grammar-item').remove();
                 });
             });
-        });
-    }
 
-    if (grammarBtn) {
-        grammarBtn.addEventListener('click', function () {
-            grammarBtn.disabled = true;
-            setGrammarStatus('Vérification en cours\u2026', 'checking');
-            grammarResults.innerHTML = '';
-            if (!QuillTools || !QuillTools.quill) {
-                setGrammarStatus('Éditeur non initialisé', 'error');
-                grammarBtn.disabled = false;
-                return;
-            }
-            QuillTools.checkGrammar(ignoredWords, function (matches, err) {
-                grammarBtn.disabled = false;
-                if (err) {
-                    setGrammarStatus('Erreur de connexion', 'error');
+            grammarResults.querySelectorAll('.grammar-ignore-btn').forEach(function (btn) {
+                btn.addEventListener('click', function () {
+                    ignoredWords.push(btn.dataset.word);
+                    btn.closest('.grammar-item').remove();
+                });
+            });
+
+            grammarResults.querySelectorAll('.grammar-dict-btn').forEach(function (btn) {
+                btn.addEventListener('click', function () {
+                    var word = btn.dataset.word;
+                    fetch(baseUrl + '/project/' + projectId + '/dictionary/add', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json', 'X-CSRF-Token': window.CSRF_TOKEN },
+                        body: JSON.stringify({ word: word })
+                    }).then(function (r) { return r.json(); }).then(function (data) {
+                        if (data.words) ignoredWords = data.words;
+                        btn.closest('.grammar-item').remove();
+                    });
+                });
+            });
+        }
+
+        if (grammarBtn) {
+            grammarBtn.addEventListener('click', function () {
+                grammarBtn.disabled = true;
+                setGrammarStatus('Vérification en cours\u2026', 'checking');
+                grammarResults.innerHTML = '';
+                if (!QuillTools || !QuillTools.quill) {
+                    setGrammarStatus('Éditeur non initialisé', 'error');
+                    grammarBtn.disabled = false;
                     return;
                 }
-                setGrammarStatus(matches.length > 0 ? matches.length + ' problème(s)' : 'OK', matches.length > 0 ? 'warn' : 'ok');
-                renderGrammarResults(matches);
+                QuillTools.checkGrammar(ignoredWords, function (matches, err) {
+                    grammarBtn.disabled = false;
+                    if (err) {
+                        setGrammarStatus('Erreur de connexion', 'error');
+                        return;
+                    }
+                    setGrammarStatus(matches.length > 0 ? matches.length + ' problème(s)' : 'OK', matches.length > 0 ? 'warn' : 'ok');
+                    renderGrammarResults(matches);
+                });
             });
-        });
-    }
-}());
+        }
+    }());
 </script>
 
 <script nonce="{{ @nonce }}">
-(function () {
-    var FOCUS_CLASS = 'focus-mode';
+    (function () {
+        var FOCUS_CLASS = 'focus-mode';
 
-    function enterFocus() {
-        document.body.classList.add(FOCUS_CLASS);
-        document.getElementById('btnFocusMode').innerHTML = '<i class="fas fa-compress"></i>';
-        document.getElementById('btnFocusMode').title = 'Quitter le mode focus (Échap)';
-        if (typeof QuillTools !== 'undefined' && QuillTools.quill) {
-            QuillTools.quill.focus();
-        }
-    }
-
-    function exitFocus() {
-        document.body.classList.remove(FOCUS_CLASS);
-        document.getElementById('btnFocusMode').innerHTML = '<i class="fas fa-expand"></i>';
-        document.getElementById('btnFocusMode').title = 'Mode focus (F11)';
-    }
-
-    function toggleFocus() {
-        document.body.classList.contains(FOCUS_CLASS) ? exitFocus() : enterFocus();
-    }
-
-    var btn = document.getElementById('btnFocusMode');
-    if (btn) btn.addEventListener('click', toggleFocus);
-
-    var exitBtn = document.getElementById('focusExitBtn');
-    if (exitBtn) exitBtn.addEventListener('click', exitFocus);
-
-    document.addEventListener('keydown', function (e) {
-        if (e.key === 'F11') {
-            e.preventDefault();
-            toggleFocus();
-        }
-        if (e.key === 'Escape' && document.body.classList.contains(FOCUS_CLASS)) {
-            exitFocus();
-        }
-    });
-}());
-</script>
-
-<script nonce="{{ @nonce }}">
-(function () {
-    var GOAL_KEY   = 'ecrivain_session_goal';
-    var goalText   = document.getElementById('sessionGoalText');
-    var goalTrack  = document.getElementById('sessionGoalTrack');
-    var goalFill   = document.getElementById('sessionGoalFill');
-    var goalWidget = document.getElementById('sessionGoalWidget');
-
-    var sessionGoal    = parseInt(localStorage.getItem(GOAL_KEY) || '0', 10);
-    var initialWords   = 0;
-    var goalReached    = false;
-
-    function getWordCount() {
-        if (typeof QuillTools !== 'undefined' && QuillTools.quill) {
-            var text = QuillTools.quill.getText().trim();
-            return text.length > 0 ? text.split(/\s+/).length : 0;
-        }
-        return 0;
-    }
-
-    function updateGoalWidget() {
-        if (!sessionGoal) {
-            goalWidget.style.display = 'none';
-            return;
-        }
-        goalWidget.style.display = 'flex';
-        var added = Math.max(0, getWordCount() - initialWords);
-        var pct   = Math.min(100, Math.round(added / sessionGoal * 100));
-        goalText.textContent = added + '\u202f/\u202f' + sessionGoal + ' mots';
-        goalTrack.style.display = 'block';
-        goalFill.style.width = pct + '%';
-        if (pct >= 100) {
-            goalFill.classList.add('done');
-            if (!goalReached) {
-                goalReached = true;
-                goalText.textContent = '\u2713 Objectif atteint\u00a0! (' + added + ' mots)';
-            }
-        } else {
-            goalFill.classList.remove('done');
-            goalReached = false;
-        }
-    }
-
-    if (goalWidget) {
-        goalWidget.addEventListener('click', function () {
-            var val = prompt('Objectif de mots pour cette session (0 pour désactiver) :', sessionGoal || '');
-            if (val === null) return;
-            var n = parseInt(val, 10);
-            if (isNaN(n) || n < 0) return;
-            sessionGoal = n;
-            goalReached = false;
-            if (n > 0) localStorage.setItem(GOAL_KEY, n);
-            else localStorage.removeItem(GOAL_KEY);
-            updateGoalWidget();
-        });
-    }
-
-    // Wait for QuillTools to be ready then capture initial word count
-    window.addEventListener('load', function () {
-        setTimeout(function () {
-            initialWords = getWordCount();
-            updateGoalWidget();
-
-            // Update on every Quill text change
+        function enterFocus() {
+            document.body.classList.add(FOCUS_CLASS);
+            document.getElementById('btnFocusMode').innerHTML = '<i class="fas fa-compress"></i>';
+            document.getElementById('btnFocusMode').title = 'Quitter le mode focus (Échap)';
             if (typeof QuillTools !== 'undefined' && QuillTools.quill) {
-                QuillTools.quill.on('text-change', updateGoalWidget);
+                QuillTools.quill.focus();
             }
-        }, 300);
-    });
-}());
+        }
+
+        function exitFocus() {
+            document.body.classList.remove(FOCUS_CLASS);
+            document.getElementById('btnFocusMode').innerHTML = '<i class="fas fa-expand"></i>';
+            document.getElementById('btnFocusMode').title = 'Mode focus (F11)';
+        }
+
+        function toggleFocus() {
+            document.body.classList.contains(FOCUS_CLASS) ? exitFocus() : enterFocus();
+        }
+
+        var btn = document.getElementById('btnFocusMode');
+        if (btn) btn.addEventListener('click', toggleFocus);
+
+        var exitBtn = document.getElementById('focusExitBtn');
+        if (exitBtn) exitBtn.addEventListener('click', exitFocus);
+
+        document.addEventListener('keydown', function (e) {
+            if (e.key === 'F11') {
+                e.preventDefault();
+                toggleFocus();
+            }
+            if (e.key === 'Escape' && document.body.classList.contains(FOCUS_CLASS)) {
+                exitFocus();
+            }
+        });
+    }());
+</script>
+
+<script nonce="{{ @nonce }}">
+    (function () {
+        var GOAL_KEY = 'ecrivain_session_goal';
+        var goalText = document.getElementById('sessionGoalText');
+        var goalTrack = document.getElementById('sessionGoalTrack');
+        var goalFill = document.getElementById('sessionGoalFill');
+        var goalWidget = document.getElementById('sessionGoalWidget');
+
+        var sessionGoal = parseInt(localStorage.getItem(GOAL_KEY) || '0', 10);
+        var initialWords = 0;
+        var goalReached = false;
+
+        function getWordCount() {
+            if (typeof QuillTools !== 'undefined' && QuillTools.quill) {
+                var text = QuillTools.quill.getText().trim();
+                return text.length > 0 ? text.split(/\s+/).length : 0;
+            }
+            return 0;
+        }
+
+        function updateGoalWidget() {
+            if (!sessionGoal) {
+                goalWidget.style.display = 'none';
+                return;
+            }
+            goalWidget.style.display = 'flex';
+            var added = Math.max(0, getWordCount() - initialWords);
+            var pct = Math.min(100, Math.round(added / sessionGoal * 100));
+            goalText.textContent = added + '\u202f/\u202f' + sessionGoal + ' mots';
+            goalTrack.style.display = 'block';
+            goalFill.style.width = pct + '%';
+            if (pct >= 100) {
+                goalFill.classList.add('done');
+                if (!goalReached) {
+                    goalReached = true;
+                    goalText.textContent = '\u2713 Objectif atteint\u00a0! (' + added + ' mots)';
+                }
+            } else {
+                goalFill.classList.remove('done');
+                goalReached = false;
+            }
+        }
+
+        if (goalWidget) {
+            goalWidget.addEventListener('click', function () {
+                var val = prompt('Objectif de mots pour cette session (0 pour désactiver) :', sessionGoal || '');
+                if (val === null) return;
+                var n = parseInt(val, 10);
+                if (isNaN(n) || n < 0) return;
+                sessionGoal = n;
+                goalReached = false;
+                if (n > 0) localStorage.setItem(GOAL_KEY, n);
+                else localStorage.removeItem(GOAL_KEY);
+                updateGoalWidget();
+            });
+        }
+
+        // Wait for QuillTools to be ready then capture initial word count
+        window.addEventListener('load', function () {
+            setTimeout(function () {
+                initialWords = getWordCount();
+                updateGoalWidget();
+
+                // Update on every Quill text change
+                if (typeof QuillTools !== 'undefined' && QuillTools.quill) {
+                    QuillTools.quill.on('text-change', updateGoalWidget);
+                }
+            }, 300);
+        });
+    }());
 </script>
