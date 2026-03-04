@@ -45,7 +45,6 @@
                 <label for="title">Titre du Projet *</label>
 
                 <input type="text" id="title" name="title" value="{{ @project.title }}"
-
                     class="input-control title-input" required>
 
             </div>
@@ -57,7 +56,6 @@
                     <label for="author">Auteur</label>
 
                     <input type="text" id="author" name="author" value="{{ @project.author }}" class="input-control"
-
                         placeholder="Nom de plume">
 
                 </div>
@@ -75,7 +73,6 @@
                 <label for="description">Synopsis / Description courte</label>
 
                 <textarea id="description" name="description" class="input-control"
-
                     rows="4">{{ @project.description }}</textarea>
 
                 <div class="helper-text">Ce résumé sera utilisé par l'IA pour comprendre le contexte global.</div>
@@ -99,7 +96,6 @@
                         <true>
 
                             <img src="{{ @base }}/project/{{ @project.id }}/cover?v={{ mt_rand() }}" alt="Couverture"
-
                                 class="cover-preview">
 
                         </true>
@@ -147,7 +143,6 @@
                     <label for="words_per_page">Mots par page (Estimation)</label>
 
                     <input type="number" id="words_per_page" name="words_per_page"
-
                         value="{{ @project.words_per_page ?: 350 }}" min="1" class="input-control">
 
                     <div class="helper-text">Utilisé pour calculer le nombre de pages.</div>
@@ -159,7 +154,6 @@
                     <label for="lines_per_page">Lignes par page</label>
 
                     <input type="number" id="lines_per_page" name="lines_per_page"
-
                         value="{{ @project.lines_per_page ?: 38 }}" min="1" class="input-control">
 
                 </div>
@@ -169,7 +163,6 @@
                     <label for="target_pages">Objectif de pages (Optionnel)</label>
 
                     <input type="number" id="target_pages" name="target_pages" value="{{ @project.target_pages ?: 0 }}"
-
                         min="0" class="input-control">
 
                 </div>
@@ -179,7 +172,6 @@
                     <label for="target_words">Objectif de mots total</label>
 
                     <input type="number" id="target_words" name="target_words" value="{{ @project.target_words }}"
-
                         min="0" class="input-control" readonly>
 
                     <div class="helper-text">Calculé automatiquement (Mots/Page * Pages).</div>
@@ -192,7 +184,7 @@
 
         <!-- Card: Tags -->
 
-        <div class="edit-card">
+        <div class="edit-card" style="display:none">
 
             <h3><i class="fas fa-tags"></i> Tags</h3>
 
@@ -200,10 +192,8 @@
 
                 <label for="tags">Tags (séparés par des virgules)</label>
 
-                <input type="text" id="tags" name="tags"
-                    value="{{ @project.tags_string }}"
-                    placeholder="ex: fantasy, roman, en cours"
-                    class="input-control" autocomplete="off">
+                <input type="text" id="tags" name="tags" value="{{ @project.tags_string }}"
+                    placeholder="ex: fantasy, roman, en cours" class="input-control" autocomplete="off">
 
                 <small class="text-muted">Permet de filtrer vos projets sur le tableau de bord.</small>
 
@@ -225,7 +215,7 @@
 
                     <repeat group="{{ @templates }}" value="{{ @tpl }}">
 
-                        <option value="{{ @tpl.id }}" {{ (@project.template_id == @tpl.id) ? 'selected' : '' }}>
+                        <option value="{{ @tpl.id }}" {{ (@project.template_id==@tpl.id) ? 'selected' : '' }}>
 
                             {{ @tpl.name }}
 
@@ -237,7 +227,8 @@
 
                 </select>
 
-                <div class="helper-text">Définit la structure du projet (sections, actes, chapitres, etc.). <a href="{{ @base }}/templates">Gérer les templates</a></div>
+                <div class="helper-text">Définit la structure du projet (sections, actes, chapitres, etc.). <a
+                        href="{{ @base }}/templates">Gérer les templates</a></div>
 
             </div>
 
