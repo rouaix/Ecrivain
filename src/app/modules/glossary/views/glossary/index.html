@@ -1,0 +1,120 @@
+<div class="edit-header">
+
+    <h2>Lexique &mdash; {{ @project.title }}</h2>
+
+    <span>
+
+        <a href="{{ @base }}/project/{{ @project.id }}/glossary/create" class="button" title="Nouveau terme"><i class="fas fa-plus"></i></a>
+
+        <a href="{{ @base }}/project/{{ @project.id }}" class="button" title="Retour au projet"><i class="fas fa-arrow-left"></i></a>
+
+    </span>
+
+</div>
+
+<check if="{{ @count == 0 }}">
+
+    <true>
+
+        <div class="panel-empty">
+
+            <p>Aucun terme dans le lexique. <a href="{{ @base }}/project/{{ @project.id }}/glossary/create">Ajoutez votre premier terme.</a></p>
+
+        </div>
+
+    </true>
+
+    <false>
+
+        <p class="glossary-meta">{{ @count }} terme(s) au total</p>
+
+        <repeat group="{{ @categories }}" key="{{ @catKey }}" value="{{ @catLabel }}">
+
+            <check if="{{ isset(@grouped[@catKey]) }}">
+
+                <true>
+
+                    <section class="glossary-category">
+
+                        <h3 class="glossary-category-title">{{ @catLabel }}</h3>
+
+                        <table class="compact-table data-table glossary-table">
+
+                            <thead>
+
+                                <tr>
+
+                                    <th>Terme</th>
+
+                                    <th>D&eacute;finition</th>
+
+                                    <th class="compact-actions compact-actions--wide"></th>
+
+                                </tr>
+
+                            </thead>
+
+                            <tbody>
+
+                                <repeat group="{{ @grouped[@catKey] }}" value="{{ @entry }}">
+
+                                    <tr>
+
+                                        <td class="glossary-term">{{ @entry.term }}</td>
+
+                                        <td class="glossary-definition">{{ @entry.definition ?: '—' }}</td>
+
+                                        <td class="compact-actions compact-actions--wide">
+
+                                            <a class="button small" href="{{ @base }}/project/{{ @project.id }}/glossary/{{ @entry.id }}/edit" title="Modifier"><i class="fas fa-edit"></i></a>
+
+                                            <a class="button small delete js-confirm"
+                                                href="{{ @base }}/project/{{ @project.id }}/glossary/{{ @entry.id }}/delete"
+                                                data-confirm="Supprimer le terme « {{ @entry.term }} » ?"
+                                                title="Supprimer"><i class="fas fa-trash"></i></a>
+
+                                        </td>
+
+                                    </tr>
+
+                                </repeat>
+
+                            </tbody>
+
+                        </table>
+
+                    </section>
+
+                </true>
+
+            </check>
+
+        </repeat>
+
+    </false>
+
+</check>
+
+<script nonce="{{ @nonce }}">
+
+    document.addEventListener('DOMContentLoaded', function () {
+
+        document.querySelectorAll('.js-confirm').forEach(function (el) {
+
+            el.addEventListener('click', function (e) {
+
+                if (!confirm(this.dataset.confirm || 'Confirmer ?')) {
+
+                    e.preventDefault();
+
+                }
+
+            });
+
+        });
+
+    });
+
+</script>
+
+</content>

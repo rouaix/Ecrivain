@@ -1049,4 +1049,143 @@ class AiController extends Controller
         }
         return $dir . '/ai_config.json';
     }
+
+    /**
+     * Suggest 3 opening sentences for the current chapter based on the end of the previous one.
+     */
+    public function suggestContinuity()
+    {
+        $json      = json_decode($this->f3->get('BODY'), true);
+        $chapterId = (int) ($json['chapter_id'] ?? 0);
+
+        if (!$chapterId) {
+            http_response_code(400);
+            echo json_encode(['success' => false, 'error' => 'ID de chapitre requis']);
+            return;
+        }
+
+        $db      = $this->f3->get('DB');
+        $chapter = new \Chapter($db);
+        $chapter->load(['id=?', $chapterId]);
+
+        if ($chapter->dry()) {
+            http_response_code(404);
+            echo json_encode(['success' => false, 'error' => 'Chapitre introuvable']);
+            return;
+        }
+
+        // SECURITY: verify ownership
+        $projectModel = new \Project($db);
+        $projectModel->load(['id=? AND user_id=?', $chapter->project_id, $this->currentUser()['id']]);
+        if ($projectModel->dry()) {
+            http_response_code(403);
+            echo json_encode(['success' => false, 'error' => 'Accès non autorisé']);
+            return;
+        }
+
+        if (!$this->checkRateLimit('ai_gen', 10, 60)) {
+            http_response_code(429);
+            echo json_encode(['success' => false, 'error' => 'Trop de requêtes IA. Attendez quelques secondes.']);
+            return;
+        }
+
+        // Find previous chapter in project order (same sort as getAllByProject)
+        $allChapters = $db->exec(
+            'SELECT c.id, c.title, c.content, c.order_index, c.act_id, c.parent_id,
+                    a.order_index as act_order,
+                    COALESCE(p.order_index, c.order_index) as parent_order
+             FROM chapters c
+             LEFT JOIN acts a ON c.act_id = a.id
+             LEFT JOIN chapters p ON c.parent_id = p.id
+             WHERE c.project_id = ?
+             ORDER BY
+                (a.order_index IS NULL) ASC,
+                a.order_index ASC,
+                COALESCE(p.order_index, c.order_index) ASC,
+                (c.parent_id IS NOT NULL) ASC,
+                c.order_index ASC,
+                c.id ASC',
+            [$chapter->project_id]
+        ) ?: [];
+
+        // Find position of current chapter in the ordered list
+        $currentIndex = null;
+        foreach ($allChapters as $i => $ch) {
+            if ((int)$ch['id'] === $chapterId) {
+                $currentIndex = $i;
+                break;
+            }
+        }
+
+        $prevEndText = '';
+        if ($currentIndex !== null && $currentIndex > 0) {
+            $prev        = $allChapters[$currentIndex - 1];
+            $plainText   = trim(strip_tags($prev['content'] ?? ''));
+            // Take last ~600 chars (roughly last paragraph)
+            if (mb_strlen($plainText) > 600) {
+                $plainText = '…' . mb_substr($plainText, -600);
+            }
+            $prevEndText = $plainText;
+        }
+
+        // Build prompt
+        $currentTitle  = $chapter->title;
+        $currentResume = trim(strip_tags($chapter->resume ?? ''));
+
+        $contextParts = [];
+        if ($prevEndText !== '') {
+            $contextParts[] = "Fin du chapitre précédent :\n«\n{$prevEndText}\n»";
+        }
+        $contextParts[] = "Titre du chapitre à ouvrir : « {$currentTitle} »";
+        if ($currentResume !== '') {
+            $contextParts[] = "Résumé du chapitre à ouvrir : {$currentResume}";
+        }
+
+        $context    = implode("\n\n", $contextParts);
+        $taskPrompt = "En t'appuyant sur le contexte ci-dessous, propose exactement 3 phrases d'ouverture distinctes pour débuter ce nouveau chapitre. "
+                    . "Chaque suggestion doit être sur une ligne séparée, précédée d'un numéro (1. 2. 3.). "
+                    . "Les phrases doivent être en français, fluides, et créer une continuité naturelle avec la fin du chapitre précédent.\n\n"
+                    . $context;
+
+        $userConfig   = $this->getUserConfig();
+        $prompts      = $this->getDefaultPrompts();
+        $provider     = $userConfig['active_provider'] ?? 'openai';
+        $apiKey       = $userConfig['providers'][$provider]['api_key'] ?? $this->f3->get('OPENAI_API_KEY');
+        $model        = $userConfig['providers'][$provider]['model'] ?? ($this->f3->get('OPENAI_MODEL') ?: 'gpt-4o');
+        $systemPrompt = $this->compressPrompt($userConfig['prompts']['system'] ?? "Tu es un assistant d'écriture créative expert en narration française.");
+
+        $service = new AiService($provider, $apiKey, $model);
+        $t0      = microtime(true);
+        $result  = $service->generate($systemPrompt, $taskPrompt, 0.85, 350);
+        $elapsed = microtime(true) - $t0;
+
+        if (!$result['success']) {
+            echo json_encode(['success' => false, 'error' => $result['error']]);
+            return;
+        }
+
+        // Parse numbered suggestions
+        $raw         = trim($result['text']);
+        $suggestions = [];
+        foreach (preg_split('/\r?\n/', $raw) as $line) {
+            $line = trim($line);
+            if ($line === '') continue;
+            // Remove leading "1. " "2. " etc.
+            $clean = preg_replace('/^\d+[\.\)]\s*/', '', $line);
+            if ($clean !== '') $suggestions[] = $clean;
+        }
+        // Fallback: split by double newline if not numbered
+        if (count($suggestions) < 2) {
+            $suggestions = array_values(array_filter(array_map('trim', preg_split('/\n{2,}/', $raw))));
+        }
+
+        $this->logAiUsage($model, $result['prompt_tokens'] ?? 0, $result['completion_tokens'] ?? 0, 'suggest_continuity');
+        $this->notifyAiCompletionIfNeeded($elapsed, 'suggest_continuity');
+
+        echo json_encode([
+            'success'     => true,
+            'suggestions' => array_slice($suggestions, 0, 3),
+            'has_previous' => $prevEndText !== '',
+        ]);
+    }
 }

@@ -123,6 +123,18 @@ class StatsController extends Controller
             $targetWords = (int) ($goalRow[0]['target_words'] ?? 0);
         }
 
+        // --- User writing goals (daily / weekly) from profile.json ---
+        $profileFile = $this->getUserDataDir($user['email']) . 'profile.json';
+        $profileData = [];
+        if (file_exists($profileFile)) {
+            $profileData = json_decode(file_get_contents($profileFile), true) ?: [];
+        }
+        $dailyGoal  = max(0, (int) ($profileData['daily_goal']  ?? 0));
+        $weeklyGoal = max(0, (int) ($profileData['weekly_goal'] ?? 0));
+
+        $dailyPct  = ($dailyGoal  > 0) ? min(100, (int) round($wordsToday / $dailyGoal  * 100)) : 0;
+        $weeklyPct = ($weeklyGoal > 0) ? min(100, (int) round($wordsWeek  / $weeklyGoal * 100)) : 0;
+
         // --- Chart data as JSON ---
         $chartLabels = array_map(fn($d) => (new DateTime($d))->format('d/m'), $dates);
         $chartData   = array_values($dailyWords);
@@ -138,6 +150,10 @@ class StatsController extends Controller
             'streak'       => $streak,
             'topChapters'  => $topChapters,
             'targetWords'  => $targetWords,
+            'dailyGoal'    => $dailyGoal,
+            'weeklyGoal'   => $weeklyGoal,
+            'dailyPct'     => $dailyPct,
+            'weeklyPct'    => $weeklyPct,
             'chartLabels'  => json_encode($chartLabels),
             'chartData'    => json_encode($chartData),
         ]);

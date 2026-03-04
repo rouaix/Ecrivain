@@ -1,0 +1,77 @@
+<div class="edit-header">
+
+    <h2>{{ @title }}</h2>
+
+    <span>
+
+        <a href="{{ @base }}/project/{{ @project.id }}/glossary" class="button" title="Retour au lexique"><i class="fas fa-arrow-left"></i></a>
+
+    </span>
+
+</div>
+
+<check if="{{ !empty(@errors) }}">
+
+    <true>
+
+        <ul class="form-errors">
+
+            <repeat group="{{ @errors }}" value="{{ @err }}">
+
+                <li>{{ @err }}</li>
+
+            </repeat>
+
+        </ul>
+
+    </true>
+
+</check>
+
+<form method="POST" action="{{ @base }}/project/{{ @project.id }}/glossary{{ @entry.id ? '/' ~ @entry.id ~ '/edit' : '/create' }}" class="card-form">
+
+    <input type="hidden" name="csrf_token" value="{{ @csrfToken }}">
+
+    <div class="form-group">
+
+        <label for="term">Terme <span class="required">*</span></label>
+
+        <input type="text" id="term" name="term" value="{{ @entry.term }}" maxlength="150" required autofocus class="input-full">
+
+    </div>
+
+    <div class="form-group">
+
+        <label for="category">Cat&eacute;gorie</label>
+
+        <select id="category" name="category" class="input-full">
+
+            <repeat group="{{ @categories }}" key="{{ @catKey }}" value="{{ @catLabel }}">
+
+                <option value="{{ @catKey }}" {{ @entry.category == @catKey ? 'selected' : '' }}>{{ @catLabel }}</option>
+
+            </repeat>
+
+        </select>
+
+    </div>
+
+    <div class="form-group">
+
+        <label for="definition">D&eacute;finition</label>
+
+        <textarea id="definition" name="definition" rows="6" class="input-full" placeholder="Description, explications, notes…">{{ @entry.definition }}</textarea>
+
+    </div>
+
+    <div class="form-actions">
+
+        <button type="submit" class="button">Enregistrer</button>
+
+        <a href="{{ @base }}/project/{{ @project.id }}/glossary" class="button secondary">Annuler</a>
+
+    </div>
+
+</form>
+
+</content>

@@ -188,4 +188,108 @@ class CharacterController extends Controller
         }
         $this->f3->error(404);
     }
+
+    // ─── Relations ────────────────────────────────────────────────────────────
+
+    public function relations()
+    {
+        $pid = (int) $this->f3->get('PARAMS.pid');
+        if (!$this->isOwner($pid)) {
+            $this->f3->error(403);
+            return;
+        }
+
+        $projectModel = new Project();
+        $project = $projectModel->findAndCast(['id=?', $pid])[0];
+
+        $charModel  = new Character();
+        $characters = $charModel->getAllByProject($pid);
+
+        $relations = $this->db->exec(
+            'SELECT cr.id, cr.char_from, cr.char_to, cr.label, cr.color,
+                    cf.name AS name_from, ct.name AS name_to
+             FROM character_relations cr
+             JOIN characters cf ON cf.id = cr.char_from
+             JOIN characters ct ON ct.id = cr.char_to
+             WHERE cr.project_id = ?
+             ORDER BY cr.id ASC',
+            [$pid]
+        ) ?: [];
+
+        $this->render('characters/relations.html', [
+            'title'      => 'Relations — ' . $project['title'],
+            'project'    => $project,
+            'characters' => $characters,
+            'relations'  => $relations,
+        ]);
+    }
+
+    public function addRelation()
+    {
+        $pid = (int) $this->f3->get('PARAMS.pid');
+        if (!$this->isOwner($pid)) {
+            http_response_code(403);
+            echo json_encode(['success' => false, 'error' => 'Accès refusé']);
+            return;
+        }
+
+        $charFrom = (int) ($_POST['char_from'] ?? 0);
+        $charTo   = (int) ($_POST['char_to']   ?? 0);
+        $label    = mb_substr(trim($_POST['label'] ?? ''), 0, 100);
+        $color    = preg_match('/^#[0-9a-fA-F]{6}$/', $_POST['color'] ?? '') ? $_POST['color'] : '#94a3b8';
+
+        if (!$charFrom || !$charTo || $charFrom === $charTo) {
+            echo json_encode(['success' => false, 'error' => 'Personnages invalides']);
+            return;
+        }
+
+        // Verify both characters belong to this project
+        $charModel = new Character();
+        if (!$charModel->count(['id=? AND project_id=?', $charFrom, $pid]) ||
+            !$charModel->count(['id=? AND project_id=?', $charTo, $pid])) {
+            echo json_encode(['success' => false, 'error' => 'Personnage introuvable']);
+            return;
+        }
+
+        $this->db->exec(
+            'INSERT INTO character_relations (project_id, char_from, char_to, label, color) VALUES (?, ?, ?, ?, ?)',
+            [$pid, $charFrom, $charTo, $label, $color]
+        );
+        $rid = (int) $this->db->exec('SELECT LAST_INSERT_ID() AS id')[0]['id'];
+
+        $nameFrom = $this->db->exec('SELECT name FROM characters WHERE id=?', [$charFrom])[0]['name'] ?? '';
+        $nameTo   = $this->db->exec('SELECT name FROM characters WHERE id=?', [$charTo])[0]['name'] ?? '';
+
+        echo json_encode([
+            'success'   => true,
+            'relation'  => [
+                'id'        => $rid,
+                'char_from' => $charFrom,
+                'char_to'   => $charTo,
+                'label'     => $label,
+                'color'     => $color,
+                'name_from' => $nameFrom,
+                'name_to'   => $nameTo,
+            ]
+        ]);
+    }
+
+    public function deleteRelation()
+    {
+        $pid = (int) $this->f3->get('PARAMS.pid');
+        $rid = (int) $this->f3->get('PARAMS.rid');
+
+        if (!$this->isOwner($pid)) {
+            http_response_code(403);
+            echo json_encode(['success' => false, 'error' => 'Accès refusé']);
+            return;
+        }
+
+        $this->db->exec(
+            'DELETE FROM character_relations WHERE id = ? AND project_id = ?',
+            [$rid, $pid]
+        );
+
+        echo json_encode(['success' => true]);
+    }
 }

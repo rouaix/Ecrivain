@@ -16,10 +16,12 @@ class ProfileController extends Controller
         // Merge with user data (but priority to JSON for extended fields if any conflict, though keys should be distinct)
         // Ensure defaults for extended fields to avoid Undefined Index with DEBUG=3
         $defaults = [
-            'lastname' => '',
-            'firstname' => '',
-            'dob' => '',
-            'bio' => ''
+            'lastname'    => '',
+            'firstname'   => '',
+            'dob'         => '',
+            'bio'         => '',
+            'daily_goal'  => 0,
+            'weekly_goal' => 0,
         ];
         $profileData = array_merge($defaults, $profileData);
 
@@ -54,10 +56,12 @@ class ProfileController extends Controller
         $password = $_POST['password'] ?? '';
 
         // Extended fields
-        $lastname = trim($_POST['lastname'] ?? '');
-        $firstname = trim($_POST['firstname'] ?? '');
-        $dob = $_POST['dob'] ?? '';
-        $bio = $_POST['bio'] ?? ''; // TinyMCE content
+        $lastname    = trim($_POST['lastname'] ?? '');
+        $firstname   = trim($_POST['firstname'] ?? '');
+        $dob         = $_POST['dob'] ?? '';
+        $bio         = $_POST['bio'] ?? '';
+        $daily_goal  = max(0, (int) ($_POST['daily_goal'] ?? 0));
+        $weekly_goal = max(0, (int) ($_POST['weekly_goal'] ?? 0));
 
         $errors = [];
 
@@ -98,10 +102,12 @@ class ProfileController extends Controller
         // 3. Update Extended Profile Data (JSON)
         if (empty($errors)) {
             $this->saveProfileData($email, [
-                'lastname' => $lastname,
-                'firstname' => $firstname,
-                'dob' => $dob,
-                'bio' => $bio
+                'lastname'    => $lastname,
+                'firstname'   => $firstname,
+                'dob'         => $dob,
+                'bio'         => $bio,
+                'daily_goal'  => $daily_goal,
+                'weekly_goal' => $weekly_goal,
             ]);
 
             $this->f3->reroute('/profile?success=1');

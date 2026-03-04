@@ -86,6 +86,18 @@
 
             <div class="form-group">
 
+                <label for="tags">Tags (séparés par des virgules)</label>
+
+                <input type="text" id="tags" name="tags" value="{{ @old.tags }}"
+                    placeholder="ex: fantasy, roman, en cours"
+                    class="input-control" autocomplete="off">
+
+                <small class="text-muted">Permet de filtrer vos projets sur le tableau de bord.</small>
+
+            </div>
+
+            <div class="form-group">
+
                 <label for="template_id">Template de projet</label>
 
                 <select id="template_id" name="template_id">

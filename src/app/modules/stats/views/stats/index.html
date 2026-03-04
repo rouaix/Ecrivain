@@ -47,6 +47,55 @@
         </div>
     </div>
 
+    <!-- Daily / weekly writing goals -->
+    <check if="{{ @dailyGoal > 0 || @weeklyGoal > 0 }}">
+        <div class="stats-goals-row">
+
+            <check if="{{ @dailyGoal > 0 }}">
+                <div class="stats-card stats-goal-card">
+                    <div class="stats-goal-header">
+                        <span class="stats-goal-title"><i class="fas fa-sun"></i> Objectif du jour</span>
+                        <span class="stats-goal-numbers">
+                            {{ number_format(@wordsToday, 0, ',', "\u{202f}") }}
+                            /
+                            {{ number_format(@dailyGoal, 0, ',', "\u{202f}") }} mots
+                            &mdash; {{ @dailyPct }}&nbsp;%
+                        </span>
+                    </div>
+                    <div class="stats-goal-track">
+                        <div class="stats-goal-fill {{ @dailyPct >= 100 ? 'stats-goal-fill--done' : '' }}"
+                            style="width:{{ @dailyPct }}%"></div>
+                    </div>
+                    <check if="{{ @dailyPct >= 100 }}">
+                        <p class="stats-goal-congrats"><i class="fas fa-check-circle"></i> Objectif du jour atteint !</p>
+                    </check>
+                </div>
+            </check>
+
+            <check if="{{ @weeklyGoal > 0 }}">
+                <div class="stats-card stats-goal-card">
+                    <div class="stats-goal-header">
+                        <span class="stats-goal-title"><i class="fas fa-calendar-week"></i> Objectif de la semaine</span>
+                        <span class="stats-goal-numbers">
+                            {{ number_format(@wordsWeek, 0, ',', "\u{202f}") }}
+                            /
+                            {{ number_format(@weeklyGoal, 0, ',', "\u{202f}") }} mots
+                            &mdash; {{ @weeklyPct }}&nbsp;%
+                        </span>
+                    </div>
+                    <div class="stats-goal-track">
+                        <div class="stats-goal-fill {{ @weeklyPct >= 100 ? 'stats-goal-fill--done' : '' }}"
+                            style="width:{{ @weeklyPct }}%"></div>
+                    </div>
+                    <check if="{{ @weeklyPct >= 100 }}">
+                        <p class="stats-goal-congrats"><i class="fas fa-check-circle"></i> Objectif de la semaine atteint !</p>
+                    </check>
+                </div>
+            </check>
+
+        </div>
+    </check>
+
     <!-- Project word goal -->
     <check if="{{ @targetWords > 0 }}">
         <set pct="{{ min(100, round(@totalWords / @targetWords * 100)) }}" />
@@ -210,6 +259,9 @@ document.addEventListener('DOMContentLoaded', function () {
 .stats-goal-track { background: var(--border-color, #e0e0e0); border-radius: 6px; height: 12px; overflow: hidden; }
 .stats-goal-fill { background: var(--link-color, #3f51b5); height: 100%; border-radius: 6px; transition: width .4s ease; min-width: 4px; }
 .stats-goal-fill--done { background: #22c55e; }
+.stats-goals-row { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 14px; }
+.stats-goals-row .stats-goal-card { margin-bottom: 0; }
+.stats-goal-congrats { margin: 8px 0 0; font-size: .82rem; color: #22c55e; font-weight: 600; }
 @media (max-width: 600px) {
     .stats-bar-label { width: 100px; }
     .stats-kpi-grid { grid-template-columns: repeat(2, 1fr); }

@@ -24,6 +24,14 @@
     <a href="{{ @base }}/templates" class="button secondary">
         <i class="fas fa-layer-group"></i> Templates
     </a>
+    <div class="view-toggle" style="margin-left:auto;">
+        <button type="button" id="btnViewList" class="button secondary view-toggle-btn active" title="Vue liste">
+            <i class="fas fa-th-large"></i>
+        </button>
+        <button type="button" id="btnViewKanban" class="button secondary view-toggle-btn" title="Vue Kanban">
+            <i class="fas fa-columns"></i>
+        </button>
+    </div>
 </div>
 
 <!-- Theme Switcher -->
@@ -63,11 +71,88 @@
     </check>
 </form>
 
+<!-- Tag filter bar -->
+<check if="{{ !empty(@allTags) }}">
+    <div class="tag-filter-bar">
+        <span class="tag-filter-label"><i class="fas fa-filter"></i></span>
+        <button type="button" class="tag-filter-btn active" data-tag="">Tous</button>
+        <repeat group="{{ @allTags }}" value="{{ @t }}">
+            <button type="button" class="tag-filter-btn" data-tag="{{ @t.name | esc }}">{{ @t.name | esc }}</button>
+        </repeat>
+    </div>
+</check>
+
+<!-- Daily writing goal widget -->
+<check if="{{ @dailyGoal > 0 }}">
+    <div class="dash-goal-widget">
+        <div class="dash-goal-info">
+            <span class="dash-goal-label">
+                <i class="fas fa-sun"></i> Objectif du jour
+            </span>
+            <span class="dash-goal-numbers">
+                {{ number_format(@wordsToday, 0, ',', "\u{202f}") }}
+                /
+                {{ number_format(@dailyGoal, 0, ',', "\u{202f}") }} mots
+                &mdash; {{ @dailyPct }}&nbsp;%
+            </span>
+            <a href="{{ @base }}/stats" class="dash-goal-link">Voir les stats</a>
+        </div>
+        <div class="dash-goal-track">
+            <div class="dash-goal-fill {{ @dailyPct >= 100 ? 'dash-goal-fill--done' : '' }}"
+                style="width:{{ @dailyPct }}%"></div>
+        </div>
+        <check if="{{ @dailyPct >= 100 }}">
+            <p class="dash-goal-congrats"><i class="fas fa-check-circle"></i> Objectif du jour atteint !</p>
+        </check>
+    </div>
+</check>
+
+<!-- Kanban view (hidden by default) -->
+<div id="kanbanView" style="display:none;">
+    <div class="kanban-board">
+
+        <div class="kanban-col" data-status="active">
+            <div class="kanban-col-header">
+                <span class="kanban-col-dot kanban-col-dot--active"></span>
+                <span class="kanban-col-title">En cours</span>
+                <span class="kanban-col-count" id="kCount-active">0</span>
+            </div>
+            <div class="kanban-col-body" id="kCol-active"></div>
+        </div>
+
+        <div class="kanban-col" data-status="review">
+            <div class="kanban-col-header">
+                <span class="kanban-col-dot kanban-col-dot--review"></span>
+                <span class="kanban-col-title">Relecture</span>
+                <span class="kanban-col-count" id="kCount-review">0</span>
+            </div>
+            <div class="kanban-col-body" id="kCol-review"></div>
+        </div>
+
+        <div class="kanban-col" data-status="done">
+            <div class="kanban-col-header">
+                <span class="kanban-col-dot kanban-col-dot--done"></span>
+                <span class="kanban-col-title">Terminé</span>
+                <span class="kanban-col-count" id="kCount-done">0</span>
+            </div>
+            <div class="kanban-col-body" id="kCol-done"></div>
+        </div>
+
+    </div>
+</div>
+
+<div id="listView">
 <check if="{{ count(@projects) > 0 }}">
     <true>
         <div class="projects-grid">
             <repeat group="{{ @projects }}" value="{{ @proj }}">
-                <div class="project-card"> <!-- Changed from 'a' to 'div' to properly handle nested actions -->
+                <div class="project-card"
+                    data-tags="{{ json_encode(@proj.tags) | esc }}"
+                    data-pid="{{ @proj.id }}"
+                    data-status="{{ @proj.status ?: 'active' }}"
+                    data-title="{{ @proj.title | esc }}"
+                    data-url="{{ @base }}/project/{{ @proj.id }}"
+                    data-edit-url="{{ @base }}/project/{{ @proj.id }}/edit"> <!-- Changed from 'a' to 'div' to properly handle nested actions -->
                     <a href="{{ @base }}/project/{{ @proj.id }}" class="project-card-link">
                         <check if="{{ @proj.cover_image }}">
                             <true>
@@ -88,6 +173,13 @@
                             <div class="project-card__meta">
                                 <span>Modifié: {{ date('d/m/Y', strtotime(@proj.updated_at)) }}</span>
                             </div>
+                            <check if="{{ !empty(@proj.tags) }}">
+                                <div class="project-card__tags">
+                                    <repeat group="{{ @proj.tags }}" value="{{ @tag }}">
+                                        <span class="project-tag">{{ @tag.name | esc }}</span>
+                                    </repeat>
+                                </div>
+                            </check>
                             <div class="project-card__stats cache">
                                 <div class="project-stat">
                                     <span class="label">Mots</span>
@@ -122,6 +214,7 @@
         </div>
     </false>
 </check>
+</div><!-- #listView -->
 
 <!-- Invitations en attente -->
 <check if="{{ count(@pendingInvitations) > 0 }}">
@@ -203,6 +296,161 @@
 
 
 <script nonce="{{ @nonce }}">
+    // ── Kanban ────────────────────────────────────────────────────────────────
+    (function () {
+        var BASE  = '{{ @base }}';
+        var CSRF  = '{{ @csrfToken }}';
+
+        // Collect project data from DOM cards
+        var projects = [];
+        document.querySelectorAll('.project-card[data-pid]').forEach(function (card) {
+            projects.push({
+                pid:    parseInt(card.dataset.pid),
+                title:  card.dataset.title || '',
+                status: card.dataset.status || 'active',
+                url:    card.dataset.url || '#',
+                editUrl: card.dataset.editUrl || '#'
+            });
+        });
+
+        var COLS   = ['active', 'review', 'done'];
+        var LABELS = { active: 'En cours', review: 'Relecture', done: 'Terminé' };
+
+        function buildKanban() {
+            COLS.forEach(function (status) {
+                var col   = document.getElementById('kCol-' + status);
+                var count = document.getElementById('kCount-' + status);
+                col.innerHTML = '';
+                var items = projects.filter(function (p) { return p.status === status; });
+                count.textContent = items.length;
+                items.forEach(function (p) { col.appendChild(makeCard(p)); });
+                if (!items.length) {
+                    var empty = document.createElement('div');
+                    empty.className = 'kanban-empty';
+                    empty.textContent = 'Aucun projet';
+                    col.appendChild(empty);
+                }
+            });
+        }
+
+        function makeCard(p) {
+            var card = document.createElement('div');
+            card.className = 'kanban-card';
+            card.dataset.pid = p.pid;
+            card.draggable = true;
+
+            var otherCols = COLS.filter(function (s) { return s !== p.status; });
+            var moveButtons = otherCols.map(function (s) {
+                return '<button type="button" class="kanban-move-btn" data-to="' + s + '" data-pid="' + p.pid + '">'
+                     + '<i class="fas fa-arrow-right"></i> ' + LABELS[s] + '</button>';
+            }).join('');
+
+            card.innerHTML =
+                '<a href="' + escHtml(p.url) + '" class="kanban-card-title">' + escHtml(p.title) + '</a>' +
+                '<div class="kanban-card-actions">' + moveButtons +
+                '<a href="' + escHtml(p.editUrl) + '" class="kanban-edit-btn" title="Modifier"><i class="fas fa-edit"></i></a>' +
+                '</div>';
+
+            // Drag-and-drop
+            card.addEventListener('dragstart', function (e) {
+                e.dataTransfer.setData('text/plain', p.pid);
+                card.classList.add('kanban-dragging');
+            });
+            card.addEventListener('dragend', function () { card.classList.remove('kanban-dragging'); });
+
+            return card;
+        }
+
+        // Drop targets
+        COLS.forEach(function (status) {
+            var col = document.getElementById('kCol-' + status);
+            col.addEventListener('dragover', function (e) { e.preventDefault(); col.classList.add('kanban-drag-over'); });
+            col.addEventListener('dragleave', function () { col.classList.remove('kanban-drag-over'); });
+            col.addEventListener('drop', function (e) {
+                e.preventDefault();
+                col.classList.remove('kanban-drag-over');
+                var pid = parseInt(e.dataTransfer.getData('text/plain'));
+                setStatus(pid, status);
+            });
+        });
+
+        // Move buttons (delegated)
+        document.getElementById('kanbanView').addEventListener('click', function (e) {
+            var btn = e.target.closest('.kanban-move-btn');
+            if (btn) setStatus(parseInt(btn.dataset.pid), btn.dataset.to);
+        });
+
+        function setStatus(pid, status) {
+            fetch(BASE + '/project/' + pid + '/status', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json', 'X-CSRF-Token': CSRF },
+                body: JSON.stringify({ status: status, csrf_token: CSRF })
+            })
+            .then(function (r) { return r.json(); })
+            .then(function (data) {
+                if (!data.success) return;
+                var p = projects.find(function (p) { return p.pid === pid; });
+                if (p) { p.status = status; buildKanban(); }
+                // Also update list card
+                var listCard = document.querySelector('.project-card[data-pid="' + pid + '"]');
+                if (listCard) listCard.dataset.status = status;
+            });
+        }
+
+        // View toggle
+        var listView   = document.getElementById('listView');
+        var kanbanView = document.getElementById('kanbanView');
+        var btnList    = document.getElementById('btnViewList');
+        var btnKanban  = document.getElementById('btnViewKanban');
+        var STORAGE_KEY = 'dashboardView';
+
+        function showView(view) {
+            if (view === 'kanban') {
+                listView.style.display   = 'none';
+                kanbanView.style.display = 'block';
+                btnList.classList.remove('active');
+                btnKanban.classList.add('active');
+                buildKanban();
+                localStorage.setItem(STORAGE_KEY, 'kanban');
+            } else {
+                listView.style.display   = 'block';
+                kanbanView.style.display = 'none';
+                btnList.classList.add('active');
+                btnKanban.classList.remove('active');
+                localStorage.setItem(STORAGE_KEY, 'list');
+            }
+        }
+
+        btnList.addEventListener('click',   function () { showView('list'); });
+        btnKanban.addEventListener('click', function () { showView('kanban'); });
+
+        // Restore last view
+        if (localStorage.getItem(STORAGE_KEY) === 'kanban') showView('kanban');
+
+        function escHtml(s) {
+            return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+        }
+    }());
+
+    // Tag filter
+    document.querySelectorAll('.tag-filter-btn').forEach(function (btn) {
+        btn.addEventListener('click', function () {
+            document.querySelectorAll('.tag-filter-btn').forEach(function (b) { b.classList.remove('active'); });
+            btn.classList.add('active');
+            var selectedTag = btn.dataset.tag;
+            document.querySelectorAll('.project-card').forEach(function (card) {
+                if (!selectedTag) {
+                    card.style.display = '';
+                    return;
+                }
+                var tags = [];
+                try { tags = JSON.parse(card.dataset.tags || '[]'); } catch (e) {}
+                var names = tags.map(function (t) { return typeof t === 'string' ? t : t.name; });
+                card.style.display = names.indexOf(selectedTag) !== -1 ? '' : 'none';
+            });
+        });
+    });
+
     // Confirmer la suppression
     function openDeleteModal(url) {
         const modal = document.getElementById('deleteModal');
@@ -243,3 +491,111 @@
     });
 
 </script>
+
+<style nonce="{{ @nonce }}">
+.dash-goal-widget {
+    background: var(--card-bg, #fff);
+    border: 1px solid var(--border-color, #e0e0e0);
+    border-radius: 10px;
+    padding: 14px 18px;
+    margin-bottom: 1.25rem;
+}
+.dash-goal-info {
+    display: flex;
+    align-items: baseline;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-bottom: 8px;
+}
+.dash-goal-label {
+    font-weight: 600;
+    font-size: .9rem;
+    color: var(--text-main, #333);
+}
+.dash-goal-label i { color: #f59e0b; margin-right: 4px; }
+.dash-goal-numbers {
+    font-size: .85rem;
+    color: var(--text-muted, #777);
+    flex: 1;
+}
+.dash-goal-link {
+    font-size: .8rem;
+    color: var(--link-color, #3f51b5);
+    text-decoration: none;
+    margin-left: auto;
+}
+.dash-goal-track {
+    background: var(--border-color, #e0e0e0);
+    border-radius: 6px;
+    height: 10px;
+    overflow: hidden;
+}
+.dash-goal-fill {
+    background: var(--link-color, #3f51b5);
+    height: 100%;
+    border-radius: 6px;
+    transition: width .4s ease;
+    min-width: 4px;
+}
+.dash-goal-fill--done { background: #22c55e; }
+.dash-goal-congrats {
+    margin: 6px 0 0;
+    font-size: .8rem;
+    color: #22c55e;
+    font-weight: 600;
+}
+.tag-filter-bar {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 6px;
+    margin-bottom: 1rem;
+}
+.tag-filter-label { color: var(--text-muted, #777); font-size: .85rem; }
+.tag-filter-btn {
+    background: var(--card-bg, #fff);
+    border: 1px solid var(--border-color, #ddd);
+    border-radius: 20px;
+    padding: 3px 12px;
+    font-size: .8rem;
+    cursor: pointer;
+    color: var(--text-main, #333);
+    transition: background .15s, color .15s;
+}
+.tag-filter-btn:hover { background: var(--link-color, #3f51b5); color: #fff; border-color: transparent; }
+.tag-filter-btn.active { background: var(--link-color, #3f51b5); color: #fff; border-color: transparent; }
+.project-card__tags { display: flex; flex-wrap: wrap; gap: 4px; margin-top: 6px; }
+.view-toggle { display: flex; gap: 4px; }
+.view-toggle-btn.active { background: var(--link-color,#3f51b5); color: #fff; border-color: transparent; }
+.kanban-board { display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; align-items: start; }
+.kanban-col { background: var(--table-header-bg,#f8f9fa); border: 1px solid var(--border-color,#e0e0e0); border-radius: 10px; overflow: hidden; }
+.kanban-col-header { display: flex; align-items: center; gap: 8px; padding: 10px 14px; background: var(--card-bg,#fff); border-bottom: 1px solid var(--border-color,#e0e0e0); }
+.kanban-col-dot { width: 10px; height: 10px; border-radius: 50%; flex-shrink: 0; }
+.kanban-col-dot--active { background: #3b82f6; }
+.kanban-col-dot--review { background: #f59e0b; }
+.kanban-col-dot--done   { background: #22c55e; }
+.kanban-col-title { font-weight: 600; font-size: .88rem; color: var(--text-main,#333); flex: 1; }
+.kanban-col-count { font-size: .75rem; background: var(--border-color,#e0e0e0); color: var(--text-muted,#777); border-radius: 10px; padding: 1px 7px; }
+.kanban-col-body { padding: 10px; min-height: 80px; display: flex; flex-direction: column; gap: 8px; transition: background .15s; }
+.kanban-col-body.kanban-drag-over { background: var(--link-color,#3f51b5)1a; }
+.kanban-card { background: var(--card-bg,#fff); border: 1px solid var(--border-color,#e0e0e0); border-radius: 8px; padding: 10px 12px; cursor: grab; transition: box-shadow .15s, opacity .15s; }
+.kanban-card:hover { box-shadow: 0 3px 10px rgba(0,0,0,.1); }
+.kanban-card.kanban-dragging { opacity: .5; cursor: grabbing; }
+.kanban-card-title { display: block; font-weight: 600; font-size: .88rem; color: var(--text-main,#333); text-decoration: none; margin-bottom: 8px; }
+.kanban-card-title:hover { color: var(--link-color,#3f51b5); }
+.kanban-card-actions { display: flex; flex-wrap: wrap; gap: 4px; align-items: center; }
+.kanban-move-btn { font-size: .72rem; padding: 2px 8px; background: var(--table-header-bg,#f3f4f6); border: 1px solid var(--border-color,#e0e0e0); border-radius: 12px; cursor: pointer; color: var(--text-muted,#666); white-space: nowrap; }
+.kanban-move-btn:hover { background: var(--link-color,#3f51b5); color: #fff; border-color: transparent; }
+.kanban-edit-btn { margin-left: auto; font-size: .8rem; color: var(--text-muted,#999); }
+.kanban-edit-btn:hover { color: var(--link-color,#3f51b5); }
+.kanban-empty { text-align: center; font-size: .8rem; color: var(--text-muted,#bbb); padding: 16px 0; }
+@media (max-width: 768px) { .kanban-board { grid-template-columns: 1fr; } }
+.project-tag {
+    background: var(--tag-bg, #e8eaf6);
+    color: var(--link-color, #3f51b5);
+    border-radius: 12px;
+    padding: 1px 9px;
+    font-size: .72rem;
+    font-weight: 500;
+}
+</style>

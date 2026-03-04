@@ -84,6 +84,7 @@ class ProjectController extends ProjectBaseController
         foreach ($projects as &$proj) {
             $wpp = $proj['words_per_page'] ?: 350;
             $proj['pages_count'] = ceil($proj['target_words'] / $wpp);
+            $proj['status'] = $proj['status'] ?? 'active';
         }
 
         $sharedProjects = $this->db->exec(
@@ -105,12 +106,67 @@ class ProjectController extends ProjectBaseController
             [$user['id']]
         ) ?: [];
 
+        // --- Tags per project ---
+        $projectIds = array_column($projects, 'id');
+        $tagsMap    = $this->getTagsForProjects(array_map('intval', $projectIds));
+        foreach ($projects as &$proj) {
+            $proj['tags'] = $tagsMap[(int)$proj['id']] ?? [];
+        }
+        unset($proj);
+
+        // All tags of the user for the filter bar
+        $allTags = $this->db->exec(
+            'SELECT DISTINCT pt.name FROM project_tags pt
+             JOIN project_tag_links ptl ON ptl.tag_id = pt.id
+             JOIN projects p ON p.id = ptl.project_id
+             WHERE p.user_id = ?
+             ORDER BY pt.name ASC',
+            [$user['id']]
+        ) ?: [];
+
+        // --- Daily writing goal widget ---
+        $profileFile = $this->getUserDataDir($user['email']) . 'profile.json';
+        $profileData = file_exists($profileFile)
+            ? (json_decode(file_get_contents($profileFile), true) ?: [])
+            : [];
+        $dailyGoal = max(0, (int) ($profileData['daily_goal'] ?? 0));
+
+        $wordsToday = 0;
+        if ($dailyGoal > 0) {
+            $todayStr = date('Y-m-d');
+            $snapRows = $this->db->exec(
+                'SELECT ws.chapter_id, ws.word_count
+                 FROM writing_stats ws
+                 WHERE ws.user_id = ? AND ws.stat_date = ?',
+                [$user['id'], $todayStr]
+            ) ?: [];
+            $prevRows = $this->db->exec(
+                'SELECT ws.chapter_id, ws.word_count
+                 FROM writing_stats ws
+                 WHERE ws.user_id = ? AND ws.stat_date = DATE_SUB(?, INTERVAL 1 DAY)',
+                [$user['id'], $todayStr]
+            ) ?: [];
+            $prevMap = [];
+            foreach ($prevRows as $r) {
+                $prevMap[$r['chapter_id']] = (int) $r['word_count'];
+            }
+            foreach ($snapRows as $r) {
+                $delta = (int) $r['word_count'] - ($prevMap[$r['chapter_id']] ?? 0);
+                if ($delta > 0) $wordsToday += $delta;
+            }
+        }
+        $dailyPct = ($dailyGoal > 0) ? min(100, (int) round($wordsToday / $dailyGoal * 100)) : 0;
+
         $this->render('project/dashboard', [
             'title'              => 'Tableau de bord',
             'projects'           => $projects,
             'user'               => $user,
             'sharedProjects'     => $sharedProjects,
             'pendingInvitations' => $pendingInvitations,
+            'dailyGoal'          => $dailyGoal,
+            'wordsToday'         => $wordsToday,
+            'dailyPct'           => $dailyPct,
+            'allTags'            => $allTags,
         ]);
     }
 
@@ -149,6 +205,7 @@ class ProjectController extends ProjectBaseController
         $wordsPerPage = intval($_POST['words_per_page'] ?? 350);
         $targetPages = intval($_POST['target_pages'] ?? 0);
         $templateId  = !empty($_POST['template_id']) ? intval($_POST['template_id']) : null;
+        $tagsRaw     = trim($_POST['tags'] ?? '');
 
         $errors = [];
         if ($title === '') {
@@ -173,6 +230,7 @@ class ProjectController extends ProjectBaseController
 
             try {
                 if ($projectModel->save()) {
+                    $this->saveProjectTags((int)$projectModel->id, $this->currentUser()['id'], $tagsRaw);
                     $this->f3->reroute('/project/' . $projectModel->id);
                 } else {
                     $errors[] = 'Impossible de créer le projet.';
@@ -424,6 +482,9 @@ class ProjectController extends ProjectBaseController
         $noteModel = new Note();
         $notes     = $this->supHtml($noteModel->getAllByProject($pid));
 
+        $glossaryModel  = new GlossaryEntry();
+        $glossaryEntries = $glossaryModel->getAllByProject($pid);
+
         $fileModel = new ProjectFile();
         $filesRaw  = $fileModel->find(['project_id=?', $pid], ['order' => 'uploaded_at DESC']);
         $files     = [];
@@ -566,6 +627,7 @@ class ProjectController extends ProjectBaseController
             'note_count'       => count($notes),
             'character_count'  => count($characters),
             'file_count'       => count($files),
+            'glossary_count'   => count($glossaryEntries),
         ];
 
         // 3. Group Sections by Type
@@ -703,6 +765,7 @@ class ProjectController extends ProjectBaseController
             'afterGroups'         => $afterGroups,
             'notes'               => $notes,
             'files'               => $files,
+            'glossaryEntries'     => $glossaryEntries,
             'authorName'          => $authorName,
             'template'            => $template,
             'templateElements'    => $templateElements,
@@ -740,6 +803,10 @@ class ProjectController extends ProjectBaseController
             $templates     = $templateModel->getAllAvailable($user['id']);
         }
 
+        // Load existing tags for this project
+        $existingTags = $this->getProjectTags($pid);
+        $projectData['tags_string'] = implode(', ', array_column($existingTags, 'name'));
+
         $this->render('project/edit.html', [
             'title'     => 'Modifier le projet',
             'project'   => $projectData,
@@ -769,6 +836,7 @@ class ProjectController extends ProjectBaseController
         $linesPerPage = intval($_POST['lines_per_page'] ?? 38);
         $targetPages  = intval($_POST['target_pages'] ?? 0);
         $templateId   = !empty($_POST['template_id']) ? intval($_POST['template_id']) : null;
+        $tagsRaw      = trim($_POST['tags'] ?? '');
 
         $errors = [];
         if ($title === '') {
@@ -843,6 +911,7 @@ class ProjectController extends ProjectBaseController
             error_log("Settings JSON: " . $projectModel->settings);
 
             $projectModel->save();
+            $this->saveProjectTags($pid, $user['id'], $tagsRaw);
 
             // Migrate elements to new template if template changed
             if ($templateId && $templateId !== $oldTemplateId && $oldTemplateId > 0) {
@@ -921,5 +990,93 @@ class ProjectController extends ProjectBaseController
         header('Cache-Control: public, max-age=31536000');
         readfile($filePath);
         exit;
+    }
+
+    // ─── Kanban status ────────────────────────────────────────────────────────
+
+    public function updateStatus()
+    {
+        $pid    = (int) $this->f3->get('PARAMS.pid');
+        $user   = $this->currentUser();
+        $json   = json_decode($this->f3->get('BODY'), true);
+        $status = $json['status'] ?? '';
+
+        $allowed = ['active', 'review', 'done'];
+        if (!in_array($status, $allowed, true)) {
+            http_response_code(400);
+            echo json_encode(['success' => false, 'error' => 'Statut invalide']);
+            return;
+        }
+
+        $rows = $this->db->exec(
+            'UPDATE projects SET status=? WHERE id=? AND user_id=?',
+            [$status, $pid, $user['id']]
+        );
+
+        echo json_encode(['success' => true]);
+    }
+
+    // ─── Tag helpers ──────────────────────────────────────────────────────────
+
+    private function saveProjectTags(int $projectId, int $userId, string $rawTags): void
+    {
+        // Parse comma-separated tag names, normalize
+        $names = array_unique(array_filter(array_map(
+            fn($t) => mb_substr(trim($t), 0, 64),
+            explode(',', $rawTags)
+        )));
+
+        // Remove existing links for this project
+        $this->db->exec('DELETE FROM project_tag_links WHERE project_id = ?', [$projectId]);
+
+        foreach ($names as $name) {
+            if ($name === '') continue;
+
+            // Upsert tag for this user
+            $this->db->exec(
+                'INSERT INTO project_tags (user_id, name) VALUES (?, ?)
+                 ON DUPLICATE KEY UPDATE id = LAST_INSERT_ID(id)',
+                [$userId, $name]
+            );
+            $tagId = (int) $this->db->exec('SELECT LAST_INSERT_ID() AS id')[0]['id'];
+
+            if ($tagId > 0) {
+                $this->db->exec(
+                    'INSERT IGNORE INTO project_tag_links (project_id, tag_id) VALUES (?, ?)',
+                    [$projectId, $tagId]
+                );
+            }
+        }
+    }
+
+    private function getProjectTags(int $projectId): array
+    {
+        return $this->db->exec(
+            'SELECT pt.name FROM project_tags pt
+             JOIN project_tag_links ptl ON ptl.tag_id = pt.id
+             WHERE ptl.project_id = ?
+             ORDER BY pt.name ASC',
+            [$projectId]
+        ) ?: [];
+    }
+
+    private function getTagsForProjects(array $projectIds): array
+    {
+        if (empty($projectIds)) return [];
+        $placeholders = implode(',', array_fill(0, count($projectIds), '?'));
+        $rows = $this->db->exec(
+            "SELECT ptl.project_id, pt.name
+             FROM project_tags pt
+             JOIN project_tag_links ptl ON ptl.tag_id = pt.id
+             WHERE ptl.project_id IN ($placeholders)
+             ORDER BY pt.name ASC",
+            $projectIds
+        ) ?: [];
+
+        $map = [];
+        foreach ($rows as $r) {
+            $map[(int)$r['project_id']][] = $r['name'];
+        }
+        return $map;
     }
 }

@@ -15,6 +15,12 @@
             <button type="button" id="openAiModal" class="button secondary cache" title="Ouvrir l'assistant narratif">
                 <i class="fas fa-magic"></i>&nbsp;Assistant IA
             </button>
+            <button type="button" id="btnContinuity" class="button secondary" title="Suggestions d'ouverture IA">
+                <i class="fas fa-forward"></i>&nbsp;Continuité
+            </button>
+            <button type="button" id="btnGlossary" class="button secondary" title="Lexique du projet">
+                <i class="fas fa-book"></i>&nbsp;Lexique
+            </button>
             <a href="{{ @base }}/chapter/{{ @chapter.id }}/versions" class="button secondary" title="Historique des versions">
                 <i class="fas fa-history"></i>
             </a>
@@ -117,11 +123,17 @@
             <check if="{{ !@chapter.parent_id }}">
                 <div class="edit-card-section">
                     <div class="form-group">
-                        <label for="resume">Résumé (IA ou Manuel)</label>
+                        <div class="resume-label-row">
+                            <label for="resume">Résumé (IA ou Manuel)</label>
+                            <button type="button" id="btnSummarizeAI" class="button secondary small">
+                                <i class="fas fa-robot"></i> Résumer avec l'IA
+                            </button>
+                        </div>
                         <div id="resume-editor" class="editor-surface editor-height-150">
                             {{ @chapter.resume | raw }}
                         </div>
                         <input type="hidden" name="resume" value="{{ @chapter.resume | esc }}">
+                        <p id="summarize-status" class="summarize-status" style="display:none;"></p>
                     </div>
                 </div>
             </check>
@@ -154,6 +166,50 @@
 <button type="button" id="focusExitBtn" class="focus-exit-btn" title="Quitter le mode focus (Échap)">
     <i class="fas fa-compress"></i> Quitter le focus
 </button>
+
+<!-- Continuity Suggestions Modal -->
+<div class="modal-overlay" id="continuityModal">
+    <div class="modal-content" style="max-width: 600px;">
+        <div class="modal-header">
+            <h3><i class="fas fa-forward"></i> Suggestions d'ouverture</h3>
+            <button type="button" class="modal-close" id="closeContinuityModal">&times;</button>
+        </div>
+        <div class="modal-body">
+            <p class="continuity-hint">Sélectionnez une suggestion pour l'insérer au début du chapitre.</p>
+            <div id="continuityLoading" style="display:none; text-align:center; padding:24px 0;">
+                <i class="fas fa-spinner fa-spin"></i> Génération en cours…
+            </div>
+            <div id="continuityError" class="continuity-error" style="display:none;"></div>
+            <ul id="continuityList" class="continuity-list"></ul>
+        </div>
+    </div>
+</div>
+
+<!-- Glossary Modal -->
+<div class="modal-overlay" id="glossaryModal">
+    <div class="modal-content" style="max-width: 680px; max-height: 80vh; display: flex; flex-direction: column;">
+        <div class="modal-header">
+            <h3><i class="fas fa-book"></i> Lexique du projet</h3>
+            <button type="button" class="modal-close" id="closeGlossaryModal">&times;</button>
+        </div>
+        <div class="modal-body" style="flex:1; overflow:hidden; display:flex; flex-direction:column;">
+            <div class="glossary-modal-search">
+                <input type="text" id="glossarySearch" placeholder="Rechercher un terme…" class="input-full" autocomplete="off">
+            </div>
+            <div id="glossaryLoading" style="display:none; text-align:center; padding:24px 0;">
+                <i class="fas fa-spinner fa-spin"></i> Chargement…
+            </div>
+            <div id="glossaryEmpty" style="display:none;" class="panel-empty">Aucun terme trouvé.</div>
+            <div id="glossaryList" class="glossary-modal-list" style="flex:1; overflow-y:auto; margin-top:8px;"></div>
+        </div>
+        <div class="modal-footer" style="padding:12px 20px; border-top:1px solid var(--border); text-align:right;">
+            <a id="glossaryManageLink" href="{{ @base }}/project/{{ @project.id }}/glossary" class="button secondary" style="margin-right:8px;">
+                <i class="fas fa-cog"></i> Gérer
+            </a>
+            <button type="button" id="closeGlossaryModalBtn" class="button secondary">Fermer</button>
+        </div>
+    </div>
+</div>
 
 <!-- AI Assistant Modal -->
 <div class="modal-overlay" id="aiAssistantModal">
@@ -297,6 +353,49 @@ body.focus-mode .focus-exit-btn { display: flex; }
 .grammar-ignore-btn:hover, .grammar-dict-btn:hover {
     background: var(--table-header-bg, #f5f5f5);
 }
+.continuity-hint { font-size: .85rem; color: var(--text-muted,#777); margin: 0 0 12px; }
+.continuity-note { font-size: .82rem; color: var(--text-muted,#888); margin-bottom: 8px; }
+.continuity-error { color: #b91c1c; background: #fef2f2; border-radius: 6px; padding: 8px 12px; font-size: .85rem; }
+.continuity-list { list-style: none; padding: 0; margin: 0; display: flex; flex-direction: column; gap: 10px; }
+.continuity-item { display: flex; align-items: flex-start; gap: 10px; padding: 12px 14px; border: 1px solid var(--border-color,#e0e0e0); border-radius: 8px; background: var(--card-bg,#fff); }
+.continuity-item:hover { border-color: var(--link-color,#3f51b5); }
+.continuity-text { flex: 1; font-size: .9rem; line-height: 1.55; color: var(--text-main,#333); font-style: italic; }
+.continuity-insert-btn { flex-shrink: 0; }
+.resume-label-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-bottom: 6px;
+}
+.resume-label-row label { margin-bottom: 0; }
+.summarize-status {
+    margin-top: 6px;
+    font-size: .82rem;
+    padding: 4px 8px;
+    border-radius: 4px;
+}
+.summarize-status--ok  { color: #15803d; background: #f0fdf4; }
+.summarize-status--err { color: #b91c1c; background: #fef2f2; }
+/* Glossary modal */
+.glossary-modal-search { margin-bottom: 10px; }
+.glossary-modal-list { display: flex; flex-direction: column; gap: 8px; padding-right: 4px; }
+.glossary-modal-entry { padding: 10px 14px; border: 1px solid var(--border-color,#e0e0e0); border-radius: 8px; background: var(--card-bg,#fff); }
+.glossary-modal-entry:hover { border-color: var(--link-color,#3f51b5); }
+.glossary-modal-term { font-weight: 600; font-size: .95rem; display: block; color: var(--text-main,#333); }
+.glossary-modal-def { font-size: .85rem; color: var(--text-muted,#666); margin: 4px 0 0; line-height: 1.5; white-space: pre-wrap; }
+/* Glossary index page */
+.glossary-meta { font-size: .85rem; color: var(--text-muted,#777); margin-bottom: 20px; }
+.glossary-category { margin-bottom: 28px; }
+.glossary-category-title { font-size: 1rem; font-weight: 600; color: var(--text-muted,#555); text-transform: uppercase; letter-spacing: .05em; margin-bottom: 8px; padding-bottom: 4px; border-bottom: 1px solid var(--border,#e0e0e0); }
+.glossary-table .glossary-term { font-weight: 600; white-space: nowrap; }
+.glossary-table .glossary-definition { font-size: .88rem; color: var(--text-muted,#555); }
+/* Glossary project panel */
+.glossary-list { list-style: none; padding: 0; margin: 0 0 8px; display: flex; flex-direction: column; gap: 4px; }
+.glossary-list li { font-size: .88rem; display: flex; flex-direction: column; gap: 1px; }
+.glossary-list-term { font-weight: 600; color: var(--text-main,#333); }
+.glossary-list-def { color: var(--text-muted,#777); font-size: .82rem; }
 </style>
 
 <script nonce="{{ @nonce }}">
@@ -486,6 +585,196 @@ body.focus-mode .focus-exit-btn { display: flex; }
                 resumeQuill.clipboard.dangerouslyPasteHTML(decodedResume);
             }
         }
+
+        // Summarize with AI button
+        var btnSummarizeAI = document.getElementById('btnSummarizeAI');
+        if (btnSummarizeAI) {
+            btnSummarizeAI.addEventListener('click', function () {
+                var statusEl = document.getElementById('summarize-status');
+                btnSummarizeAI.disabled = true;
+                btnSummarizeAI.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Génération…';
+                statusEl.style.display = 'none';
+
+                fetch('{{ @base }}/ai/summarize-chapter', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRF-Token': window.CSRF_TOKEN
+                    },
+                    body: JSON.stringify({ chapter_id: parseInt(chapterId) })
+                })
+                .then(function (r) { return r.json(); })
+                .then(function (data) {
+                    if (data.success && resumeQuill) {
+                        resumeQuill.clipboard.dangerouslyPasteHTML(data.summary);
+                        document.querySelector('input[name="resume"]').value = data.summary;
+                        statusEl.className = 'summarize-status summarize-status--ok';
+                        statusEl.textContent = 'Résumé généré. N\'oubliez pas d\'enregistrer.';
+                    } else {
+                        statusEl.className = 'summarize-status summarize-status--err';
+                        statusEl.textContent = 'Erreur : ' + (data.error || 'inconnue');
+                    }
+                    statusEl.style.display = 'block';
+                })
+                .catch(function (e) {
+                    statusEl.className = 'summarize-status summarize-status--err';
+                    statusEl.textContent = 'Erreur réseau : ' + e.message;
+                    statusEl.style.display = 'block';
+                })
+                .finally(function () {
+                    btnSummarizeAI.disabled = false;
+                    btnSummarizeAI.innerHTML = '<i class="fas fa-robot"></i> Résumer avec l\'IA';
+                });
+            });
+        }
+
+        // Continuity suggestions
+        (function () {
+            var btn       = document.getElementById('btnContinuity');
+            var modal     = document.getElementById('continuityModal');
+            var closeBtn  = document.getElementById('closeContinuityModal');
+            var loading   = document.getElementById('continuityLoading');
+            var errEl     = document.getElementById('continuityError');
+            var list      = document.getElementById('continuityList');
+
+            if (!btn || !modal) return;
+
+            function openModal() { modal.classList.add('is-visible'); }
+            function closeModal() { modal.classList.remove('is-visible'); }
+
+            closeBtn.addEventListener('click', closeModal);
+            modal.addEventListener('click', function (e) { if (e.target === modal) closeModal(); });
+            document.addEventListener('keydown', function (e) {
+                if (e.key === 'Escape' && modal.classList.contains('is-visible')) closeModal();
+            });
+
+            btn.addEventListener('click', function () {
+                list.innerHTML = '';
+                errEl.style.display = 'none';
+                loading.style.display = 'block';
+                openModal();
+
+                fetch('{{ @base }}/ai/suggest-continuity', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json', 'X-CSRF-Token': window.CSRF_TOKEN },
+                    body: JSON.stringify({ chapter_id: parseInt(chapterId) })
+                })
+                .then(function (r) { return r.json(); })
+                .then(function (data) {
+                    loading.style.display = 'none';
+                    if (!data.success) {
+                        errEl.textContent = data.error || 'Erreur inconnue.';
+                        errEl.style.display = 'block';
+                        return;
+                    }
+                    if (!data.suggestions || !data.suggestions.length) {
+                        errEl.textContent = 'Aucune suggestion retournée.';
+                        errEl.style.display = 'block';
+                        return;
+                    }
+                    if (!data.has_previous) {
+                        var note = document.createElement('p');
+                        note.className = 'continuity-note';
+                        note.innerHTML = '<i class="fas fa-info-circle"></i> Aucun chapitre précédent — suggestions basées sur le titre uniquement.';
+                        list.appendChild(note);
+                    }
+                    data.suggestions.forEach(function (text) {
+                        var li = document.createElement('li');
+                        li.className = 'continuity-item';
+                        li.innerHTML =
+                            '<span class="continuity-text">' + escHtml(text) + '</span>' +
+                            '<button type="button" class="button secondary small continuity-insert-btn">Insérer</button>';
+                        li.querySelector('.continuity-insert-btn').addEventListener('click', function () {
+                            // Insert at beginning of main Quill editor
+                            var q = QuillTools.quill;
+                            if (!q) return;
+                            q.insertText(0, text + '\n', 'user');
+                            q.setSelection(0, 0);
+                            closeModal();
+                        });
+                        list.appendChild(li);
+                    });
+                })
+                .catch(function (e) {
+                    loading.style.display = 'none';
+                    errEl.textContent = 'Erreur réseau : ' + e.message;
+                    errEl.style.display = 'block';
+                });
+            });
+
+            function escHtml(s) {
+                return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+            }
+        }());
+
+        // Glossary modal
+        (function () {
+            var btn        = document.getElementById('btnGlossary');
+            var modal      = document.getElementById('glossaryModal');
+            var closeBtn   = document.getElementById('closeGlossaryModal');
+            var closeBtnFt = document.getElementById('closeGlossaryModalBtn');
+            var searchEl   = document.getElementById('glossarySearch');
+            var loading    = document.getElementById('glossaryLoading');
+            var emptyEl    = document.getElementById('glossaryEmpty');
+            var listEl     = document.getElementById('glossaryList');
+            var terms      = null; // cached
+
+            function escHtml(s) {
+                return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+            }
+
+            function renderTerms(filter) {
+                filter = (filter || '').toLowerCase();
+                listEl.innerHTML = '';
+                var visible = terms.filter(function (t) {
+                    return !filter || t.term.toLowerCase().indexOf(filter) !== -1 || (t.definition || '').toLowerCase().indexOf(filter) !== -1;
+                });
+                if (visible.length === 0) {
+                    emptyEl.style.display = 'block';
+                    return;
+                }
+                emptyEl.style.display = 'none';
+                visible.forEach(function (t) {
+                    var div = document.createElement('div');
+                    div.className = 'glossary-modal-entry';
+                    div.innerHTML =
+                        '<span class="glossary-modal-term">' + escHtml(t.term) + '</span>' +
+                        (t.definition ? '<p class="glossary-modal-def">' + escHtml(t.definition) + '</p>' : '');
+                    listEl.appendChild(div);
+                });
+            }
+
+            function openModal() { modal.style.display = 'flex'; searchEl.value = ''; searchEl.focus(); }
+            function closeModal() { modal.style.display = 'none'; }
+
+            if (btn) {
+                btn.addEventListener('click', function () {
+                    openModal();
+                    if (terms !== null) { renderTerms(''); return; }
+                    loading.style.display = 'block';
+                    listEl.innerHTML = '';
+                    emptyEl.style.display = 'none';
+                    fetch('{{ @base }}/project/{{ @project.id }}/glossary/terms', {
+                        headers: { 'X-CSRF-Token': window.CSRF_TOKEN }
+                    })
+                    .then(function (r) { return r.json(); })
+                    .then(function (data) {
+                        loading.style.display = 'none';
+                        terms = data;
+                        renderTerms('');
+                    })
+                    .catch(function () {
+                        loading.style.display = 'none';
+                        listEl.innerHTML = '<p class="continuity-error">Erreur lors du chargement.</p>';
+                    });
+                });
+            }
+
+            if (closeBtn)   closeBtn.addEventListener('click', closeModal);
+            if (closeBtnFt) closeBtnFt.addEventListener('click', closeModal);
+            modal.addEventListener('click', function (e) { if (e.target === modal) closeModal(); });
+            searchEl.addEventListener('input', function () { if (terms) renderTerms(this.value); });
+        }());
 
         // Init Comment Editor (Full)
         var commentEl = document.getElementById('comment-editor');

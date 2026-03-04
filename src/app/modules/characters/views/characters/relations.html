@@ -1,0 +1,384 @@
+<div class="edit-page-layout">
+
+    <div class="edit-header">
+        <h2><i class="fas fa-project-diagram"></i> Relations — {{ @project.title | esc }}</h2>
+        <div style="display:flex;gap:8px;">
+            <a href="{{ @base }}/project/{{ @project.id }}/characters" class="button secondary" title="Liste des personnages">
+                <i class="fas fa-users"></i>
+            </a>
+            <a href="{{ @base }}/project/{{ @project.id }}" class="button" title="Retour au projet">
+                <i class="fas fa-arrow-left"></i>
+            </a>
+        </div>
+    </div>
+
+    <check if="{{ empty(@characters) }}">
+        <div class="panel-empty">
+            <p>Aucun personnage. <a href="{{ @base }}/project/{{ @project.id }}/character/create">Créez des personnages</a> d'abord.</p>
+        </div>
+    </check>
+
+    <check if="{{ !empty(@characters) }}">
+
+        <div class="relations-layout">
+
+            <!-- Graph panel -->
+            <div class="relations-graph-panel">
+                <div id="charGraph" class="char-graph"></div>
+                <p class="char-graph-hint"><i class="fas fa-info-circle"></i> Faites glisser les nœuds pour réorganiser. Cliquez sur un lien puis <kbd>Suppr</kbd> pour le supprimer.</p>
+            </div>
+
+            <!-- Form panel -->
+            <div class="relations-form-panel">
+                <div class="edit-card">
+                    <h3><i class="fas fa-plus-circle"></i> Ajouter un lien</h3>
+
+                    <div class="form-group">
+                        <label>De</label>
+                        <select id="relFrom" class="input-control">
+                            <option value="">— Choisir —</option>
+                            <repeat group="{{ @characters }}" value="{{ @c }}">
+                                <option value="{{ @c.id }}">{{ @c.name | esc }}</option>
+                            </repeat>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Vers</label>
+                        <select id="relTo" class="input-control">
+                            <option value="">— Choisir —</option>
+                            <repeat group="{{ @characters }}" value="{{ @c }}">
+                                <option value="{{ @c.id }}">{{ @c.name | esc }}</option>
+                            </repeat>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Type de relation</label>
+                        <input type="text" id="relLabel" class="input-control"
+                            placeholder="ex: père de, rival, amour…" maxlength="100">
+                    </div>
+
+                    <div class="form-group">
+                        <label>Couleur du lien</label>
+                        <div class="color-presets">
+                            <button type="button" class="color-preset active" data-color="#94a3b8" style="background:#94a3b8" title="Neutre"></button>
+                            <button type="button" class="color-preset" data-color="#ef4444" style="background:#ef4444" title="Conflit"></button>
+                            <button type="button" class="color-preset" data-color="#f97316" style="background:#f97316" title="Tension"></button>
+                            <button type="button" class="color-preset" data-color="#eab308" style="background:#eab308" title="Alliance"></button>
+                            <button type="button" class="color-preset" data-color="#22c55e" style="background:#22c55e" title="Amitié"></button>
+                            <button type="button" class="color-preset" data-color="#ec4899" style="background:#ec4899" title="Amour"></button>
+                            <button type="button" class="color-preset" data-color="#3b82f6" style="background:#3b82f6" title="Famille"></button>
+                            <button type="button" class="color-preset" data-color="#8b5cf6" style="background:#8b5cf6" title="Magie/Lien spirituel"></button>
+                        </div>
+                        <input type="color" id="relColor" value="#94a3b8" class="color-custom-input">
+                    </div>
+
+                    <button type="button" id="btnAddRelation" class="button primary">
+                        <i class="fas fa-link"></i> Créer le lien
+                    </button>
+
+                    <p id="relStatus" class="rel-status" style="display:none;"></p>
+                </div>
+
+                <!-- Relations list -->
+                <div class="edit-card" id="relListCard">
+                    <h3><i class="fas fa-list"></i> Liens existants</h3>
+                    <div id="relList" class="rel-list">
+                        <check if="{{ empty(@relations) }}">
+                            <p class="text-muted" id="relEmptyMsg">Aucun lien défini.</p>
+                        </check>
+                        <check if="{{ !empty(@relations) }}">
+                            <repeat group="{{ @relations }}" value="{{ @r }}">
+                                <div class="rel-item" data-rid="{{ @r.id }}">
+                                    <span class="rel-dot" style="background:{{ @r.color }};"></span>
+                                    <span class="rel-names">
+                                        <strong>{{ @r.name_from | esc }}</strong>
+                                        <i class="fas fa-arrow-right rel-arrow"></i>
+                                        <strong>{{ @r.name_to | esc }}</strong>
+                                    </span>
+                                    <span class="rel-label-badge">{{ @r.label | esc }}</span>
+                                    <button type="button" class="button small delete btn-delete-rel" data-rid="{{ @r.id }}" title="Supprimer">
+                                        <i class="fas fa-trash"></i>
+                                    </button>
+                                </div>
+                            </repeat>
+                        </check>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+
+    </check>
+
+</div>
+
+<script src="https://unpkg.com/vis-network@9.1.9/standalone/umd/vis-network.min.js" nonce="{{ @nonce }}"></script>
+
+<script nonce="{{ @nonce }}">
+(function () {
+    var BASE       = '{{ @base }}';
+    var PID        = {{ @project.id }};
+    var CSRF       = '{{ @csrfToken }}';
+
+    // ── Build initial data from PHP ──────────────────────────────────────────
+
+    var charData = [
+        <repeat group="{{ @characters }}" value="{{ @c }}" counter="{{ @i }}">
+        { id: {{ @c.id }}, label: {{ json_encode(@c.name) | raw }} }<check if="{{ @i < count(@characters) }}">,</check>
+        </repeat>
+    ];
+
+    var relData = [
+        <repeat group="{{ @relations }}" value="{{ @r }}" counter="{{ @i }}">
+        { id: {{ @r.id }}, from: {{ @r.char_from }}, to: {{ @r.char_to }}, label: {{ json_encode(@r.label) | raw }}, color: {{ json_encode(@r.color) | raw }} }<check if="{{ @i < count(@relations) }}">,</check>
+        </repeat>
+    ];
+
+    // ── vis.js setup ─────────────────────────────────────────────────────────
+
+    var nodes = new vis.DataSet(charData.map(function (c) {
+        return {
+            id: c.id,
+            label: c.label,
+            shape: 'box',
+            borderRadius: 8,
+            color: {
+                background: '#e8eaf6',
+                border: '#5c6bc0',
+                highlight: { background: '#c5cae9', border: '#3f51b5' },
+                hover:      { background: '#d1d5fb', border: '#3f51b5' }
+            },
+            font: { size: 14, face: 'system-ui, sans-serif', color: '#1e1e2e', bold: { size: 14 } },
+            margin: { top: 10, right: 16, bottom: 10, left: 16 },
+            shadow: { enabled: true, color: 'rgba(0,0,0,.10)', x: 2, y: 3, size: 8 },
+            widthConstraint: { minimum: 80 }
+        };
+    }));
+
+    var edges = new vis.DataSet(relData.map(edgeFromRel));
+
+    function edgeFromRel(r) {
+        return {
+            id: r.id,
+            from: r.from,
+            to: r.to,
+            label: r.label,
+            color: { color: r.color, highlight: r.color, hover: r.color, opacity: 0.9 },
+            font: {
+                size: 12, face: 'system-ui, sans-serif', color: '#333',
+                strokeWidth: 3, strokeColor: '#fff',
+                align: 'middle'
+            },
+            arrows: { to: { enabled: true, scaleFactor: 0.7, type: 'arrow' } },
+            smooth: { type: 'curvedCW', roundness: 0.15 },
+            width: 2,
+            selectionWidth: 4,
+            hoverWidth: 1
+        };
+    }
+
+    var container = document.getElementById('charGraph');
+    var network;
+    if (container) {
+        network = new vis.Network(container, { nodes: nodes, edges: edges }, {
+            physics: {
+                enabled: true,
+                barnesHut: { gravitationalConstant: -4000, springLength: 160, springConstant: 0.04 },
+                stabilization: { iterations: 150 }
+            },
+            interaction: { hover: true, tooltipDelay: 150, zoomView: true },
+            layout: { randomSeed: 42 },
+            nodes: { borderWidth: 2, borderWidthSelected: 3 },
+            edges: { labelHighlightBold: false }
+        });
+
+        // Delete selected edge on Delete/Backspace key
+        document.addEventListener('keydown', function (e) {
+            if ((e.key === 'Delete' || e.key === 'Backspace') && document.activeElement === document.body) {
+                var sel = network.getSelectedEdges();
+                if (sel.length) deleteRelation(sel[0]);
+            }
+        });
+    }
+
+    // ── Color presets ─────────────────────────────────────────────────────────
+
+    var selectedColor = '#94a3b8';
+    var colorInput    = document.getElementById('relColor');
+
+    document.querySelectorAll('.color-preset').forEach(function (btn) {
+        btn.addEventListener('click', function () {
+            document.querySelectorAll('.color-preset').forEach(function (b) { b.classList.remove('active'); });
+            btn.classList.add('active');
+            selectedColor = btn.dataset.color;
+            colorInput.value = selectedColor;
+        });
+    });
+
+    colorInput.addEventListener('input', function () {
+        selectedColor = colorInput.value;
+        document.querySelectorAll('.color-preset').forEach(function (b) { b.classList.remove('active'); });
+    });
+
+    // ── Add relation ──────────────────────────────────────────────────────────
+
+    document.getElementById('btnAddRelation').addEventListener('click', function () {
+        var fromId = parseInt(document.getElementById('relFrom').value);
+        var toId   = parseInt(document.getElementById('relTo').value);
+        var label  = document.getElementById('relLabel').value.trim();
+        var status = document.getElementById('relStatus');
+
+        if (!fromId || !toId) {
+            showStatus('Veuillez choisir deux personnages.', 'err');
+            return;
+        }
+        if (fromId === toId) {
+            showStatus('Un personnage ne peut pas avoir de lien avec lui-même.', 'err');
+            return;
+        }
+
+        var btn = this;
+        btn.disabled = true;
+
+        fetch(BASE + '/project/' + PID + '/characters/relation/add', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/x-www-form-urlencoded', 'X-CSRF-Token': CSRF },
+            body: new URLSearchParams({ char_from: fromId, char_to: toId, label: label, color: selectedColor, csrf_token: CSRF })
+        })
+        .then(function (r) { return r.json(); })
+        .then(function (data) {
+            if (!data.success) { showStatus(data.error || 'Erreur', 'err'); return; }
+            var r = data.relation;
+
+            // Add to graph
+            edges.add(edgeFromRel({ id: r.id, from: r.char_from, to: r.char_to, label: r.label, color: r.color }));
+
+            // Add to list
+            addRelToList(r);
+
+            document.getElementById('relLabel').value = '';
+            showStatus('Lien créé.', 'ok');
+        })
+        .catch(function (e) { showStatus('Erreur réseau.', 'err'); })
+        .finally(function () { btn.disabled = false; });
+    });
+
+    // ── Delete relation ───────────────────────────────────────────────────────
+
+    function deleteRelation(rid) {
+        if (!confirm('Supprimer ce lien ?')) return;
+
+        fetch(BASE + '/project/' + PID + '/characters/relation/' + rid + '/delete', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/x-www-form-urlencoded', 'X-CSRF-Token': CSRF },
+            body: new URLSearchParams({ csrf_token: CSRF })
+        })
+        .then(function (r) { return r.json(); })
+        .then(function (data) {
+            if (!data.success) return;
+            edges.remove(rid);
+            var item = document.querySelector('.rel-item[data-rid="' + rid + '"]');
+            if (item) item.remove();
+            if (!document.querySelector('.rel-item')) {
+                var empty = document.getElementById('relEmptyMsg');
+                if (!empty) {
+                    var p = document.createElement('p');
+                    p.id = 'relEmptyMsg';
+                    p.className = 'text-muted';
+                    p.textContent = 'Aucun lien défini.';
+                    document.getElementById('relList').appendChild(p);
+                }
+            }
+        });
+    }
+
+    // Delegate click on delete buttons in list
+    document.getElementById('relList').addEventListener('click', function (e) {
+        var btn = e.target.closest('.btn-delete-rel');
+        if (btn) deleteRelation(parseInt(btn.dataset.rid));
+    });
+
+    // ── Helpers ───────────────────────────────────────────────────────────────
+
+    function addRelToList(r) {
+        var empty = document.getElementById('relEmptyMsg');
+        if (empty) empty.remove();
+
+        var item = document.createElement('div');
+        item.className = 'rel-item';
+        item.dataset.rid = r.id;
+        item.innerHTML =
+            '<span class="rel-dot" style="background:' + r.color + ';"></span>' +
+            '<span class="rel-names"><strong>' + escHtml(r.name_from) + '</strong>' +
+            ' <i class="fas fa-arrow-right rel-arrow"></i> ' +
+            '<strong>' + escHtml(r.name_to) + '</strong></span>' +
+            '<span class="rel-label-badge">' + escHtml(r.label) + '</span>' +
+            '<button type="button" class="button small delete btn-delete-rel" data-rid="' + r.id + '" title="Supprimer">' +
+            '<i class="fas fa-trash"></i></button>';
+        document.getElementById('relList').appendChild(item);
+    }
+
+    function showStatus(msg, type) {
+        var el = document.getElementById('relStatus');
+        el.textContent = msg;
+        el.className = 'rel-status rel-status--' + type;
+        el.style.display = 'block';
+        setTimeout(function () { el.style.display = 'none'; }, 3000);
+    }
+
+    function escHtml(str) {
+        return String(str).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+    }
+}());
+</script>
+
+<style nonce="{{ @nonce }}">
+.relations-layout {
+    display: grid;
+    grid-template-columns: 1fr 340px;
+    gap: 16px;
+    align-items: start;
+}
+.relations-graph-panel { min-width: 0; }
+.char-graph {
+    width: 100%;
+    height: 520px;
+    border: 1px solid var(--border-color, #e0e0e0);
+    border-radius: 10px;
+    background: var(--card-bg, #fff);
+}
+.char-graph-hint {
+    font-size: .78rem;
+    color: var(--text-muted, #777);
+    margin: 6px 0 0;
+}
+.char-graph-hint kbd {
+    background: var(--border-color, #e0e0e0);
+    border-radius: 3px;
+    padding: 1px 5px;
+    font-size: .75rem;
+}
+.color-presets { display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 6px; }
+.color-preset {
+    width: 24px; height: 24px; border-radius: 50%;
+    border: 3px solid transparent; cursor: pointer;
+    transition: border-color .15s;
+}
+.color-preset.active { border-color: var(--text-main, #333); }
+.color-custom-input { width: 48px; height: 28px; padding: 0; border: 1px solid var(--border-color,#ddd); border-radius: 4px; cursor: pointer; }
+.rel-list { display: flex; flex-direction: column; gap: 6px; }
+.rel-item { display: flex; align-items: center; gap: 8px; padding: 8px 10px; border: 1px solid var(--border-color,#e0e0e0); border-radius: 6px; font-size: .83rem; }
+.rel-dot { width: 10px; height: 10px; border-radius: 50%; flex-shrink: 0; }
+.rel-names { flex: 1; min-width: 0; }
+.rel-arrow { color: var(--text-muted,#999); margin: 0 4px; font-size: .75rem; }
+.rel-label-badge { background: var(--border-color,#eee); border-radius: 10px; padding: 1px 8px; font-size: .75rem; color: var(--text-muted,#666); white-space: nowrap; }
+.rel-status { margin-top: 8px; font-size: .82rem; padding: 4px 8px; border-radius: 4px; }
+.rel-status--ok  { color: #15803d; background: #f0fdf4; }
+.rel-status--err { color: #b91c1c; background: #fef2f2; }
+@media (max-width: 768px) {
+    .relations-layout { grid-template-columns: 1fr; }
+    .char-graph { height: 360px; }
+}
+</style>
