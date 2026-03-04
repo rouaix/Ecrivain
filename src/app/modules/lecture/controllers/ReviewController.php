@@ -214,12 +214,30 @@ class ReviewController extends Controller
             ) ?: [];
         }
 
+        if ($isOwner) {
+            $suggestions = $this->db->exec(
+                'SELECT s.*, u.username AS author_name, u.email AS author_email
+                 FROM inline_suggestions s
+                 LEFT JOIN users u ON u.id = s.user_id
+                 WHERE s.project_id = ?
+                 ORDER BY s.created_at DESC',
+                [$pid]
+            ) ?: [];
+        } else {
+            $suggestions = $this->db->exec(
+                'SELECT * FROM inline_suggestions WHERE project_id = ? AND user_id = ? ORDER BY created_at DESC',
+                [$pid, $user['id']]
+            ) ?: [];
+        }
+
         $this->render('relecture/review.html', [
             'title'           => 'Relecture : ' . $data['project']['title'],
             'project'         => $data['project'],
             'items'           => $data['items'],
             'annotations'     => $annotations,
             'annotationsJson' => json_encode(array_values($annotations)),
+            'suggestions'     => $suggestions,
+            'suggestionsJson' => json_encode(array_values($suggestions)),
             'projectJson'     => json_encode(['id' => $pid, 'currentUserId' => $user['id'], 'isOwner' => $isOwner]),
             'isOwner'         => $isOwner,
             'isCollaborator'  => $this->isCollaborator($pid),
@@ -298,6 +316,105 @@ class ReviewController extends Controller
         }
 
         $this->db->exec('DELETE FROM annotations WHERE id = ?', [$aid]);
+        echo json_encode(['status' => 'ok']);
+    }
+
+    /**
+     * AJAX: add an inline suggestion.
+     */
+    public function addSuggestion()
+    {
+        header('Content-Type: application/json');
+        $user = $this->currentUser();
+
+        $pid           = (int) ($_POST['project_id'] ?? 0);
+        $contentType   = trim($_POST['content_type'] ?? '');
+        $contentId     = (int) ($_POST['content_id'] ?? 0);
+        $originalText  = trim($_POST['original_text'] ?? '');
+        $suggestedText = trim($_POST['suggested_text'] ?? '');
+        $comment       = trim($_POST['comment'] ?? '');
+
+        $validTypes = ['chapter', 'act', 'section', 'note', 'element'];
+
+        if (!$pid || !$contentType || !$contentId || $originalText === '' || $suggestedText === ''
+            || !in_array($contentType, $validTypes)) {
+            echo json_encode(['status' => 'error', 'message' => 'Données invalides.']);
+            return;
+        }
+
+        if (!$this->hasProjectAccess($pid)) {
+            echo json_encode(['status' => 'error', 'message' => 'Accès refusé.']);
+            return;
+        }
+
+        $this->db->exec(
+            'INSERT INTO inline_suggestions (project_id, user_id, content_type, content_id, original_text, suggested_text, comment)
+             VALUES (?, ?, ?, ?, ?, ?, ?)',
+            [$pid, $user['id'], $contentType, $contentId, $originalText, $suggestedText, $comment ?: null]
+        );
+
+        $rows = $this->db->exec('SELECT LAST_INSERT_ID() AS id');
+        $id   = (int) ($rows[0]['id'] ?? 0);
+
+        echo json_encode(['status' => 'ok', 'id' => $id]);
+    }
+
+    /**
+     * AJAX: accept or reject an inline suggestion (owner only).
+     */
+    public function updateSuggestion()
+    {
+        header('Content-Type: application/json');
+        $sid    = (int) $this->f3->get('PARAMS.sid');
+        $action = trim($this->f3->get('PARAMS.action') ?? '');
+
+        if (!in_array($action, ['accept', 'reject'])) {
+            echo json_encode(['status' => 'error', 'message' => 'Action invalide.']);
+            return;
+        }
+
+        $rows = $this->db->exec('SELECT * FROM inline_suggestions WHERE id = ?', [$sid]);
+        if (empty($rows)) {
+            echo json_encode(['status' => 'error', 'message' => 'Suggestion introuvable.']);
+            return;
+        }
+
+        $sug = $rows[0];
+
+        if (!$this->isOwner((int) $sug['project_id'])) {
+            echo json_encode(['status' => 'error', 'message' => 'Réservé au propriétaire du projet.']);
+            return;
+        }
+
+        $status = $action === 'accept' ? 'accepted' : 'rejected';
+        $this->db->exec('UPDATE inline_suggestions SET status = ? WHERE id = ?', [$status, $sid]);
+
+        echo json_encode(['status' => 'ok', 'newStatus' => $status]);
+    }
+
+    /**
+     * AJAX: delete an inline suggestion.
+     */
+    public function deleteSuggestion()
+    {
+        header('Content-Type: application/json');
+        $user = $this->currentUser();
+        $sid  = (int) $this->f3->get('PARAMS.sid');
+
+        $rows = $this->db->exec('SELECT * FROM inline_suggestions WHERE id = ?', [$sid]);
+        if (empty($rows)) {
+            echo json_encode(['status' => 'error', 'message' => 'Suggestion introuvable.']);
+            return;
+        }
+
+        $sug = $rows[0];
+
+        if ((int) $sug['user_id'] !== (int) $user['id'] && !$this->isOwner((int) $sug['project_id'])) {
+            echo json_encode(['status' => 'error', 'message' => 'Non autorisé.']);
+            return;
+        }
+
+        $this->db->exec('DELETE FROM inline_suggestions WHERE id = ?', [$sid]);
         echo json_encode(['status' => 'ok']);
     }
 

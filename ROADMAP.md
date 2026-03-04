@@ -93,7 +93,7 @@ Suivi des fonctionnalités proposées. Statuts : `[ ]` à faire · `[~]` en cour
 ## Collaboration & partage
 
 ### 11. Mode relecture avec suggestions inline
-**Statut** : `[ ]`
+**Statut** : `[x]`
 **Description** : Le collaborateur peut proposer des corrections inline (style Google Docs). Étend le module `collab` au-delà des `collaboration_requests`.
 **Fichiers concernés** : `collab/`, `lecture/controllers/LectureController.php`, `quill-adapter.js`
 **Notes** :
