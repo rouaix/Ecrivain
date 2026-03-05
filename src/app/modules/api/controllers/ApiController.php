@@ -829,20 +829,20 @@ class ApiController extends Controller
             'SELECT a.id, a.title, a.description, a.resume, a.order_index FROM acts a
              WHERE a.project_id = ? ORDER BY a.order_index ASC, a.id ASC',
             [$id]
-        );
+        ) ?: [];
         foreach ($acts as &$a) {
             $a['chapters'] = $this->db->exec(
                 'SELECT id, title, resume, word_count, order_index FROM chapters
                  WHERE project_id = ? AND act_id = ? ORDER BY order_index ASC, id ASC',
                 [$id, $a['id']]
-            );
+            ) ?: [];
         }
         // Chapters without act
         $freeChapters = $this->db->exec(
             'SELECT id, title, resume, word_count, order_index FROM chapters
              WHERE project_id = ? AND act_id IS NULL ORDER BY order_index ASC, id ASC',
             [$id]
-        );
+        ) ?: [];
 
         $sections = $this->db->exec(
             'SELECT id, type, title, order_index FROM sections WHERE project_id = ? ORDER BY order_index ASC', [$id]
@@ -883,7 +883,7 @@ class ApiController extends Controller
         $chapters = $this->db->exec(
             'SELECT id, title, resume, word_count, order_index FROM chapters
              WHERE act_id = ? ORDER BY order_index ASC, id ASC', [$id]
-        );
+        ) ?: [];
         return [
             'id'          => (int)$a['id'],
             'project_id'  => (int)$a['project_id'],

@@ -395,7 +395,7 @@ class McpController extends Controller
         $rows = $this->db->exec(
             'SELECT id, title, content, parent_id FROM chapters WHERE act_id=? ORDER BY order_index ASC, id ASC',
             [$id]
-        );
+        ) ?: [];
 
         $md = "# {$act['title']}\n";
         if ($act['description']) $md .= $this->htmlToText($act['description']) . "\n";
