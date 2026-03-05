@@ -3,68 +3,68 @@
         <h2><i class="fas fa-envelope-open-text"></i> Mes invitations &amp; collaborations</h2>
     </div>
 
-    <check if="{{ count(@invitations) == 0 }}">
-        <div class="card">
-            <p class="text-muted-para" style="text-align:center;padding:2rem 0">
-                <i class="fas fa-inbox" style="font-size:2rem;opacity:.3;display:block;margin-bottom:.5rem"></i>
-                Aucune invitation reçue.
-            </p>
-        </div>
-    </check>
+    <div class="edit-card" style="margin-top:1.5rem">
+        <div class="edit-card-section">
+            <check if="{{ count(@invitations) == 0 }}">
+                <p class="text-muted-para" style="text-align:center;padding:2rem 0">
+                    <i class="fas fa-inbox" style="font-size:2rem;opacity:.3;display:block;margin-bottom:.5rem"></i>
+                    Aucune invitation reçue.
+                </p>
+            </check>
 
-    <check if="{{ count(@invitations) > 0 }}">
-        <div class="card">
-            <table class="data-table">
-                <thead>
-                    <tr>
-                        <th>Projet</th>
-                        <th>Propriétaire</th>
-                        <th>Statut</th>
-                        <th>Date</th>
-                        <th>Actions</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <repeat group="{{ @invitations }}" value="{{ @inv }}">
+            <check if="{{ count(@invitations) > 0 }}">
+                <table class="data-table">
+                    <thead>
                         <tr>
-                            <td><strong>{{ @inv.project_title | esc }}</strong></td>
-                            <td>{{ @inv.owner_username | esc }}</td>
-                            <td>
-                                <check if="{{ @inv.status == 'accepted' }}">
-                                    <span class="badge badge-success">Accepté</span>
-                                </check>
-                                <check if="{{ @inv.status == 'pending' }}">
-                                    <span class="badge badge-warning">En attente</span>
-                                </check>
-                                <check if="{{ @inv.status == 'declined' }}">
-                                    <span class="badge badge-error">Refusé</span>
-                                </check>
-                            </td>
-                            <td>{{ @inv.created_at }}</td>
-                            <td>
-                                <check if="{{ @inv.status == 'accepted' }}">
-                                    <a href="{{ @base }}/project/{{ @inv.project_id }}" class="button small" data-tooltip="Voir le projet" title="Voir le projet">
-                                        <i class="fas fa-eye"></i> Voir
-                                    </a>
-                                    <a href="{{ @base }}/project/{{ @inv.project_id }}/collab/mes-demandes" class="button small secondary" data-tooltip="Voir mes demandes" title="Voir mes demandes">
-                                        <i class="fas fa-paper-plane"></i> Mes demandes
-                                    </a>
-                                </check>
-                                <check if="{{ @inv.status == 'pending' }}">
-                                    <form method="post" action="{{ @base }}/collab/invitation/{{ @inv.id }}/accept" style="display:inline">
-                                        <input type="hidden" name="csrf_token" value="{{ @csrfToken }}">
-                                        <button type="submit" class="button small primary" data-tooltip="Accepter l'invitation" title="Accepter l'invitation">Accepter</button>
-                                    </form>
-                                    <form method="post" action="{{ @base }}/collab/invitation/{{ @inv.id }}/decline" style="display:inline">
-                                        <input type="hidden" name="csrf_token" value="{{ @csrfToken }}">
-                                        <button type="submit" class="button small" data-tooltip="Refuser l'invitation" title="Refuser l'invitation">Refuser</button>
-                                    </form>
-                                </check>
-                            </td>
+                            <th>Projet</th>
+                            <th>Propriétaire</th>
+                            <th>Statut</th>
+                            <th>Date</th>
+                            <th>Actions</th>
                         </tr>
-                    </repeat>
-                </tbody>
-            </table>
+                    </thead>
+                    <tbody>
+                        <repeat group="{{ @invitations }}" value="{{ @inv }}">
+                            <tr>
+                                <td><strong>{{ @inv.project_title | esc }}</strong></td>
+                                <td>{{ @inv.owner_username | esc }}</td>
+                                <td>
+                                    <check if="{{ @inv.status == 'accepted' }}">
+                                        <span class="badge badge-success">Accepté</span>
+                                    </check>
+                                    <check if="{{ @inv.status == 'pending' }}">
+                                        <span class="badge badge-warning">En attente</span>
+                                    </check>
+                                    <check if="{{ @inv.status == 'declined' }}">
+                                        <span class="badge badge-error">Refusé</span>
+                                    </check>
+                                </td>
+                                <td>{{ @inv.created_at }}</td>
+                                <td>
+                                    <check if="{{ @inv.status == 'accepted' }}">
+                                        <a href="{{ @base }}/project/{{ @inv.project_id }}" class="button small" data-tooltip="Voir le projet" title="Voir le projet">
+                                            <i class="fas fa-eye"></i> Voir
+                                        </a>
+                                        <a href="{{ @base }}/project/{{ @inv.project_id }}/collab/mes-demandes" class="button small secondary" data-tooltip="Mes demandes" title="Mes demandes">
+                                            <i class="fas fa-paper-plane"></i> Mes demandes
+                                        </a>
+                                    </check>
+                                    <check if="{{ @inv.status == 'pending' }}">
+                                        <form method="post" action="{{ @base }}/collab/invitation/{{ @inv.id }}/accept" style="display:inline">
+                                            <input type="hidden" name="csrf_token" value="{{ @csrfToken }}">
+                                            <button type="submit" class="button small" data-tooltip="Accepter l'invitation" title="Accepter l'invitation">Accepter</button>
+                                        </form>
+                                        <form method="post" action="{{ @base }}/collab/invitation/{{ @inv.id }}/decline" style="display:inline">
+                                            <input type="hidden" name="csrf_token" value="{{ @csrfToken }}">
+                                            <button type="submit" class="button small secondary" data-tooltip="Refuser l'invitation" title="Refuser l'invitation">Refuser</button>
+                                        </form>
+                                    </check>
+                                </td>
+                            </tr>
+                        </repeat>
+                    </tbody>
+                </table>
+            </check>
         </div>
-    </check>
+    </div>
 </div>

@@ -1,120 +1,73 @@
-<div class="edit-header">
+<div class="edit-page-layout">
 
-    <h2>Lexique &mdash; {{ @project.title }}</h2>
+    <div class="edit-header">
+        <h2><i class="fas fa-book"></i> Lexique &mdash; {{ @project.title }}</h2>
+        <div class="header-actions">
+            <a href="{{ @base }}/project/{{ @project.id }}/glossary/create" class="button" title="Nouveau terme" data-tooltip="Nouveau terme"><i class="fas fa-plus"></i></a>
+            <a href="{{ @base }}/project/{{ @project.id }}" class="button secondary" title="Retour au projet" data-tooltip="Retour au projet"><i class="fas fa-arrow-left"></i></a>
+        </div>
+    </div>
 
-    <span>
+    <check if="{{ @count == 0 }}">
+        <true>
+            <div class="edit-card" style="margin-top:1.5rem">
+                <p class="text-muted-para" style="text-align:center;padding:2rem 0">
+                    <i class="fas fa-book" style="font-size:2rem;opacity:.3;display:block;margin-bottom:.5rem"></i>
+                    Aucun terme dans le lexique. <a href="{{ @base }}/project/{{ @project.id }}/glossary/create">Ajoutez votre premier terme.</a>
+                </p>
+            </div>
+        </true>
+        <false>
+            <p class="glossary-meta" style="margin-top:1.5rem">{{ @count }} terme(s) au total</p>
 
-        <a href="{{ @base }}/project/{{ @project.id }}/glossary/create" class="button" title="Nouveau terme" data-tooltip="Nouveau terme"><i class="fas fa-plus"></i></a>
-
-        <a href="{{ @base }}/project/{{ @project.id }}" class="button" title="Retour au projet" data-tooltip="Retour au projet"><i class="fas fa-arrow-left"></i></a>
-
-    </span>
+            <repeat group="{{ @categories }}" key="{{ @catKey }}" value="{{ @catLabel }}">
+                <check if="{{ isset(@grouped[@catKey]) }}">
+                    <true>
+                        <div class="edit-card glossary-category">
+                            <div class="edit-card-section">
+                                <h3>{{ @catLabel }}</h3>
+                                <table class="data-table glossary-table">
+                                    <thead>
+                                        <tr>
+                                            <th>Terme</th>
+                                            <th>Définition</th>
+                                            <th class="compact-actions--wide"></th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <repeat group="{{ @grouped[@catKey] }}" value="{{ @entry }}">
+                                            <tr>
+                                                <td class="glossary-term">{{ @entry.term }}</td>
+                                                <td class="glossary-definition">{{ @entry.definition ?: '—' }}</td>
+                                                <td class="compact-actions--wide" style="text-align:right">
+                                                    <a class="button small" href="{{ @base }}/project/{{ @project.id }}/glossary/{{ @entry.id }}/edit" title="Modifier" data-tooltip="Modifier le terme"><i class="fas fa-edit"></i></a>
+                                                    <a class="button small delete js-confirm"
+                                                        href="{{ @base }}/project/{{ @project.id }}/glossary/{{ @entry.id }}/delete"
+                                                        data-confirm="Supprimer le terme « {{ @entry.term }} » ?"
+                                                        title="Supprimer" data-tooltip="Supprimer le terme"><i class="fas fa-trash"></i></a>
+                                                </td>
+                                            </tr>
+                                        </repeat>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </true>
+                </check>
+            </repeat>
+        </false>
+    </check>
 
 </div>
 
-<check if="{{ @count == 0 }}">
-
-    <true>
-
-        <div class="panel-empty">
-
-            <p>Aucun terme dans le lexique. <a href="{{ @base }}/project/{{ @project.id }}/glossary/create">Ajoutez votre premier terme.</a></p>
-
-        </div>
-
-    </true>
-
-    <false>
-
-        <p class="glossary-meta">{{ @count }} terme(s) au total</p>
-
-        <repeat group="{{ @categories }}" key="{{ @catKey }}" value="{{ @catLabel }}">
-
-            <check if="{{ isset(@grouped[@catKey]) }}">
-
-                <true>
-
-                    <section class="glossary-category">
-
-                        <h3 class="glossary-category-title">{{ @catLabel }}</h3>
-
-                        <table class="compact-table data-table glossary-table">
-
-                            <thead>
-
-                                <tr>
-
-                                    <th>Terme</th>
-
-                                    <th>D&eacute;finition</th>
-
-                                    <th class="compact-actions compact-actions--wide"></th>
-
-                                </tr>
-
-                            </thead>
-
-                            <tbody>
-
-                                <repeat group="{{ @grouped[@catKey] }}" value="{{ @entry }}">
-
-                                    <tr>
-
-                                        <td class="glossary-term">{{ @entry.term }}</td>
-
-                                        <td class="glossary-definition">{{ @entry.definition ?: '—' }}</td>
-
-                                        <td class="compact-actions compact-actions--wide">
-
-                                            <a class="button small" href="{{ @base }}/project/{{ @project.id }}/glossary/{{ @entry.id }}/edit" title="Modifier" data-tooltip="Modifier le terme"><i class="fas fa-edit"></i></a>
-
-                                            <a class="button small delete js-confirm"
-                                                href="{{ @base }}/project/{{ @project.id }}/glossary/{{ @entry.id }}/delete"
-                                                data-confirm="Supprimer le terme « {{ @entry.term }} » ?"
-                                                title="Supprimer" data-tooltip="Supprimer le terme"><i class="fas fa-trash"></i></a>
-
-                                        </td>
-
-                                    </tr>
-
-                                </repeat>
-
-                            </tbody>
-
-                        </table>
-
-                    </section>
-
-                </true>
-
-            </check>
-
-        </repeat>
-
-    </false>
-
-</check>
-
 <script nonce="{{ @nonce }}">
-
     document.addEventListener('DOMContentLoaded', function () {
-
         document.querySelectorAll('.js-confirm').forEach(function (el) {
-
             el.addEventListener('click', function (e) {
-
                 if (!confirm(this.dataset.confirm || 'Confirmer ?')) {
-
                     e.preventDefault();
-
                 }
-
             });
-
         });
-
     });
-
 </script>
-
-</content>

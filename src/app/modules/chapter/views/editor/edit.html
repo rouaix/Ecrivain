@@ -958,7 +958,6 @@
                 contextId: '{{ @chapter.id }}',
                 contextType: 'chapter'
             });
-            QuillTools.quill.on('text-change', _markDirty);
         } else {
             console.error('QuillTools is not defined');
         }
@@ -1021,7 +1020,6 @@
                 html = QuillTools.cleanQuillHtml(html);
                 document.querySelector('input[name="resume"]').value = html;
             });
-            resumeQuill.on('text-change', _markDirty);
 
             var decodedResume = decodeHtmlDeep(initialResumeHtml, 2);
             if (decodedResume) {
@@ -1315,7 +1313,6 @@
                 html = QuillTools.cleanQuillHtml(html);
                 document.querySelector('input[name="comment"]').value = html;
             });
-            commentQuill.on('text-change', _markDirty);
 
             var decodedComment = decodeHtmlDeep(initialCommentHtml, 2);
             if (decodedComment) {
@@ -1506,14 +1503,7 @@
             }
         });
 
-        // ─── Auto-save wiring ─────────────────────────────────────────────────
-        // Track changes on non-Quill fields
-        document.getElementById('title').addEventListener('input', _markDirty);
-        document.getElementById('act_id').addEventListener('change', _markDirty);
-        document.getElementById('parent_id').addEventListener('change', _markDirty);
-
-        // Auto-save every 30 seconds if dirty
-        setInterval(_doAutoSave, 30000);
+        // ─── Auto-save wiring (disabled) ──────────────────────────────────────
 
         // Warn before leaving with unsaved changes + cleanup Quill listeners
         window.addEventListener('beforeunload', function (e) {

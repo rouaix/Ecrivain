@@ -1,0 +1,42 @@
+/* Glossary module styles */
+/* ==========================================
+   GLOSSARY
+   ========================================== */
+
+.glossary-meta {
+    font-size: 0.85rem;
+    color: var(--text-muted);
+    margin: 0 0 16px 0;
+}
+
+.glossary-category {
+    margin-bottom: 28px;
+}
+
+.glossary-category-title {
+    font-size: 0.75rem;
+    font-weight: 600;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--text-muted);
+    margin: 0 0 8px 0;
+    padding-bottom: 6px;
+    border-bottom: 1px solid var(--border-light);
+}
+
+.glossary-term {
+    font-weight: 500;
+    color: var(--text-main);
+    width: 200px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 200px;
+}
+
+.glossary-definition {
+    color: var(--text-muted);
+    font-size: 0.9rem;
+    line-height: 1.5;
+    white-space: pre-line;
+}

@@ -1,77 +1,54 @@
-<div class="edit-header">
+<div class="edit-page-layout">
 
-    <h2>{{ @title }}</h2>
+    <div class="edit-header">
+        <h2>{{ @title }}</h2>
+        <div class="header-actions">
+            <a href="{{ @base }}/project/{{ @project.id }}/glossary" class="button secondary" title="Retour au lexique" data-tooltip="Retour au lexique"><i class="fas fa-arrow-left"></i></a>
+        </div>
+    </div>
 
-    <span>
+    <check if="{{ !empty(@errors) }}">
+        <true>
+            <div class="alert alert-error" style="margin-top:1.5rem">
+                <repeat group="{{ @errors }}" value="{{ @err }}">
+                    <p>{{ @err }}</p>
+                </repeat>
+            </div>
+        </true>
+    </check>
 
-        <a href="{{ @base }}/project/{{ @project.id }}/glossary" class="button" title="Retour au lexique" data-tooltip="Retour au lexique"><i class="fas fa-arrow-left"></i></a>
+    <div class="edit-card" style="margin-top:1.5rem">
+        <form method="POST" action="{{ @base }}/project/{{ @project.id }}/glossary{{ @entry.id ? '/' . @entry.id . '/edit' : '/create' }}">
+            <input type="hidden" name="csrf_token" value="{{ @csrfToken }}">
 
-    </span>
+            <div class="edit-card-section">
+                <h3><i class="fas fa-tag"></i> Terme</h3>
+
+                <div class="form-group">
+                    <label for="term">Terme <span class="required">*</span></label>
+                    <input type="text" id="term" name="term" value="{{ @entry.term }}" maxlength="150" required autofocus class="input-control">
+                </div>
+
+                <div class="form-group">
+                    <label for="category">Catégorie</label>
+                    <select id="category" name="category" class="input-control">
+                        <repeat group="{{ @categories }}" key="{{ @catKey }}" value="{{ @catLabel }}">
+                            <option value="{{ @catKey }}" {{ @entry.category == @catKey ? 'selected' : '' }}>{{ @catLabel }}</option>
+                        </repeat>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label for="definition">Définition</label>
+                    <textarea id="definition" name="definition" rows="6" class="input-control" placeholder="Description, explications, notes…">{{ @entry.definition }}</textarea>
+                </div>
+            </div>
+
+            <div class="edit-actions">
+                <a href="{{ @base }}/project/{{ @project.id }}/glossary" class="button secondary" data-tooltip="Annuler" title="Annuler">Annuler</a>
+                <button type="submit" class="button" data-tooltip="Enregistrer le terme" title="Enregistrer le terme">Enregistrer</button>
+            </div>
+        </form>
+    </div>
 
 </div>
-
-<check if="{{ !empty(@errors) }}">
-
-    <true>
-
-        <ul class="form-errors">
-
-            <repeat group="{{ @errors }}" value="{{ @err }}">
-
-                <li>{{ @err }}</li>
-
-            </repeat>
-
-        </ul>
-
-    </true>
-
-</check>
-
-<form method="POST" action="{{ @base }}/project/{{ @project.id }}/glossary{{ @entry.id ? '/' ~ @entry.id ~ '/edit' : '/create' }}" class="card-form">
-
-    <input type="hidden" name="csrf_token" value="{{ @csrfToken }}">
-
-    <div class="form-group">
-
-        <label for="term">Terme <span class="required">*</span></label>
-
-        <input type="text" id="term" name="term" value="{{ @entry.term }}" maxlength="150" required autofocus class="input-full">
-
-    </div>
-
-    <div class="form-group">
-
-        <label for="category">Cat&eacute;gorie</label>
-
-        <select id="category" name="category" class="input-full">
-
-            <repeat group="{{ @categories }}" key="{{ @catKey }}" value="{{ @catLabel }}">
-
-                <option value="{{ @catKey }}" {{ @entry.category == @catKey ? 'selected' : '' }}>{{ @catLabel }}</option>
-
-            </repeat>
-
-        </select>
-
-    </div>
-
-    <div class="form-group">
-
-        <label for="definition">D&eacute;finition</label>
-
-        <textarea id="definition" name="definition" rows="6" class="input-full" placeholder="Description, explications, notes…">{{ @entry.definition }}</textarea>
-
-    </div>
-
-    <div class="form-actions">
-
-        <button type="submit" class="button" data-tooltip="Enregistrer le terme" title="Enregistrer le terme">Enregistrer</button>
-
-        <a href="{{ @base }}/project/{{ @project.id }}/glossary" class="button secondary" data-tooltip="Annuler les modifications" title="Annuler les modifications">Annuler</a>
-
-    </div>
-
-</form>
-
-</content>

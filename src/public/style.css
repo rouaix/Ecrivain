@@ -30,6 +30,7 @@
 @import 'css/modules/characters.css';
 @import 'css/modules/notes.css';
 @import 'css/modules/sections.css';
+@import 'css/modules/glossary.css';
 /* Editor - Quill editor customization */
 @import 'css/editor/quill-base.css';
 @import 'css/editor/quill-toolbar.css';

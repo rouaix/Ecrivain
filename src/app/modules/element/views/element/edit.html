@@ -186,30 +186,7 @@
             }
         }
 
-        // Auto-save every 30 seconds
-        var saveTimeout;
-        function triggerAutoSave() {
-            clearTimeout(saveTimeout);
-            saveTimeout = setTimeout(function () {
-                var form = document.getElementById('editorForm');
-                var formData = new FormData(form);
-
-                fetch(form.action, {
-                    method: 'POST',
-                    body: formData,
-                    headers: { 'X-Requested-With': 'XMLHttpRequest' }
-                })
-                    .then(function (response) { return response.json(); })
-                    .then(function (data) {
-                        if (data.status === 'ok') {
-                            console.log('Auto-saved at', new Date().toLocaleTimeString());
-                        }
-                    });
-            }, 30000);
-        }
-
-        QuillTools.quill.on('text-change', triggerAutoSave);
-        if (resumeQuill) resumeQuill.on('text-change', triggerAutoSave);
+        // Auto-save disabled
 
         // AI Modal integration (reuse from main layout)
         document.getElementById('openAiModal').addEventListener('click', function () {

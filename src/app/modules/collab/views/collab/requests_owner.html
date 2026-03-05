@@ -12,7 +12,7 @@
     </div>
 
     <check if="{{ count(@requests) == 0 }}">
-        <div class="card">
+        <div class="edit-card" style="margin-top:1.5rem">
             <p class="text-muted-para" style="text-align:center;padding:2rem 0">
                 <i class="fas fa-check-circle" style="font-size:2rem;color:#22c55e;display:block;margin-bottom:.5rem"></i>
                 Aucune demande en attente.
@@ -20,9 +20,9 @@
         </div>
     </check>
 
-    <div id="requestsList">
+    <div id="requestsList" style="margin-top:1.5rem">
         <repeat group="{{ @requests }}" value="{{ @req }}">
-            <div class="collab-request-card card {{ @req.status }}" id="req-{{ @req.id }}">
+            <div class="edit-card collab-request-card {{ @req.status }}" id="req-{{ @req.id }}">
                 <div class="collab-req-header">
                     <div class="collab-req-meta">
                         <span class="collab-req-type collab-req-type-{{ @req.request_type }}">{{ @req.request_type | esc }}</span>
@@ -66,12 +66,12 @@
 
                 <check if="{{ @req.status == 'pending' }}">
                     <div class="collab-req-actions">
-                        <button class="button primary small btn-approve" data-id="{{ @req.id }}" data-tooltip="Approuver et appliquer" title="Approuver et appliquer">
+                        <button class="button small btn-approve" data-id="{{ @req.id }}" data-tooltip="Approuver et appliquer" title="Approuver et appliquer">
                             <i class="fas fa-check"></i> Approuver &amp; appliquer
                         </button>
                         <div class="collab-reject-form" style="display:flex;gap:.5rem;align-items:center">
                             <input type="text" class="input-control reject-note" placeholder="Note de refus (optionnel)" style="flex:1;font-size:.85rem">
-                            <button class="button small danger btn-reject" data-id="{{ @req.id }}" data-tooltip="Refuser la demande" title="Refuser la demande">
+                            <button class="button small delete btn-reject" data-id="{{ @req.id }}" data-tooltip="Refuser la demande" title="Refuser la demande">
                                 <i class="fas fa-times"></i> Refuser
                             </button>
                         </div>
@@ -109,8 +109,6 @@
 .collab-diff-content { max-height: 220px; overflow-y: auto; padding: .5rem .75rem; font-size: .85rem; }
 .collab-req-actions { display: flex; gap: .75rem; flex-wrap: wrap; align-items: center; margin-top: .75rem; padding-top: .75rem; border-top: 1px solid var(--border-color, #e0e0e0); }
 .collab-reject-form { flex: 1; }
-.button.danger { background: #ef4444; color: #fff; }
-.button.danger:hover { background: #dc2626; }
 </style>
 
 <script nonce="{{ @nonce }}">

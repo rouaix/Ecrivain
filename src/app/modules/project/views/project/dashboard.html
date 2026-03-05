@@ -24,7 +24,7 @@
     <a href="{{ @base }}/templates" class="button secondary">
         <i class="fas fa-layer-group"></i> Templates
     </a>
-    <div class="view-toggle" style="margin-left:auto;">
+    <div class="view-toggle" style="margin-left:auto;display:none;">
         <button type="button" id="btnViewList" class="button secondary view-toggle-btn active" title="Vue liste"
             data-tooltip="Vue liste">
             <i class="fas fa-th-large"></i>
@@ -110,7 +110,7 @@
 </check>
 
 <!-- Kanban view (hidden by default) -->
-<div id="kanbanView" style="display:none;">
+<div id="kanbanView" style="display:none">
     <div class="kanban-board">
 
         <div class="kanban-col" data-status="active">
@@ -148,75 +148,72 @@
         <true>
             <div class="projects-grid">
                 <repeat group="{{ @projects }}" value="{{ @proj }}">
-                    <div class="project-card" <check if="{{ !empty(@proj.tags) }}">data-tags="{{ json_encode(@proj.tags)
-                        | esc }}"
+                    <div class="project-card" data-tags="{{ json_encode(@proj.tags ?: []) | esc }}"
+                        data-pid="{{ @proj.id }}" data-status="{{ @proj.status ?: 'active' }}"
+                        data-title="{{ @proj.title | esc }}" data-url="{{ @base }}/project/{{ @proj.id }}"
+                        data-edit-url="{{ @base }}/project/{{ @proj.id }}/edit">
+                        <!-- Changed from 'a' to 'div' to properly handle nested actions -->
+                        <a href="{{ @base }}/project/{{ @proj.id }}" class="project-card-link">
+                            <check if="{{ @proj.cover_image }}">
+                                <true>
+                                    <div class="project-card__cover"
+                                        style="background-image: url('{{ @base }}/project/{{ @proj.id }}/cover');">
+                                    </div>
+                                </true>
+                                <false>
+                                    <div class="project-card__cover">
+                                        <div class="project-card__title-overlay">{{ @proj.title }}</div>
+                                    </div>
+                                </false>
+                            </check>
+
+                            <div class="project-card__info">
+                                <h3 class="project-card__title">{{ @proj.title }}</h3>
+                                <div class="project-card__description">{{ @proj.description }}</div>
+                                <div class="project-card__meta">
+                                    <span>Modifié: {{ date('d/m/Y', strtotime(@proj.updated_at)) }}</span>
+                                </div>
+                                <check if="{{ !empty(@proj.tags) }}">
+                                    <div class="project-card__tags">
+                                        <repeat group="{{ @proj.tags }}" value="{{ @tag }}">
+                                            <span class="project-tag">{{ @tag | esc }}</span>
+                                        </repeat>
+                                    </div>
+                                </check>
+                                <div class="project-card__stats cache">
+                                    <div class="project-stat">
+                                        <span class="label">Mots</span>
+                                        <span class="value">{{ number_format(@proj.target_words, 0, ',', ' ') }}</span>
+                                    </div>
+                                    <div class="project-stat">
+                                        <span class="label">Pages</span>
+                                        <span class="value">{{ @proj.pages_count }}</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </a>
+
+                        <div class="project-card__actions">
+                            <a href="{{ @base }}/project/{{ @proj.id }}/edit" class="button small secondary"
+                                title="Modifier">
+                                <i class="fas fa-edit"></i>
+                            </a>
+                            <a href="#" class="button small delete js-delete-project" title="Supprimer"
+                                data-url="{{ @base }}/project/{{ @proj.id }}/delete">
+                                <i class="fas fa-trash"></i>
+                            </a>
+                        </div>
+                    </div>
+                </repeat>
+            </div>
+        </true>
+        <false>
+            <div class="empty-state">
+                <p>Vous n'avez pas encore de projet.</p>
+                <a href="{{ @base }}/project/create" class="button">Créer mon premier roman</a>
+            </div>
+        </false>
     </check>
-    data-pid="{{ @proj.id }}"
-    data-status="{{ @proj.status ?: 'active' }}"
-    data-title="{{ @proj.title | esc }}"
-    data-url="{{ @base }}/project/{{ @proj.id }}"
-    data-edit-url="{{ @base }}/project/{{ @proj.id }}/edit">
-    <!-- Changed from 'a' to 'div' to properly handle nested actions -->
-    <a href="{{ @base }}/project/{{ @proj.id }}" class="project-card-link">
-        <check if="{{ @proj.cover_image }}">
-            <true>
-                <div class="project-card__cover"
-                    style="background-image: url('{{ @base }}/project/{{ @proj.id }}/cover');">
-                </div>
-            </true>
-            <false>
-                <div class="project-card__cover">
-                    <div class="project-card__title-overlay">{{ @proj.title }}</div>
-                </div>
-            </false>
-        </check>
-
-        <div class="project-card__info">
-            <h3 class="project-card__title">{{ @proj.title }}</h3>
-            <div class="project-card__description">{{ @proj.description }}</div>
-            <div class="project-card__meta">
-                <span>Modifié: {{ date('d/m/Y', strtotime(@proj.updated_at)) }}</span>
-            </div>
-            <check if="{{ !empty(@proj.tags) }}">
-                <div class="project-card__tags">
-                    <repeat group="{{ @proj.tags }}" value="{{ @tag }}">
-                        <span class="project-tag">{{ @tag.name | esc }}</span>
-                    </repeat>
-                </div>
-            </check>
-            <div class="project-card__stats cache">
-                <div class="project-stat">
-                    <span class="label">Mots</span>
-                    <span class="value">{{ number_format(@proj.target_words, 0, ',', ' ') }}</span>
-                </div>
-                <div class="project-stat">
-                    <span class="label">Pages</span>
-                    <span class="value">{{ @proj.pages_count }}</span>
-                </div>
-            </div>
-        </div>
-    </a>
-
-    <div class="project-card__actions">
-        <a href="{{ @base }}/project/{{ @proj.id }}/edit" class="button small secondary" title="Modifier">
-            <i class="fas fa-edit"></i>
-        </a>
-        <a href="#" class="button small delete js-delete-project" title="Supprimer"
-            data-url="{{ @base }}/project/{{ @proj.id }}/delete">
-            <i class="fas fa-trash"></i>
-        </a>
-    </div>
-</div>
-</repeat>
-</div>
-</true>
-<false>
-    <div class="empty-state">
-        <p>Vous n'avez pas encore de projet.</p>
-        <a href="{{ @base }}/project/create" class="button">Créer mon premier roman</a>
-    </div>
-</false>
-</check>
 </div><!-- #listView -->
 
 <!-- Invitations en attente -->
@@ -428,7 +425,7 @@
         btnKanban.addEventListener('click', function () { showView('kanban'); });
 
         // Restore last view
-        if (localStorage.getItem(STORAGE_KEY) === 'kanban') showView('kanban');
+        showView(localStorage.getItem(STORAGE_KEY) === 'kanban' ? 'kanban' : 'list');
 
         function escHtml(s) {
             return String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
@@ -726,29 +723,33 @@
 
     .kanban-move-btn {
         font-size: .72rem;
-        padding: 2px 8px;
+        gap: 4px;
         background: var(--table-header-bg, #f3f4f6);
         border: 1px solid var(--border-color, #e0e0e0);
-        border-radius: 12px;
+        border-radius: 4px;
         cursor: pointer;
         color: var(--text-muted, #666);
         white-space: nowrap;
+        transition: all 0.2s ease;
     }
 
     .kanban-move-btn:hover {
-        background: var(--link-color, #3f51b5);
-        color: #fff;
-        border-color: transparent;
+        filter: brightness(0.9);
+        background: var(--button-bg);
+        color: var(--button-text);
+        border-color: rgba(0, 0, 0, 0.2);
     }
 
     .kanban-edit-btn {
         margin-left: auto;
         font-size: .8rem;
         color: var(--text-muted, #999);
+        transition: color 0.2s ease;
     }
 
     .kanban-edit-btn:hover {
-        color: var(--link-color, #3f51b5);
+        color: var(--text-main);
+        filter: brightness(0.9);
     }
 
     .kanban-empty {
@@ -765,7 +766,7 @@
     }
 
     .project-tag {
-        background: var(--tag-bg, #e8eaf6);
+        /*background: var(--tag-bg, #e8eaf6);*/
         color: var(--link-color, #3f51b5);
         border-radius: 12px;
         padding: 1px 9px;
