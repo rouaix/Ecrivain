@@ -8,7 +8,22 @@ class OAuthController extends Controller
 
     public function beforeRoute(Base $f3)
     {
-        // OAuth endpoints: pas de CSRF global ni d'auth obligatoire ici.
+        // CORS : ChatGPT et autres clients MCP font des requêtes cross-origin
+        $allowedOrigins = ['https://chatgpt.com', 'https://chat.openai.com', 'https://claude.ai'];
+        $origin = $_SERVER['HTTP_ORIGIN'] ?? '';
+        if (in_array($origin, $allowedOrigins, true) || $origin === '') {
+            header('Access-Control-Allow-Origin: ' . ($origin ?: '*'));
+        }
+        header('Access-Control-Allow-Methods: GET, POST, OPTIONS');
+        header('Access-Control-Allow-Headers: Authorization, Content-Type, Accept');
+        header('Access-Control-Allow-Credentials: true');
+        header('Vary: Origin');
+
+        // Preflight OPTIONS → répondre 204 immédiatement
+        if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
+            http_response_code(204);
+            exit;
+        }
     }
 
     public function authorizationServerMetadata(): void
@@ -110,6 +125,35 @@ class OAuthController extends Controller
 
     public function token(): void
     {
+        // Support Basic Auth (client_secret_basic) en plus de POST body (client_secret_post)
+        if (!empty($_SERVER['PHP_AUTH_USER'])) {
+            $_POST['client_id']     = $_POST['client_id']     ?: $_SERVER['PHP_AUTH_USER'];
+            $_POST['client_secret'] = $_POST['client_secret'] ?: ($_SERVER['PHP_AUTH_PW'] ?? '');
+        } elseif (!empty($_SERVER['HTTP_AUTHORIZATION'])) {
+            $authHeader = $_SERVER['HTTP_AUTHORIZATION'];
+            if (str_starts_with($authHeader, 'Basic ')) {
+                $decoded = base64_decode(substr($authHeader, 6));
+                if ($decoded && str_contains($decoded, ':')) {
+                    [$cid, $csec] = explode(':', $decoded, 2);
+                    $_POST['client_id']     = $_POST['client_id']     ?: $cid;
+                    $_POST['client_secret'] = $_POST['client_secret'] ?: $csec;
+                }
+            }
+        }
+
+        // Supporter aussi JSON body (certains clients envoient du JSON)
+        if (empty($_POST) && !empty($_SERVER['CONTENT_TYPE']) && str_contains($_SERVER['CONTENT_TYPE'], 'application/json')) {
+            $raw = file_get_contents('php://input') ?: '';
+            $parsed = json_decode($raw, true);
+            if (is_array($parsed)) {
+                foreach ($parsed as $k => $v) {
+                    if (!isset($_POST[$k])) {
+                        $_POST[$k] = $v;
+                    }
+                }
+            }
+        }
+
         $grantType = trim((string) ($_POST['grant_type'] ?? ''));
 
         switch ($grantType) {
@@ -518,16 +562,42 @@ class OAuthController extends Controller
 
     private function oauthError(string $error, string $description, int $status = 400): void
     {
+        $this->logOauth('error', "[$error] $description");
         $this->json([
-            'error' => $error,
+            'error'             => $error,
             'error_description' => $description,
         ], $status);
+    }
+
+    private function logOauth(string $level, string $message): void
+    {
+        try {
+            $logDir  = $this->f3->get('ROOT') . '/logs';
+            if (!is_dir($logDir)) {
+                mkdir($logDir, 0755, true);
+            }
+            $line = date('Y-m-d H:i:s') . " [$level] [oauth] "
+                . ($_SERVER['REQUEST_METHOD'] ?? '') . ' ' . ($_SERVER['REQUEST_URI'] ?? '')
+                . ' origin=' . ($_SERVER['HTTP_ORIGIN'] ?? '-')
+                . ' | ' . $message . "\n";
+            file_put_contents($logDir . '/oauth.log', $line, FILE_APPEND | LOCK_EX);
+        } catch (\Throwable) {
+            // log non critique
+        }
     }
 
     private function json(array $payload, int $status = 200): void
     {
         http_response_code($status);
         header('Content-Type: application/json');
+        // CORS (aussi sur les réponses JSON directes si beforeRoute n'a pas été appelé)
+        if (!headers_sent()) {
+            $origin = $_SERVER['HTTP_ORIGIN'] ?? '';
+            $allowedOrigins = ['https://chatgpt.com', 'https://chat.openai.com', 'https://claude.ai'];
+            if (in_array($origin, $allowedOrigins, true)) {
+                header('Access-Control-Allow-Origin: ' . $origin);
+            }
+        }
         echo json_encode($payload, JSON_UNESCAPED_SLASHES);
     }
 }
