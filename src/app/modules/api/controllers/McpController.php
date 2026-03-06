@@ -178,6 +178,8 @@ class McpController extends Controller
             // Sections
             $this->tool('list_sections',   'Liste les sections d\'un projet.',
                 ['project_id' => $int], ['project_id']),
+            $this->tool('get_section',     'Contenu complet d\'une section.',
+                ['id' => $int], ['id']),
             $this->tool('create_section',  'Crée une section.',
                 ['project_id' => $int, 'title' => $str, 'content' => $str], ['project_id', 'title']),
             $this->tool('update_section',  'Modifie une section.',
@@ -188,6 +190,8 @@ class McpController extends Controller
             // Notes
             $this->tool('list_notes',      'Liste les notes d\'un projet.',
                 ['project_id' => $int], ['project_id']),
+            $this->tool('get_note',        'Contenu complet d\'une note.',
+                ['id' => $int], ['id']),
             $this->tool('create_note',     'Crée une note.',
                 ['project_id' => $int, 'title' => $str, 'content' => $str], ['project_id', 'title']),
             $this->tool('update_note',     'Modifie une note.',
@@ -198,6 +202,8 @@ class McpController extends Controller
             // Personnages
             $this->tool('list_characters', 'Liste les personnages d\'un projet.',
                 ['project_id' => $int], ['project_id']),
+            $this->tool('get_character',   'Fiche complète d\'un personnage.',
+                ['id' => $int], ['id']),
             $this->tool('create_character','Crée un personnage.',
                 ['project_id' => $int, 'name' => $str, 'description' => $str], ['project_id', 'name']),
             $this->tool('update_character','Modifie un personnage.',
@@ -206,16 +212,23 @@ class McpController extends Controller
                 ['id' => $int], ['id']),
 
             // Éléments
-            $this->tool('list_elements',   'Liste les éléments d\'un projet (hiérarchie parent/enfant).',
+            $this->tool('list_elements',   'Liste les éléments d\'un projet groupés par type. Affiche les template_element_id nécessaires pour create_element.',
                 ['project_id' => $int], ['project_id']),
             $this->tool('get_element',     'Contenu complet d\'un élément avec ses sous-éléments.',
                 ['id' => $int], ['id']),
-            $this->tool('create_element',  'Crée un élément. Utiliser parent_id pour créer un sous-élément.',
-                ['project_id' => $int, 'parent_id' => $int, 'title' => $str, 'content' => $str], ['project_id', 'title']),
+            $this->tool('create_element',  'Crée un élément personnalisé. template_element_id est obligatoire : récupérer les IDs disponibles via list_elements. Utiliser parent_id pour créer un sous-élément.',
+                ['project_id' => $int, 'template_element_id' => $int, 'parent_id' => $int, 'title' => $str, 'content' => $str],
+                ['project_id', 'title', 'template_element_id']),
             $this->tool('update_element',  'Modifie un élément.',
                 ['id' => $int, 'title' => $str, 'content' => $str], ['id']),
             $this->tool('delete_element',  'Supprime un élément.',
                 ['id' => $int], ['id']),
+
+            // Images
+            $this->tool('list_images',     'Liste les images attachées à un projet.',
+                ['project_id' => $int], ['project_id']),
+            $this->tool('delete_image',    'Supprime une image d\'un projet.',
+                ['project_id' => $int, 'image_id' => $int], ['project_id', 'image_id']),
 
             // Export & recherche
             $this->tool('export_markdown', 'Exporte un projet complet en Markdown.',
@@ -264,16 +277,19 @@ class McpController extends Controller
                 'delete_chapter'   => $this->toolDeleteChapter($uid, (int) ($a['id'] ?? 0)),
 
                 'list_sections'    => $this->toolListSections($uid, (int) ($a['project_id'] ?? 0)),
+                'get_section'      => $this->toolGetSection($uid, (int) ($a['id'] ?? 0)),
                 'create_section'   => $this->toolCreateSection($uid, $a),
                 'update_section'   => $this->toolUpdateSection($uid, $a),
                 'delete_section'   => $this->toolDeleteSection($uid, (int) ($a['id'] ?? 0)),
 
                 'list_notes'       => $this->toolListNotes($uid, (int) ($a['project_id'] ?? 0)),
+                'get_note'         => $this->toolGetNote($uid, (int) ($a['id'] ?? 0)),
                 'create_note'      => $this->toolCreateNote($uid, $a),
                 'update_note'      => $this->toolUpdateNote($uid, $a),
                 'delete_note'      => $this->toolDeleteNote($uid, (int) ($a['id'] ?? 0)),
 
                 'list_characters'  => $this->toolListCharacters($uid, (int) ($a['project_id'] ?? 0)),
+                'get_character'    => $this->toolGetCharacter($uid, (int) ($a['id'] ?? 0)),
                 'create_character' => $this->toolCreateCharacter($uid, $a),
                 'update_character' => $this->toolUpdateCharacter($uid, $a),
                 'delete_character' => $this->toolDeleteCharacter($uid, (int) ($a['id'] ?? 0)),
@@ -283,6 +299,9 @@ class McpController extends Controller
                 'create_element'   => $this->toolCreateElement($uid, $a),
                 'update_element'   => $this->toolUpdateElement($uid, $a),
                 'delete_element'   => $this->toolDeleteElement($uid, (int) ($a['id'] ?? 0)),
+
+                'list_images'      => $this->toolListImages($uid, (int) ($a['project_id'] ?? 0)),
+                'delete_image'     => $this->toolDeleteImage($uid, (int) ($a['project_id'] ?? 0), (int) ($a['image_id'] ?? 0)),
 
                 'export_markdown'  => $this->toolExportMarkdown($uid, (int) ($a['project_id'] ?? 0)),
                 'search'           => $this->toolSearch($uid, $a['query'] ?? ''),
@@ -761,21 +780,38 @@ class McpController extends Controller
     {
         if (!$this->ownsProject($uid, $pid)) return $this->fail("Projet $pid introuvable.");
         $rows = $this->db->exec(
-            'SELECT id, title, parent_id FROM elements WHERE project_id=? ORDER BY order_index ASC, id ASC',
+            'SELECT e.id, e.title, e.parent_id, e.template_element_id,
+                    te.element_type, te.config_json, te.display_order
+             FROM elements e
+             LEFT JOIN template_elements te ON te.id = e.template_element_id
+             WHERE e.project_id=?
+             ORDER BY te.display_order ASC, e.order_index ASC, e.id ASC',
             [$pid]
         );
-        if (!$rows) return $this->ok("Aucun élément.");
+        if (!$rows) return $this->ok("Aucun élément. Vérifiez que le projet a des types d'éléments configurés dans son template.");
         $md = "# Éléments du projet $pid\n\n";
+        $byType = [];
         foreach ($rows as $r) {
             if ($r['parent_id']) continue;
-            $md .= "- **{$r['title']}** (ID: {$r['id']})\n";
-            foreach ($rows as $sub) {
-                if ($sub['parent_id'] == $r['id']) {
-                    $md .= "  - {$sub['title']} (ID: {$sub['id']})\n";
+            $cfg   = $r['config_json'] ? json_decode($r['config_json'], true) : [];
+            $label = $cfg['label'] ?? $r['element_type'] ?? 'Élément';
+            $teid  = $r['template_element_id'];
+            $key   = "{$label} (template_element_id: {$teid})";
+            $byType[$key][] = $r;
+        }
+        foreach ($byType as $typeLabel => $items) {
+            $md .= "## {$typeLabel}\n\n";
+            foreach ($items as $r) {
+                $md .= "- **{$r['title']}** (ID: {$r['id']})\n";
+                foreach ($rows as $sub) {
+                    if ($sub['parent_id'] == $r['id']) {
+                        $md .= "  - {$sub['title']} (ID: {$sub['id']})\n";
+                    }
                 }
             }
+            $md .= "\n";
         }
-        return $this->ok($md);
+        return $this->ok(trim($md));
     }
 
     private function toolGetElement(int $uid, int $id): array
@@ -806,17 +842,22 @@ class McpController extends Controller
 
     private function toolCreateElement(int $uid, array $a): array
     {
-        $pid = (int) ($a['project_id'] ?? 0);
+        $pid  = (int) ($a['project_id'] ?? 0);
         if (!$this->ownsProject($uid, $pid)) return $this->fail("Projet $pid introuvable.");
-        $title    = trim($a['title'] ?? '');
+        $title = trim($a['title'] ?? '');
         if (!$title) return $this->fail('Titre requis.');
+        $teid = (int) ($a['template_element_id'] ?? 0);
+        if (!$teid) return $this->fail('template_element_id est obligatoire. Utilisez list_elements pour obtenir les IDs disponibles.');
+        $check = $this->db->exec('SELECT id FROM template_elements WHERE id=?', [$teid]);
+        if (!$check) return $this->fail("template_element_id $teid invalide.");
         $parentId = ($a['parent_id'] ?? 0) ?: null;
-        $pos      = $this->db->exec(
-            'SELECT COALESCE(MAX(order_index),0)+1 as p FROM elements WHERE project_id=?', [$pid]
+        $pos = $this->db->exec(
+            'SELECT COALESCE(MAX(order_index),0)+1 as p FROM elements WHERE project_id=? AND template_element_id=? AND parent_id IS NULL',
+            [$pid, $teid]
         )[0]['p'];
         $this->db->exec(
-            'INSERT INTO elements (project_id, parent_id, title, content, order_index, created_at, updated_at) VALUES (?,?,?,?,?,NOW(),NOW())',
-            [$pid, $parentId, $title, $a['content'] ?? '', $pos]
+            'INSERT INTO elements (project_id, template_element_id, parent_id, title, content, order_index, created_at, updated_at) VALUES (?,?,?,?,?,?,NOW(),NOW())',
+            [$pid, $teid, $parentId, $title, $a['content'] ?? '', $pos]
         );
         $id = $this->db->exec('SELECT LAST_INSERT_ID() as id')[0]['id'];
         return $this->ok("Élément **{$title}** créé (ID: $id).");
@@ -848,6 +889,88 @@ class McpController extends Controller
         if (!$rows) return $this->fail("Élément $id introuvable.");
         $this->db->exec('DELETE FROM elements WHERE id=?', [$id]);
         return $this->ok("Élément $id supprimé.");
+    }
+
+    // ── GET SECTION / NOTE / CHARACTER ───────────────────────────────────────
+
+    private function toolGetSection(int $uid, int $id): array
+    {
+        $rows = $this->db->exec(
+            'SELECT s.id, s.title, s.content, s.updated_at, p.title as pt
+             FROM sections s JOIN projects p ON p.id=s.project_id
+             WHERE s.id=? AND p.user_id=?',
+            [$id, $uid]
+        );
+        if (!$rows) return $this->fail("Section $id introuvable.");
+        $s    = $rows[0];
+        $text = $this->htmlToText($s['content'] ?? '');
+        $md   = "# {$s['title']}\n_Projet : {$s['pt']} · Modifié : {$s['updated_at']}_\n\n";
+        if ($text) $md .= $text . "\n";
+        return $this->ok(trim($md));
+    }
+
+    private function toolGetNote(int $uid, int $id): array
+    {
+        $rows = $this->db->exec(
+            'SELECT n.id, n.title, n.content, n.updated_at, p.title as pt
+             FROM notes n JOIN projects p ON p.id=n.project_id
+             WHERE n.id=? AND p.user_id=?',
+            [$id, $uid]
+        );
+        if (!$rows) return $this->fail("Note $id introuvable.");
+        $n    = $rows[0];
+        $text = $this->htmlToText($n['content'] ?? '');
+        $md   = "# {$n['title']}\n_Projet : {$n['pt']} · Modifié : {$n['updated_at']}_\n\n";
+        if ($text) $md .= $text . "\n";
+        return $this->ok(trim($md));
+    }
+
+    private function toolGetCharacter(int $uid, int $id): array
+    {
+        $rows = $this->db->exec(
+            'SELECT c.id, c.name, c.description, c.updated_at, p.title as pt
+             FROM characters c JOIN projects p ON p.id=c.project_id
+             WHERE c.id=? AND p.user_id=?',
+            [$id, $uid]
+        );
+        if (!$rows) return $this->fail("Personnage $id introuvable.");
+        $c    = $rows[0];
+        $desc = $this->htmlToText($c['description'] ?? '');
+        $md   = "# {$c['name']}\n_Projet : {$c['pt']} · Modifié : {$c['updated_at']}_\n\n";
+        if ($desc) $md .= $desc . "\n";
+        return $this->ok(trim($md));
+    }
+
+    // ── IMAGES ───────────────────────────────────────────────────────────────
+
+    private function toolListImages(int $uid, int $pid): array
+    {
+        if (!$this->ownsProject($uid, $pid)) return $this->fail("Projet $pid introuvable.");
+        $rows = $this->db->exec(
+            'SELECT id, filename, filesize, uploaded_at FROM project_files WHERE project_id=? ORDER BY uploaded_at DESC',
+            [$pid]
+        );
+        if (!$rows) return $this->ok("Aucune image dans ce projet.");
+        $md = "# Images du projet $pid\n\n";
+        foreach ($rows as $r) {
+            $kb = round($r['filesize'] / 1024, 1);
+            $md .= "- **{$r['filename']}** (ID: {$r['id']}) — {$kb} Ko · {$r['uploaded_at']}\n";
+        }
+        return $this->ok($md);
+    }
+
+    private function toolDeleteImage(int $uid, int $pid, int $imageId): array
+    {
+        if (!$this->ownsProject($uid, $pid)) return $this->fail("Projet $pid introuvable.");
+        $rows = $this->db->exec(
+            'SELECT id, filename, filepath FROM project_files WHERE id=? AND project_id=?',
+            [$imageId, $pid]
+        );
+        if (!$rows) return $this->fail("Image $imageId introuvable.");
+        $filepath = $this->f3->get('BASEPATH') . $rows[0]['filepath'];
+        if (file_exists($filepath)) unlink($filepath);
+        $this->db->exec('DELETE FROM project_files WHERE id=?', [$imageId]);
+        return $this->ok("Image {$rows[0]['filename']} (ID: $imageId) supprimée.");
     }
 
     // ── EXPORT MARKDOWN ──────────────────────────────────────────────────────
