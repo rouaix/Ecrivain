@@ -277,16 +277,37 @@ abstract class Controller
                                 if (json_last_error() === JSON_ERROR_NONE && isset($data['tokens'][$tokenId])) {
                                     return $uid;
                                 }
+                                $this->logAuthDebug('token_not_in_file', $tokenId, $checkFile, json_last_error_msg());
+                            } else {
+                                $this->logAuthDebug('tokens_file_missing', $tokenId, $checkFile);
                             }
+                        } else {
+                            $this->logAuthDebug('user_not_found', (string) $uid);
                         }
                     }
+                } else {
+                    $this->logAuthDebug('wrong_type', $decoded->type ?? 'none');
                 }
             } catch (Exception $e) {
-                // Invalid or expired token
+                $this->logAuthDebug('jwt_exception', $e->getMessage());
             }
         }
 
         return null;
+    }
+
+    private function logAuthDebug(string $reason, string ...$context): void
+    {
+        try {
+            $logDir = $this->f3->get('ROOT') . '/logs';
+            if (!is_dir($logDir)) {
+                mkdir($logDir, 0755, true);
+            }
+            $line = date('Y-m-d H:i:s') . ' [auth_debug] reason=' . $reason
+                . ' ctx=' . implode(' | ', $context)
+                . ' uri=' . ($_SERVER['REQUEST_URI'] ?? '-') . "\n";
+            file_put_contents($logDir . '/auth_debug.log', $line, FILE_APPEND | LOCK_EX);
+        } catch (\Throwable) {}
     }
 
     /**
