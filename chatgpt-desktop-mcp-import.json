@@ -1,0 +1,25 @@
+{
+  "description": "Configurations MCP prêtes à importer dans ChatGPT Desktop pour l'application Ecrivain (HTTP et stdio). Remplacez les tokens/chemins si nécessaire.",
+  "http": {
+    "mcpServers": {
+      "ecrivain-http": {
+        "server_url": "http://127.0.0.1/edsa-Rouaix.com/ecrivain/mcp",
+        "headers": {
+          "Authorization": "Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpYXQiOjE3Njk4NzY0MDYsImp0aSI6ImYyYmJmMjAyYWQ0ZTA3YTk4OTljMWY4YTE1YTY4ZTJiIiwic3ViIjoiMSIsInR5cGUiOiJhdXRoX3Rva2VuIn0.ep70vOzZBwG5zrTHLyBrbtTIU-XQ5KgT9SgGRjdupWk"
+        }
+      }
+    }
+  },
+  "stdio": {
+    "mcpServers": {
+      "ecrivain-stdio": {
+        "command": "php",
+        "args": ["P:\\Projets\\rouaix.com\\ecrivain\\src\\app\\modules\\mcp\\server.php"],
+        "env": {
+          "API_URL": "http://127.0.0.1/edsa-Rouaix.com/ecrivain",
+          "API_TOKEN": "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpYXQiOjE3Njk4NzY0MDYsImp0aSI6ImYyYmJmMjAyYWQ0ZTA3YTk4OTljMWY4YTE1YTY4ZTJiIiwic3ViIjoiMSIsInR5cGUiOiJhdXRoX3Rva2VuIn0.ep70vOzZBwG5zrTHLyBrbtTIU-XQ5KgT9SgGRjdupWk"
+        }
+      }
+    }
+  }
+}
