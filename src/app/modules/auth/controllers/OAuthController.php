@@ -64,6 +64,7 @@ class OAuthController extends Controller
         $codeChallenge = trim((string) $this->f3->get('GET.code_challenge'));
         $codeChallengeMethod = strtoupper(trim((string) $this->f3->get('GET.code_challenge_method')));
         $scope = trim((string) ($this->f3->get('GET.scope') ?: 'mcp'));
+        $pkceEnabled = ($codeChallenge !== '');
 
         if ($responseType !== 'code') {
             $this->oauthError('unsupported_response_type', 'response_type doit être "code".');
@@ -77,8 +78,10 @@ class OAuthController extends Controller
             $this->oauthError('invalid_request', 'redirect_uri non autorisée.');
             return;
         }
-        if ($codeChallenge === '' || $codeChallengeMethod !== 'S256') {
-            $this->oauthError('invalid_request', 'PKCE S256 est requis (code_challenge + method S256).');
+        // PKCE S256 est recommandé mais optionnel : si fourni, la méthode doit être S256.
+        // Sans PKCE, un client_secret sera exigé à l'échange du token.
+        if ($pkceEnabled && $codeChallengeMethod !== 'S256') {
+            $this->oauthError('invalid_request', 'code_challenge_method doit être S256.');
             return;
         }
 
@@ -90,7 +93,8 @@ class OAuthController extends Controller
             'user_id' => (int) $currentUser['id'],
             'client_id' => $clientId,
             'redirect_uri' => $redirectUri,
-            'code_challenge' => $codeChallenge,
+            'code_challenge' => $pkceEnabled ? $codeChallenge : null,
+            'pkce' => $pkceEnabled,
             'scope' => $scope,
             'expires_at' => time() + self::CODE_TTL_SECONDS,
         ];
@@ -195,12 +199,24 @@ class OAuthController extends Controller
             return;
         }
 
-        if (!$this->verifyPkceS256($codeVerifier, (string) ($entry['code_challenge'] ?? ''))) {
-            $this->oauthError('invalid_grant', 'PKCE code_verifier invalide.', 400);
-            return;
+        $usedPkce = (bool) ($entry['pkce'] ?? false);
+
+        if ($usedPkce) {
+            // Flow PKCE : vérifier le code_verifier
+            if (!$this->verifyPkceS256($codeVerifier, (string) ($entry['code_challenge'] ?? ''))) {
+                $this->oauthError('invalid_grant', 'PKCE code_verifier invalide.', 400);
+                return;
+            }
+        } else {
+            // Flow sans PKCE : le client_secret est obligatoire
+            if (!$this->isClientSecretValid($store, $clientId, $clientSecret, true)) {
+                $this->oauthError('invalid_client', 'client_secret requis et invalide (PKCE absent).', 401);
+                return;
+            }
         }
 
-        if (!$this->isClientSecretValid($store, $clientId, $clientSecret)) {
+        // Vérification client_secret supplémentaire pour les clients enregistrés avec secret (même avec PKCE)
+        if ($usedPkce && !$this->isClientSecretValid($store, $clientId, $clientSecret)) {
             $this->oauthError('invalid_client', 'Client non autorisé.', 401);
             return;
         }
@@ -377,17 +393,18 @@ class OAuthController extends Controller
         return false;
     }
 
-    private function isClientSecretValid(array $store, string $clientId, string $clientSecret): bool
+    private function isClientSecretValid(array $store, string $clientId, string $clientSecret, bool $required = false): bool
     {
         $client = $store['clients'][$clientId] ?? null;
         if (!is_array($client)) {
-            // Client "public" non enregistré (flow user-defined sans secret).
-            return true;
+            // Client non enregistré : si le secret est requis (flow sans PKCE), refuser.
+            return !$required;
         }
 
         $method = (string) ($client['token_endpoint_auth_method'] ?? 'client_secret_post');
         if ($method === 'none') {
-            return true;
+            // Client public : si secret requis et méthode none, refuser.
+            return !$required;
         }
 
         $hash = (string) ($client['client_secret'] ?? '');
