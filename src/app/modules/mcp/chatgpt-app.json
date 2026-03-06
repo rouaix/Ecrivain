@@ -1,0 +1,14 @@
+{
+  "name": "Ecrivain",
+  "description": "Accès aux outils écrivain",
+  "version": "1.0",
+  "mcp": {
+    "server_url": "https://www.rouaix.com/ecrivain/mcp"
+  },
+  "auth": {
+    "type": "bearer",
+    "authorization_type": "header",
+    "header_name": "Authorization",
+    "token_prefix": "Bearer"
+  }
+}
