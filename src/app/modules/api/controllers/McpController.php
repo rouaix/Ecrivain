@@ -32,6 +32,13 @@ class McpController extends Controller
             exit;
         }
 
+        // GET /mcp sans auth = discovery (CIMD) — retourner les capabilities sans authentification
+        if ($_SERVER['REQUEST_METHOD'] === 'GET' && !$this->hasAuthorizationHeader()) {
+            header('Content-Type: application/json');
+            echo json_encode($this->buildInitializeResult(null));
+            exit;
+        }
+
         // Pas de CSRF — authentification Bearer JWT
         $uid = $this->authenticateApiRequest();
 
@@ -118,9 +125,24 @@ class McpController extends Controller
     {
         return ['jsonrpc' => '2.0', 'id' => $id, 'result' => [
             'protocolVersion' => '2024-11-05',
-            'capabilities'    => ['tools' => new \stdClass()],
+            'capabilities'    => [
+                'tools'        => new \stdClass(),
+                'experimental' => ['cimd' => true],
+            ],
             'serverInfo'      => ['name' => 'ecrivain', 'version' => '1.0.0'],
         ]];
+    }
+
+    private function hasAuthorizationHeader(): bool
+    {
+        if (!empty($_SERVER['HTTP_AUTHORIZATION'])) {
+            return true;
+        }
+        // Apache peut passer le header via la variable REDIRECT_HTTP_AUTHORIZATION
+        if (!empty($_SERVER['REDIRECT_HTTP_AUTHORIZATION'])) {
+            return true;
+        }
+        return false;
     }
 
     private function htmlToText(string $html): string

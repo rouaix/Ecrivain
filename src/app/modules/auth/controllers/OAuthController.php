@@ -58,6 +58,7 @@ class OAuthController extends Controller
             'authorization_servers' => [$base],
             'bearer_methods_supported' => ['header'],
             'scopes_supported' => ['mcp'],
+            'mcp_servers' => [['url' => $base . '/mcp']],
         ];
 
         $this->json($metadata);
