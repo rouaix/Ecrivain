@@ -621,6 +621,20 @@ function buildTools(): array
         ],
 
         // ── Elements ──────────────────────────────────────────────────────────
+        'list_element_types' => [
+            'description' => "Liste les types d'éléments disponibles pour un projet (avec leur template_element_id). À appeler AVANT create_element pour connaître les IDs valides.",
+            'inputSchema' => $req(['project_id' => $prop('integer', 'ID du projet')], ['project_id']),
+            'handler' => function ($a) {
+                $data = apiGet("/api/project/{$a['project_id']}/element-types");
+                $types = $data['types'] ?? [];
+                if (!$types) return '_Aucun type d\'élément configuré pour ce projet._';
+                $out = "# Types d'éléments disponibles\n\nUtiliser `template_element_id` dans `create_element`.\n\n";
+                foreach ($types as $t) {
+                    $out .= "- **{$t['label']}** — template_element_id: **{$t['id']}**\n";
+                }
+                return $out;
+            },
+        ],
         'list_elements' => [
             'description' => "Liste les éléments personnalisés d'un projet (lieux, objets, exercices…).",
             'inputSchema' => $req(['project_id' => $prop('integer', 'ID du projet')], ['project_id']),

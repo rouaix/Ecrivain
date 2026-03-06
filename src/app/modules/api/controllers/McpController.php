@@ -212,6 +212,8 @@ class McpController extends Controller
                 ['id' => $int], ['id']),
 
             // Éléments
+            $this->tool('list_element_types', 'Liste les types d\'éléments disponibles pour un projet (avec leur template_element_id). À appeler AVANT create_element pour connaître les IDs valides.',
+                ['project_id' => $int], ['project_id']),
             $this->tool('list_elements',   'Liste les éléments d\'un projet groupés par type. Affiche les template_element_id nécessaires pour create_element.',
                 ['project_id' => $int], ['project_id']),
             $this->tool('get_element',     'Contenu complet d\'un élément avec ses sous-éléments.',
@@ -294,6 +296,7 @@ class McpController extends Controller
                 'update_character' => $this->toolUpdateCharacter($uid, $a),
                 'delete_character' => $this->toolDeleteCharacter($uid, (int) ($a['id'] ?? 0)),
 
+                'list_element_types' => $this->toolListElementTypes($uid, (int) ($a['project_id'] ?? 0)),
                 'list_elements'    => $this->toolListElements($uid, (int) ($a['project_id'] ?? 0)),
                 'get_element'      => $this->toolGetElement($uid, (int) ($a['id'] ?? 0)),
                 'create_element'   => $this->toolCreateElement($uid, $a),
@@ -775,6 +778,28 @@ class McpController extends Controller
     }
 
     // ── ÉLÉMENTS ─────────────────────────────────────────────────────────────
+
+    private function toolListElementTypes(int $uid, int $pid): array
+    {
+        if (!$this->ownsProject($uid, $pid)) return $this->fail("Projet $pid introuvable.");
+        $rows = $this->db->exec(
+            'SELECT te.id, te.element_type, te.config_json, te.display_order
+             FROM template_elements te
+             JOIN projects p ON p.template_id = te.template_id
+             WHERE p.id = ? AND te.is_enabled = 1
+             ORDER BY te.display_order ASC',
+            [$pid]
+        );
+        if (!$rows) return $this->ok("Aucun type d'élément configuré pour ce projet.");
+        $md = "# Types d'éléments disponibles (projet $pid)\n\n";
+        $md .= "Utiliser `template_element_id` dans `create_element`.\n\n";
+        foreach ($rows as $r) {
+            $cfg   = $r['config_json'] ? json_decode($r['config_json'], true) : [];
+            $label = $cfg['label_plural'] ?? $cfg['label'] ?? $r['element_type'];
+            $md   .= "- **{$label}** — template_element_id: **{$r['id']}**\n";
+        }
+        return $this->ok($md);
+    }
 
     private function toolListElements(int $uid, int $pid): array
     {

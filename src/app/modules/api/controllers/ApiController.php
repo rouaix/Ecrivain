@@ -547,6 +547,32 @@ class ApiController extends Controller
     // ELEMENTS
     // ──────────────────────────────────────────────────────────────
 
+    public function listElementTypes()
+    {
+        $pid = (int)$this->f3->get('PARAMS.pid');
+        if (!$this->hasProjectAccess($pid)) $this->jsonError('Accès refusé.', 403, 'FORBIDDEN');
+        $rows = $this->db->exec(
+            'SELECT te.id, te.element_type, te.config_json, te.display_order
+             FROM template_elements te
+             JOIN projects p ON p.template_id = te.template_id
+             WHERE p.id = ? AND te.is_enabled = 1
+             ORDER BY te.display_order ASC',
+            [$pid]
+        );
+        $types = [];
+        foreach ($rows as $r) {
+            $cfg = $r['config_json'] ? json_decode($r['config_json'], true) : [];
+            $types[] = [
+                'id'           => (int)$r['id'],
+                'element_type' => $r['element_type'],
+                'label'        => $cfg['label_plural'] ?? $cfg['label'] ?? $r['element_type'],
+                'label_singular' => $cfg['label_singular'] ?? $cfg['label'] ?? $r['element_type'],
+                'display_order' => (int)$r['display_order'],
+            ];
+        }
+        $this->jsonOut(['types' => $types]);
+    }
+
     public function listElements()
     {
         $pid = (int)$this->f3->get('PARAMS.pid');
