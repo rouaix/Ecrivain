@@ -1,0 +1,629 @@
+{
+  "openapi": "3.1.0",
+  "info": {
+    "title": "Ecrivain API",
+    "description": "API complète pour gérer vos projets d'écriture : romans, scénarios, nouvelles. Accès aux projets, actes, chapitres, sections, notes, personnages et éléments personnalisés.",
+    "version": "1.0.0"
+  },
+  "servers": [
+    {
+      "url": "https://www.rouaix.com/ecrivain",
+      "description": "Serveur de production"
+    }
+  ],
+  "paths": {
+    "/api/projects": {
+      "get": {
+        "operationId": "listProjects",
+        "summary": "Lister tous les projets",
+        "description": "Retourne la liste de tous les projets de l'utilisateur connecté.",
+        "responses": {
+          "200": {
+            "description": "Liste des projets",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "projects": {
+                      "type": "array",
+                      "items": { "$ref": "#/components/schemas/ProjectSummary" }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "operationId": "createProject",
+        "summary": "Créer un projet",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": ["title"],
+                "properties": {
+                  "title": { "type": "string", "description": "Titre du projet" },
+                  "description": { "type": "string", "description": "Description du projet" }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": { "description": "Projet créé" }
+        }
+      }
+    },
+    "/api/project/{id}": {
+      "get": {
+        "operationId": "getProject",
+        "summary": "Détails d'un projet",
+        "description": "Retourne la structure complète du projet : actes, chapitres, sections, personnages, notes.",
+        "parameters": [
+          { "name": "id", "in": "path", "required": true, "schema": { "type": "integer" }, "description": "ID du projet" }
+        ],
+        "responses": {
+          "200": { "description": "Détails du projet" }
+        }
+      },
+      "put": {
+        "operationId": "updateProject",
+        "summary": "Modifier un projet",
+        "parameters": [
+          { "name": "id", "in": "path", "required": true, "schema": { "type": "integer" } }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "title": { "type": "string" },
+                  "description": { "type": "string" }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": { "description": "Projet mis à jour" }
+        }
+      },
+      "delete": {
+        "operationId": "deleteProject",
+        "summary": "Supprimer un projet",
+        "parameters": [
+          { "name": "id", "in": "path", "required": true, "schema": { "type": "integer" } }
+        ],
+        "responses": {
+          "200": { "description": "Projet supprimé" }
+        }
+      }
+    },
+    "/api/project/{pid}/acts": {
+      "get": {
+        "operationId": "listActs",
+        "summary": "Lister les actes d'un projet",
+        "parameters": [
+          { "name": "pid", "in": "path", "required": true, "schema": { "type": "integer" } }
+        ],
+        "responses": { "200": { "description": "Liste des actes" } }
+      },
+      "post": {
+        "operationId": "createAct",
+        "summary": "Créer un acte",
+        "parameters": [
+          { "name": "pid", "in": "path", "required": true, "schema": { "type": "integer" } }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": ["title"],
+                "properties": {
+                  "title": { "type": "string" },
+                  "description": { "type": "string" }
+                }
+              }
+            }
+          }
+        },
+        "responses": { "201": { "description": "Acte créé" } }
+      }
+    },
+    "/api/act/{id}": {
+      "get": {
+        "operationId": "getAct",
+        "summary": "Détails d'un acte",
+        "parameters": [
+          { "name": "id", "in": "path", "required": true, "schema": { "type": "integer" } }
+        ],
+        "responses": { "200": { "description": "Détails de l'acte" } }
+      },
+      "put": {
+        "operationId": "updateAct",
+        "summary": "Modifier un acte",
+        "parameters": [
+          { "name": "id", "in": "path", "required": true, "schema": { "type": "integer" } }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "title": { "type": "string" },
+                  "description": { "type": "string" },
+                  "resume": { "type": "string" }
+                }
+              }
+            }
+          }
+        },
+        "responses": { "200": { "description": "Acte mis à jour" } }
+      },
+      "delete": {
+        "operationId": "deleteAct",
+        "summary": "Supprimer un acte",
+        "parameters": [
+          { "name": "id", "in": "path", "required": true, "schema": { "type": "integer" } }
+        ],
+        "responses": { "200": { "description": "Acte supprimé" } }
+      }
+    },
+    "/api/chapter/{id}": {
+      "get": {
+        "operationId": "getChapter",
+        "summary": "Lire un chapitre",
+        "description": "Retourne le contenu complet d'un chapitre (texte brut + HTML + résumé).",
+        "parameters": [
+          { "name": "id", "in": "path", "required": true, "schema": { "type": "integer" } }
+        ],
+        "responses": { "200": { "description": "Contenu du chapitre" } }
+      },
+      "put": {
+        "operationId": "updateChapter",
+        "summary": "Modifier un chapitre",
+        "description": "Met à jour le contenu, le titre ou le résumé. Crée automatiquement une version historique.",
+        "parameters": [
+          { "name": "id", "in": "path", "required": true, "schema": { "type": "integer" } }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "title": { "type": "string" },
+                  "content": { "type": "string", "description": "Contenu HTML Quill" },
+                  "resume": { "type": "string" }
+                }
+              }
+            }
+          }
+        },
+        "responses": { "200": { "description": "Chapitre mis à jour" } }
+      },
+      "delete": {
+        "operationId": "deleteChapter",
+        "summary": "Supprimer un chapitre",
+        "parameters": [
+          { "name": "id", "in": "path", "required": true, "schema": { "type": "integer" } }
+        ],
+        "responses": { "200": { "description": "Chapitre supprimé" } }
+      }
+    },
+    "/api/project/{pid}/chapters": {
+      "post": {
+        "operationId": "createChapter",
+        "summary": "Créer un chapitre",
+        "parameters": [
+          { "name": "pid", "in": "path", "required": true, "schema": { "type": "integer" } }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": ["title"],
+                "properties": {
+                  "title": { "type": "string" },
+                  "act_id": { "type": "integer", "description": "ID de l'acte parent (optionnel)" },
+                  "content": { "type": "string" },
+                  "resume": { "type": "string" }
+                }
+              }
+            }
+          }
+        },
+        "responses": { "201": { "description": "Chapitre créé" } }
+      }
+    },
+    "/api/project/{pid}/sections": {
+      "get": {
+        "operationId": "listSections",
+        "summary": "Lister les sections d'un projet",
+        "parameters": [
+          { "name": "pid", "in": "path", "required": true, "schema": { "type": "integer" } }
+        ],
+        "responses": { "200": { "description": "Liste des sections" } }
+      },
+      "post": {
+        "operationId": "createSection",
+        "summary": "Créer une section",
+        "description": "Types valides : cover, preface, introduction, prologue, postface, appendices, back_cover",
+        "parameters": [
+          { "name": "pid", "in": "path", "required": true, "schema": { "type": "integer" } }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": ["type"],
+                "properties": {
+                  "type": { "type": "string", "enum": ["cover", "preface", "introduction", "prologue", "postface", "appendices", "back_cover"] },
+                  "title": { "type": "string" },
+                  "content": { "type": "string" },
+                  "comment": { "type": "string" }
+                }
+              }
+            }
+          }
+        },
+        "responses": { "201": { "description": "Section créée" } }
+      }
+    },
+    "/api/section/{id}": {
+      "get": {
+        "operationId": "getSection",
+        "summary": "Lire une section",
+        "parameters": [
+          { "name": "id", "in": "path", "required": true, "schema": { "type": "integer" } }
+        ],
+        "responses": { "200": { "description": "Contenu de la section" } }
+      },
+      "put": {
+        "operationId": "updateSection",
+        "summary": "Modifier une section",
+        "parameters": [
+          { "name": "id", "in": "path", "required": true, "schema": { "type": "integer" } }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "title": { "type": "string" },
+                  "content": { "type": "string" },
+                  "comment": { "type": "string" }
+                }
+              }
+            }
+          }
+        },
+        "responses": { "200": { "description": "Section mise à jour" } }
+      },
+      "delete": {
+        "operationId": "deleteSection",
+        "summary": "Supprimer une section",
+        "parameters": [
+          { "name": "id", "in": "path", "required": true, "schema": { "type": "integer" } }
+        ],
+        "responses": { "200": { "description": "Section supprimée" } }
+      }
+    },
+    "/api/project/{pid}/notes": {
+      "get": {
+        "operationId": "listNotes",
+        "summary": "Lister les notes d'un projet",
+        "parameters": [
+          { "name": "pid", "in": "path", "required": true, "schema": { "type": "integer" } }
+        ],
+        "responses": { "200": { "description": "Liste des notes" } }
+      },
+      "post": {
+        "operationId": "createNote",
+        "summary": "Créer une note",
+        "parameters": [
+          { "name": "pid", "in": "path", "required": true, "schema": { "type": "integer" } }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "title": { "type": "string" },
+                  "content": { "type": "string" },
+                  "comment": { "type": "string" }
+                }
+              }
+            }
+          }
+        },
+        "responses": { "201": { "description": "Note créée" } }
+      }
+    },
+    "/api/note/{id}": {
+      "get": {
+        "operationId": "getNote",
+        "summary": "Lire une note",
+        "parameters": [
+          { "name": "id", "in": "path", "required": true, "schema": { "type": "integer" } }
+        ],
+        "responses": { "200": { "description": "Contenu de la note" } }
+      },
+      "put": {
+        "operationId": "updateNote",
+        "summary": "Modifier une note",
+        "parameters": [
+          { "name": "id", "in": "path", "required": true, "schema": { "type": "integer" } }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "title": { "type": "string" },
+                  "content": { "type": "string" },
+                  "comment": { "type": "string" }
+                }
+              }
+            }
+          }
+        },
+        "responses": { "200": { "description": "Note mise à jour" } }
+      },
+      "delete": {
+        "operationId": "deleteNote",
+        "summary": "Supprimer une note",
+        "parameters": [
+          { "name": "id", "in": "path", "required": true, "schema": { "type": "integer" } }
+        ],
+        "responses": { "200": { "description": "Note supprimée" } }
+      }
+    },
+    "/api/project/{pid}/characters": {
+      "get": {
+        "operationId": "listCharacters",
+        "summary": "Lister les personnages d'un projet",
+        "parameters": [
+          { "name": "pid", "in": "path", "required": true, "schema": { "type": "integer" } }
+        ],
+        "responses": { "200": { "description": "Liste des personnages" } }
+      },
+      "post": {
+        "operationId": "createCharacter",
+        "summary": "Créer un personnage",
+        "parameters": [
+          { "name": "pid", "in": "path", "required": true, "schema": { "type": "integer" } }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": ["name"],
+                "properties": {
+                  "name": { "type": "string" },
+                  "description": { "type": "string", "description": "Biographie" },
+                  "comment": { "type": "string", "description": "Notes internes" }
+                }
+              }
+            }
+          }
+        },
+        "responses": { "201": { "description": "Personnage créé" } }
+      }
+    },
+    "/api/character/{id}": {
+      "get": {
+        "operationId": "getCharacter",
+        "summary": "Fiche d'un personnage",
+        "parameters": [
+          { "name": "id", "in": "path", "required": true, "schema": { "type": "integer" } }
+        ],
+        "responses": { "200": { "description": "Fiche du personnage" } }
+      },
+      "put": {
+        "operationId": "updateCharacter",
+        "summary": "Modifier un personnage",
+        "parameters": [
+          { "name": "id", "in": "path", "required": true, "schema": { "type": "integer" } }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "name": { "type": "string" },
+                  "description": { "type": "string" },
+                  "comment": { "type": "string" }
+                }
+              }
+            }
+          }
+        },
+        "responses": { "200": { "description": "Personnage mis à jour" } }
+      },
+      "delete": {
+        "operationId": "deleteCharacter",
+        "summary": "Supprimer un personnage",
+        "parameters": [
+          { "name": "id", "in": "path", "required": true, "schema": { "type": "integer" } }
+        ],
+        "responses": { "200": { "description": "Personnage supprimé" } }
+      }
+    },
+    "/api/project/{pid}/element-types": {
+      "get": {
+        "operationId": "listElementTypes",
+        "summary": "Types d'éléments disponibles",
+        "description": "À appeler AVANT createElement pour connaître les template_element_id valides.",
+        "parameters": [
+          { "name": "pid", "in": "path", "required": true, "schema": { "type": "integer" } }
+        ],
+        "responses": { "200": { "description": "Types disponibles" } }
+      }
+    },
+    "/api/project/{pid}/elements": {
+      "get": {
+        "operationId": "listElements",
+        "summary": "Lister les éléments d'un projet",
+        "description": "Éléments personnalisés : lieux, objets, exercices, etc.",
+        "parameters": [
+          { "name": "pid", "in": "path", "required": true, "schema": { "type": "integer" } }
+        ],
+        "responses": { "200": { "description": "Liste des éléments" } }
+      },
+      "post": {
+        "operationId": "createElement",
+        "summary": "Créer un élément",
+        "parameters": [
+          { "name": "pid", "in": "path", "required": true, "schema": { "type": "integer" } }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": ["title", "template_element_id"],
+                "properties": {
+                  "title": { "type": "string" },
+                  "template_element_id": { "type": "integer", "description": "ID du type (voir listElementTypes)" },
+                  "parent_id": { "type": "integer", "description": "ID du parent pour sous-élément" }
+                }
+              }
+            }
+          }
+        },
+        "responses": { "201": { "description": "Élément créé" } }
+      }
+    },
+    "/api/element/{id}": {
+      "get": {
+        "operationId": "getElement",
+        "summary": "Fiche d'un élément",
+        "parameters": [
+          { "name": "id", "in": "path", "required": true, "schema": { "type": "integer" } }
+        ],
+        "responses": { "200": { "description": "Fiche de l'élément" } }
+      },
+      "put": {
+        "operationId": "updateElement",
+        "summary": "Modifier un élément",
+        "parameters": [
+          { "name": "id", "in": "path", "required": true, "schema": { "type": "integer" } }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "title": { "type": "string" },
+                  "content": { "type": "string" },
+                  "resume": { "type": "string" }
+                }
+              }
+            }
+          }
+        },
+        "responses": { "200": { "description": "Élément mis à jour" } }
+      },
+      "delete": {
+        "operationId": "deleteElement",
+        "summary": "Supprimer un élément",
+        "parameters": [
+          { "name": "id", "in": "path", "required": true, "schema": { "type": "integer" } }
+        ],
+        "responses": { "200": { "description": "Élément supprimé" } }
+      }
+    },
+    "/api/project/{pid}/images": {
+      "get": {
+        "operationId": "listImages",
+        "summary": "Lister les images d'un projet",
+        "parameters": [
+          { "name": "pid", "in": "path", "required": true, "schema": { "type": "integer" } }
+        ],
+        "responses": { "200": { "description": "Liste des images" } }
+      }
+    },
+    "/api/project/{id}/export/markdown": {
+      "get": {
+        "operationId": "exportMarkdown",
+        "summary": "Exporter un projet en Markdown",
+        "description": "Retourne l'intégralité du projet structuré en Markdown.",
+        "parameters": [
+          { "name": "id", "in": "path", "required": true, "schema": { "type": "integer" } }
+        ],
+        "responses": {
+          "200": {
+            "description": "Export Markdown",
+            "content": {
+              "text/markdown": { "schema": { "type": "string" } }
+            }
+          }
+        }
+      }
+    },
+    "/api/search": {
+      "get": {
+        "operationId": "search",
+        "summary": "Recherche full-text",
+        "description": "Recherche dans les chapitres, personnages, notes et éléments.",
+        "parameters": [
+          { "name": "q", "in": "query", "required": true, "schema": { "type": "string" }, "description": "Texte à rechercher (min. 2 caractères)" },
+          { "name": "pid", "in": "query", "required": false, "schema": { "type": "integer" }, "description": "Limiter à un projet" }
+        ],
+        "responses": { "200": { "description": "Résultats de recherche" } }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "ProjectSummary": {
+        "type": "object",
+        "properties": {
+          "id": { "type": "integer" },
+          "title": { "type": "string" },
+          "description": { "type": "string" },
+          "updated_at": { "type": "string", "format": "date-time" }
+        }
+      }
+    },
+    "securitySchemes": {
+      "oauth2": {
+        "type": "oauth2",
+        "flows": {
+          "authorizationCode": {
+            "authorizationUrl": "https://www.rouaix.com/ecrivain/oauth/authorize",
+            "tokenUrl": "https://www.rouaix.com/ecrivain/oauth/token",
+            "scopes": {
+              "mcp": "Accès complet aux projets d'écriture"
+            }
+          }
+        }
+      }
+    }
+  },
+  "security": [
+    { "oauth2": ["mcp"] }
+  ]
+}
