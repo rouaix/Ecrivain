@@ -17,12 +17,32 @@ class McpController extends Controller
 
     public function beforeRoute(Base $f3): void
     {
+        // CORS — ChatGPT et autres clients MCP font des requêtes cross-origin
+        $origin = $_SERVER['HTTP_ORIGIN'] ?? '';
+        $allowedOrigins = ['https://chatgpt.com', 'https://chat.openai.com', 'https://claude.ai'];
+        if (in_array($origin, $allowedOrigins, true)) {
+            header('Access-Control-Allow-Origin: ' . $origin);
+            header('Access-Control-Allow-Methods: GET, POST, OPTIONS');
+            header('Access-Control-Allow-Headers: Authorization, Content-Type, Accept');
+            header('Access-Control-Allow-Credentials: true');
+            header('Vary: Origin');
+        }
+        if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
+            http_response_code(204);
+            exit;
+        }
+
         // Pas de CSRF — authentification Bearer JWT
         $uid = $this->authenticateApiRequest();
 
         if (!$uid) {
+            $base = rtrim((string) $f3->get('BASE'), '/');
+            $scheme = $f3->get('SCHEME') ?: 'https';
+            $host = $f3->get('HOST');
+            $resourceMetadataUrl = $scheme . '://' . $host . $base . '/.well-known/oauth-protected-resource';
             http_response_code(401);
             header('Content-Type: application/json');
+            header('WWW-Authenticate: Bearer realm="Ecrivain", resource_metadata="' . $resourceMetadataUrl . '"');
             echo json_encode([
                 'jsonrpc' => '2.0',
                 'id'      => null,

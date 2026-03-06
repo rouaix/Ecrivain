@@ -225,8 +225,8 @@ class OAuthController extends Controller
         $codeVerifier = trim((string) ($_POST['code_verifier'] ?? ''));
         $clientSecret = (string) ($_POST['client_secret'] ?? '');
 
-        if ($code === '' || $clientId === '' || $redirectUri === '' || $codeVerifier === '') {
-            $this->oauthError('invalid_request', 'code, client_id, redirect_uri et code_verifier sont requis.', 400);
+        if ($code === '' || $clientId === '' || $redirectUri === '') {
+            $this->oauthError('invalid_request', 'code, client_id et redirect_uri sont requis.', 400);
             return;
         }
 
