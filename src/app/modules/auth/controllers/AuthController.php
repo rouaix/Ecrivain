@@ -1,13 +1,11 @@
 <?php
 
 class AuthController extends Controller
-
 {
 
     private const PASSWORD_RESET_TTL = 3600;
 
     public function beforeRoute(Base $f3)
-
     {
 
         parent::beforeRoute($f3);
@@ -25,7 +23,6 @@ class AuthController extends Controller
     }
 
     public function login()
-
     {
 
         // Render with F3 Template
@@ -45,7 +42,6 @@ class AuthController extends Controller
     }
 
     private function log($msg)
-
     {
 
         // Debug logging disabled in production for security
@@ -61,12 +57,11 @@ class AuthController extends Controller
     }
 
     public function authenticate()
-
     {
 
         // $this->log("Authenticate called.");
 
-        
+
 
         $username = trim($_POST['username'] ?? '');
 
@@ -134,10 +129,17 @@ class AuthController extends Controller
             }
 
             // Explicitly close session to ensure write before redirect
+            $redirectAfterLogin = $_SESSION['post_login_redirect'] ?? '';
+            if (isset($_SESSION['post_login_redirect'])) {
+                unset($_SESSION['post_login_redirect']);
+            }
 
+            // Explicitly close session to ensure write before redirect
             session_write_close();
 
             $this->f3->reroute('/dashboard');
+            $this->f3->reroute($redirectAfterLogin ?: '/dashboard');
+            //$this->f3->reroute('/dashboard');
 
         } else {
 
@@ -164,7 +166,6 @@ class AuthController extends Controller
     }
 
     public function forgotPassword()
-
     {
 
         $this->render('auth/forgot-password.html', [
@@ -182,7 +183,6 @@ class AuthController extends Controller
     }
 
     public function requestPasswordReset()
-
     {
 
         $identifier = trim($_POST['username'] ?? '');
@@ -258,7 +258,6 @@ class AuthController extends Controller
     }
 
     public function showPasswordResetForm()
-
     {
 
         $token = $this->f3->get('PARAMS.token');
@@ -282,7 +281,6 @@ class AuthController extends Controller
     }
 
     public function performPasswordReset()
-
     {
 
         $token = $this->f3->get('PARAMS.token');
@@ -360,7 +358,6 @@ class AuthController extends Controller
     }
 
     public function register()
-
     {
 
         // Render with F3 Template
@@ -378,7 +375,6 @@ class AuthController extends Controller
     }
 
     public function store()
-
     {
 
         $username = trim($_POST['username'] ?? '');
@@ -464,7 +460,6 @@ class AuthController extends Controller
     }
 
     private function getPasswordResetDir(): string
-
     {
 
         $dir = 'tmp/password-resets';
@@ -480,7 +475,6 @@ class AuthController extends Controller
     }
 
     private function createPasswordResetToken(array $user): string
-
     {
 
         $token = bin2hex(random_bytes(32));
@@ -504,7 +498,6 @@ class AuthController extends Controller
     }
 
     private function loadPasswordResetToken(string $token): ?array
-
     {
 
         if (!preg_match('/^[0-9a-f]{64}$/', $token)) {
@@ -542,7 +535,6 @@ class AuthController extends Controller
     }
 
     private function removePasswordResetToken(string $token): void
-
     {
 
         $file = $this->getPasswordResetDir() . '/' . $token . '.json';
@@ -556,7 +548,6 @@ class AuthController extends Controller
     }
 
     private function sendPasswordResetEmail(string $email, string $token): void
-
     {
 
         $resetUrl = $this->buildAbsoluteUrl('/password/reset/' . $token);
@@ -603,7 +594,6 @@ class AuthController extends Controller
     }
 
     private function buildAbsoluteUrl(string $path): string
-
     {
 
         $host = $_SERVER['HTTP_HOST'] ?? $this->f3->get('HOST') ?? 'localhost';
@@ -625,7 +615,6 @@ class AuthController extends Controller
     }
 
     public function logout()
-
     {
 
         session_destroy();
@@ -635,7 +624,6 @@ class AuthController extends Controller
     }
 
     public function generateToken()
-
     {
 
         $currentUser = $this->currentUser();
@@ -755,7 +743,6 @@ class AuthController extends Controller
     }
 
     public function listTokens()
-
     {
 
         $currentUser = $this->currentUser();
@@ -859,7 +846,6 @@ class AuthController extends Controller
     }
 
     public function revokeTokens()
-
     {
 
         $currentUser = $this->currentUser();
@@ -969,7 +955,6 @@ class AuthController extends Controller
      */
 
     private function encodeAutoLoginToken(string $tokenId, int $userId, int $iat): string
-
     {
 
         $jwtSecret = getenv('JWT_SECRET') ?: $_ENV['JWT_SECRET'] ?? null;
@@ -1003,7 +988,6 @@ class AuthController extends Controller
      */
 
     private function resolveTokenIdFromJwt(string $token): ?string
-
     {
 
         $jwtSecret = getenv('JWT_SECRET') ?: $_ENV['JWT_SECRET'] ?? null;
@@ -1037,7 +1021,6 @@ class AuthController extends Controller
     /* Rate Limiting Implementation (File-based) */
 
     private function getRateLimitFile(string $ip): string
-
     {
 
         // Use a hash of IP to create filename
@@ -1057,7 +1040,6 @@ class AuthController extends Controller
     }
 
     private function isRateLimited(string $ip): bool
-
     {
 
         $file = $this->getRateLimitFile($ip);
@@ -1103,7 +1085,6 @@ class AuthController extends Controller
     }
 
     private function incrementFailedLogin(string $ip): void
-
     {
 
         $file = $this->getRateLimitFile($ip);
@@ -1149,24 +1130,29 @@ class AuthController extends Controller
     private function sendWeeklyStatsIfDue(array $user): void
     {
 
-        if (empty($user['email'])) return;
+        if (empty($user['email']))
+            return;
 
         $configFile = $this->getUserDataDir($user['email']) . '/ai_config.json';
 
-        if (!file_exists($configFile)) return;
+        if (!file_exists($configFile))
+            return;
 
         $config = json_decode(file_get_contents($configFile), true);
 
-        if (!is_array($config)) return;
+        if (!is_array($config))
+            return;
 
         $notifs = $config['notifications'] ?? [];
 
-        if (empty($notifs['weekly_stats'])) return;
+        if (empty($notifs['weekly_stats']))
+            return;
 
         // Only send once every 7 days
         $lastSent = $notifs['last_weekly_sent'] ?? null;
 
-        if ($lastSent && (time() - strtotime($lastSent)) < 7 * 24 * 3600) return;
+        if ($lastSent && (time() - strtotime($lastSent)) < 7 * 24 * 3600)
+            return;
 
         $stats = $this->gatherWeeklyStats($user['id']);
 
@@ -1207,8 +1193,8 @@ class AuthController extends Controller
 
         return [
             'words_this_week' => (int) ($wordsResult[0]['total'] ?? 0),
-            'sessions'        => (int) ($sessionsResult[0]['total'] ?? 0),
-            'ai_tokens'       => (int) ($tokensResult[0]['total'] ?? 0),
+            'sessions' => (int) ($sessionsResult[0]['total'] ?? 0),
+            'ai_tokens' => (int) ($tokensResult[0]['total'] ?? 0),
         ];
 
     }
