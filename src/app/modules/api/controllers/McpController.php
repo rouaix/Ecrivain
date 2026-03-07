@@ -126,8 +126,7 @@ class McpController extends Controller
         return ['jsonrpc' => '2.0', 'id' => $id, 'result' => [
             'protocolVersion' => '2024-11-05',
             'capabilities'    => [
-                'tools'        => new \stdClass(),
-                'experimental' => ['cimd' => true],
+                'tools' => new \stdClass(),
             ],
             'serverInfo'      => ['name' => 'ecrivain', 'version' => '1.0.0'],
         ]];

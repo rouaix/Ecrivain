@@ -188,6 +188,7 @@ class OAuthController extends Controller
 
         foreach ($redirectUris as $uri) {
             if (!is_string($uri) || !$this->isAllowedRedirectUri($uri)) {
+                $this->logOauth('error', 'redirect_uri refusée: ' . $uri);
                 $this->oauthError('invalid_redirect_uri', 'Une redirect_uri n\'est pas autorisée.', 400);
                 return;
             }
