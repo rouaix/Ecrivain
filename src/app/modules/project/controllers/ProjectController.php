@@ -191,6 +191,7 @@ class ProjectController extends ProjectBaseController
                 'words_per_page' => 350,
                 'target_pages'   => 0,
                 'target_words'   => 0,
+                'tags'           => '',
                 'template_id'    => $defaultTemplate['id'] ?? ''
             ]
         ]);
