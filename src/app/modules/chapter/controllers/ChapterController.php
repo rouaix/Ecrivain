@@ -357,6 +357,44 @@ class ChapterController extends Controller
         echo json_encode(['status' => 'ok']);
     }
 
+    public function deleteComment()
+    {
+        header('Content-Type: application/json');
+        $cid = (int) $this->f3->get('PARAMS.cid');
+
+        $commentModel = new Comment();
+        $commentModel->load(['id=?', $cid]);
+
+        if ($commentModel->dry()) {
+            http_response_code(404);
+            echo json_encode(['error' => 'Annotation introuvable']);
+            return;
+        }
+
+        // Verify ownership via chapter
+        $chapterModel = new Chapter();
+        $chapterModel->load(['id=?', $commentModel->chapter_id]);
+        if ($chapterModel->dry()) {
+            http_response_code(404);
+            echo json_encode(['error' => 'Chapitre introuvable']);
+            return;
+        }
+
+        $projectModel = new Project();
+        if (!$projectModel->count(['id=? AND user_id=?', $chapterModel->project_id, $this->currentUser()['id']])) {
+            http_response_code(403);
+            echo json_encode(['error' => 'Accès non autorisé']);
+            return;
+        }
+
+        $chapterId = $commentModel->chapter_id;
+        $commentModel->erase();
+
+        // Return updated list
+        $comments = (new Comment())->getByChapter($chapterId);
+        echo json_encode($comments);
+    }
+
     public function getComments()
     {
         $cid = (int) $this->f3->get('PARAMS.id');

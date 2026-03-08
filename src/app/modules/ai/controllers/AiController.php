@@ -1272,10 +1272,15 @@ class AiController extends Controller
         // Build prompt
         $taskPrompt =
             "Tu es un assistant éditorial. Analyse le chapitre ci-dessous en le comparant aux fiches personnages fournies.\n"
-          . "Identifie toutes les incohérences, contradictions ou erreurs de continuité : "
-          . "caractéristiques physiques incorrectes, traits de personnalité contradictoires, "
-          . "connaissances que le personnage ne devrait pas avoir, anachronismes, etc.\n"
-          . "Si tu ne trouves aucune incohérence, réponds exactement : \"Aucune incohérence détectée.\"\n"
+          . "Signale uniquement les vraies contradictions logiques qui sont impossibles ou incompatibles :\n"
+          . "- Attributs physiques décrits différemment (couleur des yeux, morphologie, handicap…)\n"
+          . "- Connaissances ou compétences que le personnage ne peut pas avoir selon sa fiche\n"
+          . "- Événements qui contredisent directement un fait établi (personnage mort qui apparaît vivant, etc.)\n"
+          . "- Traits de personnalité radicalement opposés à ceux décrits\n"
+          . "NE SIGNALE PAS les comportements situationnels normaux : un personnage qui possède un véhicule "
+          . "peut aussi marcher à pied, un personnage courageux peut avoir peur dans certaines situations, etc. "
+          . "Une fiche décrit des caractéristiques générales, pas des comportements exclusifs.\n"
+          . "Si tu ne trouves aucune incohérence réelle, réponds exactement : \"Aucune incohérence détectée.\"\n"
           . "Sinon, liste chaque problème sous forme de puces courtes (une par ligne, commençant par « - »). "
           . "Sois précis et cite le passage concerné entre guillemets si possible.\n\n"
           . "### Fiches personnages\n"
@@ -1323,5 +1328,152 @@ class AiController extends Controller
             'issues'  => $issues,
             'raw'     => $raw,
         ]);
+    }
+
+    /**
+     * Suggest character relations by analysing chapter content with AI.
+     * POST /ai/suggest-relations
+     */
+    public function suggestRelations()
+    {
+        header('Content-Type: application/json');
+        $user = $this->currentUser();
+        if (!$user) {
+            http_response_code(401);
+            echo json_encode(['success' => false, 'error' => 'Non authentifié']);
+            return;
+        }
+
+        $json = json_decode($this->f3->get('BODY'), true);
+        $pid  = (int) ($json['project_id'] ?? 0);
+
+        if (!$pid) {
+            http_response_code(400);
+            echo json_encode(['success' => false, 'error' => 'project_id manquant']);
+            return;
+        }
+
+        // Verify ownership
+        $db = $this->f3->get('DB');
+        $project = $db->exec('SELECT id, title FROM projects WHERE id = ? AND user_id = ?', [$pid, $user['id']]);
+        if (empty($project)) {
+            http_response_code(403);
+            echo json_encode(['success' => false, 'error' => 'Accès refusé']);
+            return;
+        }
+
+        // Load characters
+        $characters = $db->exec('SELECT id, name, description FROM characters WHERE project_id = ? ORDER BY name ASC', [$pid]) ?: [];
+        if (count($characters) < 2) {
+            echo json_encode(['success' => false, 'error' => 'Il faut au moins 2 personnages pour suggérer des relations.']);
+            return;
+        }
+
+        // Build name → id map
+        $nameToId = [];
+        $charContext = '';
+        foreach ($characters as $c) {
+            $nameToId[mb_strtolower($c['name'])] = (int) $c['id'];
+            $desc = mb_substr(trim(strip_tags(html_entity_decode($c['description'] ?? ''))), 0, 200);
+            $charContext .= "- {$c['name']}" . ($desc ? " : $desc" : '') . "\n";
+        }
+
+        // Load chapters (title + content, truncated)
+        $chapters = $db->exec(
+            'SELECT title, content FROM chapters WHERE project_id = ? ORDER BY order_index ASC LIMIT 30',
+            [$pid]
+        ) ?: [];
+
+        if (empty($chapters)) {
+            echo json_encode(['success' => false, 'error' => 'Aucun chapitre dans ce projet.']);
+            return;
+        }
+
+        $chapContext = '';
+        foreach ($chapters as $ch) {
+            $text = mb_substr(trim(strip_tags(html_entity_decode($ch['content'] ?? ''))), 0, 800);
+            if ($text) {
+                $chapContext .= "### " . $ch['title'] . "\n" . $text . "\n\n";
+            }
+        }
+
+        // AI config
+        $userConfig = $this->getUserConfig();
+        $provider   = $userConfig['active_provider'] ?? 'openai';
+        $apiKey     = $userConfig['providers'][$provider]['api_key'] ?? $this->f3->get('OPENAI_API_KEY');
+        $model      = $userConfig['providers'][$provider]['model'] ?? ($this->f3->get('OPENAI_MODEL') ?: 'gpt-4o');
+
+        if (!$apiKey) {
+            echo json_encode(['success' => false, 'error' => 'Aucune clé API configurée.']);
+            return;
+        }
+
+        $charNames = implode(', ', array_column($characters, 'name'));
+
+        $prompt =
+            "Tu es un assistant littéraire. Analyse les chapitres ci-dessous et identifie les relations "
+          . "significatives entre les personnages suivants : {$charNames}.\n\n"
+          . "Règles :\n"
+          . "- Ne retiens que les relations claires et récurrentes (pas les interactions anodines ponctuelles).\n"
+          . "- Chaque relation doit être entre exactement deux personnages de la liste.\n"
+          . "- Utilise un label court en français (2-4 mots max) : ex. \"père de\", \"rival\", \"alliée\", \"amoureuse de\".\n"
+          . "- Attribue une couleur hex parmi : #ef4444 (conflit), #f97316 (tension), #eab308 (alliance), "
+          . "#22c55e (amitié), #ec4899 (amour), #3b82f6 (famille), #8b5cf6 (lien mystique), #94a3b8 (neutre).\n"
+          . "- Réponds UNIQUEMENT en JSON valide, sans texte autour, sous cette forme exacte :\n"
+          . "[{\"from\":\"NomA\",\"to\":\"NomB\",\"label\":\"label\",\"color\":\"#xxxxxx\"},...]\n"
+          . "- Si aucune relation claire n'est détectable, réponds : []\n\n"
+          . "### Personnages\n{$charContext}\n"
+          . "### Chapitres\n{$chapContext}";
+
+        $service = new AiService($provider, $apiKey, $model);
+        $t0 = microtime(true);
+
+        try {
+            $result = $service->generate("Tu es un assistant littéraire.", $prompt, 0.5, 800);
+        } catch (\Exception $e) {
+            echo json_encode(['success' => false, 'error' => 'Erreur IA : ' . $e->getMessage()]);
+            return;
+        }
+
+        $elapsed = microtime(true) - $t0;
+        $raw = trim($result['text'] ?? '');
+
+        // Extract JSON array from response (strip potential markdown code fences)
+        $raw = preg_replace('/^```(?:json)?\s*/i', '', $raw);
+        $raw = preg_replace('/\s*```$/', '', $raw);
+
+        $suggestions = json_decode($raw, true);
+        if (!is_array($suggestions)) {
+            echo json_encode(['success' => false, 'error' => 'Réponse IA invalide.', 'raw' => $raw]);
+            return;
+        }
+
+        // Resolve names to IDs and validate
+        $resolved = [];
+        $allowedColors = ['#ef4444','#f97316','#eab308','#22c55e','#ec4899','#3b82f6','#8b5cf6','#94a3b8'];
+        foreach ($suggestions as $s) {
+            $fromName = $s['from'] ?? '';
+            $toName   = $s['to']   ?? '';
+            $fromId = $nameToId[mb_strtolower($fromName)] ?? null;
+            $toId   = $nameToId[mb_strtolower($toName)]   ?? null;
+
+            if (!$fromId || !$toId || $fromId === $toId) continue;
+
+            $color = in_array($s['color'] ?? '', $allowedColors) ? $s['color'] : '#94a3b8';
+            $label = mb_substr(trim($s['label'] ?? ''), 0, 100);
+
+            $resolved[] = [
+                'from_id'   => $fromId,
+                'to_id'     => $toId,
+                'from_name' => $fromName,
+                'to_name'   => $toName,
+                'label'     => $label,
+                'color'     => $color,
+            ];
+        }
+
+        $this->logAiUsage($model, $result['prompt_tokens'] ?? 0, $result['completion_tokens'] ?? 0, 'suggest_relations');
+
+        echo json_encode(['success' => true, 'suggestions' => $resolved]);
     }
 }

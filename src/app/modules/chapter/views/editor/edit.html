@@ -12,6 +12,12 @@
             <button type="button" id="btnGlossary" class="button secondary" title="Lexique du projet" data-tooltip="Lexique du projet">
                 <i class="fas fa-book"></i>&nbsp;Lexique
             </button>
+            <button type="button" id="commentButton" class="button secondary" title="Annoter une sélection" data-tooltip="Annoter une sélection de texte">
+                <i class="fas fa-comment-alt"></i>&nbsp;Annoter
+            </button>
+            <button type="button" id="btnInconsistency" class="button secondary" title="Détecter les incohérences" data-tooltip="Détecter les incohérences avec les fiches personnages">
+                <i class="fas fa-search"></i>&nbsp;Incohérences
+            </button>
             <a href="{{ @base }}/chapter/{{ @chapter.id }}/versions" class="button secondary"
                 title="Historique des versions" data-tooltip="Historique des versions">
                 <i class="fas fa-history"></i>
@@ -105,6 +111,14 @@
                     </div>
                     <input type="hidden" name="content" value="{{ @chapter.content | esc }}">
                 </div>
+            </div>
+
+            <!-- Annotations Section -->
+            <div class="edit-card-section" id="annotationsSection" style="display:none;">
+                <div class="grammar-header">
+                    <label>Annotations</label>
+                </div>
+                <div id="commentsList"></div>
             </div>
 
             <!-- Grammar Check Section -->
@@ -1320,20 +1334,70 @@
             }
         }
 
-        // Add comment functionality (Quill Adapted)
+        // Annotations : chargement et affichage
+        function renderAnnotations(comments) {
+            var section = document.getElementById('annotationsSection');
+            var listDiv = document.getElementById('commentsList');
+            if (!section || !listDiv) return;
+            if (!comments || comments.length === 0) {
+                section.style.display = 'none';
+                return;
+            }
+            section.style.display = '';
+            var quillText = QuillTools.quill ? QuillTools.quill.getText() : '';
+            var html = '<ul class="annotations-list">';
+            comments.forEach(function (com) {
+                var snippet = quillText.slice(com.start_pos, com.end_pos).trim();
+                var safeSnippet = snippet.replace(/</g, '&lt;').replace(/>/g, '&gt;');
+                var safeContent = com.content.replace(/</g, '&lt;').replace(/>/g, '&gt;');
+                html += '<li class="annotation-item" data-id="' + com.id + '">';
+                if (safeSnippet) {
+                    html += '<span class="annotation-quote">« ' + safeSnippet + ' »</span> ';
+                }
+                html += '<span class="annotation-text">' + safeContent + '</span>';
+                html += '<button type="button" class="button delete annotation-delete" data-id="' + com.id + '" title="Supprimer">Supprimer</button>';
+                html += '</li>';
+            });
+            html += '</ul>';
+            listDiv.innerHTML = html;
+
+            // Boutons supprimer
+            listDiv.querySelectorAll('.annotation-delete').forEach(function (btn) {
+                btn.addEventListener('click', function () {
+                    var aid = this.dataset.id;
+                    fetch('{{ @base }}/chapter/comment/' + aid + '/delete', {
+                        method: 'POST',
+                        headers: { 'X-CSRF-Token': window.CSRF_TOKEN }
+                    })
+                    .then(function (resp) { return resp.json(); })
+                    .then(renderAnnotations);
+                });
+            });
+        }
+
+        function loadAnnotations() {
+            fetch('{{ @base }}/chapter/' + chapterId + '/comments')
+                .then(function (resp) { return resp.json(); })
+                .then(renderAnnotations)
+                .catch(function () {});
+        }
+
+        // Charger les annotations existantes au démarrage
+        loadAnnotations();
+
+        // Bouton Annoter
         var commentButton = document.getElementById('commentButton');
         if (commentButton) {
             commentButton.addEventListener('click', function () {
                 var range = QuillTools.quill.getSelection();
                 if (!range || range.length === 0) {
-                    alert('Sélectionnez une portion de texte pour commenter.');
+                    alert('Sélectionnez une portion de texte pour annoter.');
                     return;
                 }
 
-                var userContent = prompt('Saisissez votre commentaire :');
+                var userContent = prompt('Votre annotation :');
                 if (!userContent) return;
 
-                // Use range index as offsets
                 var start = range.index;
                 var end = range.index + range.length;
 
@@ -1344,28 +1408,9 @@
                         'X-CSRF-Token': window.CSRF_TOKEN
                     },
                     body: JSON.stringify({ start: start, end: end, content: userContent })
-                }).then(function (resp) { return resp.json().catch(function () { return null; }); }).then(function (data) {
-                    // Reload comments list
-                    fetch('{{ @base }}/chapter/' + chapterId + '/comments')
-                        .then(function (resp) { return resp.json(); })
-                        .then(function (comments) {
-                            var listDiv = document.getElementById('commentsList');
-                            if (comments.length === 0) {
-                                listDiv.innerHTML = '<p>Aucun commentaire pour l\'instant.</p>';
-                                return;
-                            }
-                            var html = '<ul>';
-                            comments.forEach(function (com) {
-                                // Note: Snippet display might be off if we don't have server-side text content
-                                // But we just display what server sends
-                                // We escape HTML in comments for safety
-                                var snippet = (com.snippet || '').replace(/</g, '&lt;').replace(/>/g, '&gt;');
-                                html += '<li><strong>« ' + snippet + ' »</strong> : ' + com.content.replace(/</g, '&lt;').replace(/>/g, '&gt;') + '</li>';
-                            });
-                            html += '</ul>';
-                            listDiv.innerHTML = html;
-                        });
-                });
+                })
+                .then(function (resp) { return resp.json().catch(function () { return null; }); })
+                .then(function () { loadAnnotations(); });
             });
         }
 

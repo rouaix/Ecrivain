@@ -82,15 +82,13 @@ input[type="submit"]:hover {
 }
 
 .button.delete {
-    /*
     background-color: var(--button-delete-bg);
     color: var(--button-text);
     border-color: rgba(0, 0, 0, 0.1);
-    */
 }
 
 .button.delete:hover {
-    /*background-color: darkred;*/
+    background-color: darkred;
 }
 
 /* Specific AI Buttons */

@@ -3,6 +3,9 @@
     <div class="edit-header">
         <h2><i class="fas fa-project-diagram"></i> Relations — {{ @project.title | esc }}</h2>
         <div style="display:flex;gap:8px;">
+            <button type="button" id="btnSuggestRelations" class="button secondary" title="Suggérer des relations depuis les chapitres" data-tooltip="Analyser les chapitres avec l'IA pour suggérer des relations">
+                <i class="fas fa-magic"></i>&nbsp;Suggérer
+            </button>
             <a href="{{ @base }}/project/{{ @project.id }}/characters" class="button secondary" title="Liste des personnages" data-tooltip="Liste des personnages">
                 <i class="fas fa-users"></i>
             </a>
@@ -112,6 +115,26 @@
 
     </check>
 
+</div>
+
+<!-- Suggestions modal -->
+<div class="modal-overlay" id="suggestModal" style="display:none;">
+    <div class="modal-content" style="max-width:620px;max-height:80vh;display:flex;flex-direction:column;">
+        <div class="modal-header">
+            <h3><i class="fas fa-magic"></i> Relations suggérées par l'IA</h3>
+            <button type="button" class="modal-close" id="closeSuggestModal">&times;</button>
+        </div>
+        <div class="modal-body" style="flex:1;overflow-y:auto;">
+            <div id="suggestLoading" style="display:none;text-align:center;padding:32px 0;">
+                <i class="fas fa-spinner fa-spin fa-2x"></i>
+                <p style="margin-top:12px;color:var(--text-muted,#777);">Analyse des chapitres en cours…</p>
+            </div>
+            <div id="suggestList"></div>
+        </div>
+        <div class="modal-footer" style="padding:12px 20px;border-top:1px solid var(--border);text-align:right;">
+            <button type="button" class="button" id="closeSuggestModalBtn">Fermer</button>
+        </div>
+    </div>
 </div>
 
 <script src="https://unpkg.com/vis-network@9.1.9/standalone/umd/vis-network.min.js" nonce="{{ @nonce }}"></script>
@@ -331,6 +354,106 @@
     function escHtml(str) {
         return String(str).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
     }
+
+    // ── Suggest relations ─────────────────────────────────────────────────────
+
+    var suggestModal   = document.getElementById('suggestModal');
+    var suggestLoading = document.getElementById('suggestLoading');
+    var suggestList    = document.getElementById('suggestList');
+
+    function openSuggestModal() { suggestModal.style.display = 'flex'; }
+    function closeSuggestModal() { suggestModal.style.display = 'none'; }
+
+    document.getElementById('closeSuggestModal').addEventListener('click', closeSuggestModal);
+    document.getElementById('closeSuggestModalBtn').addEventListener('click', closeSuggestModal);
+    suggestModal.addEventListener('click', function (e) { if (e.target === suggestModal) closeSuggestModal(); });
+
+    document.getElementById('btnSuggestRelations').addEventListener('click', function () {
+        openSuggestModal();
+        suggestLoading.style.display = 'block';
+        suggestList.innerHTML = '';
+
+        fetch(BASE + '/ai/suggest-relations', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json', 'X-CSRF-Token': CSRF },
+            body: JSON.stringify({ project_id: PID })
+        })
+        .then(function (r) { return r.json(); })
+        .then(function (data) {
+            suggestLoading.style.display = 'none';
+            if (!data.success) {
+                suggestList.innerHTML = '<p class="rel-status rel-status--err">' + escHtml(data.error || 'Erreur') + '</p>';
+                return;
+            }
+            if (!data.suggestions || data.suggestions.length === 0) {
+                suggestList.innerHTML = '<p style="padding:16px;color:var(--text-muted,#777);">Aucune relation détectée dans les chapitres.</p>';
+                return;
+            }
+
+            var html = '<p style="padding:8px 0 12px;font-size:.85rem;color:var(--text-muted,#777);">'
+                + data.suggestions.length + ' relation(s) suggérée(s). Acceptez celles qui vous semblent pertinentes.</p>'
+                + '<div class="rel-list" id="suggestionItems">';
+
+            data.suggestions.forEach(function (s, i) {
+                html += '<div class="rel-item" id="sug-' + i + '">'
+                    + '<span class="rel-dot" style="background:' + escHtml(s.color) + ';"></span>'
+                    + '<span class="rel-names"><strong>' + escHtml(s.from_name) + '</strong>'
+                    + ' <i class="fas fa-arrow-right rel-arrow"></i> '
+                    + '<strong>' + escHtml(s.to_name) + '</strong></span>'
+                    + '<span class="rel-label-badge">' + escHtml(s.label) + '</span>'
+                    + '<button type="button" class="button small primary btn-accept-sug" '
+                    + 'data-i="' + i + '" data-from="' + s.from_id + '" data-to="' + s.to_id + '" '
+                    + 'data-label="' + escHtml(s.label) + '" data-color="' + escHtml(s.color) + '">Accepter</button>'
+                    + '<button type="button" class="button small btn-ignore-sug" data-i="' + i + '">Ignorer</button>'
+                    + '</div>';
+            });
+            html += '</div>';
+            suggestList.innerHTML = html;
+
+            // Accept
+            suggestList.addEventListener('click', function (e) {
+                var btnAccept = e.target.closest('.btn-accept-sug');
+                var btnIgnore = e.target.closest('.btn-ignore-sug');
+
+                if (btnAccept) {
+                    btnAccept.disabled = true;
+                    var idx = btnAccept.dataset.i;
+                    fetch(BASE + '/project/' + PID + '/characters/relation/add', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/x-www-form-urlencoded', 'X-CSRF-Token': CSRF },
+                        body: new URLSearchParams({
+                            char_from: btnAccept.dataset.from,
+                            char_to:   btnAccept.dataset.to,
+                            label:     btnAccept.dataset.label,
+                            color:     btnAccept.dataset.color,
+                            csrf_token: CSRF
+                        })
+                    })
+                    .then(function (r) { return r.json(); })
+                    .then(function (data) {
+                        if (!data.success) { btnAccept.disabled = false; return; }
+                        // Add to graph and list
+                        var r = data.relation;
+                        edges.add(edgeFromRel({ id: r.id, from: r.char_from, to: r.char_to, label: r.label, color: r.color }));
+                        addRelToList(r);
+                        // Remove suggestion row
+                        var row = document.getElementById('sug-' + idx);
+                        if (row) row.remove();
+                    });
+                }
+
+                if (btnIgnore) {
+                    var row = document.getElementById('sug-' + btnIgnore.dataset.i);
+                    if (row) row.remove();
+                }
+            });
+        })
+        .catch(function () {
+            suggestLoading.style.display = 'none';
+            suggestList.innerHTML = '<p class="rel-status rel-status--err">Erreur réseau.</p>';
+        });
+    });
+
 }());
 </script>
 
