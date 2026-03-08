@@ -181,6 +181,7 @@ class ElementController extends Controller
         $this->f3->clear('SESSION.success');
 
         $elementData = $elementModel->cast();
+        $subElementCount = count($elementModel->getSubElements($eid));
 
         $this->render('element/edit.html', [
             'title' => $elementModel->title,
@@ -191,6 +192,7 @@ class ElementController extends Controller
             'parentElement' => $parentElement,
             'topElements' => $topLevelElements,
             'elementTypes' => $elementTypes,
+            'subElementCount' => $subElementCount,
             'errors' => [],
             'success' => $success
         ]);
@@ -230,8 +232,8 @@ class ElementController extends Controller
         // Handle type change: update element and all its sub-elements
         if ($newTemplateElementId && $newTemplateElementId !== (int) $elementModel->template_element_id) {
             $elementModel->changeType($eid, $newTemplateElementId, $elementModel->project_id);
+            // Reload to get the updated order_index set by changeType()
             $elementModel->load(['id=?', $eid]);
-            // Re-apply fields set before the reload
             $elementModel->title = $title;
             $elementModel->content = $content;
             $elementModel->resume = $resume;

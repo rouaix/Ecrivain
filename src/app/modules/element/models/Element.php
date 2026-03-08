@@ -118,25 +118,28 @@ class Element extends Mapper
     }
 
     /**
-     * Change template_element_id for an element and all its direct sub-elements.
+     * Change template_element_id for an element and all its sub-elements.
+     * Sub-elements keep their parent_id (stay attached to the moved element).
      * Positions the element at the end of the new type's list.
      */
     public function changeType(int $elementId, int $newTemplateElementId, int $projectId): void
     {
-        // Get next order position in the target type (excluding the element itself)
+        // Calculate position at the end of the target type
         $res = $this->db->exec(
-            'SELECT MAX(order_index) as m FROM elements WHERE project_id = ? AND template_element_id = ? AND parent_id IS NULL AND id != ?',
+            'SELECT MAX(order_index) as m FROM elements
+             WHERE project_id = ? AND template_element_id = ? AND parent_id IS NULL AND id != ?',
             [$projectId, $newTemplateElementId, $elementId]
         );
         $newOrder = (int) ($res[0]['m'] ?? -1) + 1;
 
-        // Update type for element and all its sub-elements
+        // Change type for the element and all its sub-elements
+        // Sub-elements keep their parent_id — they remain attached to their parent
         $this->db->exec(
             'UPDATE elements SET template_element_id = ? WHERE id = ? OR parent_id = ?',
             [$newTemplateElementId, $elementId, $elementId]
         );
 
-        // Place element at the end of the new type
+        // Reposition the element at the end of the new type
         $this->db->exec(
             'UPDATE elements SET order_index = ? WHERE id = ?',
             [$newOrder, $elementId]
