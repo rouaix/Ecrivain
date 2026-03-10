@@ -168,6 +168,8 @@ class ChapterController extends Controller
         }
         $ignoredWords = array_values(array_unique($ignoredWords));
 
+        $subChapterCount = $chapterModel->count(['parent_id=?', $cid]);
+
         $this->render('editor/edit.html', [
             'title' => $chapterModel->title,
             'chapter' => $chapterData,
@@ -180,6 +182,7 @@ class ChapterController extends Controller
             'errors' => [],
             'success' => $success,
             'ignoredWords' => json_encode($ignoredWords),
+            'subChapterCount' => $subChapterCount,
         ]);
     }
 

@@ -111,6 +111,12 @@
             <div class="edit-actions">
                 <input type="submit" value="Enregistrer" class="button primary large" title="Enregistrer l'élément"
                     title="Enregistrer l'élément">
+                <check if="{{ @subElementCount == 0 }}">
+                    <a class="button delete js-confirm" href="{{ @base }}/element/{{ @element.id }}/delete"
+                        data-confirm="Supprimer cet élément ?" title="Supprimer">
+                        <i class="fas fa-trash"></i> Supprimer
+                    </a>
+                </check>
             </div>
         </div>
     </form>

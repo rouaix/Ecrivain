@@ -99,7 +99,13 @@ class ProjectExportController extends ProjectBaseController
         $sectionsAfter  = $sectionModel->getAfterChapters($pid);
 
         $noteModel = new Note();
-        $notes     = $noteModel->getAllByProject($pid);
+        $notes     = array_values(array_filter(
+            $noteModel->getAllByProject($pid),
+            fn($n) => ($n['type'] ?? 'note') !== 'scenario'
+        ));
+
+        $scenarioModel = new Scenario();
+        $scenarios     = $scenarioModel->getAllByProject($pid);
 
         // Detect Cover from Sections Before
         $coverImage = null;
@@ -434,6 +440,26 @@ class ProjectExportController extends ProjectBaseController
                     }
                     break;
 
+                case 'scenario':
+                    if ($format !== 'summaries') {
+                        foreach ($scenarios as $sc) {
+                            if (isset($sc['is_exported']) && (int) $sc['is_exported'] === 0) continue;
+                            if ($format === 'markdown' && !empty($sc['markdown'])) {
+                                $title = $sc['title'] ?? '';
+                                if ($title) $content .= "\n\n## " . $title . "\n\n";
+                                $content .= $sc['markdown'] . "\n\n";
+                            } else {
+                                $sc['content'] = preg_replace(
+                                    '/<pre[^>]*>(?:<code[^>]*>)?([\s\S]*?)(?:<\/code>)?<\/pre>/i',
+                                    '<p>$1</p>',
+                                    $sc['content'] ?? ''
+                                );
+                                $appendItem($sc, false);
+                            }
+                        }
+                    }
+                    break;
+
                 case 'character':
                 case 'file':
                     break;
@@ -548,7 +574,13 @@ class ProjectExportController extends ProjectBaseController
         $sectionsBefore = $sectionModel->getBeforeChapters($pid);
         $allChapters    = $chapterModel->getAllByProject($pid);
         $sectionsAfter  = $sectionModel->getAfterChapters($pid);
-        $notes          = $noteModel->getAllByProject($pid);
+        $notes          = array_values(array_filter(
+            $noteModel->getAllByProject($pid),
+            fn($n) => ($n['type'] ?? 'note') !== 'scenario'
+        ));
+
+        $scenarioModel = new Scenario();
+        $scenarios     = $scenarioModel->getAllByProject($pid);
 
         $coverImage = null;
         $coverKey   = null;
@@ -676,6 +708,17 @@ class ProjectExportController extends ProjectBaseController
                     case 'note':
                         foreach ($notes as $note) { $addItem($note, 'note'); }
                         break;
+                    case 'scenario':
+                        foreach ($scenarios as $sc) {
+                            if (isset($sc['is_exported']) && (int) $sc['is_exported'] === 0) continue;
+                            $sc['content'] = preg_replace(
+                                '/<pre[^>]*>(?:<code[^>]*>)?([\s\S]*?)(?:<\/code>)?<\/pre>/i',
+                                '<p>$1</p>',
+                                $sc['content'] ?? ''
+                            );
+                            $addItem($sc, 'note');
+                        }
+                        break;
                     case 'element':
                         $elements        = $customElementsByType[$elem['id']] ?? [];
                         $topElements     = [];
@@ -727,6 +770,15 @@ class ProjectExportController extends ProjectBaseController
             }
             foreach ($sectionsAfter as $sec) { $addItem($sec, 'section'); }
             foreach ($notes as $note) { $addItem($note, 'note'); }
+            foreach ($scenarios as $sc) {
+                if (isset($sc['is_exported']) && (int) $sc['is_exported'] === 0) continue;
+                $sc['content'] = preg_replace(
+                    '/<pre[^>]*>(?:<code[^>]*>)?([\s\S]*?)(?:<\/code>)?<\/pre>/i',
+                    '<p>$1</p>',
+                    $sc['content'] ?? ''
+                );
+                $addItem($sc, 'note');
+            }
         }
 
         // --- ZIP Creation ---

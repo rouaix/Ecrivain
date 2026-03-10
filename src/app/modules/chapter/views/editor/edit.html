@@ -178,6 +178,12 @@
             <div class="edit-actions">
                 <input type="submit" value="Enregistrer" class="button primary large" title="Enregistrer le chapitre"
                     title="Enregistrer le chapitre">
+                <check if="{{ @subChapterCount == 0 }}">
+                    <a class="button delete js-confirm" href="{{ @base }}/chapter/{{ @chapter.id }}/delete"
+                        data-confirm="Supprimer ce chapitre ?" title="Supprimer">
+                        <i class="fas fa-trash"></i> Supprimer
+                    </a>
+                </check>
             </div>
         </div>
     </form>

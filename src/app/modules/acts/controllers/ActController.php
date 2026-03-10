@@ -117,10 +117,14 @@ class ActController extends Controller
             return;
         }
 
+        $chapterModel = new Chapter();
+        $chapterCount = $chapterModel->count(['act_id=?', $aid]);
+
         $this->render('acts/edit.html', [
             'title' => 'Modifier l\'acte',
             'project' => $project[0],
             'act' => $act,
+            'chapterCount' => $chapterCount,
             'errors' => []
         ]);
     }
@@ -170,10 +174,13 @@ class ActController extends Controller
 
         $projectModel->load(['id=?', $actModel->project_id]);
         $project = $projectModel->cast();
+        $chapterModel2 = new Chapter();
+        $chapterCount = $chapterModel2->count(['act_id=?', $aid]);
         $this->render('acts/edit.html', [
             'title' => 'Modifier l\'acte',
             'project' => $project,
             'act' => $actModel->cast(),
+            'chapterCount' => $chapterCount,
             'errors' => $errors
         ]);
     }

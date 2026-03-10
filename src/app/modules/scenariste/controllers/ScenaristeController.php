@@ -272,7 +272,9 @@ class ScenaristeController extends Controller
         }
 
         // --- Convert Markdown → HTML for Quill storage ---
-        $markdownText  = $result['text'];
+        $markdownText = $result['text'];
+        // Strip any code fence wrapper the AI may have added around the entire screenplay
+        $markdownText = preg_replace('/^```\w*\r?\n([\s\S]*)\r?\n```\s*$/m', '$1', trim($markdownText));
         $parsedown     = new Parsedown();
         $parsedown->setSafeMode(false);
         $generatedText = $parsedown->text($markdownText);

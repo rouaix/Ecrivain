@@ -496,11 +496,24 @@
             document.getElementById('suggestionOriginalPreview').textContent = '\u00ab ' + preview + ' \u00bb';
             setPopupMode('annotation');
 
-            var left = Math.min(Math.max(0, rect.left), window.innerWidth - 320);
-            var top = rect.bottom + 8;
-            if (top + 260 > window.innerHeight) top = rect.top - 268;
+            // Show popup temporarily offscreen to measure real height
+            popup.style.visibility = 'hidden';
+            popup.style.display = 'block';
+            var popupH = popup.offsetHeight;
+            var popupW = popup.offsetWidth || 320;
+            popup.style.display = 'none';
+            popup.style.visibility = '';
+
+            var headerH = 70; // sticky header clearance
+            var margin = 8;
+            var left = Math.min(Math.max(0, rect.left), window.innerWidth - popupW - margin);
+            var top = rect.bottom + margin;
+            if (top + popupH > window.innerHeight - margin) {
+                top = rect.top - popupH - margin;
+            }
+            top = Math.max(headerH, top);
             popup.style.left = left + 'px';
-            popup.style.top = Math.max(4, top) + 'px';
+            popup.style.top = top + 'px';
             popup.style.display = 'block';
             document.getElementById('annotationCategory').focus();
         }
@@ -734,6 +747,14 @@
 </script>
 
 <style nonce="{{ @nonce }}">
+    /* Sticky site header */
+    header {
+        position: sticky;
+        top: 0;
+        z-index: 100;
+        box-shadow: 0 2px 6px rgba(0, 0, 0, .10);
+    }
+
     /* Layout */
     .review-hint {
         font-size: .83rem;
@@ -1067,6 +1088,8 @@
     .annotation-popup {
         position: fixed;
         z-index: 9000;
+        max-height: calc(100vh - 80px);
+        overflow-y: auto;
         background: var(--card-bg, #fff);
         border: 1px solid var(--border-color, #ddd);
         border-radius: 10px;

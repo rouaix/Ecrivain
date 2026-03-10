@@ -48,7 +48,13 @@ class ReviewController extends Controller
         $sectionsAfter  = $sectionModel->getAfterChapters($pid);
 
         $noteModel = new Note();
-        $notes     = $noteModel->getAllByProject($pid);
+        $notes     = array_values(array_filter(
+            $noteModel->getAllByProject($pid),
+            fn($n) => ($n['type'] ?? 'note') !== 'scenario'
+        ));
+
+        $scenarioModel = new Scenario();
+        $scenarios     = $scenarioModel->getAllByProject($pid);
 
         // Chapter hierarchy
         $chaptersByAct        = [];
@@ -81,6 +87,26 @@ class ReviewController extends Controller
 
         $prepare = function ($content) {
             return $this->cleanQuillHtml(html_entity_decode($content ?? ''));
+        };
+
+        $prepareScenario = function ($content) {
+            $html = html_entity_decode($content ?? '');
+            $html = preg_replace_callback(
+                '/<pre[^>]*>(?:<code[^>]*>)?([\s\S]*?)(?:<\/code>)?<\/pre>/i',
+                function ($m) {
+                    $text = html_entity_decode($m[1], ENT_QUOTES, 'UTF-8');
+                    $lines = preg_split('/\r?\n/', trim($text));
+                    $result = '';
+                    foreach ($lines as $line) {
+                        if (trim($line) !== '') {
+                            $result .= '<p>' . htmlspecialchars($line, ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8') . '</p>';
+                        }
+                    }
+                    return $result ?: '';
+                },
+                $html
+            );
+            return $this->cleanQuillHtml($html);
         };
 
         $addChapter = function ($ch, &$items) use ($prepare, &$subChaptersByParent) {
@@ -152,6 +178,18 @@ class ReviewController extends Controller
                             'id'      => $note['id'],
                             'title'   => $note['title'],
                             'content' => $prepare($note['content']),
+                        ];
+                    }
+                    break;
+
+                case 'scenario':
+                    foreach ($scenarios as $sc) {
+                        if (!($sc['is_exported'] ?? 1)) continue;
+                        $items[] = [
+                            'type'    => 'scenario',
+                            'id'      => $sc['id'],
+                            'title'   => $sc['title'],
+                            'content' => $prepareScenario($sc['content']),
                         ];
                     }
                     break;

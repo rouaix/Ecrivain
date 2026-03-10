@@ -319,10 +319,12 @@
                       title="Modifier ce {{ @panelLabels.act.singular_lc }}" title="Modifier"><i
                         class="fas fa-edit"></i></a>
 
-                    <a class="button small delete js-confirm js-stop-propagation"
-                      href="{{ @base }}/act/{{ @act.id }}/delete"
-                      data-confirm="Supprimer ce {{ @panelLabels.act.singular_lc }} et tous ses {{ @panelLabels.chapter.plural_lc }} ?"
-                      title="Supprimer" title="Supprimer"><i class="fas fa-trash"></i></a>
+                    <check if="{{ @act.stats_chapters == 0 }}">
+                      <a class="button small delete js-confirm js-stop-propagation"
+                        href="{{ @base }}/act/{{ @act.id }}/delete"
+                        data-confirm="Supprimer ce {{ @panelLabels.act.singular_lc }} ?"
+                        title="Supprimer" title="Supprimer"><i class="fas fa-trash"></i></a>
+                    </check>
 
                   </div>
 
@@ -491,9 +493,11 @@
                                 <a class="button small" href="{{ @base }}/chapter/{{ @ch.id }}" title="Éditer"
                                   title="Éditer"><i class="fas fa-edit"></i></a>
 
-                                <a class="button small delete js-confirm" href="{{ @base }}/chapter/{{ @ch.id }}/delete"
-                                  data-confirm="Supprimer ce {{ @panelLabels.chapter.singular_lc }} ?" title="Supprimer"
-                                  title="Supprimer"><i class="fas fa-trash"></i></a>
+                                <check if="{{ count(@ch.subs) == 0 }}">
+                                  <a class="button small delete js-confirm" href="{{ @base }}/chapter/{{ @ch.id }}/delete"
+                                    data-confirm="Supprimer ce {{ @panelLabels.chapter.singular_lc }} ?" title="Supprimer"
+                                    title="Supprimer"><i class="fas fa-trash"></i></a>
+                                </check>
 
                               </td>
 
@@ -882,10 +886,12 @@
                       <a class="button small" href="{{ @base }}/element/{{ @ce.id }}" title="Éditer" title="Éditer">
                         <i class="fas fa-edit"></i>
                       </a>
-                      <a class="button small delete js-confirm" href="{{ @base }}/element/{{ @ce.id }}/delete"
-                        data-confirm="Supprimer cet élément ?" title="Supprimer" title="Supprimer">
-                        <i class="fas fa-trash"></i>
-                      </a>
+                      <check if="{{ !isset(@ce.subs) || count(@ce.subs) == 0 }}">
+                        <a class="button small delete js-confirm" href="{{ @base }}/element/{{ @ce.id }}/delete"
+                          data-confirm="Supprimer cet élément ?" title="Supprimer" title="Supprimer">
+                          <i class="fas fa-trash"></i>
+                        </a>
+                      </check>
                     </td>
                   </tr>
 

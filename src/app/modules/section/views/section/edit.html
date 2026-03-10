@@ -172,6 +172,13 @@
                 <input type="submit" value="Enregistrer" class="button primary large" title="Enregistrer la section"
                     title="Enregistrer la section">
 
+                <check if="{{ @section.id }}">
+                    <a class="button delete js-confirm" href="{{ @base }}/section/{{ @section.id }}/delete"
+                        data-confirm="Supprimer cette section ?" title="Supprimer">
+                        <i class="fas fa-trash"></i> Supprimer
+                    </a>
+                </check>
+
             </div>
 
         </div>

@@ -116,6 +116,13 @@
                 <input type="submit" value="Enregistrer" class="button primary large"
                     title="Enregistrer les modifications">
 
+                <check if="{{ @chapterCount == 0 }}">
+                    <a class="button delete js-confirm" href="{{ @base }}/act/{{ @act.id }}/delete"
+                        data-confirm="Supprimer cet acte ?" title="Supprimer">
+                        <i class="fas fa-trash"></i> Supprimer
+                    </a>
+                </check>
+
             </div>
 
         </div>

@@ -70,7 +70,13 @@ class LectureController extends Controller
         $sectionsAfterChapters = $sectionModel->getAfterChapters($pid);
 
         $noteModel = new Note();
-        $notes = $noteModel->getAllByProject($pid);
+        $notes = array_values(array_filter(
+            $noteModel->getAllByProject($pid),
+            fn($n) => ($n['type'] ?? 'note') !== 'scenario'
+        ));
+
+        $scenarioModel = new Scenario();
+        $scenarios = $scenarioModel->getAllByProject($pid);
 
         // Build reading content in order
         $readingContent = [];
@@ -81,6 +87,27 @@ class LectureController extends Controller
         $prepareContent = function ($content) {
             $decoded = html_entity_decode($content ?? '');
             return $this->cleanQuillHtml($decoded);
+        };
+
+        // Helper to prepare scenario content: unwrap <pre><code> blocks from code-fence converted markdown
+        $prepareScenario = function ($content) {
+            $html = html_entity_decode($content ?? '');
+            $html = preg_replace_callback(
+                '/<pre[^>]*>(?:<code[^>]*>)?([\s\S]*?)(?:<\/code>)?<\/pre>/i',
+                function ($m) {
+                    $text = html_entity_decode($m[1], ENT_QUOTES, 'UTF-8');
+                    $lines = preg_split('/\r?\n/', trim($text));
+                    $result = '';
+                    foreach ($lines as $line) {
+                        if (trim($line) !== '') {
+                            $result .= '<p>' . htmlspecialchars($line, ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8') . '</p>';
+                        }
+                    }
+                    return $result ?: '';
+                },
+                $html
+            );
+            return $this->cleanQuillHtml($html);
         };
         // Helper to calculate pages
         $calculatePages = function ($content) use ($lpp) {
@@ -373,6 +400,30 @@ class LectureController extends Controller
 
                             $currentPage += $subPages;
                         }
+                    }
+                    break;
+
+                case 'scenario':
+                    foreach ($scenarios as $sc) {
+                        if (!($sc['is_exported'] ?? 1)) continue;
+
+                        $pages = $calculatePages($sc['content']);
+                        $readingContent[] = [
+                            'type'       => 'scenario',
+                            'id'         => $sc['id'],
+                            'title'      => $sc['title'],
+                            'content'    => $prepareScenario($sc['content']),
+                            'page_start' => $currentPage,
+                            'page_end'   => $currentPage + $pages - 1
+                        ];
+
+                        $tocItems[] = [
+                            'title' => $sc['title'],
+                            'page'  => $currentPage,
+                            'level' => 0
+                        ];
+
+                        $currentPage += $pages;
                     }
                     break;
 

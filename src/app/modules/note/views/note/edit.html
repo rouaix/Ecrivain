@@ -123,6 +123,13 @@
                 <input type="submit" value="Enregistrer" class="button primary large" title="Enregistrer la note"
                     title="Enregistrer la note">
 
+                <check if="{{ @note.id }}">
+                    <a class="button delete js-confirm" href="{{ @base }}/note/{{ @note.id }}/delete"
+                        data-confirm="Supprimer cette note ?" title="Supprimer">
+                        <i class="fas fa-trash"></i> Supprimer
+                    </a>
+                </check>
+
             </div>
 
         </div>
