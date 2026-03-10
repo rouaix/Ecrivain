@@ -48,14 +48,13 @@
       <div class="edit-card-section">
         <h3>Scénario</h3>
         <div class="form-group">
-          <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:.4rem;">
+          <label>
             <span class="form-hint"><kbd>Ctrl+S</kbd> pour sauvegarder</span>
-            <span id="word-count" class="form-hint">0 mots</span>
-          </div>
-          <div id="screenplay-editor" class="editor-surface editor-height-600">
-            {{ @note.content | raw }}
-          </div>
-          <input type="hidden" name="content" id="content-input" value="{{ @note.content | esc }}">
+            <span id="word-count" class="form-hint" style="float:right;">0 mots</span>
+          </label>
+          <div style="clear:both;"></div>
+          <div id="screenplay-editor" class="editor-surface">{{ @note.content | raw }}</div>
+          <input type="hidden" name="content" id="content-input">
         </div>
       </div>
 
@@ -81,21 +80,12 @@
 </div>
 
 <style nonce="{{ @nonce }}">
-  .editor-height-600 .ql-editor {
-    min-height: 600px;
-  }
-
   kbd {
     background: var(--input-bg, #f5f5f5);
     border: 1px solid var(--input-border, #ddd);
     border-radius: 3px;
     padding: 0 4px;
     font-size: .8rem;
-  }
-
-  .form-hint {
-    font-size: .85rem;
-    color: var(--text-muted);
   }
 </style>
 
@@ -106,16 +96,17 @@
   var csrfToken = '{{ @csrfToken }}';
   var base = '{{ @base }}';
 
-  var wordCount = document.getElementById('word-count');
+  var wordCountEl = document.getElementById('word-count');
   var saveStatus = document.getElementById('save-status');
   var saveLabel = document.getElementById('save-label');
   var saveBtn = document.getElementById('save-btn');
   var contentInput = document.getElementById('content-input');
 
-  // --- Init Quill ---
+  // Read initial HTML from the div BEFORE QuillTools.init (same pattern as chapter/edit)
   var editorEl = document.getElementById('screenplay-editor');
-  var initialHtml = editorEl ? (editorEl.innerHTML || '') : '';
+  var initialContentHtml = editorEl ? (editorEl.innerHTML || '') : '';
 
+  // --- Init Quill ---
   QuillTools.init('#screenplay-editor', {
     inputSelector: '#content-input',
     baseUrl: base,
@@ -124,11 +115,14 @@
     contextType: 'note'
   });
 
+  // Helper: decode HTML entities once
   function decodeHtml(html) {
     var txt = document.createElement('textarea');
     txt.innerHTML = html;
     return txt.value;
   }
+
+  // Helper: decode up to `depth` times (stops early if stable)
   function decodeHtmlDeep(html, depth) {
     var current = html;
     for (var i = 0; i < depth; i++) {
@@ -139,25 +133,33 @@
     return current;
   }
 
-  var decodedContent = decodeHtmlDeep(initialHtml, 2);
+  // Strip legacy <pre><code> wrappers (old AI-generated content)
+  initialContentHtml = initialContentHtml.replace(
+    /<pre[^>]*>(?:<code[^>]*>)?([\s\S]*?)(?:<\/code>)?<\/pre>/gi,
+    function (m, inner) {
+      var text = inner.replace(/&lt;/g, '<').replace(/&gt;/g, '>').replace(/&amp;/g, '&');
+      return text.split(/\r?\n/).filter(function (l) { return l.trim(); })
+        .map(function (l) { return '<p>' + l + '</p>'; }).join('');
+    }
+  );
+
+  var decodedContent = decodeHtmlDeep(initialContentHtml, 2);
   if (decodedContent && QuillTools.quill && decodedContent !== QuillTools.quill.root.innerHTML) {
     QuillTools.quill.clipboard.dangerouslyPasteHTML(decodedContent);
   }
 
+  // Track baseline for auto-save (set after paste so text-change already fired)
+  var lastSaved = contentInput ? contentInput.value : '';
+
   // --- Word count ---
   function updateWordCount() {
-    if (!QuillTools.quill || !wordCount) return;
+    if (!QuillTools.quill || !wordCountEl) return;
     var text = QuillTools.quill.getText().trim();
     var words = text ? text.split(/\s+/).filter(function (w) { return w.length > 0; }) : [];
-    wordCount.textContent = words.length.toLocaleString('fr-FR') + ' mots';
+    wordCountEl.textContent = words.length.toLocaleString('fr-FR') + ' mots';
   }
   if (QuillTools.quill) {
-    QuillTools.quill.on('text-change', function () {
-      var html = QuillTools.quill.root.innerHTML;
-      html = QuillTools.cleanQuillHtml(html);
-      contentInput.value = html;
-      updateWordCount();
-    });
+    QuillTools.quill.on('text-change', function () { updateWordCount(); });
     updateWordCount();
   }
 
@@ -170,7 +172,7 @@
     var fd = new FormData();
     fd.append('csrf_token', csrfToken);
     fd.append('title', document.getElementById('episode-title').value);
-    fd.append('content', contentInput.value);
+    fd.append('content', contentInput ? contentInput.value : '');
 
     fetch(base + '/scenariste/' + noteId + '/save', {
       method: 'POST',
@@ -204,12 +206,11 @@
   });
 
   // Auto-save every 2 minutes if changed
-  var lastSaved = contentInput ? contentInput.value : '';
   setInterval(function () {
     if (contentInput && contentInput.value !== lastSaved) {
       lastSaved = contentInput.value;
       save();
     }
   }, 120000);
-});
+  });
 </script>

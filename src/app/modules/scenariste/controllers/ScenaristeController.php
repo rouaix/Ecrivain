@@ -278,6 +278,8 @@ class ScenaristeController extends Controller
         $parsedown     = new Parsedown();
         $parsedown->setSafeMode(false);
         $generatedText = $parsedown->text($markdownText);
+        // Strip outer <div> wrapper that Parsedown sometimes adds around block content
+        $generatedText = preg_replace('/^\s*<div[^>]*>([\s\S]*)<\/div>\s*$/i', '$1', trim($generatedText));
 
         // --- Episode title ---
         $sNum = str_pad($saison, 2, '0', STR_PAD_LEFT);
