@@ -3,13 +3,17 @@
     <div class="edit-header">
         <h2><i class="fas fa-project-diagram"></i> Relations — {{ @project.title | esc }}</h2>
         <div style="display:flex;gap:8px;">
-            <button type="button" id="btnSuggestRelations" class="button secondary" title="Suggérer des relations depuis les chapitres" data-tooltip="Analyser les chapitres avec l'IA pour suggérer des relations">
+            <button type="button" id="btnSuggestRelations" class="button secondary"
+                title="Suggérer des relations depuis les chapitres"
+                title="Analyser les chapitres avec l'IA pour suggérer des relations">
                 <i class="fas fa-magic"></i>&nbsp;Suggérer
             </button>
-            <a href="{{ @base }}/project/{{ @project.id }}/characters" class="button secondary" title="Liste des personnages" data-tooltip="Liste des personnages">
+            <a href="{{ @base }}/project/{{ @project.id }}/characters" class="button secondary"
+                title="Liste des personnages" title="Liste des personnages">
                 <i class="fas fa-users"></i>
             </a>
-            <a href="{{ @base }}/project/{{ @project.id }}" class="button" title="Retour au projet" data-tooltip="Retour au projet">
+            <a href="{{ @base }}/project/{{ @project.id }}" class="button" title="Retour au projet"
+                title="Retour au projet">
                 <i class="fas fa-arrow-left"></i>
             </a>
         </div>
@@ -17,7 +21,8 @@
 
     <check if="{{ empty(@characters) }}">
         <div class="panel-empty">
-            <p>Aucun personnage. <a href="{{ @base }}/project/{{ @project.id }}/character/create">Créez des personnages</a> d'abord.</p>
+            <p>Aucun personnage. <a href="{{ @base }}/project/{{ @project.id }}/character/create">Créez des
+                    personnages</a> d'abord.</p>
         </div>
     </check>
 
@@ -28,7 +33,8 @@
             <!-- Graph panel -->
             <div class="relations-graph-panel">
                 <div id="charGraph" class="char-graph"></div>
-                <p class="char-graph-hint"><i class="fas fa-info-circle"></i> Faites glisser les nœuds pour réorganiser. Cliquez sur un lien puis <kbd>Suppr</kbd> pour le supprimer.</p>
+                <p class="char-graph-hint"><i class="fas fa-info-circle"></i> Faites glisser les nœuds pour réorganiser.
+                    Cliquez sur un lien puis <kbd>Suppr</kbd> pour le supprimer.</p>
             </div>
 
             <!-- Form panel -->
@@ -58,26 +64,35 @@
 
                     <div class="form-group">
                         <label>Type de relation</label>
-                        <input type="text" id="relLabel" class="input-control"
-                            placeholder="ex: père de, rival, amour…" maxlength="100">
+                        <input type="text" id="relLabel" class="input-control" placeholder="ex: père de, rival, amour…"
+                            maxlength="100">
                     </div>
 
                     <div class="form-group">
                         <label>Couleur du lien</label>
                         <div class="color-presets">
-                            <button type="button" class="color-preset active" data-color="#94a3b8" style="background:#94a3b8" title="Neutre" data-tooltip="Neutre"></button>
-                            <button type="button" class="color-preset" data-color="#ef4444" style="background:#ef4444" title="Conflit" data-tooltip="Conflit"></button>
-                            <button type="button" class="color-preset" data-color="#f97316" style="background:#f97316" title="Tension" data-tooltip="Tension"></button>
-                            <button type="button" class="color-preset" data-color="#eab308" style="background:#eab308" title="Alliance" data-tooltip="Alliance"></button>
-                            <button type="button" class="color-preset" data-color="#22c55e" style="background:#22c55e" title="Amitié" data-tooltip="Amitié"></button>
-                            <button type="button" class="color-preset" data-color="#ec4899" style="background:#ec4899" title="Amour" data-tooltip="Amour"></button>
-                            <button type="button" class="color-preset" data-color="#3b82f6" style="background:#3b82f6" title="Famille" data-tooltip="Famille"></button>
-                            <button type="button" class="color-preset" data-color="#8b5cf6" style="background:#8b5cf6" title="Magie/Lien spirituel" data-tooltip="Magie/Lien spirituel"></button>
+                            <button type="button" class="color-preset active" data-color="#94a3b8"
+                                style="background:#94a3b8" title="Neutre" title="Neutre"></button>
+                            <button type="button" class="color-preset" data-color="#ef4444" style="background:#ef4444"
+                                title="Conflit" title="Conflit"></button>
+                            <button type="button" class="color-preset" data-color="#f97316" style="background:#f97316"
+                                title="Tension" title="Tension"></button>
+                            <button type="button" class="color-preset" data-color="#eab308" style="background:#eab308"
+                                title="Alliance" title="Alliance"></button>
+                            <button type="button" class="color-preset" data-color="#22c55e" style="background:#22c55e"
+                                title="Amitié" title="Amitié"></button>
+                            <button type="button" class="color-preset" data-color="#ec4899" style="background:#ec4899"
+                                title="Amour" title="Amour"></button>
+                            <button type="button" class="color-preset" data-color="#3b82f6" style="background:#3b82f6"
+                                title="Famille" title="Famille"></button>
+                            <button type="button" class="color-preset" data-color="#8b5cf6" style="background:#8b5cf6"
+                                title="Magie/Lien spirituel" title="Magie/Lien spirituel"></button>
                         </div>
                         <input type="color" id="relColor" value="#94a3b8" class="color-custom-input">
                     </div>
 
-                    <button type="button" id="btnAddRelation" class="button primary" data-tooltip="Créer le lien entre personnages" title="Créer le lien entre personnages">
+                    <button type="button" id="btnAddRelation" class="button primary"
+                        title="Créer le lien entre personnages" title="Créer le lien entre personnages">
                         <i class="fas fa-link"></i> Créer le lien
                     </button>
 
@@ -101,7 +116,8 @@
                                         <strong>{{ @r.name_to | esc }}</strong>
                                     </span>
                                     <span class="rel-label-badge">{{ @r.label | esc }}</span>
-                                    <button type="button" class="button small delete btn-delete-rel" data-rid="{{ @r.id }}" title="Supprimer" data-tooltip="Supprimer ce lien">
+                                    <button type="button" class="button small delete btn-delete-rel"
+                                        data-rid="{{ @r.id }}" title="Supprimer" title="Supprimer ce lien">
                                         <i class="fas fa-trash"></i>
                                     </button>
                                 </div>
@@ -140,22 +156,23 @@
 <script src="https://unpkg.com/vis-network@9.1.9/standalone/umd/vis-network.min.js" nonce="{{ @nonce }}"></script>
 
 <script nonce="{{ @nonce }}">
-(function () {
-    var BASE       = '{{ @base }}';
-    var PID        = {{ @project.id }};
-    var CSRF       = '{{ @csrfToken }}';
+    (function () {
+        var BASE = '{{ @base }}';
+        var PID = {{ @project.id
+    }};
+    var CSRF = '{{ @csrfToken }}';
 
     // ── Build initial data from PHP ──────────────────────────────────────────
 
     var charData = [
         <repeat group="{{ @characters }}" value="{{ @c }}" counter="{{ @i }}">
-        { id: {{ @c.id }}, label: {{ json_encode(@c.name) | raw }} }<check if="{{ @i < count(@characters) }}">,</check>
+            {id: {{ @c.id }}, label: {{ json_encode(@c.name) | raw}} }<check if="{{ @i < count(@characters) }}">,</check>
         </repeat>
     ];
 
     var relData = [
         <repeat group="{{ @relations }}" value="{{ @r }}" counter="{{ @i }}">
-        { id: {{ @r.id }}, from: {{ @r.char_from }}, to: {{ @r.char_to }}, label: {{ json_encode(@r.label) | raw }}, color: {{ json_encode(@r.color) | raw }} }<check if="{{ @i < count(@relations) }}">,</check>
+            {id: {{ @r.id }}, from: {{ @r.char_from }}, to: {{ @r.char_to }}, label: {{ json_encode(@r.label) | raw}}, color: {{ json_encode(@r.color) | raw}} }<check if="{{ @i < count(@relations) }}">,</check>
         </repeat>
     ];
 
@@ -171,7 +188,7 @@
                 background: '#e8eaf6',
                 border: '#5c6bc0',
                 highlight: { background: '#c5cae9', border: '#3f51b5' },
-                hover:      { background: '#d1d5fb', border: '#3f51b5' }
+                hover: { background: '#d1d5fb', border: '#3f51b5' }
             },
             font: { size: 14, face: 'system-ui, sans-serif', color: '#1e1e2e', bold: { size: 14 } },
             margin: { top: 10, right: 16, bottom: 10, left: 16 },
@@ -229,7 +246,7 @@
     // ── Color presets ─────────────────────────────────────────────────────────
 
     var selectedColor = '#94a3b8';
-    var colorInput    = document.getElementById('relColor');
+    var colorInput = document.getElementById('relColor');
 
     document.querySelectorAll('.color-preset').forEach(function (btn) {
         btn.addEventListener('click', function () {
@@ -249,8 +266,8 @@
 
     document.getElementById('btnAddRelation').addEventListener('click', function () {
         var fromId = parseInt(document.getElementById('relFrom').value);
-        var toId   = parseInt(document.getElementById('relTo').value);
-        var label  = document.getElementById('relLabel').value.trim();
+        var toId = parseInt(document.getElementById('relTo').value);
+        var label = document.getElementById('relLabel').value.trim();
         var status = document.getElementById('relStatus');
 
         if (!fromId || !toId) {
@@ -270,22 +287,22 @@
             headers: { 'Content-Type': 'application/x-www-form-urlencoded', 'X-CSRF-Token': CSRF },
             body: new URLSearchParams({ char_from: fromId, char_to: toId, label: label, color: selectedColor, csrf_token: CSRF })
         })
-        .then(function (r) { return r.json(); })
-        .then(function (data) {
-            if (!data.success) { showStatus(data.error || 'Erreur', 'err'); return; }
-            var r = data.relation;
+            .then(function (r) { return r.json(); })
+            .then(function (data) {
+                if (!data.success) { showStatus(data.error || 'Erreur', 'err'); return; }
+                var r = data.relation;
 
-            // Add to graph
-            edges.add(edgeFromRel({ id: r.id, from: r.char_from, to: r.char_to, label: r.label, color: r.color }));
+                // Add to graph
+                edges.add(edgeFromRel({ id: r.id, from: r.char_from, to: r.char_to, label: r.label, color: r.color }));
 
-            // Add to list
-            addRelToList(r);
+                // Add to list
+                addRelToList(r);
 
-            document.getElementById('relLabel').value = '';
-            showStatus('Lien créé.', 'ok');
-        })
-        .catch(function (e) { showStatus('Erreur réseau.', 'err'); })
-        .finally(function () { btn.disabled = false; });
+                document.getElementById('relLabel').value = '';
+                showStatus('Lien créé.', 'ok');
+            })
+            .catch(function (e) { showStatus('Erreur réseau.', 'err'); })
+            .finally(function () { btn.disabled = false; });
     });
 
     // ── Delete relation ───────────────────────────────────────────────────────
@@ -298,23 +315,23 @@
             headers: { 'Content-Type': 'application/x-www-form-urlencoded', 'X-CSRF-Token': CSRF },
             body: new URLSearchParams({ csrf_token: CSRF })
         })
-        .then(function (r) { return r.json(); })
-        .then(function (data) {
-            if (!data.success) return;
-            edges.remove(rid);
-            var item = document.querySelector('.rel-item[data-rid="' + rid + '"]');
-            if (item) item.remove();
-            if (!document.querySelector('.rel-item')) {
-                var empty = document.getElementById('relEmptyMsg');
-                if (!empty) {
-                    var p = document.createElement('p');
-                    p.id = 'relEmptyMsg';
-                    p.className = 'text-muted';
-                    p.textContent = 'Aucun lien défini.';
-                    document.getElementById('relList').appendChild(p);
+            .then(function (r) { return r.json(); })
+            .then(function (data) {
+                if (!data.success) return;
+                edges.remove(rid);
+                var item = document.querySelector('.rel-item[data-rid="' + rid + '"]');
+                if (item) item.remove();
+                if (!document.querySelector('.rel-item')) {
+                    var empty = document.getElementById('relEmptyMsg');
+                    if (!empty) {
+                        var p = document.createElement('p');
+                        p.id = 'relEmptyMsg';
+                        p.className = 'text-muted';
+                        p.textContent = 'Aucun lien défini.';
+                        document.getElementById('relList').appendChild(p);
+                    }
                 }
-            }
-        });
+            });
     }
 
     // Delegate click on delete buttons in list
@@ -352,14 +369,14 @@
     }
 
     function escHtml(str) {
-        return String(str).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+        return String(str).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
     }
 
     // ── Suggest relations ─────────────────────────────────────────────────────
 
-    var suggestModal   = document.getElementById('suggestModal');
+    var suggestModal = document.getElementById('suggestModal');
     var suggestLoading = document.getElementById('suggestLoading');
-    var suggestList    = document.getElementById('suggestList');
+    var suggestList = document.getElementById('suggestList');
 
     function openSuggestModal() { suggestModal.style.display = 'flex'; }
     function closeSuggestModal() { suggestModal.style.display = 'none'; }
@@ -378,130 +395,214 @@
             headers: { 'Content-Type': 'application/json', 'X-CSRF-Token': CSRF },
             body: JSON.stringify({ project_id: PID })
         })
-        .then(function (r) { return r.json(); })
-        .then(function (data) {
-            suggestLoading.style.display = 'none';
-            if (!data.success) {
-                suggestList.innerHTML = '<p class="rel-status rel-status--err">' + escHtml(data.error || 'Erreur') + '</p>';
-                return;
-            }
-            if (!data.suggestions || data.suggestions.length === 0) {
-                suggestList.innerHTML = '<p style="padding:16px;color:var(--text-muted,#777);">Aucune relation détectée dans les chapitres.</p>';
-                return;
-            }
+            .then(function (r) { return r.json(); })
+            .then(function (data) {
+                suggestLoading.style.display = 'none';
+                if (!data.success) {
+                    suggestList.innerHTML = '<p class="rel-status rel-status--err">' + escHtml(data.error || 'Erreur') + '</p>';
+                    return;
+                }
+                if (!data.suggestions || data.suggestions.length === 0) {
+                    suggestList.innerHTML = '<p style="padding:16px;color:var(--text-muted,#777);">Aucune relation détectée dans les chapitres.</p>';
+                    return;
+                }
 
-            var html = '<p style="padding:8px 0 12px;font-size:.85rem;color:var(--text-muted,#777);">'
-                + data.suggestions.length + ' relation(s) suggérée(s). Acceptez celles qui vous semblent pertinentes.</p>'
-                + '<div class="rel-list" id="suggestionItems">';
+                var html = '<p style="padding:8px 0 12px;font-size:.85rem;color:var(--text-muted,#777);">'
+                    + data.suggestions.length + ' relation(s) suggérée(s). Acceptez celles qui vous semblent pertinentes.</p>'
+                    + '<div class="rel-list" id="suggestionItems">';
 
-            data.suggestions.forEach(function (s, i) {
-                html += '<div class="rel-item" id="sug-' + i + '">'
-                    + '<span class="rel-dot" style="background:' + escHtml(s.color) + ';"></span>'
-                    + '<span class="rel-names"><strong>' + escHtml(s.from_name) + '</strong>'
-                    + ' <i class="fas fa-arrow-right rel-arrow"></i> '
-                    + '<strong>' + escHtml(s.to_name) + '</strong></span>'
-                    + '<span class="rel-label-badge">' + escHtml(s.label) + '</span>'
-                    + '<button type="button" class="button small primary btn-accept-sug" '
-                    + 'data-i="' + i + '" data-from="' + s.from_id + '" data-to="' + s.to_id + '" '
-                    + 'data-label="' + escHtml(s.label) + '" data-color="' + escHtml(s.color) + '">Accepter</button>'
-                    + '<button type="button" class="button small btn-ignore-sug" data-i="' + i + '">Ignorer</button>'
-                    + '</div>';
-            });
-            html += '</div>';
-            suggestList.innerHTML = html;
+                data.suggestions.forEach(function (s, i) {
+                    html += '<div class="rel-item" id="sug-' + i + '">'
+                        + '<span class="rel-dot" style="background:' + escHtml(s.color) + ';"></span>'
+                        + '<span class="rel-names"><strong>' + escHtml(s.from_name) + '</strong>'
+                        + ' <i class="fas fa-arrow-right rel-arrow"></i> '
+                        + '<strong>' + escHtml(s.to_name) + '</strong></span>'
+                        + '<span class="rel-label-badge">' + escHtml(s.label) + '</span>'
+                        + '<button type="button" class="button small primary btn-accept-sug" '
+                        + 'data-i="' + i + '" data-from="' + s.from_id + '" data-to="' + s.to_id + '" '
+                        + 'data-label="' + escHtml(s.label) + '" data-color="' + escHtml(s.color) + '">Accepter</button>'
+                        + '<button type="button" class="button small btn-ignore-sug" data-i="' + i + '">Ignorer</button>'
+                        + '</div>';
+                });
+                html += '</div>';
+                suggestList.innerHTML = html;
 
-            // Accept
-            suggestList.addEventListener('click', function (e) {
-                var btnAccept = e.target.closest('.btn-accept-sug');
-                var btnIgnore = e.target.closest('.btn-ignore-sug');
+                // Accept
+                suggestList.addEventListener('click', function (e) {
+                    var btnAccept = e.target.closest('.btn-accept-sug');
+                    var btnIgnore = e.target.closest('.btn-ignore-sug');
 
-                if (btnAccept) {
-                    btnAccept.disabled = true;
-                    var idx = btnAccept.dataset.i;
-                    fetch(BASE + '/project/' + PID + '/characters/relation/add', {
-                        method: 'POST',
-                        headers: { 'Content-Type': 'application/x-www-form-urlencoded', 'X-CSRF-Token': CSRF },
-                        body: new URLSearchParams({
-                            char_from: btnAccept.dataset.from,
-                            char_to:   btnAccept.dataset.to,
-                            label:     btnAccept.dataset.label,
-                            color:     btnAccept.dataset.color,
-                            csrf_token: CSRF
+                    if (btnAccept) {
+                        btnAccept.disabled = true;
+                        var idx = btnAccept.dataset.i;
+                        fetch(BASE + '/project/' + PID + '/characters/relation/add', {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/x-www-form-urlencoded', 'X-CSRF-Token': CSRF },
+                            body: new URLSearchParams({
+                                char_from: btnAccept.dataset.from,
+                                char_to: btnAccept.dataset.to,
+                                label: btnAccept.dataset.label,
+                                color: btnAccept.dataset.color,
+                                csrf_token: CSRF
+                            })
                         })
-                    })
-                    .then(function (r) { return r.json(); })
-                    .then(function (data) {
-                        if (!data.success) { btnAccept.disabled = false; return; }
-                        // Add to graph and list
-                        var r = data.relation;
-                        edges.add(edgeFromRel({ id: r.id, from: r.char_from, to: r.char_to, label: r.label, color: r.color }));
-                        addRelToList(r);
-                        // Remove suggestion row
-                        var row = document.getElementById('sug-' + idx);
-                        if (row) row.remove();
-                    });
-                }
+                            .then(function (r) { return r.json(); })
+                            .then(function (data) {
+                                if (!data.success) { btnAccept.disabled = false; return; }
+                                // Add to graph and list
+                                var r = data.relation;
+                                edges.add(edgeFromRel({ id: r.id, from: r.char_from, to: r.char_to, label: r.label, color: r.color }));
+                                addRelToList(r);
+                                // Remove suggestion row
+                                var row = document.getElementById('sug-' + idx);
+                                if (row) row.remove();
+                            });
+                    }
 
-                if (btnIgnore) {
-                    var row = document.getElementById('sug-' + btnIgnore.dataset.i);
-                    if (row) row.remove();
-                }
+                    if (btnIgnore) {
+                        var row = document.getElementById('sug-' + btnIgnore.dataset.i);
+                        if (row) row.remove();
+                    }
+                });
+            })
+            .catch(function () {
+                suggestLoading.style.display = 'none';
+                suggestList.innerHTML = '<p class="rel-status rel-status--err">Erreur réseau.</p>';
             });
-        })
-        .catch(function () {
-            suggestLoading.style.display = 'none';
-            suggestList.innerHTML = '<p class="rel-status rel-status--err">Erreur réseau.</p>';
-        });
     });
 
 }());
 </script>
 
 <style nonce="{{ @nonce }}">
-.relations-layout {
-    display: grid;
-    grid-template-columns: 1fr 340px;
-    gap: 16px;
-    align-items: start;
-}
-.relations-graph-panel { min-width: 0; }
-.char-graph {
-    width: 100%;
-    height: 520px;
-    border: 1px solid var(--border-color, #e0e0e0);
-    border-radius: 10px;
-    background: var(--card-bg, #fff);
-}
-.char-graph-hint {
-    font-size: .78rem;
-    color: var(--text-muted, #777);
-    margin: 6px 0 0;
-}
-.char-graph-hint kbd {
-    background: var(--border-color, #e0e0e0);
-    border-radius: 3px;
-    padding: 1px 5px;
-    font-size: .75rem;
-}
-.color-presets { display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 6px; }
-.color-preset {
-    width: 24px; height: 24px; border-radius: 50%;
-    border: 3px solid transparent; cursor: pointer;
-    transition: border-color .15s;
-}
-.color-preset.active { border-color: var(--text-main, #333); }
-.color-custom-input { width: 48px; height: 28px; padding: 0; border: 1px solid var(--border-color,#ddd); border-radius: 4px; cursor: pointer; }
-.rel-list { display: flex; flex-direction: column; gap: 6px; }
-.rel-item { display: flex; align-items: center; gap: 8px; padding: 8px 10px; border: 1px solid var(--border-color,#e0e0e0); border-radius: 6px; font-size: .83rem; }
-.rel-dot { width: 10px; height: 10px; border-radius: 50%; flex-shrink: 0; }
-.rel-names { flex: 1; min-width: 0; }
-.rel-arrow { color: var(--text-muted,#999); margin: 0 4px; font-size: .75rem; }
-.rel-label-badge { background: var(--border-color,#eee); border-radius: 10px; padding: 1px 8px; font-size: .75rem; color: var(--text-muted,#666); white-space: nowrap; }
-.rel-status { margin-top: 8px; font-size: .82rem; padding: 4px 8px; border-radius: 4px; }
-.rel-status--ok  { color: #15803d; background: #f0fdf4; }
-.rel-status--err { color: #b91c1c; background: #fef2f2; }
-@media (max-width: 768px) {
-    .relations-layout { grid-template-columns: 1fr; }
-    .char-graph { height: 360px; }
-}
+    .relations-layout {
+        display: grid;
+        grid-template-columns: 1fr 340px;
+        gap: 16px;
+        align-items: start;
+    }
+
+    .relations-graph-panel {
+        min-width: 0;
+    }
+
+    .char-graph {
+        width: 100%;
+        height: 520px;
+        border: 1px solid var(--border-color, #e0e0e0);
+        border-radius: 10px;
+        background: var(--card-bg, #fff);
+    }
+
+    .char-graph-hint {
+        font-size: .78rem;
+        color: var(--text-muted, #777);
+        margin: 6px 0 0;
+    }
+
+    .char-graph-hint kbd {
+        background: var(--border-color, #e0e0e0);
+        border-radius: 3px;
+        padding: 1px 5px;
+        font-size: .75rem;
+    }
+
+    .color-presets {
+        display: flex;
+        gap: 6px;
+        flex-wrap: wrap;
+        margin-bottom: 6px;
+    }
+
+    .color-preset {
+        width: 24px;
+        height: 24px;
+        border-radius: 50%;
+        border: 3px solid transparent;
+        cursor: pointer;
+        transition: border-color .15s;
+    }
+
+    .color-preset.active {
+        border-color: var(--text-main, #333);
+    }
+
+    .color-custom-input {
+        width: 48px;
+        height: 28px;
+        padding: 0;
+        border: 1px solid var(--border-color, #ddd);
+        border-radius: 4px;
+        cursor: pointer;
+    }
+
+    .rel-list {
+        display: flex;
+        flex-direction: column;
+        gap: 6px;
+    }
+
+    .rel-item {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        padding: 8px 10px;
+        border: 1px solid var(--border-color, #e0e0e0);
+        border-radius: 6px;
+        font-size: .83rem;
+    }
+
+    .rel-dot {
+        width: 10px;
+        height: 10px;
+        border-radius: 50%;
+        flex-shrink: 0;
+    }
+
+    .rel-names {
+        flex: 1;
+        min-width: 0;
+    }
+
+    .rel-arrow {
+        color: var(--text-muted, #999);
+        margin: 0 4px;
+        font-size: .75rem;
+    }
+
+    .rel-label-badge {
+        background: var(--border-color, #eee);
+        border-radius: 10px;
+        padding: 1px 8px;
+        font-size: .75rem;
+        color: var(--text-muted, #666);
+        white-space: nowrap;
+    }
+
+    .rel-status {
+        margin-top: 8px;
+        font-size: .82rem;
+        padding: 4px 8px;
+        border-radius: 4px;
+    }
+
+    .rel-status--ok {
+        color: #15803d;
+        background: #f0fdf4;
+    }
+
+    .rel-status--err {
+        color: #b91c1c;
+        background: #fef2f2;
+    }
+
+    @media (max-width: 768px) {
+        .relations-layout {
+            grid-template-columns: 1fr;
+        }
+
+        .char-graph {
+            height: 360px;
+        }
+    }
 </style>

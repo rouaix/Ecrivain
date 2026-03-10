@@ -18,8 +18,8 @@
 
         </h2>
 
-        <a href="{{ @base }}/project/{{ @project.id }}" class="button" title="Retour au projet" data-tooltip="Retour au projet"><i
-                class="fas fa-arrow-left"></i></a>
+        <a href="{{ @base }}/project/{{ @project.id }}" class="button" title="Retour au projet"
+            title="Retour au projet"><i class="fas fa-arrow-left"></i></a>
 
     </div>
 
@@ -90,7 +90,8 @@
                                     action="{{ @base }}/project/{{ @project.id }}/section/{{ @sectionType }}/image/delete"
                                     style="margin-top:0.5rem">
                                     <input type="hidden" name="csrf_token" value="{{ @csrfToken }}">
-                                    <div><button type="submit" class="button delete small" data-tooltip="Supprimer l'image" title="Supprimer l'image">Supprimer l'image</button>
+                                    <div><button type="submit" class="button delete small" title="Supprimer l'image"
+                                            title="Supprimer l'image">Supprimer l'image</button>
                                     </div>
                                 </form>
 
@@ -168,7 +169,8 @@
 
             <div class="edit-actions">
 
-                <input type="submit" value="Enregistrer" class="button primary large" data-tooltip="Enregistrer la section" title="Enregistrer la section">
+                <input type="submit" value="Enregistrer" class="button primary large" title="Enregistrer la section"
+                    title="Enregistrer la section">
 
             </div>
 

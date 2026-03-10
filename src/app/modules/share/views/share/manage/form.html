@@ -2,7 +2,8 @@
     <div class="edit-header">
         <h2><i class="fas fa-share-alt"></i> {{ @title | esc }}</h2>
         <div class="header-actions">
-            <a href="{{ @base }}/share" class="button secondary" data-tooltip="Retour aux liens partagés" title="Retour aux liens partagés">
+            <a href="{{ @base }}/share" class="button secondary" title="Retour aux liens partagés"
+                title="Retour aux liens partagés">
                 <i class="fas fa-arrow-left"></i> Retour
             </a>
         </div>
@@ -13,9 +14,8 @@
 
         <div class="form-group">
             <label for="label">Nom du lien <small>(optionnel)</small></label>
-            <input type="text" id="label" name="label" class="form-control"
-                   value="{{ @link ? @link.label : '' | esc }}"
-                   placeholder="Ex : Mon roman – bêta-lecteurs">
+            <input type="text" id="label" name="label" class="form-control" value="{{ @link ? @link.label : '' | esc }}"
+                placeholder="Ex : Mon roman – bêta-lecteurs">
         </div>
 
         <div class="form-group">
@@ -37,7 +37,8 @@
         </div>
 
         <div class="form-actions">
-            <button type="submit" class="button primary" data-tooltip="Enregistrer le lien de partage" title="Enregistrer le lien de partage">
+            <button type="submit" class="button primary" title="Enregistrer le lien de partage"
+                title="Enregistrer le lien de partage">
                 <i class="fas fa-save"></i>&nbsp;Enregistrer
             </button>
         </div>
@@ -45,6 +46,16 @@
 </div>
 
 <style>
-.checkbox-label { display: flex; align-items: center; gap: .5rem; padding: .4rem 0; cursor: pointer; }
-.checkbox-label input[type="checkbox"] { width: 1rem; height: 1rem; }
+    .checkbox-label {
+        display: flex;
+        align-items: center;
+        gap: .5rem;
+        padding: .4rem 0;
+        cursor: pointer;
+    }
+
+    .checkbox-label input[type="checkbox"] {
+        width: 1rem;
+        height: 1rem;
+    }
 </style>

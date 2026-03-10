@@ -1,0 +1,215 @@
+<div class="edit-page-layout">
+
+  <div class="edit-header">
+    <h2>Scénario {{ @note.title }}</h2>
+    <a href="{{ @base }}/project/{{ @project.id }}" class="button" title="Retour au projet" title="Retour au projet">
+      <i class="fas fa-arrow-left"></i>
+    </a>
+  </div>
+
+  <check if="{{ @saved }}">
+    <true>
+      <div class="success edit-success" style="margin-bottom:1rem;">
+        <i class="fas fa-check"></i> Scénario sauvegardé.
+      </div>
+    </true>
+  </check>
+
+  <form id="scenariste-save-form">
+    <input type="hidden" name="csrf_token" value="{{ @csrfToken }}">
+
+    <div class="edit-card">
+
+      <!-- Title -->
+      <div class="edit-card-section">
+        <h3>Informations</h3>
+        <div class="editor-grid-row">
+          <div class="form-group">
+            <label for="episode-title">Titre de l'épisode</label>
+            <input type="text" id="episode-title" name="title" value="{{ @note.title }}" class="input-control">
+          </div>
+          <check if="{{ @meta.saison }}">
+            <true>
+              <div class="form-group">
+                <label>Référence</label>
+                <div class="input-control" style="display:flex;gap:.5rem;align-items:center;cursor:default;">
+                  <strong>S{{ @meta.saison }}E{{ @meta.episode }}</strong>
+                  <check if="{{ @meta.genre }}">
+                    <true><span style="font-size:.85rem;color:var(--text-muted);">{{ @meta.genre }}</span></true>
+                  </check>
+                </div>
+              </div>
+            </true>
+          </check>
+        </div>
+      </div>
+
+      <!-- Screenplay content -->
+      <div class="edit-card-section">
+        <h3>Scénario</h3>
+        <div class="form-group">
+          <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:.4rem;">
+            <span class="form-hint"><kbd>Ctrl+S</kbd> pour sauvegarder</span>
+            <span id="word-count" class="form-hint">0 mots</span>
+          </div>
+          <div id="screenplay-editor" class="editor-surface editor-height-600">
+            {{ @note.content | raw }}
+          </div>
+          <input type="hidden" name="content" id="content-input" value="{{ @note.content | esc }}">
+        </div>
+      </div>
+
+      <!-- Actions -->
+      <div class="edit-actions" style="display:flex;gap:.75rem;align-items:center;flex-wrap:wrap;">
+        <button type="submit" id="save-btn" class="button primary large">
+          <i class="fas fa-save"></i> <span id="save-label">Sauvegarder</span>
+        </button>
+        <a href="{{ @base }}/scenariste/{{ @note.id }}/download" class="button large">
+          <i class="fas fa-download"></i> Télécharger .md
+        </a>
+        <span id="save-status" style="font-size:.85rem;color:var(--success-color,#16a34a);"></span>
+        <span style="flex:1;"></span>
+        <a href="{{ @base }}/scenariste/{{ @note.id }}/delete" class="button delete"
+          onclick="return confirm('Supprimer ce scénario définitivement ?')" title="Supprimer" title="Supprimer">
+          <i class="fas fa-trash"></i>
+        </a>
+      </div>
+
+    </div>
+  </form>
+
+</div>
+
+<style nonce="{{ @nonce }}">
+  .editor-height-600 .ql-editor {
+    min-height: 600px;
+  }
+
+  kbd {
+    background: var(--input-bg, #f5f5f5);
+    border: 1px solid var(--input-border, #ddd);
+    border-radius: 3px;
+    padding: 0 4px;
+    font-size: .8rem;
+  }
+
+  .form-hint {
+    font-size: .85rem;
+    color: var(--text-muted);
+  }
+</style>
+
+<script nonce="{{ @nonce }}">
+  document.addEventListener('DOMContentLoaded', function () {
+    var noteId = {{ @note.id
+  }};
+  var csrfToken = '{{ @csrfToken }}';
+  var base = '{{ @base }}';
+
+  var wordCount = document.getElementById('word-count');
+  var saveStatus = document.getElementById('save-status');
+  var saveLabel = document.getElementById('save-label');
+  var saveBtn = document.getElementById('save-btn');
+  var contentInput = document.getElementById('content-input');
+
+  // --- Init Quill ---
+  var editorEl = document.getElementById('screenplay-editor');
+  var initialHtml = editorEl ? (editorEl.innerHTML || '') : '';
+
+  QuillTools.init('#screenplay-editor', {
+    inputSelector: '#content-input',
+    baseUrl: base,
+    csrfToken: csrfToken,
+    contextId: noteId,
+    contextType: 'note'
+  });
+
+  function decodeHtml(html) {
+    var txt = document.createElement('textarea');
+    txt.innerHTML = html;
+    return txt.value;
+  }
+  function decodeHtmlDeep(html, depth) {
+    var current = html;
+    for (var i = 0; i < depth; i++) {
+      var decoded = decodeHtml(current);
+      if (decoded === current) break;
+      current = decoded;
+    }
+    return current;
+  }
+
+  var decodedContent = decodeHtmlDeep(initialHtml, 2);
+  if (decodedContent && QuillTools.quill && decodedContent !== QuillTools.quill.root.innerHTML) {
+    QuillTools.quill.clipboard.dangerouslyPasteHTML(decodedContent);
+  }
+
+  // --- Word count ---
+  function updateWordCount() {
+    if (!QuillTools.quill || !wordCount) return;
+    var text = QuillTools.quill.getText().trim();
+    var words = text ? text.split(/\s+/).filter(function (w) { return w.length > 0; }) : [];
+    wordCount.textContent = words.length.toLocaleString('fr-FR') + ' mots';
+  }
+  if (QuillTools.quill) {
+    QuillTools.quill.on('text-change', function () {
+      var html = QuillTools.quill.root.innerHTML;
+      html = QuillTools.cleanQuillHtml(html);
+      contentInput.value = html;
+      updateWordCount();
+    });
+    updateWordCount();
+  }
+
+  // --- Save ---
+  function save() {
+    saveStatus.textContent = 'Sauvegarde\u2026';
+    saveLabel.textContent = 'Sauvegarde\u2026';
+    saveBtn.disabled = true;
+
+    var fd = new FormData();
+    fd.append('csrf_token', csrfToken);
+    fd.append('title', document.getElementById('episode-title').value);
+    fd.append('content', contentInput.value);
+
+    fetch(base + '/scenariste/' + noteId + '/save', {
+      method: 'POST',
+      headers: { 'X-Requested-With': 'XMLHttpRequest' },
+      body: fd
+    })
+      .then(function (r) { return r.json(); })
+      .then(function (data) {
+        saveBtn.disabled = false;
+        saveLabel.textContent = 'Sauvegarder';
+        if (data.success) {
+          saveStatus.textContent = '\u2713 Sauvegard\u00e9';
+          setTimeout(function () { saveStatus.textContent = ''; }, 3000);
+        } else {
+          saveStatus.textContent = '\u2717 Erreur';
+        }
+      })
+      .catch(function () {
+        saveBtn.disabled = false;
+        saveLabel.textContent = 'Sauvegarder';
+        saveStatus.textContent = '\u2717 Erreur r\u00e9seau';
+      });
+  }
+
+  var form = document.getElementById('scenariste-save-form');
+  if (form) form.addEventListener('submit', function (e) { e.preventDefault(); save(); });
+
+  // Ctrl+S
+  document.addEventListener('keydown', function (e) {
+    if ((e.ctrlKey || e.metaKey) && e.key === 's') { e.preventDefault(); save(); }
+  });
+
+  // Auto-save every 2 minutes if changed
+  var lastSaved = contentInput ? contentInput.value : '';
+  setInterval(function () {
+    if (contentInput && contentInput.value !== lastSaved) {
+      lastSaved = contentInput.value;
+      save();
+    }
+  }, 120000);
+});
+</script>

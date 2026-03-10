@@ -216,6 +216,8 @@ class ProjectContentController extends ProjectBaseController
         } elseif ($type === 'element') {
             if (!$this->f3->get('DB')->exists('elements')) { return; }
             $model = new Element();
+        } elseif ($type === 'scenario') {
+            $model = new Scenario();
         } else {
             $model = new Section();
         }
@@ -247,6 +249,8 @@ class ProjectContentController extends ProjectBaseController
         } elseif ($type === 'element') {
             if (!$this->f3->get('DB')->exists('elements')) { $this->f3->error(404); return; }
             $model = new Element();
+        } elseif ($type === 'scenario') {
+            $model = new Scenario();
         } else {
             $model = new Section();
         }

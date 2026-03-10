@@ -26,11 +26,11 @@
     </a>
     <div class="view-toggle" style="margin-left:auto;display:none;">
         <button type="button" id="btnViewList" class="button secondary view-toggle-btn active" title="Vue liste"
-            data-tooltip="Vue liste">
+            title="Vue liste">
             <i class="fas fa-th-large"></i>
         </button>
         <button type="button" id="btnViewKanban" class="button secondary view-toggle-btn" title="Vue Kanban"
-            data-tooltip="Vue Kanban">
+            title="Vue Kanban">
             <i class="fas fa-columns"></i>
         </button>
     </div>
@@ -43,33 +43,33 @@
 
     <check if="{{ !isset(@COOKIE.theme) || @COOKIE.theme=='default' }}">
         <true><button type="submit" name="theme" value="default" class="theme-btn active theme-swatch--default"
-                title="Défaut (Rouaix)" data-tooltip="Thème Défaut"></button></true>
+                title="Défaut (Rouaix)" title="Thème Défaut"></button></true>
         <false><button type="submit" name="theme" value="default" class="theme-btn theme-swatch--default"
-                title="Défaut (Rouaix)" data-tooltip="Thème Défaut"></button></false>
+                title="Défaut (Rouaix)" title="Thème Défaut"></button></false>
     </check>
     <check if="{{ isset(@COOKIE.theme) && @COOKIE.theme=='blue' }}">
         <true><button type="submit" name="theme" value="blue" class="theme-btn active theme-swatch--blue"
-                title="Bleu (Moderne)" data-tooltip="Thème Bleu"></button></true>
+                title="Bleu (Moderne)" title="Thème Bleu"></button></true>
         <false><button type="submit" name="theme" value="blue" class="theme-btn theme-swatch--blue"
-                title="Bleu (Moderne)" data-tooltip="Thème Bleu"></button></false>
+                title="Bleu (Moderne)" title="Thème Bleu"></button></false>
     </check>
     <check if="{{ isset(@COOKIE.theme) && @COOKIE.theme=='dark' }}">
         <true><button type="submit" name="theme" value="dark" class="theme-btn active theme-swatch--dark" title="Sombre"
-                data-tooltip="Thème Sombre"></button></true>
+                title="Thème Sombre"></button></true>
         <false><button type="submit" name="theme" value="dark" class="theme-btn theme-swatch--dark" title="Sombre"
-                data-tooltip="Thème Sombre"></button></false>
+                title="Thème Sombre"></button></false>
     </check>
     <check if="{{ isset(@COOKIE.theme) && @COOKIE.theme=='forest' }}">
         <true><button type="submit" name="theme" value="forest" class="theme-btn active theme-swatch--forest"
-                title="Forêt" data-tooltip="Thème Forêt"></button></true>
+                title="Forêt" title="Thème Forêt"></button></true>
         <false><button type="submit" name="theme" value="forest" class="theme-btn theme-swatch--forest" title="Forêt"
-                data-tooltip="Thème Forêt"></button></false>
+                title="Thème Forêt"></button></false>
     </check>
     <check if="{{ isset(@COOKIE.theme) && @COOKIE.theme=='moderne' }}">
         <true><button type="submit" name="theme" value="moderne" class="theme-btn active theme-swatch--moderne"
-                title="Moderne" data-tooltip="Thème Moderne"></button></true>
+                title="Moderne" title="Thème Moderne"></button></true>
         <false><button type="submit" name="theme" value="moderne" class="theme-btn theme-swatch--moderne"
-                title="Moderne" data-tooltip="Thème Moderne"></button></false>
+                title="Moderne" title="Thème Moderne"></button></false>
     </check>
 </form>
 

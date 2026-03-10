@@ -312,6 +312,7 @@ class ProjectController extends ProjectBaseController
             'character'      => true,
             'file'           => true,
             'has_acts'       => true,
+            'scenario'       => true,
         ];
 
         $db = $this->f3->get('DB');
@@ -339,6 +340,7 @@ class ProjectController extends ProjectBaseController
                     'character'      => false,
                     'file'           => false,
                     'has_acts'       => false,
+                    'scenario'       => false,
                 ];
 
                 $customElementsByType = [];
@@ -442,6 +444,8 @@ class ProjectController extends ProjectBaseController
                             'plural'   => $cfg['label_plural']   ?? 'Fichiers',
                         ];
                         $key = 'file';
+                    } elseif ($type === 'scenario') {
+                        $key = 'scenario';
                     } else {
                         $key = $type;
                     }
@@ -455,9 +459,10 @@ class ProjectController extends ProjectBaseController
             }
           } catch (\Exception $e) {
               $panelConfig = [
-                  'section_before' => true, 'content' => true,
-                  'section_after'  => true, 'note'    => true,
-                  'character'      => true, 'file'    => true,
+                  'section_before' => true, 'content'  => true,
+                  'section_after'  => true, 'note'     => true,
+                  'character'      => true, 'file'     => true,
+                  'scenario'       => true,
               ];
           }
         }
@@ -481,7 +486,13 @@ class ProjectController extends ProjectBaseController
         $sectionsAfterChapters  = $this->supHtml($sectionModel->getAfterChapters($pid));
 
         $noteModel = new Note();
-        $notes     = $this->supHtml($noteModel->getAllByProject($pid));
+        $notes     = array_values(array_filter(
+            $this->supHtml($noteModel->getAllByProject($pid)),
+            fn($n) => ($n['type'] ?? 'note') !== 'scenario'
+        ));
+
+        $scenarioModel = new Scenario();
+        $scenarios     = $this->supHtml($scenarioModel->getAllByProject($pid));
 
         $glossaryModel  = new GlossaryEntry();
         $glossaryEntries = $glossaryModel->getAllByProject($pid);
@@ -765,6 +776,7 @@ class ProjectController extends ProjectBaseController
             'beforeGroups'        => $beforeGroups,
             'afterGroups'         => $afterGroups,
             'notes'               => $notes,
+            'scenarios'           => $scenarios,
             'files'               => $files,
             'glossaryEntries'     => $glossaryEntries,
             'authorName'          => $authorName,

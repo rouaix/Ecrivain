@@ -3,7 +3,7 @@
         'name' => '__root__',
         'pretty_version' => 'dev-main',
         'version' => 'dev-main',
-        'reference' => '2d5befcd70b0b5252a5d98cb7f41d798f41cf3cc',
+        'reference' => '64a529c571d2db2b1291db05edcf636e9c29c501',
         'type' => 'library',
         'install_path' => __DIR__ . '/../../',
         'aliases' => array(),
@@ -13,7 +13,7 @@
         '__root__' => array(
             'pretty_version' => 'dev-main',
             'version' => 'dev-main',
-            'reference' => '2d5befcd70b0b5252a5d98cb7f41d798f41cf3cc',
+            'reference' => '64a529c571d2db2b1291db05edcf636e9c29c501',
             'type' => 'library',
             'install_path' => __DIR__ . '/../../',
             'aliases' => array(),
@@ -29,6 +29,15 @@
                 0 => '9999999-dev',
                 1 => '3.6.5',
             ),
+            'dev_requirement' => false,
+        ),
+        'erusev/parsedown' => array(
+            'pretty_version' => '1.8.0',
+            'version' => '1.8.0.0',
+            'reference' => '96baaad00f71ba04d76e45b4620f54d3beabd6f7',
+            'type' => 'library',
+            'install_path' => __DIR__ . '/../erusev/parsedown',
+            'aliases' => array(),
             'dev_requirement' => false,
         ),
         'firebase/php-jwt' => array(

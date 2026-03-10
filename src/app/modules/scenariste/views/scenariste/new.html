@@ -1,0 +1,316 @@
+<div class="edit-page-layout">
+
+  <div class="edit-header">
+    <h2>Nouveau scénario</h2>
+    <a href="{{ @base }}/project/{{ @project.id }}" class="button" title="Retour au projet" title="Retour au projet">
+      <i class="fas fa-arrow-left"></i>
+    </a>
+  </div>
+
+  <div id="generate-error" class="error edit-error" style="display:none;"></div>
+
+  <form id="scenariste-form">
+
+    <input type="hidden" name="csrf_token" value="{{ @csrfToken }}">
+
+    <div class="edit-card">
+
+      <!-- Identification -->
+      <div class="edit-card-section">
+        <h3>Identification de l'épisode</h3>
+
+        <div class="editor-grid-row">
+          <div class="form-group">
+            <label for="saison">Saison</label>
+            <input type="text" id="saison" name="saison" value="01" maxlength="4" class="input-control">
+          </div>
+          <div class="form-group">
+            <label for="episode">Épisode</label>
+            <input type="text" id="episode" name="episode" value="01" maxlength="4" class="input-control">
+          </div>
+          <div class="form-group">
+            <label for="genre">Genre</label>
+            <select id="genre" name="genre" class="input-control">
+              <option value="">— Choisir —</option>
+              <option value="thriller">Thriller</option>
+              <option value="drame">Drame</option>
+              <option value="drame familial">Drame familial</option>
+              <option value="roman historique">Roman historique</option>
+              <option value="fantasy">Fantasy</option>
+              <option value="science-fiction">Science-fiction</option>
+              <option value="policier">Policier</option>
+              <option value="comédie dramatique">Comédie dramatique</option>
+              <option value="aventure">Aventure</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label for="ep-title">Titre de l'épisode <span style="font-weight:normal;color:var(--text-muted)">(optionnel —
+              l'IA peut en proposer un)</span></label>
+          <input type="text" id="ep-title" name="title" class="input-control" placeholder="ex: Les cendres du passé">
+        </div>
+      </div>
+
+      <!-- Source : chapitres -->
+      <check if="{{ count(@chapters) > 0 }}">
+        <true>
+          <div class="edit-card-section">
+            <h3>Chapitres source</h3>
+            <p class="form-hint">Sélectionnez un ou plusieurs chapitres à adapter.</p>
+            <div class="chapters-checklist">
+              <repeat group="{{ @chapters }}" value="{{ @ch }}">
+                <label class="checklist-item">
+                  <input type="checkbox" name="chapter_ids[]" value="{{ @ch.id }}">
+                  <span>
+                    <check if="{{ @ch.act_title }}">
+                      <true><em class="act-hint">{{ @ch.act_title }} — </em></true>
+                    </check>
+                    {{ @ch.title }}
+                  </span>
+                </label>
+              </repeat>
+            </div>
+          </div>
+        </true>
+      </check>
+
+      <!-- Source : fichier uploadé -->
+      <div class="edit-card-section">
+        <h3>Source externe <span style="font-weight:normal;color:var(--text-muted)">(.md ou .txt)</span></h3>
+        <p class="form-hint">Uploadez un fichier texte comme source alternative ou complémentaire.</p>
+        <div class="form-group">
+          <input type="file" id="source-file" accept=".md,.txt" class="input-control">
+          <p id="upload-status" class="form-hint" style="display:none;"></p>
+        </div>
+        <textarea id="uploaded-content" name="uploaded_content" style="display:none;"></textarea>
+      </div>
+
+      <!-- Contexte libre -->
+      <div class="edit-card-section">
+        <h3>Contexte complémentaire</h3>
+        <p class="form-hint">Résumé du livre, consignes spéciales, éléments de continuité…</p>
+        <div class="form-group">
+          <textarea name="free_context" id="free-context" class="input-control" rows="5"
+            placeholder="Ex: Le livre se déroule dans la France des années 50. Le personnage principal est hanté par la mort de son frère. Ne pas révéler le meurtrier avant l'épisode 6…"></textarea>
+        </div>
+      </div>
+
+      <!-- Épisodes précédents -->
+      <check if="{{ count(@previousEpisodes) > 0 }}">
+        <true>
+          <div class="edit-card-section">
+            <h3>Continuité narrative</h3>
+            <p class="form-hint">Sélectionnez les épisodes précédents à injecter dans le contexte IA.</p>
+            <div class="chapters-checklist">
+              <repeat group="{{ @previousEpisodes }}" value="{{ @ep }}">
+                <label class="checklist-item">
+                  <input type="checkbox" name="previous_episode_ids[]" value="{{ @ep.id }}">
+                  <span>{{ @ep.title }}</span>
+                </label>
+              </repeat>
+            </div>
+          </div>
+        </true>
+      </check>
+
+      <!-- Actions -->
+      <div class="edit-actions">
+        <button type="submit" id="generate-btn" class="button primary large">
+          <span id="btn-label">Générer le scénario</span>
+          <span id="btn-spinner" style="display:none;">Génération en cours…</span>
+        </button>
+        <a href="{{ @base }}/project/{{ @project.id }}" class="button">Annuler</a>
+      </div>
+
+    </div>
+
+  </form>
+
+</div>
+
+<!-- Loading overlay -->
+<div id="loading-overlay"
+  style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:9999;display:none;align-items:center;justify-content:center;">
+  <div
+    style="background:var(--card-bg,#fff);border-radius:10px;padding:2.5rem 3rem;text-align:center;max-width:360px;box-shadow:0 20px 60px rgba(0,0,0,.25);">
+    <div
+      style="width:44px;height:44px;border:4px solid var(--border-color,#e5e7eb);border-top-color:var(--link-color,#6c47ff);border-radius:50%;animation:spin 1s linear infinite;margin:0 auto 1.2rem;">
+    </div>
+    <div style="font-weight:700;font-size:1.05rem;margin-bottom:.5rem;">Scénario en cours de rédaction…</div>
+    <div id="loading-step" style="font-size:.9rem;color:var(--text-muted);margin-bottom:.8rem;min-height:1.3em;">Analyse
+      du chapitre source…</div>
+    <div style="font-size:.8rem;color:var(--text-muted);">Cette opération peut prendre 1 à 3 minutes.</div>
+  </div>
+</div>
+
+<style nonce="{{ @nonce }}">
+  @keyframes spin {
+    to {
+      transform: rotate(360deg);
+    }
+  }
+
+  .chapters-checklist {
+    display: flex;
+    flex-direction: column;
+    gap: .3rem;
+    max-height: 260px;
+    overflow-y: auto;
+    border: 1px solid var(--input-border, #ddd);
+    border-radius: 6px;
+    padding: .5rem;
+  }
+
+  .checklist-item {
+    display: flex;
+    align-items: center;
+    gap: .6rem;
+    padding: .35rem .5rem;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: .9rem;
+  }
+
+  .checklist-item:hover {
+    background: var(--hover-bg, #f5f5f5);
+  }
+
+  .act-hint {
+    font-size: .82rem;
+    color: var(--text-muted);
+  }
+
+  .form-hint {
+    font-size: .85rem;
+    color: var(--text-muted);
+    margin: .2rem 0 .6rem;
+  }
+</style>
+
+<script nonce="{{ @nonce }}">
+  (function () {
+    var pid = {{ @project.id
+  }};
+  var csrfToken = '{{ @csrfToken }}';
+  var base = '{{ @base }}';
+
+  // File upload
+  var fileInput = document.getElementById('source-file');
+  var uploadStatus = document.getElementById('upload-status');
+  var uploadedContent = document.getElementById('uploaded-content');
+
+  if (fileInput) {
+    fileInput.addEventListener('change', function () {
+      var file = fileInput.files[0];
+      if (!file) return;
+      var ext = file.name.split('.').pop().toLowerCase();
+      if (!['md', 'txt'].includes(ext)) {
+        uploadStatus.textContent = 'Format non supporté (.md ou .txt uniquement)';
+        uploadStatus.style.display = 'block';
+        return;
+      }
+      uploadStatus.textContent = 'Chargement…';
+      uploadStatus.style.display = 'block';
+      var fd = new FormData();
+      fd.append('file', file);
+      fd.append('csrf_token', csrfToken);
+      fetch(base + '/project/' + pid + '/scenariste/upload-source', { method: 'POST', body: fd })
+        .then(function (r) { return r.json(); })
+        .then(function (data) {
+          if (data.success) {
+            uploadedContent.value = data.content;
+            uploadStatus.textContent = '✓ ' + data.filename + ' chargé (' + Math.round(data.content.length / 1024) + ' ko)';
+          } else {
+            uploadStatus.textContent = 'Erreur : ' + data.error;
+          }
+        })
+        .catch(function () { uploadStatus.textContent = 'Erreur réseau'; });
+    });
+  }
+
+  // Loading step messages
+  var steps = [
+    'Analyse du chapitre source…',
+    'Identification des enjeux dramatiques…',
+    'Construction du teaser…',
+    'Rédaction de l\'Acte I…',
+    'Rédaction de l\'Acte II…',
+    'Rédaction de l\'Acte III…',
+    'Rédaction de l\'Acte IV…',
+    'Finalisation de la note d\'intention…',
+    'Mise en forme du scénario…',
+  ];
+  var stepIndex = 0, stepInterval = null;
+
+  function startSteps() {
+    var el = document.getElementById('loading-step');
+    stepIndex = 0;
+    if (el) el.textContent = steps[0];
+    stepInterval = setInterval(function () {
+      stepIndex = Math.min(stepIndex + 1, steps.length - 1);
+      if (el) el.textContent = steps[stepIndex];
+    }, 14000);
+  }
+
+  function stopSteps() { if (stepInterval) clearInterval(stepInterval); }
+
+  // Form submit
+  var form = document.getElementById('scenariste-form');
+  var overlay = document.getElementById('loading-overlay');
+  var generateBtn = document.getElementById('generate-btn');
+  var btnLabel = document.getElementById('btn-label');
+  var btnSpinner = document.getElementById('btn-spinner');
+  var errorEl = document.getElementById('generate-error');
+
+  if (form) {
+    form.addEventListener('submit', function (e) {
+      e.preventDefault();
+      errorEl.style.display = 'none';
+
+      var chapterChecked = form.querySelectorAll('input[name="chapter_ids[]"]:checked').length;
+      var hasUpload = uploadedContent && uploadedContent.value.trim().length > 0;
+      var hasFree = document.getElementById('free-context') && document.getElementById('free-context').value.trim().length > 0;
+
+      if (!chapterChecked && !hasUpload && !hasFree) {
+        errorEl.textContent = 'Sélectionnez au moins un chapitre, uploadez un fichier, ou saisissez un contexte libre.';
+        errorEl.style.display = 'block';
+        return;
+      }
+
+      overlay.style.display = 'flex';
+      btnLabel.style.display = 'none';
+      btnSpinner.style.display = 'inline';
+      generateBtn.disabled = true;
+      startSteps();
+
+      var fd = new FormData(form);
+
+      fetch(base + '/project/' + pid + '/scenariste/generate', { method: 'POST', body: fd })
+        .then(function (r) { return r.json(); })
+        .then(function (data) {
+          stopSteps();
+          if (data.success) {
+            window.location.href = base + data.redirect;
+          } else {
+            overlay.style.display = 'none';
+            btnLabel.style.display = 'inline';
+            btnSpinner.style.display = 'none';
+            generateBtn.disabled = false;
+            errorEl.textContent = data.error || 'Une erreur est survenue.';
+            errorEl.style.display = 'block';
+          }
+        })
+        .catch(function () {
+          stopSteps();
+          overlay.style.display = 'none';
+          btnLabel.style.display = 'inline';
+          btnSpinner.style.display = 'none';
+          generateBtn.disabled = false;
+          errorEl.textContent = 'Erreur réseau. Vérifiez votre connexion.';
+          errorEl.style.display = 'block';
+        });
+    });
+  }
+}) ();
+</script>

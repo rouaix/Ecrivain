@@ -2,13 +2,16 @@
     <div class="edit-header">
         <h2><i class="fas fa-layer-group"></i> Templates de projet</h2>
         <div class="header-actions">
-            <a href="{{ @base }}/template/create" class="button primary" title="Créer un template" data-tooltip="Créer un template">
+            <a href="{{ @base }}/template/create" class="button primary" title="Créer un template"
+                title="Créer un template">
                 <i class="fas fa-plus"></i> Nouveau
             </a>
-            <a href="{{ @base }}/template/import" class="button secondary" title="Importer un template JSON" data-tooltip="Importer un template JSON">
+            <a href="{{ @base }}/template/import" class="button secondary" title="Importer un template JSON"
+                title="Importer un template JSON">
                 <i class="fas fa-file-import"></i> Importer
             </a>
-            <a href="{{ @base }}/dashboard" class="button" title="Retour au tableau de bord" data-tooltip="Retour au tableau de bord">
+            <a href="{{ @base }}/dashboard" class="button" title="Retour au tableau de bord"
+                title="Retour au tableau de bord">
                 <i class="fas fa-arrow-left"></i>
             </a>
         </div>
@@ -76,7 +79,7 @@
                                         <check if="{{ @tpl.can_edit }}">
                                             <true>
                                                 <a href="{{ @base }}/template/{{ @tpl.id }}/edit" class="button small"
-                                                    title="Editer" data-tooltip="Éditer le template">
+                                                    title="Editer" title="Éditer le template">
                                                     <i class="fas fa-edit"></i>
                                                 </a>
                                             </true>
@@ -88,15 +91,16 @@
                                             </false>
                                         </check>
 
-                                        <a href="{{ @base }}/template/{{ @tpl.id }}/export" class="button small secondary"
-                                            title="Exporter en JSON" data-tooltip="Exporter en JSON">
+                                        <a href="{{ @base }}/template/{{ @tpl.id }}/export"
+                                            class="button small secondary" title="Exporter en JSON"
+                                            title="Exporter en JSON">
                                             <i class="fas fa-file-export"></i>
                                         </a>
 
                                         <check if="{{ @tpl.can_edit && !@tpl.is_system }}">
                                             <button type="button" class="button small secondary js-promote"
-                                                title="Copier en template système" data-tooltip="Copier en template système" data-id="{{ @tpl.id }}"
-                                                data-name="{{ @tpl.name | esc }}"
+                                                title="Copier en template système" title="Copier en template système"
+                                                data-id="{{ @tpl.id }}" data-name="{{ @tpl.name | esc }}"
                                                 data-description="{{ @tpl.description | esc }}">
                                                 <i class="fas fa-arrow-up"></i>
                                             </button>
@@ -106,7 +110,7 @@
                                             <true>
                                                 <a href="{{ @base }}/template/{{ @tpl.id }}/delete"
                                                     class="button small delete js-confirm" title="Supprimer"
-                                                    data-tooltip="Supprimer le template"
+                                                    title="Supprimer le template"
                                                     data-confirm="Etes-vous sur de vouloir supprimer ce template ?">
                                                     <i class="fas fa-trash"></i>
                                                 </a>
@@ -138,7 +142,8 @@
     <div class="modal-content">
         <div class="modal-header">
             <h3><i class="fas fa-arrow-up"></i> Copier en template système</h3>
-            <button type="button" class="modal-close" id="closePromoteModal" title="Fermer" data-tooltip="Fermer la fenêtre">&times;</button>
+            <button type="button" class="modal-close" id="closePromoteModal" title="Fermer"
+                title="Fermer la fenêtre">&times;</button>
         </div>
         <form id="promoteForm" method="POST" action="">
             <input type="hidden" name="csrf_token" value="{{ @csrfToken }}">
@@ -153,8 +158,10 @@
                 </div>
             </div>
             <div class="modal-footer">
-                <button type="button" class="button secondary" id="cancelPromoteModal" title="Annuler" data-tooltip="Annuler">Annuler</button>
-                <button type="submit" class="button primary" title="Créer le template système" data-tooltip="Créer le template système">Créer le template système</button>
+                <button type="button" class="button secondary" id="cancelPromoteModal" title="Annuler"
+                    title="Annuler">Annuler</button>
+                <button type="submit" class="button primary" title="Créer le template système"
+                    title="Créer le template système">Créer le template système</button>
             </div>
         </form>
     </div>

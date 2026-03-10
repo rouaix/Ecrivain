@@ -111,6 +111,7 @@ class ProjectBaseController extends Controller
             'note'           => '#panel-notes',
             'character'      => '#panel-characters',
             'file'           => '#panel-files',
+            'scenario'       => '#panel-scenarios',
         ];
 
         $rules    = [];
@@ -131,9 +132,9 @@ class ProjectBaseController extends Controller
             if ($key === 'element') {
                 $rules[] = '#panel-element-' . (int)$te['id'] . '{order:' . $order . '}';
             } elseif (isset($selectorMap[$key]) && !isset($assigned[$selectorMap[$key]])) {
-                $selector          = $selectorMap[$key];
+                $selector            = $selectorMap[$key];
                 $assigned[$selector] = true;
-                $rules[]           = $selector . '{order:' . $order . '}';
+                $rules[]             = $selector . '{order:' . $order . '}';
             }
 
             $order++;

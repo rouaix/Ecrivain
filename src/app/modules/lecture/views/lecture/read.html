@@ -19,15 +19,18 @@
         body.reading-mode nav:not(.reading-toolbar *) {
             display: none !important;
         }
+
         body.reading-mode main.reading-content {
             padding: 0 !important;
             max-width: 100% !important;
         }
+
         body.reading-mode .container {
             max-width: 100% !important;
             width: 100% !important;
             padding: 0 !important;
         }
+
         body.reading-mode .reading-container {
             max-width: 100% !important;
             width: 100vw !important;
@@ -97,6 +100,7 @@
                 overflow-x: auto !important;
                 overflow-y: hidden !important;
             }
+
             .reading-toolbar .toolbar-title {
                 font-size: 0.9rem !important;
                 line-height: 1.2 !important;
@@ -106,6 +110,7 @@
                 flex-shrink: 2 !important;
                 max-width: 200px !important;
             }
+
             .reading-toolbar .toolbar-btn {
                 font-size: 0.75rem !important;
                 padding: 6px 10px !important;
@@ -113,6 +118,7 @@
                 max-height: 32px !important;
                 flex-shrink: 0 !important;
             }
+
             .reading-toolbar .toolbar-btn i {
                 font-size: 0.85rem !important;
             }
@@ -124,14 +130,18 @@
     <!-- Toolbar -->
     <div class="reading-toolbar">
         <div class="toolbar-title">{{ @project.title | esc }}</div>
-        <button class="toolbar-btn" id="toggleToc" data-tooltip="Afficher la table des matières" title="Afficher la table des matières"><i class="fas fa-list"></i> Table des matieres</button>
-        <button class="toolbar-btn" id="toggleFullscreen" data-tooltip="Basculer en plein écran" title="Basculer en plein écran"><i class="fas fa-expand"></i> Plein ecran</button>
-        <button class="toolbar-btn" id="saveBookmark" title="Enregistrer la position" data-tooltip="Enregistrer la position"><i class="fas fa-bookmark"></i>
+        <button class="toolbar-btn" id="toggleToc" title="Afficher la table des matières"
+            title="Afficher la table des matières"><i class="fas fa-list"></i> Table des matieres</button>
+        <button class="toolbar-btn" id="toggleFullscreen" title="Basculer en plein écran"
+            title="Basculer en plein écran"><i class="fas fa-expand"></i> Plein ecran</button>
+        <button class="toolbar-btn" id="saveBookmark" title="Enregistrer la position" title="Enregistrer la position"><i
+                class="fas fa-bookmark"></i>
             Marque-page</button>
-        <button class="toolbar-btn" id="offlineSaveBtn" title="Enregistrer pour lecture hors-ligne" data-tooltip="Enregistrer pour lecture hors-ligne"><i class="fas fa-download"></i>
+        <button class="toolbar-btn" id="offlineSaveBtn" title="Enregistrer pour lecture hors-ligne"
+            title="Enregistrer pour lecture hors-ligne"><i class="fas fa-download"></i>
             Hors-ligne</button>
-        <a href="{{ @base }}/project/{{ @project.id }}" class="toolbar-btn button" title="Retour au projet" data-tooltip="Retour au projet"><i
-                class="fas fa-arrow-left"></i></a>
+        <a href="{{ @base }}/project/{{ @project.id }}" class="toolbar-btn button" title="Retour au projet"
+            title="Retour au projet"><i class="fas fa-arrow-left"></i></a>
     </div>
 
     <div class="reading-container">
@@ -245,8 +255,8 @@
             console.log('Fullscreen element:', document.fullscreenElement);
 
             // Monitor body class changes
-            const observer = new MutationObserver(function(mutations) {
-                mutations.forEach(function(mutation) {
+            const observer = new MutationObserver(function (mutations) {
+                mutations.forEach(function (mutation) {
                     if (mutation.attributeName === 'class') {
                         console.log('Body class changed to:', document.body.className);
                         console.log('Toolbar transform after change:', window.getComputedStyle(toolbar).transform);
@@ -256,7 +266,7 @@
             observer.observe(document.body, { attributes: true });
 
             // Monitor fullscreen changes
-            document.addEventListener('fullscreenchange', function() {
+            document.addEventListener('fullscreenchange', function () {
                 console.log('Fullscreen changed. Element:', document.fullscreenElement);
                 console.log('Body classes:', document.body.className);
             });
@@ -612,88 +622,89 @@
 
             // ── Offline: save reading content to IndexedDB ───────────────────────────
             const offlineBtn = document.getElementById('offlineSaveBtn');
-            const projectTitle = {{ json_encode(@project.title) | raw }};
-            const offlineReaderUrl = '{{ @base }}/public/offline.html';
+            const projectTitle = {{ json_encode(@project.title) | raw
+        }};
+        const offlineReaderUrl = '{{ @base }}/public/offline.html';
 
-            function saveOffline(silent) {
-                if (!window.OfflineReader) return Promise.resolve();
-                const html = document.getElementById('readingContent').innerHTML;
-                return OfflineReader.saveProject(projectId, projectTitle, html)
-                    .then(function () {
-                        if (!silent && offlineBtn) {
-                            offlineBtn.innerHTML = '<i class="fas fa-check"></i> Sauvegarde';
-                            offlineBtn.title = 'Sauvegarde — cliquer pour ouvrir le lecteur hors-ligne';
-                            offlineBtn.dataset.saved = '1';
-                        }
-                    })
-                    .catch(function () {
-                        if (!silent && offlineBtn) {
-                            offlineBtn.innerHTML = '<i class="fas fa-exclamation-triangle"></i> Erreur';
-                        }
-                    });
-            }
-
-            if (offlineBtn) {
-                // Auto-save silently when online
-                if (navigator.onLine) {
-                    OfflineReader && OfflineReader.loadProject(projectId).then(function (cached) {
-                        if (cached) {
-                            offlineBtn.title = 'En cache — 1 clic pour actualiser, 2 clics pour ouvrir le lecteur';
-                            offlineBtn.innerHTML = '<i class="fas fa-check"></i> Hors-ligne';
-                            offlineBtn.dataset.saved = '1';
-                        }
-                        saveOffline(true);
-                    }).catch(function () { saveOffline(true); });
-                }
-
-                offlineBtn.addEventListener('click', function () {
-                    // Second click after save: open the offline reader
-                    if (offlineBtn.dataset.saved === '1') {
-                        window.location.href = offlineReaderUrl;
-                        return;
+        function saveOffline(silent) {
+            if (!window.OfflineReader) return Promise.resolve();
+            const html = document.getElementById('readingContent').innerHTML;
+            return OfflineReader.saveProject(projectId, projectTitle, html)
+                .then(function () {
+                    if (!silent && offlineBtn) {
+                        offlineBtn.innerHTML = '<i class="fas fa-check"></i> Sauvegarde';
+                        offlineBtn.title = 'Sauvegarde — cliquer pour ouvrir le lecteur hors-ligne';
+                        offlineBtn.dataset.saved = '1';
                     }
-                    offlineBtn.disabled = true;
-                    offlineBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i>';
-                    saveOffline(false).finally(function () {
-                        offlineBtn.disabled = false;
-                    });
+                })
+                .catch(function () {
+                    if (!silent && offlineBtn) {
+                        offlineBtn.innerHTML = '<i class="fas fa-exclamation-triangle"></i> Erreur';
+                    }
                 });
+        }
+
+        if (offlineBtn) {
+            // Auto-save silently when online
+            if (navigator.onLine) {
+                OfflineReader && OfflineReader.loadProject(projectId).then(function (cached) {
+                    if (cached) {
+                        offlineBtn.title = 'En cache — 1 clic pour actualiser, 2 clics pour ouvrir le lecteur';
+                        offlineBtn.innerHTML = '<i class="fas fa-check"></i> Hors-ligne';
+                        offlineBtn.dataset.saved = '1';
+                    }
+                    saveOffline(true);
+                }).catch(function () { saveOffline(true); });
             }
 
-            // ── Swipe gesture: navigate between sections on mobile ───────────────────
-            (function () {
-                var touchStartX = 0, touchStartY = 0;
-                var swipeThreshold = 60;
-
-                function getCurrentSectionIndex() {
-                    var containerRect = scrollableDiv.getBoundingClientRect();
-                    var viewportMiddle = containerRect.top + containerRect.height / 2;
-                    for (var i = 0; i < sections.length; i++) {
-                        var rect = sections[i].getBoundingClientRect();
-                        if (rect.top <= viewportMiddle && rect.bottom > viewportMiddle) return i;
-                    }
-                    return 0;
+            offlineBtn.addEventListener('click', function () {
+                // Second click after save: open the offline reader
+                if (offlineBtn.dataset.saved === '1') {
+                    window.location.href = offlineReaderUrl;
+                    return;
                 }
+                offlineBtn.disabled = true;
+                offlineBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i>';
+                saveOffline(false).finally(function () {
+                    offlineBtn.disabled = false;
+                });
+            });
+        }
 
-                document.addEventListener('touchstart', function (e) {
-                    touchStartX = e.changedTouches[0].clientX;
-                    touchStartY = e.changedTouches[0].clientY;
-                }, { passive: true });
+        // ── Swipe gesture: navigate between sections on mobile ───────────────────
+        (function () {
+            var touchStartX = 0, touchStartY = 0;
+            var swipeThreshold = 60;
 
-                document.addEventListener('touchend', function (e) {
-                    var dx = e.changedTouches[0].clientX - touchStartX;
-                    var dy = e.changedTouches[0].clientY - touchStartY;
-                    if (Math.abs(dx) < swipeThreshold || Math.abs(dy) > Math.abs(dx)) return;
-                    var idx = getCurrentSectionIndex();
-                    var target = null;
-                    if (dx < 0 && idx < sections.length - 1) {
-                        target = sections[idx + 1];
-                    } else if (dx > 0 && idx > 0) {
-                        target = sections[idx - 1];
-                    }
-                    if (target) target.scrollIntoView({ behavior: 'smooth', block: 'start' });
-                }, { passive: true });
-            }());
+            function getCurrentSectionIndex() {
+                var containerRect = scrollableDiv.getBoundingClientRect();
+                var viewportMiddle = containerRect.top + containerRect.height / 2;
+                for (var i = 0; i < sections.length; i++) {
+                    var rect = sections[i].getBoundingClientRect();
+                    if (rect.top <= viewportMiddle && rect.bottom > viewportMiddle) return i;
+                }
+                return 0;
+            }
+
+            document.addEventListener('touchstart', function (e) {
+                touchStartX = e.changedTouches[0].clientX;
+                touchStartY = e.changedTouches[0].clientY;
+            }, { passive: true });
+
+            document.addEventListener('touchend', function (e) {
+                var dx = e.changedTouches[0].clientX - touchStartX;
+                var dy = e.changedTouches[0].clientY - touchStartY;
+                if (Math.abs(dx) < swipeThreshold || Math.abs(dy) > Math.abs(dx)) return;
+                var idx = getCurrentSectionIndex();
+                var target = null;
+                if (dx < 0 && idx < sections.length - 1) {
+                    target = sections[idx + 1];
+                } else if (dx > 0 && idx > 0) {
+                    target = sections[idx - 1];
+                }
+                if (target) target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            }, { passive: true });
+        }());
         });
     </script>
 </body>

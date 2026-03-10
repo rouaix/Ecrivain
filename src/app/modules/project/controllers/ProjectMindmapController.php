@@ -32,7 +32,13 @@ class ProjectMindmapController extends ProjectBaseController
         $characters = $characterModel->getAllByProject($pid);
 
         $noteModel = new Note();
-        $notes = $noteModel->getAllByProject($pid);
+        $notes = array_values(array_filter(
+            $noteModel->getAllByProject($pid),
+            fn($n) => ($n['type'] ?? 'note') !== 'scenario'
+        ));
+
+        $scenarioModel = new Scenario();
+        $scenarios = $scenarioModel->getAllByProject($pid);
 
         $actModel = new Act();
         $acts = $actModel->getAllByProject($pid);
@@ -95,7 +101,7 @@ class ProjectMindmapController extends ProjectBaseController
         }
 
         // Filter data
-        $exportedNotes     = array_filter($notes,     fn($n) => ($n['is_exported'] ?? 1));
+        $exportedNotes     = array_filter($notes, fn($n) => ($n['is_exported'] ?? 1));
         $exportedSecBefore = array_filter($sectionsBefore, fn($s) => ($s['is_exported'] ?? 1));
         $exportedSecAfter  = array_filter($sectionsAfter,  fn($s) => ($s['is_exported'] ?? 1));
         $exportedChapters  = array_filter($chapters,  fn($c) => ($c['is_exported'] ?? 1));
@@ -271,6 +277,30 @@ class ProjectMindmapController extends ProjectBaseController
                                 'is_subelement' => true
                             ];
                             $links[] = ['source' => $nodeId, 'target' => $subNodeId];
+                        }
+                    }
+                    break;
+
+                case 'scenario':
+                    $exportedScenarios = array_filter($scenarios, fn($sc) => ($sc['is_exported'] ?? 1));
+                    if (!empty($exportedScenarios)) {
+                        $cfg = json_decode($te['config_json'] ?? '{}', true);
+                        $nodes[] = [
+                            'id'          => 'scenarios_group',
+                            'name'        => $cfg['label_plural'] ?? 'Scénarios',
+                            'type'        => 'scenario_group',
+                            'description' => ''
+                        ];
+                        $links[] = ['source' => 'project', 'target' => 'scenarios_group'];
+
+                        foreach ($exportedScenarios as $sc) {
+                            $nodes[] = [
+                                'id'      => 'scenario_' . $sc['id'],
+                                'name'    => $sc['title'],
+                                'type'    => 'scenario',
+                                'content' => $sc['content'] ?? ''
+                            ];
+                            $links[] = ['source' => 'scenarios_group', 'target' => 'scenario_' . $sc['id']];
                         }
                     }
                     break;

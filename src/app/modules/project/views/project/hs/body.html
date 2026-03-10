@@ -102,6 +102,58 @@
 
     </details>
 
+    <!-- Scénarios Panel -->
+
+    <details class="panel" id="panel-scenarios" data-persist="true">
+
+      <summary>🎬 Scénarios <span class="panel-count">{{ count(@scenarios) }}</span></summary>
+
+      <div class="section-group-block" data-type="scenarios">
+
+        <div class="section-group-heading">
+          <h4>Épisodes adaptés</h4>
+          <a class="button small" href="{{ @base }}/project/{{ @project.id }}/scenariste/new" title="Nouveau scénario">+ Nouveau</a>
+        </div>
+
+        <check if="{{ !empty(@scenarios) }}">
+
+          <true>
+
+            <table class="compact-table data-table">
+              <tbody>
+                <repeat group="{{ @scenarios }}" value="{{ @sc }}">
+                  <tr>
+                    <td>
+                      <span class="scenario-badge">{{ @sc.title }}</span>
+                    </td>
+                    <td class="compact-actions compact-actions--wide actions">
+                      <a class="button small" href="{{ @base }}/scenariste/{{ @sc.id }}/edit" title="Éditer">Éditer</a>
+                      <a class="button small" href="{{ @base }}/scenariste/{{ @sc.id }}/download" title="Télécharger .md">⬇ .md</a>
+                      <a class="button small delete js-confirm" href="{{ @base }}/scenariste/{{ @sc.id }}/delete"
+                        data-confirm="Supprimer ce scénario ?" title="Supprimer">Supprimer</a>
+                    </td>
+                  </tr>
+                </repeat>
+              </tbody>
+            </table>
+
+          </true>
+
+          <false>
+
+            <p class="panel-empty">Aucun scénario généré.</p>
+            <div class="panel-actions panel-actions-row">
+              <a class="button" href="{{ @base }}/project/{{ @project.id }}/scenariste/new">🎬 Créer un premier épisode</a>
+            </div>
+
+          </false>
+
+        </check>
+
+      </div>
+
+    </details>
+
     <details class="panel" id="panel-characters" data-persist="true">
 
       <summary>Personnages <span class="panel-count">{{ @stats.character_count }}</span></summary>

@@ -1,7 +1,8 @@
 <div class="edit-page-layout">
     <div class="edit-header">
         <h2>Créer : {{ @config.label_singular ?? 'Élément' }}</h2>
-        <a href="{{ @base }}/project/{{ @project.id }}" class="button" title="Retour au projet" data-tooltip="Retour au projet">
+        <a href="{{ @base }}/project/{{ @project.id }}" class="button" title="Retour au projet"
+            title="Retour au projet">
             <i class="fas fa-arrow-left"></i>
         </a>
     </div>
@@ -32,8 +33,8 @@
                     <select id="parent_id" name="parent_id" class="input-control">
                         <option value="">-- Aucun (élément principal) --</option>
                         <repeat group="{{ @topElements }}" value="{{ @elem }}">
-                            <option value="{{ @elem.id }}" {{ (isset(@old.parent_id) &&
-                                @old.parent_id==@elem.id) ? 'selected' : '' }}>
+                            <option value="{{ @elem.id }}" {{ (isset(@old.parent_id) && @old.parent_id==@elem.id)
+                                ? 'selected' : '' }}>
                                 {{ @elem.title }}
                             </option>
                         </repeat>
@@ -41,7 +42,8 @@
                 </div>
             </div>
             <div class="edit-actions">
-                <input type="submit" value="Créer" class="button primary large" data-tooltip="Créer cet élément" title="Créer cet élément">
+                <input type="submit" value="Créer" class="button primary large" title="Créer cet élément"
+                    title="Créer cet élément">
             </div>
         </div>
     </form>

@@ -42,21 +42,28 @@
                                 <td>{{ @inv.created_at }}</td>
                                 <td>
                                     <check if="{{ @inv.status == 'accepted' }}">
-                                        <a href="{{ @base }}/project/{{ @inv.project_id }}" class="button small" data-tooltip="Voir le projet" title="Voir le projet">
+                                        <a href="{{ @base }}/project/{{ @inv.project_id }}" class="button small"
+                                            title="Voir le projet" title="Voir le projet">
                                             <i class="fas fa-eye"></i> Voir
                                         </a>
-                                        <a href="{{ @base }}/project/{{ @inv.project_id }}/collab/mes-demandes" class="button small secondary" data-tooltip="Mes demandes" title="Mes demandes">
+                                        <a href="{{ @base }}/project/{{ @inv.project_id }}/collab/mes-demandes"
+                                            class="button small secondary" title="Mes demandes" title="Mes demandes">
                                             <i class="fas fa-paper-plane"></i> Mes demandes
                                         </a>
                                     </check>
                                     <check if="{{ @inv.status == 'pending' }}">
-                                        <form method="post" action="{{ @base }}/collab/invitation/{{ @inv.id }}/accept" style="display:inline">
+                                        <form method="post" action="{{ @base }}/collab/invitation/{{ @inv.id }}/accept"
+                                            style="display:inline">
                                             <input type="hidden" name="csrf_token" value="{{ @csrfToken }}">
-                                            <button type="submit" class="button small" data-tooltip="Accepter l'invitation" title="Accepter l'invitation">Accepter</button>
+                                            <button type="submit" class="button small" title="Accepter l'invitation"
+                                                title="Accepter l'invitation">Accepter</button>
                                         </form>
-                                        <form method="post" action="{{ @base }}/collab/invitation/{{ @inv.id }}/decline" style="display:inline">
+                                        <form method="post" action="{{ @base }}/collab/invitation/{{ @inv.id }}/decline"
+                                            style="display:inline">
                                             <input type="hidden" name="csrf_token" value="{{ @csrfToken }}">
-                                            <button type="submit" class="button small secondary" data-tooltip="Refuser l'invitation" title="Refuser l'invitation">Refuser</button>
+                                            <button type="submit" class="button small secondary"
+                                                title="Refuser l'invitation"
+                                                title="Refuser l'invitation">Refuser</button>
                                         </form>
                                     </check>
                                 </td>

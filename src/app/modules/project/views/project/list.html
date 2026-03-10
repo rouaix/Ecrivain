@@ -1,12 +1,10 @@
 <h2>Personnages du projet « {{ @project.title }} »</h2>
 
-<p><a class="button" href="{{ @base }}/project/{{ @project.id }}" title="Retour au projet" data-tooltip="Retour au projet"><i
-
+<p><a class="button" href="{{ @base }}/project/{{ @project.id }}" title="Retour au projet" title="Retour au projet"><i
             class="fas fa-arrow-left"></i></a></p>
 
-<p><a class="button" href="{{ @base }}/project/{{ @project.id }}/character/create" title="Ajouter un personnage" data-tooltip="Ajouter un personnage"><i
-
-            class="fas fa-plus"></i></a></p>
+<p><a class="button" href="{{ @base }}/project/{{ @project.id }}/character/create" title="Ajouter un personnage"
+        title="Ajouter un personnage"><i class="fas fa-plus"></i></a></p>
 
 <check if="{{ empty(@characters) }}">
 
@@ -46,15 +44,12 @@
 
                         <td>
 
-                            <a class="button" href="{{ @base }}/character/{{ @char.id }}/edit" title="Modifier" data-tooltip="Modifier le personnage"><i
-
-                                    class="fas fa-edit"></i></a>
+                            <a class="button" href="{{ @base }}/character/{{ @char.id }}/edit" title="Modifier"
+                                title="Modifier le personnage"><i class="fas fa-edit"></i></a>
 
                             <a class="button delete js-confirm" href="{{ @base }}/character/{{ @char.id }}/delete"
-
-                                data-confirm="Supprimer ce personnage ?" title="Supprimer" data-tooltip="Supprimer le personnage"><i
-
-                                    class="fas fa-trash"></i></a>
+                                data-confirm="Supprimer ce personnage ?" title="Supprimer"
+                                title="Supprimer le personnage"><i class="fas fa-trash"></i></a>
 
                         </td>
 

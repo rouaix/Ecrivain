@@ -655,8 +655,14 @@ class SharePublicController extends Controller
         $characterModel = new Character();
         $characters = $characterModel->getAllByProject($pid);
 
-        $noteModel  = new Note();
-        $notes      = $noteModel->getAllByProject($pid);
+        $noteModel = new Note();
+        $notes     = array_values(array_filter(
+            $noteModel->getAllByProject($pid),
+            fn($n) => ($n['type'] ?? 'note') !== 'scenario'
+        ));
+
+        $scenarioModel = new Scenario();
+        $scenarios     = $scenarioModel->getAllByProject($pid);
 
         $actModel = new Act();
         $acts     = $actModel->getAllByProject($pid);
@@ -810,6 +816,19 @@ class SharePublicController extends Controller
                             $snid = 'element_' . $sub['id'];
                             $nodes[] = ['id' => $snid, 'name' => $sub['title'], 'type' => 'element', 'content' => $sub['content'] ?? '', 'is_subelement' => true];
                             $links[] = ['source' => $nid, 'target' => $snid];
+                        }
+                    }
+                    break;
+
+                case 'scenario':
+                    $exportedScenarios = array_filter($scenarios, fn($sc) => ($sc['is_exported'] ?? 1));
+                    if (!empty($exportedScenarios)) {
+                        $cfg = json_decode($te['config_json'] ?? '{}', true);
+                        $nodes[] = ['id' => 'scenarios_group', 'name' => $cfg['label_plural'] ?? 'Scénarios', 'type' => 'scenario_group', 'description' => ''];
+                        $links[] = ['source' => 'project', 'target' => 'scenarios_group'];
+                        foreach ($exportedScenarios as $sc) {
+                            $nodes[] = ['id' => 'scenario_' . $sc['id'], 'name' => $sc['title'], 'type' => 'scenario', 'content' => $sc['content'] ?? ''];
+                            $links[] = ['source' => 'scenarios_group', 'target' => 'scenario_' . $sc['id']];
                         }
                     }
                     break;

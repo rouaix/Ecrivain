@@ -56,6 +56,16 @@ class ComposerStaticInitd751713988987e9331980363e24189ce
         ),
     );
 
+    public static $prefixesPsr0 = array (
+        'P' => 
+        array (
+            'Parsedown' => 
+            array (
+                0 => __DIR__ . '/..' . '/erusev/parsedown',
+            ),
+        ),
+    );
+
     public static $classMap = array (
         'Access' => __DIR__ . '/..' . '/xfra35/f3-access/lib/access.php',
         'Audit' => __DIR__ . '/..' . '/bcosca/fatfree-core/audit.php',
@@ -121,6 +131,7 @@ class ComposerStaticInitd751713988987e9331980363e24189ce
         return \Closure::bind(function () use ($loader) {
             $loader->prefixLengthsPsr4 = ComposerStaticInitd751713988987e9331980363e24189ce::$prefixLengthsPsr4;
             $loader->prefixDirsPsr4 = ComposerStaticInitd751713988987e9331980363e24189ce::$prefixDirsPsr4;
+            $loader->prefixesPsr0 = ComposerStaticInitd751713988987e9331980363e24189ce::$prefixesPsr0;
             $loader->classMap = ComposerStaticInitd751713988987e9331980363e24189ce::$classMap;
 
         }, null, ClassLoader::class);

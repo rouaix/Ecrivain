@@ -55,7 +55,6 @@
                     <label for="words_per_page">Mots par page (moyenne)</label>
 
                     <input type="number" id="words_per_page" name="words_per_page"
-
                         value="{{ @old.words_per_page ?: 350 }}" min="1">
 
                 </div>
@@ -65,7 +64,6 @@
                     <label for="target_pages">Nombre de pages total</label>
 
                     <input type="number" id="target_pages" name="target_pages" value="{{ @old.target_pages ?: 0 }}"
-
                         min="0">
 
                 </div>
@@ -89,8 +87,7 @@
                 <label for="tags">Tags (séparés par des virgules)</label>
 
                 <input type="text" id="tags" name="tags" value="{{ @old.tags }}"
-                    placeholder="ex: fantasy, roman, en cours"
-                    class="input-control" autocomplete="off">
+                    placeholder="ex: fantasy, roman, en cours" class="input-control" autocomplete="off">
 
                 <small class="text-muted">Permet de filtrer vos projets sur le tableau de bord.</small>
 
@@ -104,7 +101,7 @@
 
                     <repeat group="{{ @templates }}" value="{{ @tpl }}">
 
-                        <option value="{{ @tpl.id }}" {{ (@old.template_id == @tpl.id) ? 'selected' : '' }}>
+                        <option value="{{ @tpl.id }}" {{ (@old.template_id==@tpl.id) ? 'selected' : '' }}>
 
                             {{ @tpl.name }}
 
@@ -116,11 +113,12 @@
 
                 </select>
 
-                <small class="text-muted">Définit la structure du projet. <a href="{{ @base }}/templates">Gérer les templates</a></small>
+                <small class="text-muted">Définit la structure du projet. <a href="{{ @base }}/templates">Gérer les
+                        templates</a></small>
 
             </div>
 
-            <input type="submit" value="Créer le projet" data-tooltip="Créer ce projet" title="Créer ce projet">
+            <input type="submit" value="Créer le projet" title="Créer ce projet" title="Créer ce projet">
 
         </form>
 

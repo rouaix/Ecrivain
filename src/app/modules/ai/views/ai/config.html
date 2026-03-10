@@ -163,7 +163,6 @@
                 <label for="summarize_chapter">Consigne "Résumé Chapitre"</label>
 
                 <textarea id="summarize_chapter" name="summarize_chapter"
-
                     rows="3">{{ @config.prompts.summarize_chapter }}</textarea>
 
                 <small>Instructions pour la génération du résumé d'un chapitre (basé sur ses sous-chapitres).</small>
@@ -175,7 +174,6 @@
                 <label for="summarize_act">Consigne "Résumé Acte"</label>
 
                 <textarea id="summarize_act" name="summarize_act"
-
                     rows="3">{{ @config.prompts.summarize_act }}</textarea>
 
                 <small>Instructions pour la génération du résumé d'un acte (basé sur les résumés de ses
@@ -195,14 +193,13 @@
                         <div class="ai-custom-prompt-row">
 
                             <input type="text" name="custom_prompt_label[]" placeholder="Titre à afficher"
-
                                 value="{{ @p.label | esc }}">
 
                             <textarea name="custom_prompt_value[]" rows="3"
-
                                 placeholder="Consigne / prompt">{{ @p.prompt | esc }}</textarea>
 
-                            <button type="button" class="button small delete ai-custom-prompt-remove" data-tooltip="Supprimer ce prompt" title="Supprimer ce prompt">Supprimer</button>
+                            <button type="button" class="button small delete ai-custom-prompt-remove"
+                                title="Supprimer ce prompt">Supprimer</button>
 
                         </div>
 
@@ -212,7 +209,9 @@
 
                 <div>
 
-                    <button type="button" class="button small" id="addCustomPrompt" data-tooltip="Ajouter un prompt personnalisé" title="Ajouter un prompt personnalisé">+ Ajouter un prompt</button>
+                    <button type="button" class="button small" id="addCustomPrompt"
+                        title="Ajouter un prompt personnalisé">+ Ajouter
+                        un prompt</button>
 
                 </div>
 
@@ -226,8 +225,8 @@
 
                 <label class="checkbox-label">
 
-                    <input type="checkbox" name="notify_ai_completion" value="1"
-                        <check if="{{ @config.notifications.ai_completion_notify }}">checked</check>>
+                    <input type="checkbox" name="notify_ai_completion" value="1" <check
+                        if="{{ @config.notifications.ai_completion_notify }}">checked</check>>
                     Notifier par email quand une génération IA longue est terminée
 
                 </label>
@@ -241,8 +240,8 @@
                 <label for="ai_completion_threshold">Seuil de durée (secondes)</label>
 
                 <input type="number" id="ai_completion_threshold" name="ai_completion_threshold"
-                    value="{{ @config.notifications.ai_completion_threshold_secs | esc }}"
-                    min="10" max="300" placeholder="30">
+                    value="{{ @config.notifications.ai_completion_threshold_secs | esc }}" min="10" max="300"
+                    placeholder="30">
 
                 <small>Valeur par défaut : 30 secondes.</small>
 
@@ -252,8 +251,8 @@
 
                 <label class="checkbox-label">
 
-                    <input type="checkbox" name="usage_alert_enabled" value="1"
-                        <check if="{{ @config.notifications.usage_alert_enabled }}">checked</check>>
+                    <input type="checkbox" name="usage_alert_enabled" value="1" <check
+                        if="{{ @config.notifications.usage_alert_enabled }}">checked</check>>
                     Alerte email si le seuil de tokens IA est dépassé dans la journée
 
                 </label>
@@ -265,8 +264,7 @@
                 <label for="usage_alert_threshold">Seuil de tokens (par jour)</label>
 
                 <input type="number" id="usage_alert_threshold" name="usage_alert_threshold"
-                    value="{{ @config.notifications.usage_alert_threshold | esc }}"
-                    min="0" placeholder="100000">
+                    value="{{ @config.notifications.usage_alert_threshold | esc }}" min="0" placeholder="100000">
 
                 <small>Alerte envoyée une fois par jour. 0 = désactivé.</small>
 
@@ -276,8 +274,8 @@
 
                 <label class="checkbox-label">
 
-                    <input type="checkbox" name="weekly_stats" value="1"
-                        <check if="{{ @config.notifications.weekly_stats }}">checked</check>>
+                    <input type="checkbox" name="weekly_stats" value="1" <check
+                        if="{{ @config.notifications.weekly_stats }}">checked</check>>
                     Recevoir un résumé hebdomadaire d'écriture par email
 
                 </label>
@@ -288,9 +286,11 @@
 
             <div class="ai-config-actions">
 
-                <button type="submit" class="button primary" data-tooltip="Enregistrer la configuration IA">Enregistrer</button>
+                <button type="submit" class="button primary"
+                    title="Enregistrer la configuration IA">Enregistrer</button>
 
-                <a href="{{ @base }}/dashboard" class="button secondary" data-tooltip="Retour au tableau de bord"><i class="fas fa-arrow-left"></i> Retour</a>
+                <a href="{{ @base }}/dashboard" class="button secondary" title="Retour au tableau de bord"><i
+                        class="fas fa-arrow-left"></i> Retour</a>
 
             </div>
 

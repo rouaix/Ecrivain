@@ -107,6 +107,8 @@
         section: '#00897B',
         section_group: '#26A69A',
         character_group: '#42A5F5',
+        scenario_group: '#C62828',
+        scenario: '#EF5350',
         default: '#5f6368',
         background: '#ffffff',
         text: '#3c4043',
@@ -489,7 +491,7 @@
 
         // Popup logic - show for content-heavy types (only on leaf nodes without children)
         var hasContent = d.data.content && d.data.content.trim() !== '';
-        var popupTypes = ['character', 'note', 'section', 'element'];
+        var popupTypes = ['character', 'note', 'section', 'element', 'scenario'];
         var isSubItem = d.data.is_subchapter || d.data.is_subelement;
         var hasChildren = d.children || d._children;
 

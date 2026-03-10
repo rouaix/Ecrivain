@@ -1,17 +1,18 @@
 <div class="edit-page-layout">
     <div class="edit-header">
         <h2><i class="fas fa-chart-line"></i> Statistiques d'écriture</h2>
-        <a href="{{ @base }}/dashboard" class="button" title="Retour" data-tooltip="Retour au tableau de bord">
+        <a href="{{ @base }}/dashboard" class="button" title="Retour" title="Retour au tableau de bord">
             <i class="fas fa-arrow-left"></i>
         </a>
     </div>
 
     <!-- Scope selector -->
-    <form method="get" action="{{ @base }}/stats" class="stats-scope-form" id="statsProjectForm" onsubmit="console.log('Form submitted');">
+    <form method="get" action="{{ @base }}/stats" class="stats-scope-form" id="statsProjectForm"
+        onsubmit="console.log('Form submitted');">
         <select name="project_id" class="input-control" id="statsProjectSelect" style="max-width:280px;">
             <option value="">Tous les projets</option>
             <repeat group="{{ @projects }}" value="{{ @proj }}">
-                <option value="{{ @proj.id }}" {{ (@projectId == @proj.id) ? 'selected' : '' }}>
+                <option value="{{ @proj.id }}" {{ (@projectId==@proj.id) ? 'selected' : '' }}>
                     {{ @proj.title | esc }}
                 </option>
             </repeat>
@@ -67,7 +68,8 @@
                             style="width:{{ @dailyPct }}%"></div>
                     </div>
                     <check if="{{ @dailyPct >= 100 }}">
-                        <p class="stats-goal-congrats"><i class="fas fa-check-circle"></i> Objectif du jour atteint !</p>
+                        <p class="stats-goal-congrats"><i class="fas fa-check-circle"></i> Objectif du jour atteint !
+                        </p>
                     </check>
                 </div>
             </check>
@@ -75,7 +77,8 @@
             <check if="{{ @weeklyGoal > 0 }}">
                 <div class="stats-card stats-goal-card">
                     <div class="stats-goal-header">
-                        <span class="stats-goal-title"><i class="fas fa-calendar-week"></i> Objectif de la semaine</span>
+                        <span class="stats-goal-title"><i class="fas fa-calendar-week"></i> Objectif de la
+                            semaine</span>
                         <span class="stats-goal-numbers">
                             {{ number_format(@wordsWeek, 0, ',', "\u{202f}") }}
                             /
@@ -88,7 +91,8 @@
                             style="width:{{ @weeklyPct }}%"></div>
                     </div>
                     <check if="{{ @weeklyPct >= 100 }}">
-                        <p class="stats-goal-congrats"><i class="fas fa-check-circle"></i> Objectif de la semaine atteint !</p>
+                        <p class="stats-goal-congrats"><i class="fas fa-check-circle"></i> Objectif de la semaine
+                            atteint !</p>
                     </check>
                 </div>
             </check>
@@ -110,7 +114,8 @@
                 </span>
             </div>
             <div class="stats-goal-track">
-                <div class="stats-goal-fill {{ @pct >= 100 ? 'stats-goal-fill--done' : '' }}" style="width:{{ @pct }}%"></div>
+                <div class="stats-goal-fill {{ @pct >= 100 ? 'stats-goal-fill--done' : '' }}" style="width:{{ @pct }}%">
+                </div>
             </div>
         </div>
     </check>
@@ -145,125 +150,268 @@
 
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js" nonce="{{ @nonce }}"></script>
 <script nonce="{{ @nonce }}">
-// Project filter functionality
-window.addEventListener('DOMContentLoaded', function() {
-    try {
-        var select = document.getElementById('statsProjectSelect');
-        var form = document.getElementById('statsProjectForm');
-        
-        console.log('Project filter initialized', { select: !!select, form: !!form });
-        
-        if (select && form) {
-            select.addEventListener('change', function() {
-                console.log('Project selection changed, submitting form...');
-                form.submit();
-            });
+    // Project filter functionality
+    window.addEventListener('DOMContentLoaded', function () {
+        try {
+            var select = document.getElementById('statsProjectSelect');
+            var form = document.getElementById('statsProjectForm');
+
+            console.log('Project filter initialized', { select: !!select, form: !!form });
+
+            if (select && form) {
+                select.addEventListener('change', function () {
+                    console.log('Project selection changed, submitting form...');
+                    form.submit();
+                });
+            }
+        } catch (e) {
+            console.error('Error initializing project filter:', e);
         }
-    } catch (e) {
-        console.error('Error initializing project filter:', e);
-    }
-});
+    });
 </script>
 <script nonce="{{ @nonce }}">
-document.addEventListener('DOMContentLoaded', function () {
-    var isDark = document.body.classList.contains('theme-dark');
-    var gridColor  = isDark ? 'rgba(255,255,255,.08)' : 'rgba(0,0,0,.06)';
-    var labelColor = isDark ? '#94a3b8' : '#777';
-    var lineColor  = getComputedStyle(document.documentElement).getPropertyValue('--link-color').trim() || '#3f51b5';
+    document.addEventListener('DOMContentLoaded', function () {
+        var isDark = document.body.classList.contains('theme-dark');
+        var gridColor = isDark ? 'rgba(255,255,255,.08)' : 'rgba(0,0,0,.06)';
+        var labelColor = isDark ? '#94a3b8' : '#777';
+        var lineColor = getComputedStyle(document.documentElement).getPropertyValue('--link-color').trim() || '#3f51b5';
 
-    var ctx = document.getElementById('writingChart');
-    if (!ctx) return;
+        var ctx = document.getElementById('writingChart');
+        if (!ctx) return;
 
-    new Chart(ctx, {
-        type: 'bar',
-        data: {
-            labels: {{ @chartLabels | raw }},
-            datasets: [{
-                label: 'Mots ajoutés',
-                data: {{ @chartData | raw }},
-                backgroundColor: lineColor + '99',
-                borderColor: lineColor,
-                borderWidth: 1,
-                borderRadius: 3,
+        new Chart(ctx, {
+            type: 'bar',
+            data: {
+                labels: {{ @chartLabels | raw }},
+        datasets: [{
+            label: 'Mots ajoutés',
+            data: {{ @chartData | raw }},
+        backgroundColor: lineColor + '99',
+        borderColor: lineColor,
+        borderWidth: 1,
+        borderRadius: 3,
             }]
         },
         options: {
-            responsive: true,
-            maintainAspectRatio: true,
-            plugins: {
-                legend: { display: false },
-                tooltip: {
-                    callbacks: {
-                        label: function(ctx) {
-                            return ctx.parsed.y.toLocaleString('fr-FR') + ' mots';
-                        }
-                    }
-                }
-            },
-            scales: {
-                x: {
-                    grid: { color: gridColor },
-                    ticks: { color: labelColor, maxTicksLimit: 10 }
-                },
-                y: {
-                    beginAtZero: true,
-                    grid: { color: gridColor },
-                    ticks: {
-                        color: labelColor,
-                        callback: function(v) { return v.toLocaleString('fr-FR'); }
+        responsive: true,
+        maintainAspectRatio: true,
+        plugins: {
+            legend: { display: false },
+            tooltip: {
+                callbacks: {
+                    label: function (ctx) {
+                        return ctx.parsed.y.toLocaleString('fr-FR') + ' mots';
                     }
                 }
             }
+        },
+        scales: {
+            x: {
+                grid: { color: gridColor },
+                ticks: { color: labelColor, maxTicksLimit: 10 }
+            },
+            y: {
+                beginAtZero: true,
+                grid: { color: gridColor },
+                ticks: {
+                    color: labelColor,
+                    callback: function (v) { return v.toLocaleString('fr-FR'); }
+                }
+            }
         }
+    }
     });
 });
 </script>
 
 <style nonce="{{ @nonce }}">
-.stats-scope-form { margin-bottom: 1.5rem; }
-.stats-kpi-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
-    gap: 14px; margin-bottom: 1.5rem;
-}
-.stats-kpi-card {
-    background: var(--card-bg, #fff); border: 1px solid var(--border-color, #e0e0e0);
-    border-radius: 10px; padding: 20px 16px; text-align: center;
-}
-.stats-kpi-card--streak { border-color: #f97316; }
-.stats-kpi-icon { font-size: 1.4rem; color: var(--link-color, #3f51b5); margin-bottom: 8px; }
-.stats-kpi-card--streak .stats-kpi-icon { color: #f97316; }
-.stats-kpi-value { font-size: 1.9rem; font-weight: 700; color: var(--text-main, #333); line-height: 1; }
-.stats-kpi-label { font-size: .78rem; color: var(--text-muted, #777); margin-top: 4px; }
-.stats-card {
-    background: var(--card-bg, #fff); border: 1px solid var(--border-color, #e0e0e0);
-    border-radius: 10px; padding: 20px; margin-bottom: 1.5rem;
-}
-.stats-card h3 { margin: 0 0 16px; font-size: 1rem; color: var(--text-main, #333); }
-.stats-card-sub { font-weight: 400; color: var(--text-muted, #888); font-size: .85rem; }
-.stats-chart-wrap { position: relative; height: 220px; }
-.stats-bar-list { display: flex; flex-direction: column; gap: 8px; }
-.stats-bar-item { display: flex; align-items: center; gap: 10px; }
-.stats-bar-label {
-    width: 180px; flex-shrink: 0; font-size: .82rem; color: var(--text-main, #333);
-    white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
-}
-.stats-bar-track { flex: 1; background: var(--border-color, #e0e0e0); border-radius: 3px; height: 10px; }
-.stats-bar-fill { background: var(--link-color, #3f51b5); border-radius: 3px; height: 100%; min-width: 4px; }
-.stats-bar-count { width: 60px; text-align: right; font-size: .8rem; color: var(--text-muted, #777); flex-shrink: 0; }
-.stats-goal-card { padding: 16px 20px; }
-.stats-goal-header { display: flex; justify-content: space-between; align-items: baseline; flex-wrap: wrap; gap: 8px; margin-bottom: 10px; }
-.stats-goal-title { font-size: .95rem; font-weight: 600; color: var(--text-main, #333); }
-.stats-goal-title i { color: var(--link-color, #3f51b5); margin-right: 6px; }
-.stats-goal-numbers { font-size: .85rem; color: var(--text-muted, #777); }
-.stats-goal-track { background: var(--border-color, #e0e0e0); border-radius: 6px; height: 12px; overflow: hidden; }
-.stats-goal-fill { background: var(--link-color, #3f51b5); height: 100%; border-radius: 6px; transition: width .4s ease; min-width: 4px; }
-.stats-goal-fill--done { background: #22c55e; }
-.stats-goals-row { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 14px; }
-.stats-goals-row .stats-goal-card { margin-bottom: 0; }
-.stats-goal-congrats { margin: 8px 0 0; font-size: .82rem; color: #22c55e; font-weight: 600; }
-@media (max-width: 600px) {
-    .stats-bar-label { width: 100px; }
-    .stats-kpi-grid { grid-template-columns: repeat(2, 1fr); }
-}
+    .stats-scope-form {
+        margin-bottom: 1.5rem;
+    }
+
+    .stats-kpi-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+        gap: 14px;
+        margin-bottom: 1.5rem;
+    }
+
+    .stats-kpi-card {
+        background: var(--card-bg, #fff);
+        border: 1px solid var(--border-color, #e0e0e0);
+        border-radius: 10px;
+        padding: 20px 16px;
+        text-align: center;
+    }
+
+    .stats-kpi-card--streak {
+        border-color: #f97316;
+    }
+
+    .stats-kpi-icon {
+        font-size: 1.4rem;
+        color: var(--link-color, #3f51b5);
+        margin-bottom: 8px;
+    }
+
+    .stats-kpi-card--streak .stats-kpi-icon {
+        color: #f97316;
+    }
+
+    .stats-kpi-value {
+        font-size: 1.9rem;
+        font-weight: 700;
+        color: var(--text-main, #333);
+        line-height: 1;
+    }
+
+    .stats-kpi-label {
+        font-size: .78rem;
+        color: var(--text-muted, #777);
+        margin-top: 4px;
+    }
+
+    .stats-card {
+        background: var(--card-bg, #fff);
+        border: 1px solid var(--border-color, #e0e0e0);
+        border-radius: 10px;
+        padding: 20px;
+        margin-bottom: 1.5rem;
+    }
+
+    .stats-card h3 {
+        margin: 0 0 16px;
+        font-size: 1rem;
+        color: var(--text-main, #333);
+    }
+
+    .stats-card-sub {
+        font-weight: 400;
+        color: var(--text-muted, #888);
+        font-size: .85rem;
+    }
+
+    .stats-chart-wrap {
+        position: relative;
+        height: 220px;
+    }
+
+    .stats-bar-list {
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+    }
+
+    .stats-bar-item {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+    }
+
+    .stats-bar-label {
+        width: 180px;
+        flex-shrink: 0;
+        font-size: .82rem;
+        color: var(--text-main, #333);
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+
+    .stats-bar-track {
+        flex: 1;
+        background: var(--border-color, #e0e0e0);
+        border-radius: 3px;
+        height: 10px;
+    }
+
+    .stats-bar-fill {
+        background: var(--link-color, #3f51b5);
+        border-radius: 3px;
+        height: 100%;
+        min-width: 4px;
+    }
+
+    .stats-bar-count {
+        width: 60px;
+        text-align: right;
+        font-size: .8rem;
+        color: var(--text-muted, #777);
+        flex-shrink: 0;
+    }
+
+    .stats-goal-card {
+        padding: 16px 20px;
+    }
+
+    .stats-goal-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: baseline;
+        flex-wrap: wrap;
+        gap: 8px;
+        margin-bottom: 10px;
+    }
+
+    .stats-goal-title {
+        font-size: .95rem;
+        font-weight: 600;
+        color: var(--text-main, #333);
+    }
+
+    .stats-goal-title i {
+        color: var(--link-color, #3f51b5);
+        margin-right: 6px;
+    }
+
+    .stats-goal-numbers {
+        font-size: .85rem;
+        color: var(--text-muted, #777);
+    }
+
+    .stats-goal-track {
+        background: var(--border-color, #e0e0e0);
+        border-radius: 6px;
+        height: 12px;
+        overflow: hidden;
+    }
+
+    .stats-goal-fill {
+        background: var(--link-color, #3f51b5);
+        height: 100%;
+        border-radius: 6px;
+        transition: width .4s ease;
+        min-width: 4px;
+    }
+
+    .stats-goal-fill--done {
+        background: #22c55e;
+    }
+
+    .stats-goals-row {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+        gap: 14px;
+    }
+
+    .stats-goals-row .stats-goal-card {
+        margin-bottom: 0;
+    }
+
+    .stats-goal-congrats {
+        margin: 8px 0 0;
+        font-size: .82rem;
+        color: #22c55e;
+        font-weight: 600;
+    }
+
+    @media (max-width: 600px) {
+        .stats-bar-label {
+            width: 100px;
+        }
+
+        .stats-kpi-grid {
+            grid-template-columns: repeat(2, 1fr);
+        }
+    }
 </style>

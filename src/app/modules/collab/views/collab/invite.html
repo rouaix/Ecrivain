@@ -2,7 +2,8 @@
     <div class="edit-header">
         <h2><i class="fas fa-users"></i> Collaborateurs — {{ @project.title | esc }}</h2>
         <div class="header-actions">
-            <a href="{{ @base }}/project/{{ @project.id }}" class="button secondary" data-tooltip="Retour au projet" title="Retour au projet">
+            <a href="{{ @base }}/project/{{ @project.id }}" class="button secondary" title="Retour au projet"
+                title="Retour au projet">
                 <i class="fas fa-arrow-left"></i> Retour au projet
             </a>
         </div>
@@ -20,15 +21,17 @@
     <div class="edit-card" style="margin-top:1.5rem">
         <div class="edit-card-section">
             <h3><i class="fas fa-user-plus"></i> Inviter un collaborateur</h3>
-            <p class="text-muted-para">L'utilisateur doit déjà posséder un compte. Il recevra une invitation qu'il pourra accepter ou refuser.</p>
+            <p class="text-muted-para">L'utilisateur doit déjà posséder un compte. Il recevra une invitation qu'il
+                pourra accepter ou refuser.</p>
             <form method="post" action="{{ @base }}/project/{{ @project.id }}/collaborateurs/invite">
                 <input type="hidden" name="csrf_token" value="{{ @csrfToken }}">
                 <div style="display:flex;gap:.75rem;align-items:flex-end">
                     <div class="form-group" style="flex:1;margin:0">
                         <label for="collabEmail">Adresse e-mail</label>
-                        <input type="email" id="collabEmail" name="email" class="input-control" placeholder="collaborateur@exemple.com" required>
+                        <input type="email" id="collabEmail" name="email" class="input-control"
+                            placeholder="collaborateur@exemple.com" required>
                     </div>
-                    <button type="submit" class="button" data-tooltip="Envoyer l'invitation" title="Envoyer l'invitation">
+                    <button type="submit" class="button" title="Envoyer l'invitation" title="Envoyer l'invitation">
                         <i class="fas fa-paper-plane"></i> Envoyer l'invitation
                     </button>
                 </div>
@@ -60,16 +63,22 @@
                                 <td>{{ @c.username | esc }}</td>
                                 <td>{{ @c.email | esc }}</td>
                                 <td>
-                                    <check if="{{ @c.status == 'accepted' }}"><span class="badge badge-success">Accepté</span></check>
-                                    <check if="{{ @c.status == 'pending' }}"><span class="badge badge-warning">En attente</span></check>
-                                    <check if="{{ @c.status == 'declined' }}"><span class="badge badge-error">Refusé</span></check>
+                                    <check if="{{ @c.status == 'accepted' }}"><span
+                                            class="badge badge-success">Accepté</span></check>
+                                    <check if="{{ @c.status == 'pending' }}"><span class="badge badge-warning">En
+                                            attente</span></check>
+                                    <check if="{{ @c.status == 'declined' }}"><span
+                                            class="badge badge-error">Refusé</span></check>
                                 </td>
                                 <td>{{ @c.created_at }}</td>
                                 <td>
-                                    <form method="post" action="{{ @base }}/project/{{ @project.id }}/collaborateurs/{{ @c.user_id }}/remove"
-                                          onsubmit="return confirm('Retirer ce collaborateur ?')">
+                                    <form method="post"
+                                        action="{{ @base }}/project/{{ @project.id }}/collaborateurs/{{ @c.user_id }}/remove"
+                                        onsubmit="return confirm('Retirer ce collaborateur ?')">
                                         <input type="hidden" name="csrf_token" value="{{ @csrfToken }}">
-                                        <button type="submit" class="button small delete" data-tooltip="Retirer ce collaborateur" title="Retirer ce collaborateur">Retirer</button>
+                                        <button type="submit" class="button small delete"
+                                            title="Retirer ce collaborateur"
+                                            title="Retirer ce collaborateur">Retirer</button>
                                     </form>
                                 </td>
                             </tr>
@@ -82,7 +91,8 @@
 
     <!-- Lien vers la file de revue -->
     <div style="margin-top:.5rem">
-        <a href="{{ @base }}/project/{{ @project.id }}/collab/demandes" class="button secondary" data-tooltip="Voir les demandes des collaborateurs" title="Voir les demandes des collaborateurs">
+        <a href="{{ @base }}/project/{{ @project.id }}/collab/demandes" class="button secondary"
+            title="Voir les demandes des collaborateurs" title="Voir les demandes des collaborateurs">
             <i class="fas fa-inbox"></i> Voir les demandes des collaborateurs
         </a>
     </div>

@@ -3,7 +3,8 @@
     <div class="edit-header">
         <h2>{{ @title }}</h2>
         <div class="header-actions">
-            <a href="{{ @base }}/project/{{ @project.id }}/glossary" class="button secondary" title="Retour au lexique" data-tooltip="Retour au lexique"><i class="fas fa-arrow-left"></i></a>
+            <a href="{{ @base }}/project/{{ @project.id }}/glossary" class="button secondary" title="Retour au lexique"
+                title="Retour au lexique"><i class="fas fa-arrow-left"></i></a>
         </div>
     </div>
 
@@ -18,7 +19,8 @@
     </check>
 
     <div class="edit-card" style="margin-top:1.5rem">
-        <form method="POST" action="{{ @base }}/project/{{ @project.id }}/glossary{{ @entry.id ? '/' . @entry.id . '/edit' : '/create' }}">
+        <form method="POST"
+            action="{{ @base }}/project/{{ @project.id }}/glossary{{ @entry.id ? '/' . @entry.id . '/edit' : '/create' }}">
             <input type="hidden" name="csrf_token" value="{{ @csrfToken }}">
 
             <div class="edit-card-section">
@@ -26,27 +28,32 @@
 
                 <div class="form-group">
                     <label for="term">Terme <span class="required">*</span></label>
-                    <input type="text" id="term" name="term" value="{{ @entry.term }}" maxlength="150" required autofocus class="input-control">
+                    <input type="text" id="term" name="term" value="{{ @entry.term }}" maxlength="150" required
+                        autofocus class="input-control">
                 </div>
 
                 <div class="form-group">
                     <label for="category">Catégorie</label>
                     <select id="category" name="category" class="input-control">
                         <repeat group="{{ @categories }}" key="{{ @catKey }}" value="{{ @catLabel }}">
-                            <option value="{{ @catKey }}" {{ @entry.category == @catKey ? 'selected' : '' }}>{{ @catLabel }}</option>
+                            <option value="{{ @catKey }}" {{ @entry.category==@catKey ? 'selected' : '' }}>{{ @catLabel
+                                }}</option>
                         </repeat>
                     </select>
                 </div>
 
                 <div class="form-group">
                     <label for="definition">Définition</label>
-                    <textarea id="definition" name="definition" rows="6" class="input-control" placeholder="Description, explications, notes…">{{ @entry.definition }}</textarea>
+                    <textarea id="definition" name="definition" rows="6" class="input-control"
+                        placeholder="Description, explications, notes…">{{ @entry.definition }}</textarea>
                 </div>
             </div>
 
             <div class="edit-actions">
-                <a href="{{ @base }}/project/{{ @project.id }}/glossary" class="button secondary" data-tooltip="Annuler" title="Annuler">Annuler</a>
-                <button type="submit" class="button" data-tooltip="Enregistrer le terme" title="Enregistrer le terme">Enregistrer</button>
+                <a href="{{ @base }}/project/{{ @project.id }}/glossary" class="button secondary" title="Annuler"
+                    title="Annuler">Annuler</a>
+                <button type="submit" class="button" title="Enregistrer le terme"
+                    title="Enregistrer le terme">Enregistrer</button>
             </div>
         </form>
     </div>

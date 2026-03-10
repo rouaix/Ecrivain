@@ -4,7 +4,8 @@
 
         <h2>Créer un chapitre</h2>
 
-        <a href="{{ @base }}/project/{{ @project.id }}" class="button" title="Retour au projet" data-tooltip="Retour au projet">
+        <a href="{{ @base }}/project/{{ @project.id }}" class="button" title="Retour au projet"
+            title="Retour au projet">
 
             <i class="fas fa-arrow-left"></i>
 
@@ -61,7 +62,6 @@
                             <repeat group="{{ @acts }}" value="{{ @act }}">
 
                                 <option value="{{ @act.id }}" {{ (isset(@old.act_id) && @old.act_id==@act.id)
-
                                     ? 'selected' : '' }}>
 
                                     {{ @act.title }}
@@ -85,7 +85,6 @@
                             <repeat group="{{ @chapters }}" value="{{ @ch }}">
 
                                 <option value="{{ @ch.id }}" data-act-id="{{ @ch.act_id }}" {{ (isset(@old.parent_id) &&
-
                                     @old.parent_id==@ch.id) ? 'selected' : '' }}>
 
                                     {{ @ch.title }}
@@ -104,7 +103,8 @@
 
             <div class="edit-actions">
 
-                <input type="submit" value="Créer le chapitre" class="button primary large" data-tooltip="Créer ce chapitre" title="Créer ce chapitre">
+                <input type="submit" value="Créer le chapitre" class="button primary large" title="Créer ce chapitre"
+                    title="Créer ce chapitre">
 
             </div>
 

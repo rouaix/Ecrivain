@@ -7,8 +7,7 @@
         <h2>Modifier le personnage « {{ @character.name }}»</h2>
 
         <a class="button" href="{{ @base }}/project/{{ @project.id }}/characters"
-
-            title="Retour à la liste des personnages" data-tooltip="Retour à la liste des personnages">
+            title="Retour à la liste des personnages" title="Retour à la liste des personnages">
 
             <i class="fas fa-arrow-left"></i>
 
@@ -35,7 +34,6 @@
     </check>
 
     <form method="post"
-
         action="{{ @character.id ? (@base . '/character/' . @character.id . '/edit') : (@base . '/project/' . @project.id . '/character/create') }}">
 
         <input type="hidden" name="csrf_token" value="{{ @csrfToken }}">
@@ -51,7 +49,6 @@
                     <label for="name">Nom *</label>
 
                     <input type="text" id="name" name="name" value="{{ @character.name }}" class="input-control"
-
                         required>
 
                 </div>
@@ -108,7 +105,8 @@
 
             <div class="edit-actions">
 
-                <input type="submit" value="Enregistrer" class="button primary large" data-tooltip="Enregistrer le personnage" title="Enregistrer le personnage">
+                <input type="submit" value="Enregistrer" class="button primary large" title="Enregistrer le personnage"
+                    title="Enregistrer le personnage">
 
             </div>
 
@@ -149,46 +147,81 @@
 </div>
 
 <style nonce="{{ @nonce }}">
-.char-mentions-card {
-    margin-top: 1.5rem;
-}
-.char-mentions-header {
-    margin-bottom: 12px;
-}
-.char-mentions-header h3 {
-    margin: 0; font-size: 1rem; color: var(--text-main, #333);
-}
-.char-mentions-header h3 i {
-    color: var(--link-color, #3f51b5); margin-right: 8px;
-}
-.char-mentions-empty {
-    color: var(--text-muted, #777); font-size: .85rem; margin: 0;
-}
-.char-mentions-list { display: flex; flex-direction: column; gap: 16px; }
-.char-mentions-act-label {
-    font-size: .75rem; font-weight: 600; text-transform: uppercase;
-    letter-spacing: .06em; color: var(--text-muted, #888);
-    margin-bottom: 6px;
-}
-.char-mentions-chapter {
-    display: flex; align-items: center; gap: 10px;
-    padding: 9px 12px; border-radius: 7px;
-    border: 1px solid var(--border-color, #e0e0e0);
-    background: var(--card-bg, #fff);
-    color: var(--text-main, #333); text-decoration: none;
-    font-size: .88rem; margin-bottom: 4px;
-    transition: background .15s, border-color .15s;
-}
-.char-mentions-chapter:hover {
-    background: var(--table-row-hover-bg, #f0f4f8);
-    border-color: var(--link-color, #3f51b5);
-    color: var(--text-main, #333);
-}
-.char-mentions-chapter i:first-child {
-    color: var(--link-color, #3f51b5); flex-shrink: 0;
-}
-.char-mentions-chapter span { flex: 1; }
-.char-mentions-arrow { color: var(--text-muted, #bbb); font-size: .7rem; flex-shrink: 0; }
+    .char-mentions-card {
+        margin-top: 1.5rem;
+    }
+
+    .char-mentions-header {
+        margin-bottom: 12px;
+    }
+
+    .char-mentions-header h3 {
+        margin: 0;
+        font-size: 1rem;
+        color: var(--text-main, #333);
+    }
+
+    .char-mentions-header h3 i {
+        color: var(--link-color, #3f51b5);
+        margin-right: 8px;
+    }
+
+    .char-mentions-empty {
+        color: var(--text-muted, #777);
+        font-size: .85rem;
+        margin: 0;
+    }
+
+    .char-mentions-list {
+        display: flex;
+        flex-direction: column;
+        gap: 16px;
+    }
+
+    .char-mentions-act-label {
+        font-size: .75rem;
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: .06em;
+        color: var(--text-muted, #888);
+        margin-bottom: 6px;
+    }
+
+    .char-mentions-chapter {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        padding: 9px 12px;
+        border-radius: 7px;
+        border: 1px solid var(--border-color, #e0e0e0);
+        background: var(--card-bg, #fff);
+        color: var(--text-main, #333);
+        text-decoration: none;
+        font-size: .88rem;
+        margin-bottom: 4px;
+        transition: background .15s, border-color .15s;
+    }
+
+    .char-mentions-chapter:hover {
+        background: var(--table-row-hover-bg, #f0f4f8);
+        border-color: var(--link-color, #3f51b5);
+        color: var(--text-main, #333);
+    }
+
+    .char-mentions-chapter i:first-child {
+        color: var(--link-color, #3f51b5);
+        flex-shrink: 0;
+    }
+
+    .char-mentions-chapter span {
+        flex: 1;
+    }
+
+    .char-mentions-arrow {
+        color: var(--text-muted, #bbb);
+        font-size: .7rem;
+        flex-shrink: 0;
+    }
 </style>
 
 <script nonce="{{ @nonce }}">

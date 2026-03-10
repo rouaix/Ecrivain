@@ -15,7 +15,7 @@ class TemplateController extends Controller
      */
     private function isAdmin(array $user): bool
     {
-        return (int)$user['id'] === 1;
+        return (int) $user['id'] === 1;
     }
 
     /**
@@ -473,21 +473,21 @@ class TemplateController extends Controller
         $elements = $templateModel->getElements($templateId);
 
         $export = [
-            'name'        => $template['name'],
+            'name' => $template['name'],
             'description' => $template['description'] ?? '',
-            'elements'    => array_map(function ($elem) {
+            'elements' => array_map(function ($elem) {
                 return [
-                    'element_type'      => $elem['element_type'],
-                    'element_subtype'   => $elem['element_subtype'],
+                    'element_type' => $elem['element_type'],
+                    'element_subtype' => $elem['element_subtype'],
                     'section_placement' => $elem['section_placement'],
-                    'display_order'     => (int) $elem['display_order'],
-                    'is_enabled'        => (int) $elem['is_enabled'],
-                    'config_json'       => json_decode($elem['config_json'] ?? '{}', true),
+                    'display_order' => (int) $elem['display_order'],
+                    'is_enabled' => (int) $elem['is_enabled'],
+                    'config_json' => json_decode($elem['config_json'] ?? '{}', true),
                 ];
             }, $elements),
         ];
 
-        $json     = json_encode($export, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE);
+        $json = json_encode($export, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE);
         $filename = 'template_' . preg_replace('/[^a-z0-9]+/', '_', strtolower($template['name'])) . '.json';
 
         header('Content-Type: application/json');
@@ -506,9 +506,9 @@ class TemplateController extends Controller
 
         if ($this->f3->get('VERB') === 'GET') {
             $this->render('template/import.html', [
-                'title'  => 'Importer un template',
+                'title' => 'Importer un template',
                 'errors' => [],
-                'old'    => ['name' => ''],
+                'old' => ['name' => ''],
             ]);
             return;
         }
@@ -523,7 +523,7 @@ class TemplateController extends Controller
         $data = null;
         if (empty($errors)) {
             $content = file_get_contents($_FILES['template_file']['tmp_name']);
-            $data    = json_decode($content, true);
+            $data = json_decode($content, true);
             if (!$data || !isset($data['elements']) || !is_array($data['elements'])) {
                 $errors[] = 'Fichier JSON invalide ou format non reconnu.';
             }
@@ -531,9 +531,9 @@ class TemplateController extends Controller
 
         if (!empty($errors)) {
             $this->render('template/import.html', [
-                'title'  => 'Importer un template',
+                'title' => 'Importer un template',
                 'errors' => $errors,
-                'old'    => ['name' => trim($_POST['name'] ?? '')],
+                'old' => ['name' => trim($_POST['name'] ?? '')],
             ]);
             return;
         }
@@ -544,12 +544,12 @@ class TemplateController extends Controller
         }
 
         // Create the new user template
-        $newTemplate              = new ProjectTemplate();
-        $newTemplate->name        = $name;
+        $newTemplate = new ProjectTemplate();
+        $newTemplate->name = $name;
         $newTemplate->description = $data['description'] ?? '';
-        $newTemplate->is_default  = 0;
-        $newTemplate->is_system   = 0;
-        $newTemplate->created_by  = $user['id'];
+        $newTemplate->is_default = 0;
+        $newTemplate->is_system = 0;
+        $newTemplate->created_by = $user['id'];
         $newTemplate->save();
         $newId = $newTemplate->id;
 

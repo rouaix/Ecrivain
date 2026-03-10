@@ -2,7 +2,7 @@
     <div class="edit-header">
         <h2><i class="fas fa-layer-group"></i> {{ @template.name }}</h2>
         <div class="header-actions">
-            <a href="{{ @base }}/templates" class="button" title="Retour aux templates" data-tooltip="Retour aux templates">
+            <a href="{{ @base }}/templates" class="button" title="Retour aux templates" title="Retour aux templates">
                 <i class="fas fa-arrow-left"></i>
             </a>
         </div>
@@ -35,11 +35,13 @@
                 <h3><i class="fas fa-info-circle"></i> Informations generales</h3>
                 <div class="form-group">
                     <label for="name">Nom du template</label>
-                    <input type="text" id="name" name="name" value="{{ @template.name }}" required class="input-control title-input">
+                    <input type="text" id="name" name="name" value="{{ @template.name }}" required
+                        class="input-control title-input">
                 </div>
                 <div class="form-group">
                     <label for="description">Description</label>
-                    <textarea id="description" name="description" class="input-control" rows="3">{{ @template.description }}</textarea>
+                    <textarea id="description" name="description" class="input-control"
+                        rows="3">{{ @template.description }}</textarea>
                 </div>
             </div>
 
@@ -63,8 +65,10 @@
                             <repeat group="{{ @elements }}" value="{{ @elem }}">
                                 <tr data-id="{{ @elem.id }}">
                                     <td class="order-cell">
-                                        <button type="button" class="button small move-up" title="Monter" data-tooltip="Monter"><i class="fas fa-arrow-up"></i></button>
-                                        <button type="button" class="button small move-down" title="Descendre" data-tooltip="Descendre"><i class="fas fa-arrow-down"></i></button>
+                                        <button type="button" class="button small move-up" title="Monter"
+                                            title="Monter"><i class="fas fa-arrow-up"></i></button>
+                                        <button type="button" class="button small move-down" title="Descendre"
+                                            title="Descendre"><i class="fas fa-arrow-down"></i></button>
                                     </td>
                                     <td>
                                         {{ @elem.type_label }}
@@ -85,22 +89,21 @@
                                         </check>
                                     </td>
                                     <td class="text-center">
-                                        <input type="checkbox" name="element_enabled[{{ @elem.id }}]" value="1"
-                                               {{ (@elem.is_enabled) ? 'checked' : '' }}>
+                                        <input type="checkbox" name="element_enabled[{{ @elem.id }}]" value="1" {{
+                                            (@elem.is_enabled) ? 'checked' : '' }}>
                                     </td>
                                     <td class="actions">
                                         <button type="button" class="button small edit-elem-btn"
-                                                data-id="{{ @elem.id }}"
-                                                data-type="{{ @elem.element_type }}"
-                                                data-subtype="{{ @elem.element_subtype }}"
-                                                data-placement="{{ @elem.section_placement }}"
-                                                data-label="{{ @elem.main_label | esc }}"
-                                                data-label-plural="{{ @elem.plural_label | esc }}"
-                                                title="Modifier" data-tooltip="Modifier cet élément">
+                                            data-id="{{ @elem.id }}" data-type="{{ @elem.element_type }}"
+                                            data-subtype="{{ @elem.element_subtype }}"
+                                            data-placement="{{ @elem.section_placement }}"
+                                            data-label="{{ @elem.main_label | esc }}"
+                                            data-label-plural="{{ @elem.plural_label | esc }}" title="Modifier"
+                                            title="Modifier cet élément">
                                             <i class="fas fa-pencil-alt"></i>
                                         </button>
                                         <button type="button" class="button small delete delete-elem-btn"
-                                                data-id="{{ @elem.id }}" title="Supprimer" data-tooltip="Supprimer cet élément">
+                                            data-id="{{ @elem.id }}" title="Supprimer" title="Supprimer cet élément">
                                             <i class="fas fa-trash"></i>
                                         </button>
                                     </td>
@@ -116,7 +119,8 @@
             </div>
 
             <div class="edit-actions">
-                <input type="submit" value="Enregistrer" class="button primary large" title="Enregistrer le template" data-tooltip="Enregistrer le template">
+                <input type="submit" value="Enregistrer" class="button primary large" title="Enregistrer le template"
+                    title="Enregistrer le template">
             </div>
         </div>
     </form>
@@ -143,6 +147,7 @@
                                 <option value="character">Personnage</option>
                                 <option value="file">Fichier</option>
                                 <option value="element">Element personnalise</option>
+                                <option value="scenario">Scénarios</option>
                             </optgroup>
                         </select>
                     </div>
@@ -176,11 +181,13 @@
                 <div class="editor-grid-row">
                     <div class="form-group">
                         <label for="add_label">Label</label>
-                        <input type="text" id="add_label" name="label" class="input-control" placeholder="Ex: Scene, Episode, Planche..." required>
+                        <input type="text" id="add_label" name="label" class="input-control"
+                            placeholder="Ex: Scene, Episode, Planche..." required>
                     </div>
                     <div class="form-group" id="labelPluralGroup">
                         <label for="add_label_plural">Label pluriel</label>
-                        <input type="text" id="add_label_plural" name="label_plural" class="input-control" placeholder="Ex: Scenes, Episodes, Planches...">
+                        <input type="text" id="add_label_plural" name="label_plural" class="input-control"
+                            placeholder="Ex: Scenes, Episodes, Planches...">
                     </div>
                 </div>
 
@@ -216,6 +223,7 @@
                                 <option value="character">Personnage</option>
                                 <option value="file">Fichier</option>
                                 <option value="element">Element personnalise</option>
+                                <option value="scenario">Scénarios</option>
                             </optgroup>
                         </select>
                     </div>
@@ -266,8 +274,9 @@
 </form>
 
 <script nonce="{{ @nonce }}">
-document.addEventListener('DOMContentLoaded', function() {
-    var templateId = {{ @template.id }};
+    document.addEventListener('DOMContentLoaded', function () {
+        var templateId = {{ @template.id
+    }};
     var baseUrl = '{{ @base }}';
     var csrfToken = '{{ @csrfToken }}';
 
@@ -276,7 +285,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
     function saveOrder() {
         var rows = tbody.querySelectorAll('tr[data-id]');
-        var order = Array.from(rows).map(function(r) { return parseInt(r.dataset.id); });
+        var order = Array.from(rows).map(function (r) { return parseInt(r.dataset.id); });
         fetch(baseUrl + '/template/' + templateId + '/reorder', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json', 'X-CSRF-Token': csrfToken },
@@ -285,7 +294,7 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 
     if (tbody) {
-        tbody.addEventListener('click', function(e) {
+        tbody.addEventListener('click', function (e) {
             var btn = e.target.closest('.move-up, .move-down');
             if (!btn) return;
             e.preventDefault();
@@ -338,8 +347,8 @@ document.addEventListener('DOMContentLoaded', function() {
 
     editTypeSelect.addEventListener('change', updateEditModalFields);
 
-    document.querySelectorAll('.edit-elem-btn').forEach(function(btn) {
-        btn.addEventListener('click', function() {
+    document.querySelectorAll('.edit-elem-btn').forEach(function (btn) {
+        btn.addEventListener('click', function () {
             var elemId = this.dataset.id;
             editForm.action = baseUrl + '/template/' + templateId + '/element/' + elemId + '/update';
             editTypeSelect.value = this.dataset.type;
@@ -355,14 +364,14 @@ document.addEventListener('DOMContentLoaded', function() {
     function closeModal() { editModal.classList.remove('is-visible'); }
     document.getElementById('closeEditModal').addEventListener('click', closeModal);
     document.getElementById('cancelEditModal').addEventListener('click', closeModal);
-    editModal.addEventListener('click', function(e) {
+    editModal.addEventListener('click', function (e) {
         if (e.target === editModal) closeModal();
     });
 
     // ===== Suppression =====
     var deleteForm = document.getElementById('deleteElemForm');
-    document.querySelectorAll('.delete-elem-btn').forEach(function(btn) {
-        btn.addEventListener('click', function() {
+    document.querySelectorAll('.delete-elem-btn').forEach(function (btn) {
+        btn.addEventListener('click', function () {
             if (!confirm('Supprimer cet element du template ?')) return;
             deleteForm.action = baseUrl + '/template/' + templateId + '/element/' + this.dataset.id + '/delete';
             deleteForm.submit();
