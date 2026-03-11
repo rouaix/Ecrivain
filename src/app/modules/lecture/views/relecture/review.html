@@ -3,16 +3,11 @@
         <h2><i class="fas fa-glasses"></i> Relecture : {{ @project.title | esc }}</h2>
         <div class="header-actions">
             <a href="{{ @base }}/project/{{ @project.id }}/relecture/rapport" class="button secondary"
-                title="Rapport d'annotations" title="Rapport d'annotations">
+                title="Rapport d'annotations">
                 <i class="fas fa-file-alt"></i> Rapport
             </a>
-            <a href="{{ @base }}/project/{{ @project.id }}/lecture" class="button" title="Mode lecture"
-                title="Mode lecture">
+            <a href="{{ @base }}/project/{{ @project.id }}/lecture" class="button" title="Mode lecture">
                 <i class="fas fa-book-open"></i>
-            </a>
-            <a href="{{ @base }}/project/{{ @project.id }}" class="button" title="Retour au projet"
-                title="Retour au projet">
-                <i class="fas fa-arrow-left"></i>
             </a>
         </div>
     </div>
@@ -51,12 +46,12 @@
                 <div class="review-tabs">
                     <button class="review-tab active" data-tab="annotations" id="tabAnnotations"
                         title="Voir les annotations" title="Voir les annotations">
-                        <i class="fas fa-tags"></i> Annotations
+                        <i class="fas fa-tags" style="margin-right:6px"></i> Annotations
                         <span class="review-panel-count" id="annotationCount">0</span>
                     </button>
                     <button class="review-tab" data-tab="suggestions" id="tabSuggestions" title="Voir les suggestions"
                         title="Voir les suggestions">
-                        <i class="fas fa-edit"></i> Suggestions
+                        <i class="fas fa-edit" style="margin-right:6px"></i> Suggestions
                         <span class="review-panel-count suggestion-count-badge" id="suggestionCount">0</span>
                     </button>
                 </div>
@@ -104,9 +99,9 @@
     <!-- Mode toggle -->
     <div class="popup-mode-toggle">
         <button class="popup-mode-btn active" id="modeAnnotation" title="Mode annotation" title="Mode annotation"><i
-                class="fas fa-tag"></i> Annoter</button>
+                class="fas fa-tag" style="margin-right:6px"></i> Annoter</button>
         <button class="popup-mode-btn" id="modeSuggestion" title="Mode suggestion" title="Mode suggestion"><i
-                class="fas fa-edit"></i> Suggérer</button>
+                class="fas fa-edit" style="margin-right:6px"></i> Suggérer</button>
     </div>
 
     <div class="annotation-popup-text" id="annotationPopupText"></div>
@@ -755,6 +750,82 @@
         box-shadow: 0 2px 6px rgba(0, 0, 0, .10);
     }
 
+    /* Style unifié pour TOUS les éléments interactifs du <header> (sauf le titre h1) */
+    header {
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        flex-wrap: nowrap;
+    }
+
+    header h1 {
+        margin-right: auto;
+        flex-shrink: 0;
+    }
+
+    header nav.main-nav {
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        flex-wrap: nowrap;
+    }
+
+    header .review-header-actions {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+    }
+
+    header nav.main-nav a,
+    header nav.main-nav button,
+    header .review-header-btn {
+        background: rgba(255, 255, 255, 0.1) !important;
+        color: var(--header-text, #fff) !important;
+        border: 1px solid rgba(255, 255, 255, 0.2) !important;
+        padding: 0 12px !important;
+        margin: 0 !important;
+        border-radius: 4px !important;
+        font-size: 0.85rem !important;
+        font-family: inherit !important;
+        line-height: 1 !important;
+        height: 34px !important;
+        display: inline-flex !important;
+        align-items: center !important;
+        justify-content: center !important;
+        gap: 5px !important;
+        text-decoration: none !important;
+        cursor: pointer !important;
+        white-space: nowrap !important;
+        flex-shrink: 0 !important;
+        box-sizing: border-box !important;
+        opacity: 1 !important;
+    }
+
+    header nav.main-nav a:hover,
+    header nav.main-nav button:hover,
+    header .review-header-btn:hover {
+        background: rgba(255, 255, 255, 0.22) !important;
+    }
+
+    header .review-header-btn.active {
+        background: rgba(255, 255, 255, 0.32) !important;
+        border-color: rgba(255, 255, 255, 0.5) !important;
+    }
+
+    /* Badge compteur collabs — garder sa forme */
+    header .nav-badge {
+        background: #ef4444;
+        color: #fff;
+        border-radius: 50%;
+        font-size: .65rem;
+        width: 16px;
+        height: 16px;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        flex-shrink: 0;
+    }
+
     /* Layout */
     .review-hint {
         font-size: .83rem;
@@ -1018,25 +1089,35 @@
 
     /* Content items */
     .review-item {
-        margin-bottom: 2.5rem;
+        margin-bottom: 1rem;
     }
 
     .review-act-title {
         font-size: 1.3rem;
         font-weight: 700;
         text-align: center;
-        padding: 1rem 0;
+        padding: 0.3rem 0;
         border-bottom: 2px solid var(--border-color, #e0e0e0);
         color: var(--text-main, #333);
         text-transform: uppercase;
         letter-spacing: 1px;
+        margin-bottom: 0.5rem;
     }
 
     .review-chapter-title {
         font-size: 1.1rem;
         font-weight: 600;
-        margin-bottom: .75rem;
+        margin: 0 0 0.3rem;
         color: var(--text-main, #333);
+    }
+
+    /* Neutraliser le padding/overflow Quill snow sur .ql-editor */
+    .review-text.ql-editor {
+        padding: 0 !important;
+        min-height: 0 !important;
+        outline: none !important;
+        border: none !important;
+        overflow: visible !important;
     }
 
     .review-text {
@@ -1045,6 +1126,60 @@
         color: var(--text-main, #333);
         cursor: text;
         user-select: text;
+    }
+
+    /* Compact spacing inside review text (override Quill defaults) */
+    .review-text p {
+        margin: 0 0 0.4em;
+    }
+
+    .review-text p:last-child {
+        margin-bottom: 0;
+    }
+
+    .review-text h1,
+    .review-text h2,
+    .review-text h3,
+    .review-text h4,
+    .review-text h5,
+    .review-text h6 {
+        margin: 0.5rem 0 0.2rem;
+    }
+
+    /* Glossary */
+    .glossary-ref {
+        text-decoration: underline;
+        text-decoration-style: dotted;
+        text-decoration-color: var(--link-color, #3f51b5);
+        cursor: help;
+    }
+
+    #toggleGlossary.active {
+        background: var(--link-color, #3f51b5);
+        color: #fff;
+        border-color: var(--link-color, #3f51b5);
+    }
+
+    .glossary-tooltip {
+        position: fixed;
+        background: var(--card-bg, #fff);
+        color: var(--text-main, #333);
+        border: 1px solid var(--border, #ddd);
+        border-radius: 6px;
+        padding: 8px 12px;
+        font-size: .82rem;
+        max-width: 260px;
+        z-index: 9999;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, .15);
+        pointer-events: none;
+        line-height: 1.45;
+    }
+
+    .glossary-tooltip-term {
+        display: block;
+        font-weight: 600;
+        color: var(--link-color, #3f51b5);
+        margin-bottom: 3px;
     }
 
     /* Annotation highlights */
@@ -1190,3 +1325,165 @@
         }
     }
 </style>
+
+<script nonce="{{ @nonce }}">
+    (function () {
+        // ── Boutons injectés dans le <header> du site ──────────────────────────
+        var siteHeader = document.querySelector('header');
+        if (siteHeader) {
+            var actionsDiv = document.createElement('div');
+            actionsDiv.className = 'review-header-actions';
+            actionsDiv.innerHTML =
+                '<a href="{{ @base }}/project/{{ @project.id }}/relecture/rapport" class="review-header-btn" title="Rapport d\'annotations"><i class="fas fa-file-alt"></i> Rapport</a>' +
+                '<button type="button" id="toggleGlossary" class="review-header-btn" title="Liens vers le lexique"><i class="fas fa-book"></i> Lexique</button>' +
+                '<a href="{{ @base }}/project/{{ @project.id }}/lecture" class="review-header-btn" title="Mode lecture"><i class="fas fa-book-open"></i></a>' +
+                '<a href="{{ @base }}/project/{{ @project.id }}" class="review-header-btn" title="Retour au projet"><i class="fas fa-arrow-left"></i></a>';
+            siteHeader.appendChild(actionsDiv);
+        }
+
+        // ── Glossary term highlighting ──────────────────────────────────────────
+        var highlighted = false;
+        var glossaryTerms = null;
+        var tooltipEl = null;
+        var btn = document.getElementById('toggleGlossary');
+        if (!btn) return;
+
+        function escHtml(s) {
+            return String(s || '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+        }
+
+        function escRe(s) {
+            return s.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+        }
+
+        function getTooltip() {
+            if (!tooltipEl) {
+                tooltipEl = document.createElement('div');
+                tooltipEl.className = 'glossary-tooltip';
+                tooltipEl.style.display = 'none';
+                document.body.appendChild(tooltipEl);
+            }
+            return tooltipEl;
+        }
+
+        function positionTooltip(e) {
+            var tip = getTooltip();
+            var x = e.clientX + 14, y = e.clientY + 14;
+            if (x + 270 > window.innerWidth) x = e.clientX - 270;
+            if (y + 80 > window.innerHeight) y = e.clientY - 80;
+            tip.style.left = x + 'px';
+            tip.style.top = y + 'px';
+        }
+
+        function attachTooltip(el) {
+            el.addEventListener('mouseenter', function (e) {
+                var tip = getTooltip();
+                var term = el.getAttribute('data-term');
+                var def = el.getAttribute('data-def');
+                var cat = el.getAttribute('data-cat');
+                tip.innerHTML =
+                    '<span class="glossary-tooltip-term">' + escHtml(term) +
+                    (cat ? ' <em style="font-weight:normal;font-size:.85em;color:var(--text-muted,#666)">(' + escHtml(cat) + ')</em>' : '') +
+                    '</span>' +
+                    (def ? escHtml(def) : '<em>Aucune définition.</em>');
+                tip.style.display = 'block';
+                positionTooltip(e);
+            });
+            el.addEventListener('mousemove', positionTooltip);
+            el.addEventListener('mouseleave', function () { getTooltip().style.display = 'none'; });
+        }
+
+        function highlightTerms(terms) {
+            var container = document.getElementById('reviewContent');
+            if (!container) return;
+
+            var sorted = terms.filter(function (t) { return t.term; }).slice()
+                .sort(function (a, b) { return b.term.length - a.term.length; });
+
+            var walker = document.createTreeWalker(
+                container,
+                NodeFilter.SHOW_TEXT,
+                {
+                    acceptNode: function (node) {
+                        var p = node.parentNode;
+                        if (!p) return NodeFilter.FILTER_REJECT;
+                        var n = p.nodeName;
+                        if (n === 'SCRIPT' || n === 'STYLE' || n === 'ABBR') return NodeFilter.FILTER_REJECT;
+                        if (p.getAttribute && p.getAttribute('data-glossary-wrapper')) return NodeFilter.FILTER_REJECT;
+                        return node.nodeValue.trim() ? NodeFilter.FILTER_ACCEPT : NodeFilter.FILTER_SKIP;
+                    }
+                }
+            );
+
+            var textNodes = [];
+            var node;
+            while ((node = walker.nextNode())) textNodes.push(node);
+
+            textNodes.forEach(function (textNode) {
+                var html = textNode.nodeValue.replace(/[&<>]/g, function (c) {
+                    return { '&': '&amp;', '<': '&lt;', '>': '&gt;' }[c];
+                });
+                var changed = false;
+                sorted.forEach(function (t) {
+                    var re = new RegExp('\\b(' + escRe(t.term) + ')\\b', 'gi');
+                    if (re.test(html)) {
+                        var def = escHtml(t.definition || '');
+                        var cat = escHtml(t.category || '');
+                        html = html.replace(re, function (m) {
+                            changed = true;
+                            return '<abbr class="glossary-ref" data-term="' + escHtml(m) + '" data-def="' + def + '" data-cat="' + cat + '">' + m + '</abbr>';
+                        });
+                    }
+                });
+                if (changed) {
+                    var span = document.createElement('span');
+                    span.setAttribute('data-glossary-wrapper', '1');
+                    span.innerHTML = html;
+                    textNode.parentNode.replaceChild(span, textNode);
+                    span.querySelectorAll('.glossary-ref').forEach(attachTooltip);
+                }
+            });
+        }
+
+        function removeHighlights() {
+            getTooltip().style.display = 'none';
+            document.querySelectorAll('span[data-glossary-wrapper]').forEach(function (span) {
+                span.parentNode.replaceChild(document.createTextNode(span.textContent), span);
+            });
+        }
+
+        btn.addEventListener('click', function () {
+            if (highlighted) {
+                removeHighlights();
+                highlighted = false;
+                btn.classList.remove('active');
+                return;
+            }
+            if (glossaryTerms !== null) {
+                highlightTerms(glossaryTerms);
+                highlighted = true;
+                btn.classList.add('active');
+                return;
+            }
+            btn.disabled = true;
+            btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i>';
+            fetch('{{ @base }}/project/{{ @project.id }}/glossary/terms', {
+                headers: { 'X-CSRF-Token': '{{ @csrfToken }}' }
+            })
+                .then(function (r) { return r.json(); })
+                .then(function (data) {
+                    glossaryTerms = data;
+                    btn.disabled = false;
+                    btn.innerHTML = '<i class="fas fa-book"></i> Lexique';
+                    if (!data.length) { alert('Aucun terme dans le lexique de ce projet.'); return; }
+                    highlightTerms(data);
+                    highlighted = true;
+                    btn.classList.add('active');
+                })
+                .catch(function () {
+                    btn.disabled = false;
+                    btn.innerHTML = '<i class="fas fa-book"></i> Lexique';
+                });
+        });
+    }());
+</script>

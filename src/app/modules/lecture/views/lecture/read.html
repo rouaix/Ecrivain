@@ -123,6 +123,41 @@
                 font-size: 0.85rem !important;
             }
         }
+
+        /* Glossary term highlights */
+        .glossary-ref {
+            text-decoration: underline;
+            text-decoration-style: dotted;
+            text-decoration-color: var(--link-color, #3f51b5);
+            cursor: help;
+        }
+
+        #toggleGlossary.active {
+            background: var(--link-color, #3f51b5) !important;
+            color: #fff !important;
+        }
+
+        .glossary-tooltip {
+            position: fixed;
+            background: var(--card-bg, #fff);
+            color: var(--text-main, #333);
+            border: 1px solid var(--border, #ddd);
+            border-radius: 6px;
+            padding: 8px 12px;
+            font-size: .82rem;
+            max-width: 260px;
+            z-index: 9999;
+            box-shadow: 0 4px 12px rgba(0,0,0,.15);
+            pointer-events: none;
+            line-height: 1.45;
+        }
+
+        .glossary-tooltip-term {
+            display: block;
+            font-weight: 600;
+            color: var(--link-color, #3f51b5);
+            margin-bottom: 3px;
+        }
     </style>
 </head>
 
@@ -140,6 +175,7 @@
         <button class="toolbar-btn" id="offlineSaveBtn" title="Enregistrer pour lecture hors-ligne"
             title="Enregistrer pour lecture hors-ligne"><i class="fas fa-download"></i>
             Hors-ligne</button>
+        <button class="toolbar-btn" id="toggleGlossary" title="Afficher les termes du lexique dans le texte"><i class="fas fa-book"></i> Lexique</button>
         <a href="{{ @base }}/project/{{ @project.id }}" class="toolbar-btn button" title="Retour au projet"
             title="Retour au projet"><i class="fas fa-arrow-left"></i></a>
     </div>
@@ -670,6 +706,157 @@
                 });
             });
         }
+
+        // ── Glossary term highlighting ────────────────────────────────────────────
+        (function () {
+            var highlighted = false;
+            var glossaryTerms = null;
+            var tooltipEl = null;
+            var btn = document.getElementById('toggleGlossary');
+            if (!btn) return;
+
+            function escHtml(s) {
+                return String(s || '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+            }
+
+            function escRe(s) {
+                return s.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+            }
+
+            function getTooltip() {
+                if (!tooltipEl) {
+                    tooltipEl = document.createElement('div');
+                    tooltipEl.className = 'glossary-tooltip';
+                    tooltipEl.style.display = 'none';
+                    document.body.appendChild(tooltipEl);
+                }
+                return tooltipEl;
+            }
+
+            function positionTooltip(e) {
+                var tip = getTooltip();
+                var x = e.clientX + 14, y = e.clientY + 14;
+                if (x + 270 > window.innerWidth) x = e.clientX - 270;
+                if (y + 80 > window.innerHeight) y = e.clientY - 80;
+                tip.style.left = x + 'px';
+                tip.style.top = y + 'px';
+            }
+
+            function attachTooltip(el) {
+                el.addEventListener('mouseenter', function (e) {
+                    var tip = getTooltip();
+                    var term = el.getAttribute('data-term');
+                    var def = el.getAttribute('data-def');
+                    var cat = el.getAttribute('data-cat');
+                    tip.innerHTML =
+                        '<span class="glossary-tooltip-term">' + escHtml(term) +
+                        (cat ? ' <em style="font-weight:normal;font-size:.85em;color:var(--text-muted,#666)">(' + escHtml(cat) + ')</em>' : '') +
+                        '</span>' +
+                        (def ? escHtml(def) : '<em>Aucune définition.</em>');
+                    tip.style.display = 'block';
+                    positionTooltip(e);
+                });
+                el.addEventListener('mousemove', positionTooltip);
+                el.addEventListener('mouseleave', function () { getTooltip().style.display = 'none'; });
+            }
+
+            function highlightTerms(terms) {
+                var container = document.querySelector('.lecture-content');
+                if (!container) return;
+
+                // Sort longest-first to match multi-word terms before sub-terms
+                var sorted = terms.filter(function (t) { return t.term; }).slice()
+                    .sort(function (a, b) { return b.term.length - a.term.length; });
+
+                var walker = document.createTreeWalker(
+                    container,
+                    NodeFilter.SHOW_TEXT,
+                    {
+                        acceptNode: function (node) {
+                            var p = node.parentNode;
+                            if (!p) return NodeFilter.FILTER_REJECT;
+                            var n = p.nodeName;
+                            if (n === 'SCRIPT' || n === 'STYLE' || n === 'ABBR') return NodeFilter.FILTER_REJECT;
+                            if (p.getAttribute && p.getAttribute('data-glossary-wrapper')) return NodeFilter.FILTER_REJECT;
+                            return node.nodeValue.trim() ? NodeFilter.FILTER_ACCEPT : NodeFilter.FILTER_SKIP;
+                        }
+                    }
+                );
+
+                var textNodes = [];
+                var node;
+                while ((node = walker.nextNode())) textNodes.push(node);
+
+                textNodes.forEach(function (textNode) {
+                    var original = textNode.nodeValue;
+                    var html = original.replace(/[&<>]/g, function (c) {
+                        return { '&': '&amp;', '<': '&lt;', '>': '&gt;' }[c];
+                    });
+                    var changed = false;
+
+                    sorted.forEach(function (t) {
+                        var re = new RegExp('\\b(' + escRe(t.term) + ')\\b', 'gi');
+                        if (re.test(html)) {
+                            var def = escHtml(t.definition || '');
+                            var cat = escHtml(t.category || '');
+                            html = html.replace(re, function (m) {
+                                changed = true;
+                                return '<abbr class="glossary-ref" data-term="' + escHtml(m) + '" data-def="' + def + '" data-cat="' + cat + '">' + m + '</abbr>';
+                            });
+                        }
+                    });
+
+                    if (changed) {
+                        var span = document.createElement('span');
+                        span.setAttribute('data-glossary-wrapper', '1');
+                        span.innerHTML = html;
+                        textNode.parentNode.replaceChild(span, textNode);
+                        span.querySelectorAll('.glossary-ref').forEach(attachTooltip);
+                    }
+                });
+            }
+
+            function removeHighlights() {
+                getTooltip().style.display = 'none';
+                document.querySelectorAll('span[data-glossary-wrapper]').forEach(function (span) {
+                    span.parentNode.replaceChild(document.createTextNode(span.textContent), span);
+                });
+            }
+
+            btn.addEventListener('click', function () {
+                if (highlighted) {
+                    removeHighlights();
+                    highlighted = false;
+                    btn.classList.remove('active');
+                    return;
+                }
+                if (glossaryTerms !== null) {
+                    highlightTerms(glossaryTerms);
+                    highlighted = true;
+                    btn.classList.add('active');
+                    return;
+                }
+                btn.disabled = true;
+                btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i>';
+                fetch('{{ @base }}/project/{{ @project.id }}/glossary/terms', {
+                    headers: { 'X-CSRF-Token': window.CSRF_TOKEN }
+                })
+                .then(function (r) { return r.json(); })
+                .then(function (data) {
+                    glossaryTerms = data;
+                    btn.disabled = false;
+                    btn.innerHTML = '<i class="fas fa-book"></i> Lexique';
+                    if (!data.length) { alert('Aucun terme dans le lexique de ce projet.'); return; }
+                    highlightTerms(data);
+                    highlighted = true;
+                    btn.classList.add('active');
+                })
+                .catch(function () {
+                    btn.disabled = false;
+                    btn.innerHTML = '<i class="fas fa-book"></i> Lexique';
+                });
+            });
+        }());
 
         // ── Swipe gesture: navigate between sections on mobile ───────────────────
         (function () {

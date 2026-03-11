@@ -120,6 +120,14 @@
                 </div>
             </div>
 
+            <!-- Glossaire - Termes détectés dans ce chapitre -->
+            <div id="glossaryFoundSection" class="edit-card-section" style="display:none;">
+                <div class="grammar-header">
+                    <label><i class="fas fa-book"></i> Termes du lexique présents</label>
+                </div>
+                <div id="glossaryFoundList" class="glossary-found-list"></div>
+            </div>
+
             <!-- Annotations Section -->
             <div class="edit-card-section" id="annotationsSection" style="display:none;">
                 <div class="grammar-header">
@@ -851,6 +859,39 @@
         color: var(--text-muted, #555);
     }
 
+    /* Glossary found terms panel (editor) */
+    .glossary-found-list {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 6px;
+        padding: 4px 0;
+    }
+
+    .glossary-chip {
+        display: inline-flex;
+        flex-direction: column;
+        background: var(--input-bg, #f9f9f9);
+        border: 1px solid var(--link-color, #3f51b5);
+        border-radius: 6px;
+        padding: 4px 10px;
+        cursor: default;
+        max-width: 220px;
+    }
+
+    .glossary-chip-term {
+        font-size: .85rem;
+        font-weight: 600;
+        color: var(--link-color, #3f51b5);
+    }
+
+    .glossary-chip-def {
+        font-size: .78rem;
+        color: var(--text-muted, #666);
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+
     /* Glossary project panel */
     .glossary-list {
         list-style: none;
@@ -1248,7 +1289,7 @@
             modal.addEventListener('click', function (e) { if (e.target === modal) closeModal(); });
         }());
 
-        // Glossary modal
+        // Glossary modal + auto-detect terms in editor
         (function () {
             var btn = document.getElementById('btnGlossary');
             var modal = document.getElementById('glossaryModal');
@@ -1285,6 +1326,57 @@
                 });
             }
 
+            // Scan Quill text for glossary terms and update the found-terms panel
+            function scanGlossaryTerms() {
+                var section = document.getElementById('glossaryFoundSection');
+                var foundList = document.getElementById('glossaryFoundList');
+                if (!section || !foundList || !terms || !terms.length) return;
+                if (!QuillTools || !QuillTools.quill) return;
+
+                var text = QuillTools.quill.getText().toLowerCase();
+                var found = terms.filter(function (t) {
+                    if (!t.term) return false;
+                    var re = new RegExp('\\b' + t.term.toLowerCase().replace(/[.*+?^${}()|[\]\\]/g, '\\$&') + '\\b');
+                    return re.test(text);
+                });
+
+                if (found.length === 0) {
+                    section.style.display = 'none';
+                    return;
+                }
+
+                section.style.display = '';
+                foundList.innerHTML = '';
+                found.forEach(function (t) {
+                    var chip = document.createElement('div');
+                    chip.className = 'glossary-chip';
+                    chip.title = t.definition || '';
+                    chip.innerHTML =
+                        '<span class="glossary-chip-term">' + escHtml(t.term) + '</span>' +
+                        (t.definition ? '<span class="glossary-chip-def">' + escHtml(t.definition) + '</span>' : '');
+                    foundList.appendChild(chip);
+                });
+            }
+
+            // Load terms on page load (silently, no loading indicator)
+            fetch('{{ @base }}/project/{{ @project.id }}/glossary/terms', {
+                headers: { 'X-CSRF-Token': window.CSRF_TOKEN }
+            })
+            .then(function (r) { return r.json(); })
+            .then(function (data) {
+                terms = data;
+                scanGlossaryTerms();
+                // Debounced rescan on Quill text change
+                if (QuillTools && QuillTools.quill) {
+                    var _scanTimer = null;
+                    QuillTools.quill.on('text-change', function () {
+                        clearTimeout(_scanTimer);
+                        _scanTimer = setTimeout(scanGlossaryTerms, 600);
+                    });
+                }
+            })
+            .catch(function () { /* silent fail */ });
+
             function openModal() { modal.style.display = 'flex'; searchEl.value = ''; searchEl.focus(); }
             function closeModal() { modal.style.display = 'none'; }
 
@@ -1303,6 +1395,7 @@
                             loading.style.display = 'none';
                             terms = data;
                             renderTerms('');
+                            scanGlossaryTerms();
                         })
                         .catch(function () {
                             loading.style.display = 'none';
