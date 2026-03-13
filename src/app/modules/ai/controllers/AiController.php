@@ -1476,4 +1476,146 @@ class AiController extends Controller
 
         echo json_encode(['success' => true, 'suggestions' => $resolved]);
     }
+
+    /**
+     * Enrich a character description using AI, structured according to character_template.md.
+     * POST /ai/enrich-character
+     */
+    public function enrichCharacter()
+    {
+        header('Content-Type: application/json');
+        $user = $this->currentUser();
+        if (!$user) {
+            http_response_code(401);
+            echo json_encode(['success' => false, 'error' => 'Non authentifié']);
+            return;
+        }
+
+        $json        = json_decode($this->f3->get('BODY'), true);
+        $characterId = (int) ($json['character_id'] ?? 0);
+        $rawDesc     = trim($json['description'] ?? '');
+
+        if (!$characterId) {
+            http_response_code(400);
+            echo json_encode(['success' => false, 'error' => 'character_id manquant']);
+            return;
+        }
+
+        // Load character and verify ownership
+        $db        = $this->f3->get('DB');
+        $charRows  = $db->exec(
+            'SELECT c.id, c.name, c.description, c.project_id
+             FROM characters c
+             JOIN projects p ON p.id = c.project_id
+             WHERE c.id = ? AND p.user_id = ?',
+            [$characterId, $user['id']]
+        );
+
+        if (empty($charRows)) {
+            http_response_code(403);
+            echo json_encode(['success' => false, 'error' => 'Personnage introuvable ou accès refusé']);
+            return;
+        }
+
+        $character = $charRows[0];
+        $pid       = (int) $character['project_id'];
+
+        // Use provided raw description or fall back to saved description
+        if ($rawDesc === '') {
+            $rawDesc = trim(strip_tags(html_entity_decode($character['description'] ?? '')));
+        }
+
+        // Load project title
+        $projectRows = $db->exec('SELECT title FROM projects WHERE id = ?', [$pid]);
+        $projectTitle = $projectRows[0]['title'] ?? 'Sans titre';
+
+        // Load other characters for relation context
+        $otherChars = $db->exec(
+            'SELECT name, description FROM characters WHERE project_id = ? AND id != ? ORDER BY name ASC LIMIT 20',
+            [$pid, $characterId]
+        ) ?: [];
+
+        $otherCharContext = '';
+        foreach ($otherChars as $oc) {
+            $d = mb_substr(trim(strip_tags(html_entity_decode($oc['description'] ?? ''))), 0, 150);
+            $otherCharContext .= '- ' . $oc['name'] . ($d ? ' : ' . $d : '') . "\n";
+        }
+
+        // Load chapter excerpts for narrative context
+        $chapters = $db->exec(
+            'SELECT title, content FROM chapters WHERE project_id = ? ORDER BY order_index ASC LIMIT 20',
+            [$pid]
+        ) ?: [];
+
+        $chapContext = '';
+        foreach ($chapters as $ch) {
+            $text = mb_substr(trim(strip_tags(html_entity_decode($ch['content'] ?? ''))), 0, 600);
+            if ($text) {
+                $chapContext .= '### ' . $ch['title'] . "\n" . $text . "\n\n";
+            }
+        }
+
+        // Load character template
+        $templatePath = __DIR__ . '/../../characters/models/character_template.md';
+        $template     = file_exists($templatePath) ? file_get_contents($templatePath) : '';
+
+        // AI config
+        $userConfig = $this->getUserConfig();
+        $provider   = $userConfig['active_provider'] ?? 'openai';
+        $apiKey     = $userConfig['providers'][$provider]['api_key'] ?? $this->f3->get('OPENAI_API_KEY');
+        $model      = $userConfig['providers'][$provider]['model'] ?? ($this->f3->get('OPENAI_MODEL') ?: 'gpt-4o');
+
+        if (!$apiKey) {
+            echo json_encode(['success' => false, 'error' => 'Aucune clé API configurée.']);
+            return;
+        }
+
+        $charName = $character['name'];
+
+        $systemPrompt = "Tu es un assistant littéraire expert en création de personnages. "
+            . "Tu produis des fiches de personnages riches, cohérentes avec l'univers du livre. "
+            . "Tu réponds UNIQUEMENT en HTML valide (balises <h2> et <p> uniquement, sans <html>/<body>/<head>). "
+            . "Tu respectes scrupuleusement la structure imposée par le modèle fourni. "
+            . "Si une information est inconnue, tu écris « Non défini. » sans inventer.";
+
+        $userPrompt = "## Projet : {$projectTitle}\n\n"
+            . "## Personnage à enrichir : {$charName}\n\n"
+            . "## Description brute saisie par l'auteur :\n"
+            . ($rawDesc ?: '(aucune description saisie)')
+            . "\n\n"
+            . ($otherCharContext ? "## Autres personnages du projet :\n{$otherCharContext}\n\n" : '')
+            . ($chapContext ? "## Extraits des chapitres :\n{$chapContext}\n\n" : '')
+            . "## Modèle de structure à respecter :\n{$template}\n\n"
+            . "---\n\n"
+            . "Produis la fiche complète du personnage **{$charName}** en HTML, "
+            . "en t'appuyant sur la description brute et le contexte du livre. "
+            . "Chaque section du modèle doit apparaître comme un `<h2>` suivi de `<p>`. "
+            . "Enrichis et complète les informations manquantes si le contexte du livre le permet, "
+            . "sinon indique « Non défini. ». "
+            . "Ne produis que le HTML des sections, sans wrapper <div> ni doctype.";
+
+        $service = new AiService($provider, $apiKey, $model);
+
+        try {
+            $result = $service->generate($systemPrompt, $userPrompt, 0.7, 2000);
+        } catch (\Exception $e) {
+            echo json_encode(['success' => false, 'error' => 'Erreur IA : ' . $e->getMessage()]);
+            return;
+        }
+
+        if (!$result['success']) {
+            echo json_encode(['success' => false, 'error' => $result['error'] ?? 'Erreur inconnue']);
+            return;
+        }
+
+        $html = trim($result['text'] ?? '');
+
+        // Strip potential markdown code fences
+        $html = preg_replace('/^```(?:html)?\s*/i', '', $html);
+        $html = preg_replace('/\s*```$/', '', $html);
+
+        $this->logAiUsage($model, $result['prompt_tokens'] ?? 0, $result['completion_tokens'] ?? 0, 'enrich_character');
+
+        echo json_encode(['success' => true, 'html' => $html]);
+    }
 }

@@ -32,393 +32,393 @@
 
         const aiSystemPrompt = {{ json_encode(@aiSystemPrompt)
 
-        }};
+    }};
 
-        document.querySelectorAll('.progress-bar[data-progress]').forEach(function (bar) {
+    document.querySelectorAll('.progress-bar[data-progress]').forEach(function (bar) {
 
-            var value = parseFloat(bar.getAttribute('data-progress')) || 0;
+        var value = parseFloat(bar.getAttribute('data-progress')) || 0;
 
-            bar.style.width = value + '%';
+        bar.style.width = value + '%';
 
-        });
+    });
 
-        // Export Toggle Logic
+    // Export Toggle Logic
 
-        document.querySelectorAll('.export-toggle').forEach(function (checkbox) {
+    document.querySelectorAll('.export-toggle').forEach(function (checkbox) {
 
-            checkbox.addEventListener('change', function () {
+        checkbox.addEventListener('change', function () {
 
-                const type = this.getAttribute('data-type');
+            const type = this.getAttribute('data-type');
 
-                const id = this.getAttribute('data-id');
+            const id = this.getAttribute('data-id');
 
-                const isExported = this.checked ? 1 : 0;
+            const isExported = this.checked ? 1 : 0;
 
-                const projectId = "{{ @project.id }}";
+            const projectId = "{{ @project.id }}";
 
-                fetch('{{ @base }}/project/' + projectId + '/export-toggle', {
+            fetch('{{ @base }}/project/' + projectId + '/export-toggle', {
 
-                    method: 'POST',
+                method: 'POST',
 
-                    headers: {
+                headers: {
 
-                        'Content-Type': 'application/json',
+                    'Content-Type': 'application/json',
 
-                        'X-CSRF-Token': window.CSRF_TOKEN
+                    'X-CSRF-Token': window.CSRF_TOKEN
 
-                    },
+                },
 
-                    body: JSON.stringify({
+                body: JSON.stringify({
 
-                        type: type,
+                    type: type,
 
-                        id: id,
+                    id: id,
 
-                        is_exported: isExported
-
-                    })
+                    is_exported: isExported
 
                 })
 
-                    .then(function (resp) {
+            })
 
-                        if (resp.ok) {
+                .then(function (resp) {
 
-                            showStatus('Choix d\'export enregistré !');
+                    if (resp.ok) {
 
-                        } else {
+                        showStatus('Choix d\'export enregistré !');
 
-                            alert('Erreur lors de l\'enregistrement du choix d\'export.');
+                    } else {
 
-                            this.checked = !this.checked; // Revert
+                        alert('Erreur lors de l\'enregistrement du choix d\'export.');
 
-                        }
+                        this.checked = !this.checked; // Revert
 
-                    }.bind(this));
+                    }
 
-            });
+                }.bind(this));
 
         });
 
-        // Order Index Logic
+    });
 
-        document.querySelectorAll('.order-input').forEach(function (input) {
+    // Order Index Logic
 
-            input.addEventListener('change', function () {
+    document.querySelectorAll('.order-input').forEach(function (input) {
 
-                const type = this.getAttribute('data-type');
+        input.addEventListener('change', function () {
 
-                const id = this.getAttribute('data-id');
+            const type = this.getAttribute('data-type');
 
-                const newIndex = this.value;
+            const id = this.getAttribute('data-id');
 
-                const projectId = "{{ @project.id }}";
+            const newIndex = this.value;
 
-                fetch('{{ @base }}/project/' + projectId + '/reorder-item', {
+            const projectId = "{{ @project.id }}";
 
-                    method: 'POST',
+            fetch('{{ @base }}/project/' + projectId + '/reorder-item', {
 
-                    headers: {
+                method: 'POST',
 
-                        'Content-Type': 'application/json',
+                headers: {
 
-                        'X-CSRF-Token': window.CSRF_TOKEN
+                    'Content-Type': 'application/json',
 
-                    },
+                    'X-CSRF-Token': window.CSRF_TOKEN
 
-                    body: JSON.stringify({
+                },
 
-                        type: type,
+                body: JSON.stringify({
 
-                        id: id,
+                    type: type,
 
-                        new_index: newIndex
+                    id: id,
 
-                    })
+                    new_index: newIndex
 
                 })
 
-                    .then(function (resp) {
+            })
 
-                        if (resp.ok) {
+                .then(function (resp) {
 
-                            window.location.reload(); // Reload to reflect re-indexing
+                    if (resp.ok) {
 
-                        } else {
+                        window.location.reload(); // Reload to reflect re-indexing
 
-                            alert('Erreur lors de la réorganisation.');
+                    } else {
 
-                        }
+                        alert('Erreur lors de la réorganisation.');
 
-                    });
-
-            });
-
-        });
-
-        // Modal Logic
-
-        const modal = document.getElementById('previewModal');
-
-        const modalTitle = document.getElementById('modalTitle');
-
-        const modalBody = document.getElementById('modalBody');
-
-        const closeModal = document.querySelector('.modal-close');
-
-        if (modal) {
-
-            document.querySelectorAll('.preview-btn').forEach(btn => {
-
-                btn.addEventListener('click', function (e) {
-
-                    e.preventDefault();
-
-                    const type = this.dataset.type;
-
-                    const id = this.dataset.id;
-
-                    const projectId = "{{ @project.id }}";
-
-                    modalTitle.innerText = "Chargement...";
-
-                    modalBody.innerHTML = '<div class="modal-loading">Chargement du contenu...</div>';
-
-                    modal.classList.add('is-visible');
-
-                    fetch(`{{ @base }}/project/${projectId}/preview/${type}/${id}`)
-
-                        .then(response => response.json())
-
-                        .then(data => {
-
-                            modalTitle.innerText = data.title;
-
-                            modalBody.innerHTML = data.content;
-
-                        })
-
-                        .catch(err => {
-
-                            modalTitle.innerText = "Erreur";
-
-                            modalBody.innerHTML = "Impossible de charger le contenu.";
-
-                            console.error(err);
-
-                        });
+                    }
 
                 });
 
+        });
+
+    });
+
+    // Modal Logic
+
+    const modal = document.getElementById('previewModal');
+
+    const modalTitle = document.getElementById('modalTitle');
+
+    const modalBody = document.getElementById('modalBody');
+
+    const closeModal = document.querySelector('.modal-close');
+
+    if (modal) {
+
+        document.querySelectorAll('.preview-btn').forEach(btn => {
+
+            btn.addEventListener('click', function (e) {
+
+                e.preventDefault();
+
+                const type = this.dataset.type;
+
+                const id = this.dataset.id;
+
+                const projectId = "{{ @project.id }}";
+
+                modalTitle.innerText = "Chargement...";
+
+                modalBody.innerHTML = '<div class="modal-loading">Chargement du contenu...</div>';
+
+                modal.classList.add('is-visible');
+
+                fetch(`{{ @base }}/project/${projectId}/preview/${type}/${id}`)
+
+                    .then(response => response.json())
+
+                    .then(data => {
+
+                        modalTitle.innerText = data.title;
+
+                        modalBody.innerHTML = data.content;
+
+                    })
+
+                    .catch(err => {
+
+                        modalTitle.innerText = "Erreur";
+
+                        modalBody.innerHTML = "Impossible de charger le contenu.";
+
+                        console.error(err);
+
+                    });
+
             });
 
-            closeModal.onclick = () => modal.classList.remove('is-visible');
+        });
 
-            window.onclick = (event) => {
+        closeModal.onclick = () => modal.classList.remove('is-visible');
 
-                if (event.target == modal) modal.classList.remove('is-visible');
+        window.onclick = (event) => {
 
-            };
+            if (event.target == modal) modal.classList.remove('is-visible');
+
+        };
+
+    }
+
+    // --- Persistence Logic ---
+
+    document.querySelectorAll('details[data-persist="true"]').forEach(details => {
+
+        const id = details.id;
+
+        if (!id) return;
+
+        const savedState = localStorage.getItem('details-state-' + id);
+
+        if (savedState === 'open') {
+
+            details.setAttribute('open', '');
+
+        } else if (savedState === 'closed') {
+
+            details.removeAttribute('open');
 
         }
 
-        // --- Persistence Logic ---
+        // Save state on toggle
 
-        document.querySelectorAll('details[data-persist="true"]').forEach(details => {
+        details.addEventListener('toggle', function () {
 
-            const id = details.id;
+            const state = this.open ? 'open' : 'closed';
 
-            if (!id) return;
+            localStorage.setItem('details-state-' + id, state);
 
-            const savedState = localStorage.getItem('details-state-' + id);
+        });
 
-            if (savedState === 'open') {
+    });
 
-                details.setAttribute('open', '');
+    // AI Summary Logic
 
-            } else if (savedState === 'closed') {
+    document.querySelectorAll('.ai-summary-btn').forEach(btn => {
 
-                details.removeAttribute('open');
+        btn.addEventListener('click', function (e) {
+
+            e.preventDefault();
+
+            const chapterId = this.dataset.id;
+
+            const originalText = this.innerText;
+
+            if (!confirm('Voulez-vous générer un résumé de ce chapitre basé sur ses sous-chapitres ? Cela remplacera la description actuelle.')) {
+
+                return;
 
             }
 
-            // Save state on toggle
+            this.innerText = 'Génération...';
 
-            details.addEventListener('toggle', function () {
+            this.disabled = true;
 
-                const state = this.open ? 'open' : 'closed';
+            fetch('{{ @base }}/ai/summarize-chapter', {
 
-                localStorage.setItem('details-state-' + id, state);
+                method: 'POST',
 
-            });
+                headers: {
 
-        });
+                    'Content-Type': 'application/json',
 
-        // AI Summary Logic
+                    'X-CSRF-Token': window.CSRF_TOKEN
 
-        document.querySelectorAll('.ai-summary-btn').forEach(btn => {
+                },
 
-            btn.addEventListener('click', function (e) {
+                body: JSON.stringify({
 
-                e.preventDefault();
+                    chapter_id: chapterId,
 
-                const chapterId = this.dataset.id;
-
-                const originalText = this.innerText;
-
-                if (!confirm('Voulez-vous générer un résumé de ce chapitre basé sur ses sous-chapitres ? Cela remplacera la description actuelle.')) {
-
-                    return;
-
-                }
-
-                this.innerText = 'Génération...';
-
-                this.disabled = true;
-
-                fetch('{{ @base }}/ai/summarize-chapter', {
-
-                    method: 'POST',
-
-                    headers: {
-
-                        'Content-Type': 'application/json',
-
-                        'X-CSRF-Token': window.CSRF_TOKEN
-
-                    },
-
-                    body: JSON.stringify({
-
-                        chapter_id: chapterId,
-
-                        system_prompt: aiSystemPrompt
-
-                    })
+                    system_prompt: aiSystemPrompt
 
                 })
 
-                    .then(response => response.json())
+            })
 
-                    .then(data => {
+                .then(response => response.json())
 
-                        this.innerText = originalText;
+                .then(data => {
 
-                        this.disabled = false;
+                    this.innerText = originalText;
 
-                        if (data.success) {
+                    this.disabled = false;
 
-                            alert('Résumé généré et enregistré avec succès !');
+                    if (data.success) {
 
-                            window.location.reload(); // Reload to show updated description if visible or just refresh state
+                        alert('Résumé généré et enregistré avec succès !');
 
-                        } else {
+                        window.location.reload(); // Reload to show updated description if visible or just refresh state
 
-                            alert('Erreur : ' + (data.error || 'Erreur inconnue'));
+                    } else {
 
-                        }
+                        alert('Erreur : ' + (data.error || 'Erreur inconnue'));
 
-                    })
-
-                    .catch(err => {
-
-                        this.innerText = originalText;
-
-                        this.disabled = false;
-
-                        console.error(err);
-
-                        alert('Erreur de communication avec le serveur.');
-
-                    });
-
-            });
-
-        });
-
-        // AI Act Summary Logic
-
-        document.querySelectorAll('.ai-act-summary-btn').forEach(btn => {
-
-            btn.addEventListener('click', function (e) {
-
-                e.preventDefault();
-
-                e.stopPropagation(); // Prevent detail toggle
-
-                const actId = this.dataset.id;
-
-                const originalText = this.innerText;
-
-                if (!confirm('Voulez-vous générer un résumé pour cet acte basé sur ses chapitres ? Cela remplacera le résumé actuel.')) {
-
-                    return;
-
-                }
-
-                this.innerText = 'Génération...';
-
-                this.disabled = true;
-
-                fetch('{{ @base }}/ai/summarize-act', {
-
-                    method: 'POST',
-
-                    headers: {
-
-                        'Content-Type': 'application/json',
-
-                        'X-CSRF-Token': window.CSRF_TOKEN
-
-                    },
-
-                    body: JSON.stringify({
-
-                        act_id: actId,
-
-                        system_prompt: aiSystemPrompt
-
-                    })
+                    }
 
                 })
 
-                    .then(response => response.json())
+                .catch(err => {
 
-                    .then(data => {
+                    this.innerText = originalText;
 
-                        this.innerText = originalText;
+                    this.disabled = false;
 
-                        this.disabled = false;
+                    console.error(err);
 
-                        if (data.success) {
+                    alert('Erreur de communication avec le serveur.');
 
-                            alert('Résumé de l\'acte généré et enregistré avec succès !');
-
-                            window.location.reload();
-
-                        } else {
-
-                            alert('Erreur : ' + (data.error || 'Erreur inconnue'));
-
-                        }
-
-                    })
-
-                    .catch(err => {
-
-                        this.innerText = originalText;
-
-                        this.disabled = false;
-
-                        console.error(err);
-
-                        alert('Erreur de communication avec le serveur.');
-
-                    });
-
-            });
+                });
 
         });
+
+    });
+
+    // AI Act Summary Logic
+
+    document.querySelectorAll('.ai-act-summary-btn').forEach(btn => {
+
+        btn.addEventListener('click', function (e) {
+
+            e.preventDefault();
+
+            e.stopPropagation(); // Prevent detail toggle
+
+            const actId = this.dataset.id;
+
+            const originalText = this.innerText;
+
+            if (!confirm('Voulez-vous générer un résumé pour cet acte basé sur ses chapitres ? Cela remplacera le résumé actuel.')) {
+
+                return;
+
+            }
+
+            this.innerText = 'Génération...';
+
+            this.disabled = true;
+
+            fetch('{{ @base }}/ai/summarize-act', {
+
+                method: 'POST',
+
+                headers: {
+
+                    'Content-Type': 'application/json',
+
+                    'X-CSRF-Token': window.CSRF_TOKEN
+
+                },
+
+                body: JSON.stringify({
+
+                    act_id: actId,
+
+                    system_prompt: aiSystemPrompt
+
+                })
+
+            })
+
+                .then(response => response.json())
+
+                .then(data => {
+
+                    this.innerText = originalText;
+
+                    this.disabled = false;
+
+                    if (data.success) {
+
+                        alert('Résumé de l\'acte généré et enregistré avec succès !');
+
+                        window.location.reload();
+
+                    } else {
+
+                        alert('Erreur : ' + (data.error || 'Erreur inconnue'));
+
+                    }
+
+                })
+
+                .catch(err => {
+
+                    this.innerText = originalText;
+
+                    this.disabled = false;
+
+                    console.error(err);
+
+                    alert('Erreur de communication avec le serveur.');
+
+                });
+
+        });
+
+    });
 
     }); // DOMContentLoaded
 
@@ -508,7 +508,7 @@
 
         if (addFileBtn && fileUploadModal) {
 
-            addFileBtn.addEventListener('click', function() {
+            addFileBtn.addEventListener('click', function () {
 
                 fileUploadModal.classList.add('is-visible');
 
@@ -518,7 +518,7 @@
 
         if (closeFileModal) {
 
-            closeFileModal.addEventListener('click', function() {
+            closeFileModal.addEventListener('click', function () {
 
                 fileUploadModal.classList.remove('is-visible');
 
@@ -528,7 +528,7 @@
 
         if (fileUploadModal) {
 
-            fileUploadModal.addEventListener('click', function(e) {
+            fileUploadModal.addEventListener('click', function (e) {
 
                 if (e.target === fileUploadModal) {
 
@@ -542,7 +542,7 @@
 
         if (fileUploadForm) {
 
-            fileUploadForm.addEventListener('submit', function(e) {
+            fileUploadForm.addEventListener('submit', function (e) {
 
                 e.preventDefault();
 
@@ -558,31 +558,31 @@
 
                 })
 
-                .then(response => response.json())
+                    .then(response => response.json())
 
-                .then(data => {
+                    .then(data => {
 
-                    if (data.success) {
+                        if (data.success) {
 
-                        alert('Fichier ajouté avec succès!');
+                            alert('Fichier ajouté avec succès!');
 
-                        window.location.reload();
+                            window.location.reload();
 
-                    } else {
+                        } else {
 
-                        alert('Erreur: ' + (data.error || 'Erreur inconnue'));
+                            alert('Erreur: ' + (data.error || 'Erreur inconnue'));
 
-                    }
+                        }
 
-                })
+                    })
 
-                .catch(err => {
+                    .catch(err => {
 
-                    console.error(err);
+                        console.error(err);
 
-                    alert('Erreur lors de l\'envoi du fichier.');
+                        alert('Erreur lors de l\'envoi du fichier.');
 
-                });
+                    });
 
             });
 
@@ -602,7 +602,7 @@
 
         if (closePreviewModal) {
 
-            closePreviewModal.addEventListener('click', function() {
+            closePreviewModal.addEventListener('click', function () {
 
                 modal.classList.remove('is-visible');
 
@@ -614,7 +614,7 @@
 
         if (modal) {
 
-            modal.addEventListener('click', function(e) {
+            modal.addEventListener('click', function (e) {
 
                 if (e.target === modal) {
 
@@ -628,7 +628,7 @@
 
         document.querySelectorAll('.preview-file-btn').forEach(btn => {
 
-            btn.addEventListener('click', function(e) {
+            btn.addEventListener('click', function (e) {
 
                 e.preventDefault();
 
@@ -674,7 +674,7 @@
 
         if (sortFilesBtn) {
 
-            sortFilesBtn.addEventListener('click', function() {
+            sortFilesBtn.addEventListener('click', function () {
 
                 const filesTable = document.querySelector('.sortable-items[data-type="files"]');
 
@@ -712,7 +712,7 @@
 
         if (searchInput) {
 
-            searchInput.addEventListener('input', function() {
+            searchInput.addEventListener('input', function () {
 
                 const searchTerm = this.value.toLowerCase().trim();
 
@@ -902,7 +902,7 @@
 
         if (clearSearchBtn) {
 
-            clearSearchBtn.addEventListener('click', function() {
+            clearSearchBtn.addEventListener('click', function () {
 
                 if (searchInput) {
 
@@ -959,12 +959,14 @@
                 </div>
 
                 <div id="proposeDeleteArea" style="display:none">
-                    <p style="color:#b91c1c;font-weight:600"><i class="fas fa-exclamation-triangle"></i> Vous proposez la suppression de cet élément. Expliquez votre demande ci-dessous.</p>
+                    <p style="color:#b91c1c;font-weight:600"><i class="fas fa-exclamation-triangle"></i> Vous proposez
+                        la suppression de cet élément. Expliquez votre demande ci-dessous.</p>
                 </div>
 
                 <div class="form-group">
                     <label for="proposeMessage">Message (optionnel)</label>
-                    <textarea id="proposeMessage" name="message" rows="3" class="form-control" placeholder="Explications ou commentaires..."></textarea>
+                    <textarea id="proposeMessage" name="message" rows="3" class="form-control"
+                        placeholder="Explications ou commentaires..."></textarea>
                 </div>
 
                 <div class="form-actions-right mt-20">
@@ -977,120 +979,151 @@
 </div>
 
 <style nonce="{{ @nonce }}">
-.modal-content--wide { max-width: 800px; width: 95vw; }
-.propose-radio-group { display: flex; gap: 1.5rem; flex-wrap: wrap; margin-top: .5rem; }
-.propose-radio-group label { display: flex; align-items: center; gap: .4rem; cursor: pointer; }
-.propose-current-content { background: var(--input-bg, #f5f5f5); border: 1px solid var(--input-border, #ddd); border-radius: 4px; padding: .75rem 1rem; max-height: 200px; overflow-y: auto; font-size: .9rem; }
-#proposeEditor { border: 1px solid var(--input-border, #ddd); border-top: none; background: var(--card-bg, #fff); }
-.ql-toolbar { border: 1px solid var(--input-border, #ddd) !important; }
+    .modal-content--wide {
+        max-width: 800px;
+        width: 95vw;
+    }
+
+    .propose-radio-group {
+        display: flex;
+        gap: 1.5rem;
+        flex-wrap: wrap;
+        margin-top: .5rem;
+    }
+
+    .propose-radio-group label {
+        display: flex;
+        align-items: center;
+        gap: .4rem;
+        cursor: pointer;
+    }
+
+    .propose-current-content {
+        background: var(--input-bg, #f5f5f5);
+        border: 1px solid var(--input-border, #ddd);
+        border-radius: 4px;
+        padding: .75rem 1rem;
+        max-height: 200px;
+        overflow-y: auto;
+        font-size: .9rem;
+    }
+
+    #proposeEditor {
+        border: 1px solid var(--input-border, #ddd);
+        border-top: none;
+        background: var(--card-bg, #fff);
+    }
+
+    .ql-toolbar {
+        border: 1px solid var(--input-border, #ddd) !important;
+    }
 </style>
 
 <script nonce="{{ @nonce }}">
-(function () {
-    var BASE = '{{ @base }}';
-    var PROJECT_ID = '{{ @project.id }}';
+    (function () {
+        var BASE = '{{ @base }}';
+        var PROJECT_ID = '{{ @project.id }}';
 
-    var proposeModal = document.getElementById('proposeModal');
-    var proposeForm  = document.getElementById('proposeForm');
-    var proposeQuill = null;
-    var currentSnapshot = '';
+        var proposeModal = document.getElementById('proposeModal');
+        var proposeForm = document.getElementById('proposeForm');
+        var proposeQuill = null;
+        var currentSnapshot = '';
 
-    function initProposeQuill(html) {
-        if (!proposeQuill) {
-            proposeQuill = new Quill(document.getElementById('proposeEditor'), {
-                theme: 'snow',
-                modules: { toolbar: QuillTools.getToolbarOptions() }
+        function initProposeQuill(html) {
+            if (!proposeQuill) {
+                proposeQuill = new Quill(document.getElementById('proposeEditor'), {
+                    theme: 'snow',
+                    modules: { toolbar: QuillTools.getToolbarOptions() }
+                });
+            }
+            proposeQuill.root.innerHTML = html || '';
+        }
+
+        function setRequestType(type) {
+            var editorArea = document.getElementById('proposeEditorArea');
+            var deleteArea = document.getElementById('proposeDeleteArea');
+            if (type === 'delete') {
+                editorArea.style.display = 'none';
+                deleteArea.style.display = '';
+            } else {
+                editorArea.style.display = '';
+                deleteArea.style.display = 'none';
+            }
+        }
+
+        document.querySelectorAll('.propose-btn').forEach(function (btn) {
+            btn.addEventListener('click', function () {
+                var type = this.dataset.type;
+                var id = this.dataset.id;
+                var title = this.dataset.title || '';
+
+                document.getElementById('proposeModalTitle').textContent = 'Proposer — ' + (title || type + ' #' + id);
+                document.getElementById('proposeContentType').value = type;
+                document.getElementById('proposeContentId').value = id;
+                document.getElementById('proposeContentTitle').value = title;
+                document.getElementById('proposeCurrentContent').innerHTML = '<em>Chargement...</em>';
+                document.querySelector('input[name="request_type"][value="modify"]').checked = true;
+                document.getElementById('proposeMessage').value = '';
+                currentSnapshot = '';
+                setRequestType('modify');
+                proposeModal.classList.add('is-visible');
+
+                fetch(BASE + '/project/' + PROJECT_ID + '/preview/' + type + '/' + id)
+                    .then(function (r) { return r.json(); })
+                    .then(function (data) {
+                        currentSnapshot = data.content || '';
+                        document.getElementById('proposeCurrentContent').innerHTML = currentSnapshot;
+                        initProposeQuill(currentSnapshot);
+                    })
+                    .catch(function () {
+                        document.getElementById('proposeCurrentContent').innerHTML = '<em>Impossible de charger le contenu.</em>';
+                        initProposeQuill('');
+                    });
             });
-        }
-        proposeQuill.root.innerHTML = html || '';
-    }
+        });
 
-    function setRequestType(type) {
-        var editorArea = document.getElementById('proposeEditorArea');
-        var deleteArea = document.getElementById('proposeDeleteArea');
-        if (type === 'delete') {
-            editorArea.style.display = 'none';
-            deleteArea.style.display = '';
-        } else {
-            editorArea.style.display = '';
-            deleteArea.style.display = 'none';
-        }
-    }
+        document.querySelectorAll('input[name="request_type"]').forEach(function (radio) {
+            radio.addEventListener('change', function () { setRequestType(this.value); });
+        });
 
-    document.querySelectorAll('.propose-btn').forEach(function (btn) {
-        btn.addEventListener('click', function () {
-            var type  = this.dataset.type;
-            var id    = this.dataset.id;
-            var title = this.dataset.title || '';
+        function closePropose() { proposeModal.classList.remove('is-visible'); }
+        document.getElementById('closeProposeModal').addEventListener('click', closePropose);
+        document.getElementById('cancelProposeBtn').addEventListener('click', closePropose);
+        proposeModal.addEventListener('click', function (e) { if (e.target === proposeModal) closePropose(); });
 
-            document.getElementById('proposeModalTitle').textContent = 'Proposer — ' + (title || type + ' #' + id);
-            document.getElementById('proposeContentType').value  = type;
-            document.getElementById('proposeContentId').value    = id;
-            document.getElementById('proposeContentTitle').value = title;
-            document.getElementById('proposeCurrentContent').innerHTML = '<em>Chargement...</em>';
-            document.querySelector('input[name="request_type"][value="modify"]').checked = true;
-            document.getElementById('proposeMessage').value = '';
-            currentSnapshot = '';
-            setRequestType('modify');
-            proposeModal.classList.add('is-visible');
+        proposeForm.addEventListener('submit', function (e) {
+            e.preventDefault();
+            var requestType = document.querySelector('input[name="request_type"]:checked').value;
 
-            fetch(BASE + '/project/' + PROJECT_ID + '/preview/' + type + '/' + id)
+            document.getElementById('proposeCurrentSnapshot').value = currentSnapshot;
+            if (requestType !== 'delete' && proposeQuill) {
+                document.getElementById('proposeProposedContent').value = proposeQuill.root.innerHTML;
+            } else {
+                document.getElementById('proposeProposedContent').value = '';
+            }
+
+            var fd = new FormData(this);
+            var submitBtn = document.getElementById('proposeSubmitBtn');
+            submitBtn.disabled = true;
+            submitBtn.textContent = 'Envoi...';
+
+            fetch(BASE + '/project/' + PROJECT_ID + '/collab/request/add', { method: 'POST', body: fd })
                 .then(function (r) { return r.json(); })
                 .then(function (data) {
-                    currentSnapshot = data.content || '';
-                    document.getElementById('proposeCurrentContent').innerHTML = currentSnapshot;
-                    initProposeQuill(currentSnapshot);
+                    if (data.status === 'ok') {
+                        closePropose();
+                        alert('Demande soumise avec succès !');
+                    } else {
+                        alert('Erreur : ' + (data.message || 'Erreur inconnue'));
+                        submitBtn.disabled = false;
+                        submitBtn.textContent = 'Soumettre la demande';
+                    }
                 })
                 .catch(function () {
-                    document.getElementById('proposeCurrentContent').innerHTML = '<em>Impossible de charger le contenu.</em>';
-                    initProposeQuill('');
-                });
-        });
-    });
-
-    document.querySelectorAll('input[name="request_type"]').forEach(function (radio) {
-        radio.addEventListener('change', function () { setRequestType(this.value); });
-    });
-
-    function closePropose() { proposeModal.classList.remove('is-visible'); }
-    document.getElementById('closeProposeModal').addEventListener('click', closePropose);
-    document.getElementById('cancelProposeBtn').addEventListener('click', closePropose);
-    proposeModal.addEventListener('click', function (e) { if (e.target === proposeModal) closePropose(); });
-
-    proposeForm.addEventListener('submit', function (e) {
-        e.preventDefault();
-        var requestType = document.querySelector('input[name="request_type"]:checked').value;
-
-        document.getElementById('proposeCurrentSnapshot').value = currentSnapshot;
-        if (requestType !== 'delete' && proposeQuill) {
-            document.getElementById('proposeProposedContent').value = proposeQuill.root.innerHTML;
-        } else {
-            document.getElementById('proposeProposedContent').value = '';
-        }
-
-        var fd = new FormData(this);
-        var submitBtn = document.getElementById('proposeSubmitBtn');
-        submitBtn.disabled = true;
-        submitBtn.textContent = 'Envoi...';
-
-        fetch(BASE + '/project/' + PROJECT_ID + '/collab/request/add', { method: 'POST', body: fd })
-            .then(function (r) { return r.json(); })
-            .then(function (data) {
-                if (data.status === 'ok') {
-                    closePropose();
-                    alert('Demande soumise avec succès !');
-                } else {
-                    alert('Erreur : ' + (data.message || 'Erreur inconnue'));
+                    alert('Erreur de communication avec le serveur.');
                     submitBtn.disabled = false;
                     submitBtn.textContent = 'Soumettre la demande';
-                }
-            })
-            .catch(function () {
-                alert('Erreur de communication avec le serveur.');
-                submitBtn.disabled = false;
-                submitBtn.textContent = 'Soumettre la demande';
-            });
-    });
-})();
+                });
+        });
+    })();
 </script>
-

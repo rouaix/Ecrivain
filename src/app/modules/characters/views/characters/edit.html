@@ -63,7 +63,17 @@
 
                     <div class="form-group editor-column">
 
-                        <label for="description">Description (enrichie)</label>
+                        <div class="description-label-row">
+
+                            <label for="description">Description (enrichie)</label>
+
+                            <check if="{{ @character.id }}">
+                                <button type="button" id="btn-enrich-ai" class="button secondary small" title="Enrichir et structurer la description avec l'IA selon le modèle de personnage">
+                                    <i class="fas fa-magic"></i> Enrichir avec l'IA
+                                </button>
+                            </check>
+
+                        </div>
 
                         <div id="editor" class="editor-surface editor-height-300">
 
@@ -80,6 +90,41 @@
                 </div>
 
             </div>
+
+            <!-- AI Enrich Modal -->
+            <check if="{{ @character.id }}">
+                <div id="modal-enrich" class="modal-overlay" role="dialog" aria-modal="true" aria-labelledby="modal-enrich-title">
+                    <div class="modal-box">
+                        <div class="modal-header">
+                            <h3 id="modal-enrich-title"><i class="fas fa-magic"></i> Enrichir avec l'IA</h3>
+                            <button type="button" class="modal-close" id="btn-modal-close" aria-label="Fermer">&times;</button>
+                        </div>
+                        <div class="modal-body">
+                            <p class="modal-info">
+                                L'IA va structurer et compléter la description de <strong>{{ @character.name | esc }}</strong>
+                                en s'appuyant sur le contenu du livre et le modèle de fiche personnage.
+                            </p>
+                            <div id="enrich-loading" style="display:none;" class="enrich-loading">
+                                <i class="fas fa-spinner fa-spin"></i> Génération en cours…
+                            </div>
+                            <div id="enrich-error" class="enrich-error" style="display:none;"></div>
+                            <div id="enrich-preview" style="display:none;">
+                                <p class="enrich-preview-label"><strong>Aperçu du résultat :</strong></p>
+                                <div id="enrich-preview-content" class="enrich-preview-content"></div>
+                            </div>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" id="btn-enrich-confirm" class="button primary" style="display:none;">
+                                <i class="fas fa-check"></i> Insérer dans la description
+                            </button>
+                            <button type="button" id="btn-enrich-retry" class="button secondary" style="display:none;">
+                                <i class="fas fa-redo"></i> Régénérer
+                            </button>
+                            <button type="button" id="btn-enrich-cancel" class="button">Annuler</button>
+                        </div>
+                    </div>
+                </div>
+            </check>
 
             <!-- Comment Section -->
 
@@ -147,6 +192,148 @@
 </div>
 
 <style nonce="{{ @nonce }}">
+    .description-label-row {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        margin-bottom: 6px;
+        flex-wrap: wrap;
+        gap: 8px;
+    }
+
+    .description-label-row label {
+        margin-bottom: 0;
+    }
+
+    .button.secondary.small {
+        font-size: .78rem;
+        padding: 4px 10px;
+        height: auto;
+    }
+
+    /* Modal enrich personnage */
+    #modal-enrich.modal-overlay {
+        z-index: 1000;
+        padding: 16px;
+    }
+
+    .modal-box {
+        background: var(--card-bg, #fff);
+        border-radius: 10px;
+        box-shadow: 0 8px 32px rgba(0,0,0,.22);
+        width: 100%;
+        max-width: 680px;
+        max-height: 88vh;
+        display: flex;
+        flex-direction: column;
+        overflow: hidden;
+    }
+
+    .modal-header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 16px 20px;
+        border-bottom: 1px solid var(--border-color, #e0e0e0);
+        flex-shrink: 0;
+    }
+
+    .modal-header h3 {
+        margin: 0;
+        font-size: 1rem;
+        color: var(--text-main, #333);
+    }
+
+    .modal-header h3 i {
+        color: var(--link-color, #3f51b5);
+        margin-right: 8px;
+    }
+
+    .modal-close {
+        background: none;
+        border: none;
+        font-size: 1.4rem;
+        cursor: pointer;
+        color: var(--text-muted, #888);
+        line-height: 1;
+        padding: 0 4px;
+    }
+
+    .modal-close:hover { color: var(--text-main, #333); }
+
+    .modal-body {
+        padding: 18px 20px;
+        overflow-y: auto;
+        flex: 1;
+    }
+
+    .modal-info {
+        margin: 0 0 14px;
+        font-size: .88rem;
+        color: var(--text-muted, #666);
+        line-height: 1.5;
+    }
+
+    .modal-footer {
+        display: flex;
+        gap: 8px;
+        padding: 14px 20px;
+        border-top: 1px solid var(--border-color, #e0e0e0);
+        flex-shrink: 0;
+        flex-wrap: wrap;
+    }
+
+    .enrich-loading {
+        text-align: center;
+        padding: 24px 0;
+        color: var(--text-muted, #888);
+        font-size: .9rem;
+    }
+
+    .enrich-loading i { margin-right: 8px; }
+
+    .enrich-error {
+        background: var(--error-bg, #fff0f0);
+        border: 1px solid #f99;
+        border-radius: 6px;
+        padding: 10px 14px;
+        color: #c00;
+        font-size: .85rem;
+    }
+
+    .enrich-preview-label {
+        font-size: .82rem;
+        color: var(--text-muted, #888);
+        margin: 0 0 8px;
+    }
+
+    .enrich-preview-content {
+        border: 1px solid var(--border-color, #e0e0e0);
+        border-radius: 7px;
+        padding: 14px 16px;
+        background: var(--input-bg, #fafafa);
+        font-size: .88rem;
+        line-height: 1.6;
+        max-height: 340px;
+        overflow-y: auto;
+    }
+
+    .enrich-preview-content h2 {
+        font-size: .95rem;
+        font-weight: 600;
+        color: var(--link-color, #3f51b5);
+        margin: 12px 0 4px;
+        padding-bottom: 3px;
+        border-bottom: 1px solid var(--border-color, #eee);
+    }
+
+    .enrich-preview-content h2:first-child { margin-top: 0; }
+
+    .enrich-preview-content p {
+        margin: 4px 0 8px;
+        color: var(--text-main, #333);
+    }
+
     .char-mentions-card {
         margin-top: 1.5rem;
     }
@@ -350,6 +537,114 @@
                 commentQuill.clipboard.dangerouslyPasteHTML(decodedComment);
 
             }
+
+        }
+
+        // ─── AI Enrich ──────────────────────────────────────────────────────
+        var CSRF        = '{{ @csrfToken }}';
+        var btnEnrich   = document.getElementById('btn-enrich-ai');
+        var modal       = document.getElementById('modal-enrich');
+
+        if (btnEnrich && modal) {
+
+            var btnClose    = document.getElementById('btn-modal-close');
+            var btnCancel   = document.getElementById('btn-enrich-cancel');
+            var btnConfirm  = document.getElementById('btn-enrich-confirm');
+            var btnRetry    = document.getElementById('btn-enrich-retry');
+            var divLoading  = document.getElementById('enrich-loading');
+            var divError    = document.getElementById('enrich-error');
+            var divPreview  = document.getElementById('enrich-preview');
+            var divContent  = document.getElementById('enrich-preview-content');
+            var pendingHtml = '';
+
+            function openModal() {
+                modal.classList.add('is-visible');
+                divLoading.style.display = 'none';
+                divError.style.display = 'none';
+                divPreview.style.display = 'none';
+                btnConfirm.style.display = 'none';
+                btnRetry.style.display = 'none';
+                pendingHtml = '';
+                runEnrich();
+            }
+
+            function closeModal() {
+                modal.classList.remove('is-visible');
+            }
+
+            function runEnrich() {
+                divLoading.style.display = 'block';
+                divError.style.display = 'none';
+                divPreview.style.display = 'none';
+                btnConfirm.style.display = 'none';
+                btnRetry.style.display = 'none';
+
+                // Get current description from Quill
+                var currentHtml = QuillTools.quill ? QuillTools.quill.root.innerHTML : '';
+
+                fetch('{{ @base }}/ai/enrich-character', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRF-Token': CSRF
+                    },
+                    body: JSON.stringify({
+                        character_id: {{ @character.id | raw }},
+                        description: currentHtml
+                    })
+                })
+                .then(function(r) { return r.json(); })
+                .then(function(data) {
+                    divLoading.style.display = 'none';
+                    if (!data.success) {
+                        divError.textContent = data.error || 'Une erreur est survenue.';
+                        divError.style.display = 'block';
+                        btnRetry.style.display = 'inline-flex';
+                        return;
+                    }
+                    pendingHtml = data.html || '';
+                    divContent.innerHTML = pendingHtml;
+                    divPreview.style.display = 'block';
+                    btnConfirm.style.display = 'inline-flex';
+                    btnRetry.style.display = 'inline-flex';
+                })
+                .catch(function(err) {
+                    divLoading.style.display = 'none';
+                    divError.textContent = 'Erreur réseau : ' + err.message;
+                    divError.style.display = 'block';
+                    btnRetry.style.display = 'inline-flex';
+                });
+            }
+
+            btnEnrich.addEventListener('click', openModal);
+            btnClose.addEventListener('click', closeModal);
+            btnCancel.addEventListener('click', closeModal);
+
+            btnRetry.addEventListener('click', function() {
+                divPreview.style.display = 'none';
+                runEnrich();
+            });
+
+            btnConfirm.addEventListener('click', function() {
+                if (pendingHtml && QuillTools.quill) {
+                    QuillTools.quill.clipboard.dangerouslyPasteHTML(pendingHtml);
+                    // Sync hidden input
+                    var html = QuillTools.quill.root.innerHTML;
+                    html = QuillTools.cleanQuillHtml(html);
+                    document.querySelector('input[name="description"]').value = html;
+                }
+                closeModal();
+            });
+
+            // Close on overlay click
+            modal.addEventListener('click', function(e) {
+                if (e.target === modal) closeModal();
+            });
+
+            // Close on Escape
+            document.addEventListener('keydown', function(e) {
+                if (e.key === 'Escape' && modal.style.display !== 'none') closeModal();
+            });
 
         }
 

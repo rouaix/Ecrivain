@@ -44,7 +44,7 @@ modules/{name}/
 └── views/         # F3 template files
 ```
 
-Modules: `acts`, `ai`, `api`, `auth`, `chapter`, `characters`, `collab`, `element`, `lecture`, `mcp`, `note`, `project`, `search`, `section`, `share`, `stats`, `template`
+Modules: `acts`, `ai`, `api`, `auth`, `chapter`, `characters`, `collab`, `element`, `glossary`, `lecture`, `mcp`, `note`, `project`, `scenariste`, `search`, `section`, `share`, `stats`, `template`
 
 ### Routing & Autoloading
 
@@ -62,7 +62,7 @@ All routes and autoload paths are declared in `src/app/config.ini`. F3 scans the
 
 ### Database Migrations
 
-Migrations in `src/data/migrations/` run automatically on every app load (only unexecuted ones). Naming format: `NNN_description.sql` (alphabetical = execution order). Current highest: `012_`.
+Migrations in `src/data/migrations/` run automatically on every app load (only unexecuted ones). Naming format: `NNN_description.sql` (alphabetical = execution order). Current highest: `023_`.
 
 Migration rules:
 - Always use `CREATE TABLE IF NOT EXISTS`
@@ -130,14 +130,23 @@ Valid `content_type` values: `chapter`, `act`, `section`, `note`, `element`, `ch
 **REST API** (`src/app/modules/api/controllers/ApiController.php`): Full CRUD for all content types under `/api/...`. Authenticated via `Authorization: Bearer <jwt>` using `$this->authenticateApiRequest()` in `beforeRoute` — bypasses CSRF. Add `api/controllers/` to `AUTOLOAD` when adding new API controllers.
 
 **MCP server** — two modes:
-- **HTTP** (`POST /mcp` via `McpController`): Same Bearer JWT auth. Configure in Codex Desktop with `"url"` + `"headers": {"Authorization": "Bearer TOKEN"}`.
-- **stdio** (`src/app/modules/mcp/server.php`): Standalone PHP CLI script, reads `API_URL` and `API_TOKEN` from env. Configure in Codex Desktop with `"command": "php"` + `"args"` + `"env"`.
+- **HTTP** (`POST /mcp` via `McpController`): Same Bearer JWT auth. Configure in Claude Desktop with `"url"` + `"headers": {"Authorization": "Bearer TOKEN"}`.
+- **stdio** (`src/app/modules/mcp/server.php`): Standalone PHP CLI script, reads `API_URL` and `API_TOKEN` from env. Configure in Claude Desktop with `"command": "php"` + `"args"` + `"env"`.
 
 **JWT tokens**: Users generate personal API tokens at `/auth/tokens`. Tokens are JWT-signed (`JWT_SECRET`) and stored encrypted in `src/data/{email}/tokens.json`. Revocation deletes from that file.
 
 ### Share Module (public routes)
 
-`SharePublicController` serves read-only project views at `/s/@token/...` with **no authentication required**. These routes must never call `$this->currentUser()` as a guard. The `share` module has its own standalone layout separate from `layouts/main.html`.
+`SharePublicController` serves read-only project views at `/s/@token/...` with **no authentication required**. These routes must never call `$this->currentUser()` as a guard. The `share` module has its own standalone layout separate from `layouts/main.html`. Use `$this->renderPublic($view, $data)` instead of `$this->render()` — it skips auth injection and CSRF.
+
+### OAuth2 Authorization Server (auth module)
+
+`OAuthController` implements a full OAuth2 authorization code flow with PKCE for third-party integrations (e.g., ChatGPT, Claude plugins):
+- Endpoints: `GET /oauth/authorize`, `POST /oauth/token`, `POST /oauth/register`
+- Discovery: `GET /.well-known/oauth-authorization-server`, `GET /.well-known/oauth-protected-resource`
+- Token lifetimes: auth code 300s, access token 3600s, refresh token 2592000s
+- CORS enabled on token/register endpoints for cross-origin integrator use
+- This is separate from the JWT bearer tokens used by the REST API and MCP.
 
 ## Critical Rules
 
@@ -153,8 +162,8 @@ Fix CRLF files with Python if needed (see project memory notes).
 
 After modifying any JS or CSS file, increment the `?v=` parameter in `src/app/modules/project/views/layouts/main.html`:
 ```html
-<link rel="stylesheet" href="{{ @base }}/public/style.css?v=25">
-<script src="{{ @base }}/public/js/quill-adapter.js?v=21"></script>
+<link rel="stylesheet" href="{{ @base }}/public/style.css?v=33">
+<script src="{{ @base }}/public/js/quill-adapter.js?v=26"></script>
 ```
 
 ### Quill Instances
