@@ -99,9 +99,21 @@ class CharacterController extends Controller
         }
         $project = $projectModel->findAndCast(['id=?', $charModel->project_id])[0];
 
-        // Find chapters where the character name is mentioned
-        $mentions = [];
-        if ($charModel->name) {
+        // All chapters of the project (for timeline)
+        $allChapters = $this->db->exec(
+            'SELECT c.id, c.title, c.order_index, c.act_id,
+                    a.title AS act_title, a.order_index AS act_order
+             FROM chapters c
+             LEFT JOIN acts a ON a.id = c.act_id
+             WHERE c.project_id = ?
+             ORDER BY COALESCE(a.order_index, 0) ASC, c.order_index ASC, c.id ASC',
+            [$charModel->project_id]
+        ) ?: [];
+
+        // Chapters where the character name is mentioned
+        $mentionedIds = [];
+        $mentions     = [];
+        if ($charModel->name && $allChapters) {
             $rows = $this->db->exec(
                 'SELECT c.id, c.title, c.order_index, c.act_id,
                         a.title AS act_title, a.order_index AS act_order
@@ -109,13 +121,13 @@ class CharacterController extends Controller
                  LEFT JOIN acts a ON a.id = c.act_id
                  WHERE c.project_id = ?
                    AND (c.content LIKE ? OR c.resume LIKE ?)
-                 ORDER BY a.order_index ASC, c.order_index ASC, c.id ASC',
+                 ORDER BY COALESCE(a.order_index, 0) ASC, c.order_index ASC, c.id ASC',
                 [$charModel->project_id, '%' . $charModel->name . '%', '%' . $charModel->name . '%']
             ) ?: [];
 
-            // Group by act
             foreach ($rows as $row) {
-                $actKey = $row['act_id'] ?? 0;
+                $mentionedIds[$row['id']] = true;
+                $actKey   = $row['act_id'] ?? 0;
                 $actLabel = $row['act_title'] ?: 'Sans acte';
                 if (!isset($mentions[$actKey])) {
                     $mentions[$actKey] = ['label' => $actLabel, 'chapters' => []];
@@ -124,12 +136,27 @@ class CharacterController extends Controller
             }
         }
 
+        // Build timeline: all chapters grouped by act, with presence flag
+        $timeline = [];
+        foreach ($allChapters as $ch) {
+            $actKey   = $ch['act_id'] ?? 0;
+            $actLabel = $ch['act_title'] ?: 'Sans acte';
+            if (!isset($timeline[$actKey])) {
+                $timeline[$actKey] = ['label' => $actLabel, 'chapters' => []];
+            }
+            $ch['mentioned'] = isset($mentionedIds[$ch['id']]) ? 1 : 0;
+            $timeline[$actKey]['chapters'][] = $ch;
+        }
+
         $this->render('characters/edit.html', [
-            'title' => 'Modifier personnage',
-            'project' => $project,
-            'character' => $charModel->cast(),
-            'mentions' => $mentions,
-            'errors' => []
+            'title'         => 'Modifier personnage',
+            'project'       => $project,
+            'character'     => $charModel->cast(),
+            'mentions'      => $mentions,
+            'timeline'      => array_values($timeline),
+            'totalChapters' => count($allChapters),
+            'mentionCount'  => count($mentionedIds),
+            'errors'        => []
         ]);
     }
 

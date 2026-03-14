@@ -41,7 +41,22 @@
 
                     <div class="character-header">
 
-                        <h3 class="character-name">{{ @char.name }}</h3>
+                        <h3 class="character-name">{{ @char.name }}
+
+                            <div class="character-actions"
+                                style="border: none;float: right; width: 60px;display: inline;margin:0;padding:0;">
+
+                                <a class="button small" href="{{ @base }}/character/{{ @char.id }}/edit"
+                                    title="Modifier" title="Modifier le personnage"><i class="fas fa-edit"></i></a>
+
+                                <a class="button small delete js-confirm"
+                                    href="{{ @base }}/character/{{ @char.id }}/delete"
+                                    data-confirm="Confirmer la suppression de ce personnage ?" title="Supprimer"
+                                    title="Supprimer le personnage"><i class="fas fa-trash"></i></a>
+
+                            </div>
+
+                        </h3>
 
                     </div>
 

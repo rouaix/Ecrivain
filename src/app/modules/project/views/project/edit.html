@@ -90,7 +90,7 @@
 
                 <h3><i class="fas fa-image"></i> Couverture</h3>
 
-                <div class="cover-preview-container">
+                <div class="cover-preview-container" id="cover-preview-container">
 
                     <check if="{{ isset(@project.cover_image) && @project.cover_image }}">
 
@@ -103,7 +103,7 @@
 
                         <false>
 
-                            <div class="text-muted text-center">
+                            <div class="text-muted text-center" id="cover-placeholder">
 
                                 <i class="fas fa-image fa-3x cover-placeholder-icon"></i>
 
@@ -117,7 +117,25 @@
 
                 </div>
 
-                <div class="form-group">
+                <check if="{{ !empty(@imageFiles) }}">
+
+                    <div class="cover-source-tabs">
+
+                        <button type="button" class="cover-tab active" data-tab="upload">
+                            <i class="fas fa-upload"></i> Upload local
+                        </button>
+
+                        <button type="button" class="cover-tab" data-tab="existing">
+                            <i class="fas fa-photo-video"></i> Image existante ({{ count(@imageFiles) }})
+                        </button>
+
+                    </div>
+
+                </check>
+
+                <input type="hidden" name="cover_from_file" id="cover_from_file" value="">
+
+                <div id="cover-tab-upload" class="form-group">
 
                     <div class="button secondary cover-upload-btn">
 
@@ -130,6 +148,34 @@
                     <div class="helper-text text-center">Format JPG, PNG. Max 5 Mo.</div>
 
                 </div>
+
+                <check if="{{ !empty(@imageFiles) }}">
+
+                    <div id="cover-tab-existing" style="display:none">
+
+                        <div class="cover-existing-grid">
+
+                            <repeat group="@imageFiles" value="@imgFile">
+
+                                <div class="cover-existing-item" data-fid="{{ @imgFile.id }}"
+                                    title="{{ @imgFile.filename }}">
+
+                                    <img src="{{ @base }}/project/{{ @project.id }}/file/{{ @imgFile.id }}/download"
+                                        alt="{{ @imgFile.filename }}" loading="lazy">
+
+                                    <div class="cover-existing-name">{{ @imgFile.filename }}</div>
+
+                                </div>
+
+                            </repeat>
+
+                        </div>
+
+                        <div class="helper-text text-center" style="margin-top:8px">Cliquez sur une image pour l'utiliser comme couverture.</div>
+
+                    </div>
+
+                </check>
 
             </div>
 
@@ -294,17 +340,49 @@
 
         tpInput.addEventListener('input', calculateWords);
 
-        // Preview Image
+        // Cover source tabs
+        const coverTabs = document.querySelectorAll('.cover-tab');
+        const coverFromFileInput = document.getElementById('cover_from_file');
+        const previewContainer = document.getElementById('cover-preview-container');
+
+        coverTabs.forEach(function (tab) {
+            tab.addEventListener('click', function () {
+                coverTabs.forEach(function (t) { t.classList.remove('active'); });
+                this.classList.add('active');
+                const mode = this.dataset.tab;
+                document.getElementById('cover-tab-upload').style.display = mode === 'upload' ? '' : 'none';
+                const existingTab = document.getElementById('cover-tab-existing');
+                if (existingTab) existingTab.style.display = mode === 'existing' ? '' : 'none';
+                if (mode === 'upload') {
+                    coverFromFileInput.value = '';
+                    document.querySelectorAll('.cover-existing-item').forEach(function (i) { i.classList.remove('selected'); });
+                }
+            });
+        });
+
+        document.querySelectorAll('.cover-existing-item').forEach(function (item) {
+            item.addEventListener('click', function () {
+                document.querySelectorAll('.cover-existing-item').forEach(function (i) { i.classList.remove('selected'); });
+                this.classList.add('selected');
+                coverFromFileInput.value = this.dataset.fid;
+                const img = this.querySelector('img');
+                previewContainer.innerHTML = '<img src="' + img.src + '" class="cover-preview">';
+            });
+        });
+
+        // Preview Image (upload mode)
 
         const coverInput = document.getElementById('cover_image');
-
-        const previewContainer = document.querySelector('.cover-preview-container');
 
         coverInput.addEventListener('change', function (e) {
 
             const file = e.target.files[0];
 
             if (file) {
+
+                coverFromFileInput.value = '';
+
+                document.querySelectorAll('.cover-existing-item').forEach(function (i) { i.classList.remove('selected'); });
 
                 const reader = new FileReader();
 

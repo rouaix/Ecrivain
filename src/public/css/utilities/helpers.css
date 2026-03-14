@@ -3,7 +3,7 @@
    PROJECT EDIT PAGE STYLES
    ========================================== */
 .edit-page-layout {
-    max-width: 1000px;
+    max-width: 100%;
     margin: 0 auto;
     padding-bottom: 50px;
 }
@@ -111,6 +111,72 @@
     left: 0;
     opacity: 0;
     cursor: pointer;
+}
+
+.cover-source-tabs {
+    display: flex;
+    gap: 8px;
+    margin-bottom: 12px;
+}
+
+.cover-tab {
+    flex: 1;
+    padding: 7px 12px;
+    border: 1px solid var(--border-light);
+    border-radius: 6px;
+    background: var(--body-bg);
+    color: var(--text-muted);
+    cursor: pointer;
+    font-size: 0.9rem;
+    transition: all 0.15s;
+}
+
+.cover-tab.active {
+    background: var(--primary-color, #4a6fa5);
+    color: #fff;
+    border-color: var(--primary-color, #4a6fa5);
+}
+
+.cover-existing-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(80px, 1fr));
+    gap: 8px;
+    max-height: 200px;
+    overflow-y: auto;
+    padding: 4px;
+}
+
+.cover-existing-item {
+    border: 2px solid var(--border-light);
+    border-radius: 6px;
+    overflow: hidden;
+    cursor: pointer;
+    transition: border-color 0.15s;
+}
+
+.cover-existing-item:hover {
+    border-color: var(--primary-color, #4a6fa5);
+}
+
+.cover-existing-item.selected {
+    border-color: var(--primary-color, #4a6fa5);
+    box-shadow: 0 0 0 2px var(--primary-color, #4a6fa5);
+}
+
+.cover-existing-item img {
+    width: 100%;
+    height: 70px;
+    object-fit: cover;
+    display: block;
+}
+
+.cover-existing-name {
+    font-size: 0.65rem;
+    color: var(--text-muted);
+    padding: 2px 4px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
 }
 
 .helper-text {

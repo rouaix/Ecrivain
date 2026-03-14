@@ -172,7 +172,7 @@ body.reading-mode .reading-container {
 }
 
 .lecture-content {
-    max-width: 800px;
+    max-width: 90%;
     margin: 0 auto;
     padding: 40px 60px;
     background: var(--card-bg);

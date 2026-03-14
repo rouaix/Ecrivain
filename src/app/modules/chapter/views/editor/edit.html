@@ -496,6 +496,7 @@
         padding: 20px 0;
         color: #2d2d2d;
         caret-color: #3f51b5;
+        white-space: normal;
     }
 
     body.focus-mode .editor-surface {
@@ -1362,20 +1363,20 @@
             fetch('{{ @base }}/project/{{ @project.id }}/glossary/terms', {
                 headers: { 'X-CSRF-Token': window.CSRF_TOKEN }
             })
-            .then(function (r) { return r.json(); })
-            .then(function (data) {
-                terms = data;
-                scanGlossaryTerms();
-                // Debounced rescan on Quill text change
-                if (QuillTools && QuillTools.quill) {
-                    var _scanTimer = null;
-                    QuillTools.quill.on('text-change', function () {
-                        clearTimeout(_scanTimer);
-                        _scanTimer = setTimeout(scanGlossaryTerms, 600);
-                    });
-                }
-            })
-            .catch(function () { /* silent fail */ });
+                .then(function (r) { return r.json(); })
+                .then(function (data) {
+                    terms = data;
+                    scanGlossaryTerms();
+                    // Debounced rescan on Quill text change
+                    if (QuillTools && QuillTools.quill) {
+                        var _scanTimer = null;
+                        QuillTools.quill.on('text-change', function () {
+                            clearTimeout(_scanTimer);
+                            _scanTimer = setTimeout(scanGlossaryTerms, 600);
+                        });
+                    }
+                })
+                .catch(function () { /* silent fail */ });
 
             function openModal() { modal.style.display = 'flex'; searchEl.value = ''; searchEl.focus(); }
             function closeModal() { modal.style.display = 'none'; }

@@ -4,10 +4,11 @@
    Styles for AI configuration interface
    ========================================== */
 .ai-config-container {
-    max-width: 900px;
+    /*max-width: 900px;*/
     margin: 0 auto;
     padding: 40px 20px;
 }
+
 .ai-config-card {
     background: var(--card-bg);
     border: 1px solid var(--border-color);
@@ -15,21 +16,25 @@
     box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05);
     padding: 40px;
 }
+
 .ai-config-header {
     text-align: center;
     margin-bottom: 30px;
 }
+
 .ai-config-header h2 {
     margin: 0 0 10px 0;
     font-size: 1.8rem;
     color: var(--text-main);
     font-weight: 700;
 }
+
 .ai-config-header p {
     margin: 0;
     color: var(--text-muted);
     font-size: 0.95rem;
 }
+
 .ai-config-section {
     background: var(--table-row-hover-bg);
     padding: 15px;
@@ -37,11 +42,13 @@
     border: 1px solid var(--border-light);
     margin-bottom: 20px;
 }
+
 .ai-config-label {
     display: block;
     font-weight: bold;
     margin-bottom: 5px;
 }
+
 .ai-config-input {
     width: 100%;
     padding: 8px;
@@ -49,9 +56,11 @@
     border-radius: 4px;
     box-sizing: border-box;
 }
+
 .ai-config-card .form-group {
     margin-bottom: 20px;
 }
+
 .ai-config-card label {
     display: block;
     margin-bottom: 8px;
@@ -59,6 +68,7 @@
     color: var(--text-main);
     font-size: 0.9rem;
 }
+
 .ai-config-card input[type="text"],
 .ai-config-card input[type="password"],
 .ai-config-card select,
@@ -72,6 +82,7 @@
     box-sizing: border-box;
     font-family: inherit;
 }
+
 .ai-config-card input[type="text"]:focus,
 .ai-config-card input[type="password"]:focus,
 .ai-config-card select:focus,
@@ -79,15 +90,18 @@
     outline: none;
     border-color: var(--link-color);
 }
+
 .ai-config-card textarea {
     resize: vertical;
 }
+
 .ai-config-card small {
     display: block;
     color: var(--text-muted);
     font-size: 0.85rem;
     margin-top: 5px;
 }
+
 .ai-config-actions {
     display: flex;
     gap: 10px;
@@ -95,6 +109,7 @@
     padding-top: 20px;
     border-top: 1px solid var(--border-light);
 }
+
 .ai-config-actions button,
 .ai-config-actions a {
     flex: 1;
@@ -116,6 +131,7 @@
     background: var(--button-hover-bg);
 }
 }
+
 .ai-config-save {
     background-color: var(--button-primary-bg) !important;
     color: white !important;
@@ -124,6 +140,7 @@
     border-radius: 4px !important;
     height: auto !important;
 }
+
 .ai-config-back {
     padding: 10px 20px !important;
     text-decoration: none !important;

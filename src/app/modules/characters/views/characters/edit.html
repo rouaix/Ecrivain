@@ -68,7 +68,8 @@
                             <label for="description">Description (enrichie)</label>
 
                             <check if="{{ @character.id }}">
-                                <button type="button" id="btn-enrich-ai" class="button secondary small" title="Enrichir et structurer la description avec l'IA selon le modèle de personnage">
+                                <button type="button" id="btn-enrich-ai" class="button secondary small"
+                                    title="Enrichir et structurer la description avec l'IA selon le modèle de personnage">
                                     <i class="fas fa-magic"></i> Enrichir avec l'IA
                                 </button>
                             </check>
@@ -93,15 +94,18 @@
 
             <!-- AI Enrich Modal -->
             <check if="{{ @character.id }}">
-                <div id="modal-enrich" class="modal-overlay" role="dialog" aria-modal="true" aria-labelledby="modal-enrich-title">
+                <div id="modal-enrich" class="modal-overlay" role="dialog" aria-modal="true"
+                    aria-labelledby="modal-enrich-title">
                     <div class="modal-box">
                         <div class="modal-header">
                             <h3 id="modal-enrich-title"><i class="fas fa-magic"></i> Enrichir avec l'IA</h3>
-                            <button type="button" class="modal-close" id="btn-modal-close" aria-label="Fermer">&times;</button>
+                            <button type="button" class="modal-close" id="btn-modal-close"
+                                aria-label="Fermer">&times;</button>
                         </div>
                         <div class="modal-body">
                             <p class="modal-info">
-                                L'IA va structurer et compléter la description de <strong>{{ @character.name | esc }}</strong>
+                                L'IA va structurer et compléter la description de <strong>{{ @character.name | esc
+                                    }}</strong>
                                 en s'appuyant sur le contenu du livre et le modèle de fiche personnage.
                             </p>
                             <div id="enrich-loading" style="display:none;" class="enrich-loading">
@@ -159,17 +163,46 @@
 
     </form>
 
-    <!-- Character mentions timeline -->
-    <check if="{{ @character.id }}">
+    <!-- Character timeline -->
+    <check if="{{ @character.id && !empty(@timeline) }}">
         <div class="edit-card char-mentions-card">
+
             <div class="char-mentions-header">
-                <h3><i class="fas fa-map-marker-alt"></i> Apparitions dans les chapitres</h3>
+                <h3><i class="fas fa-stream"></i> Chronologie</h3>
+                <span class="char-timeline-count">
+                    <check if="{{ @mentionCount > 0 }}">
+                        <span class="char-timeline-badge char-timeline-badge--on">{{ @mentionCount }} / {{
+                            @totalChapters }} chapitres</span>
+                    </check>
+                    <check if="{{ @mentionCount == 0 }}">
+                        <span class="char-timeline-badge char-timeline-badge--off">Aucune mention</span>
+                    </check>
+                </span>
             </div>
-            <check if="{{ empty(@mentions) }}">
-                <p class="char-mentions-empty">
-                    Aucune mention de « {{ @character.name | esc }} » trouvée dans le contenu des chapitres.
-                </p>
-            </check>
+
+            <!-- Visual timeline bar -->
+            <div class="char-timeline-wrap">
+                <repeat group="{{ @timeline }}" value="{{ @act }}">
+                    <div class="char-timeline-act">
+                        <div class="char-timeline-act-label">{{ @act.label | esc }}</div>
+                        <div class="char-timeline-blocks">
+                            <repeat group="{{ @act.chapters }}" value="{{ @ch }}">
+                                <check if="{{ @ch.mentioned }}">
+                                    <true>
+                                        <a href="{{ @base }}/chapter/{{ @ch.id }}" class="char-tblock char-tblock--on"
+                                            title="{{ @ch.title | esc }}"></a>
+                                    </true>
+                                    <false>
+                                        <span class="char-tblock char-tblock--off" title="{{ @ch.title | esc }}"></span>
+                                    </false>
+                                </check>
+                            </repeat>
+                        </div>
+                    </div>
+                </repeat>
+            </div>
+
+            <!-- Detail list (only when there are mentions) -->
             <check if="{{ !empty(@mentions) }}">
                 <div class="char-mentions-list">
                     <repeat group="{{ @mentions }}" value="{{ @act }}">
@@ -186,6 +219,13 @@
                     </repeat>
                 </div>
             </check>
+
+            <check if="{{ empty(@mentions) }}">
+                <p class="char-mentions-empty">
+                    Aucune mention de « {{ @character.name | esc }} » trouvée dans les chapitres.
+                </p>
+            </check>
+
         </div>
     </check>
 
@@ -220,7 +260,7 @@
     .modal-box {
         background: var(--card-bg, #fff);
         border-radius: 10px;
-        box-shadow: 0 8px 32px rgba(0,0,0,.22);
+        box-shadow: 0 8px 32px rgba(0, 0, 0, .22);
         width: 100%;
         max-width: 680px;
         max-height: 88vh;
@@ -259,7 +299,9 @@
         padding: 0 4px;
     }
 
-    .modal-close:hover { color: var(--text-main, #333); }
+    .modal-close:hover {
+        color: var(--text-main, #333);
+    }
 
     .modal-body {
         padding: 18px 20px;
@@ -290,7 +332,9 @@
         font-size: .9rem;
     }
 
-    .enrich-loading i { margin-right: 8px; }
+    .enrich-loading i {
+        margin-right: 8px;
+    }
 
     .enrich-error {
         background: var(--error-bg, #fff0f0);
@@ -327,7 +371,9 @@
         border-bottom: 1px solid var(--border-color, #eee);
     }
 
-    .enrich-preview-content h2:first-child { margin-top: 0; }
+    .enrich-preview-content h2:first-child {
+        margin-top: 0;
+    }
 
     .enrich-preview-content p {
         margin: 4px 0 8px;
@@ -339,7 +385,10 @@
     }
 
     .char-mentions-header {
-        margin-bottom: 12px;
+        display: flex;
+        /*align-items: center;*/
+        gap: 12px;
+        margin-bottom: 16px;
     }
 
     .char-mentions-header h3 {
@@ -351,6 +400,86 @@
     .char-mentions-header h3 i {
         color: var(--link-color, #3f51b5);
         margin-right: 8px;
+    }
+
+    .char-timeline-badge {
+        font-size: .75rem;
+        font-weight: 600;
+        padding: 2px 10px;
+        border-radius: 20px;
+    }
+
+    .char-timeline-badge--on {
+        background: var(--link-color, #3f51b5);
+        color: #fff;
+    }
+
+    .char-timeline-badge--off {
+        background: var(--border-color, #e0e0e0);
+        color: var(--text-muted, #888);
+    }
+
+    .char-timeline-wrap {
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+        margin-bottom: 20px;
+        padding: 14px 16px;
+        background: var(--body-bg, #f8f9fa);
+        border: 1px solid var(--border-color, #e0e0e0);
+        border-radius: 8px;
+    }
+
+    .char-timeline-act {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+    }
+
+    .char-timeline-act-label {
+        font-size: .7rem;
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: .05em;
+        color: var(--text-muted, #888);
+        white-space: nowrap;
+        width: 80px;
+        flex-shrink: 0;
+        text-align: right;
+    }
+
+    .char-timeline-blocks {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 4px;
+        flex: 1;
+    }
+
+    .char-tblock {
+        display: block;
+        width: 22px;
+        height: 22px;
+        border-radius: 4px;
+        cursor: default;
+        transition: transform .1s, opacity .1s;
+        flex-shrink: 0;
+    }
+
+    .char-tblock--on {
+        background: var(--link-color, #3f51b5);
+        opacity: .85;
+        cursor: pointer;
+        text-decoration: none;
+    }
+
+    .char-tblock--on:hover {
+        opacity: 1;
+        transform: scaleY(1.25);
+    }
+
+    .char-tblock--off {
+        background: var(--border-color, #d1d5db);
+        opacity: .5;
     }
 
     .char-mentions-empty {
@@ -541,20 +670,20 @@
         }
 
         // ─── AI Enrich ──────────────────────────────────────────────────────
-        var CSRF        = '{{ @csrfToken }}';
-        var btnEnrich   = document.getElementById('btn-enrich-ai');
-        var modal       = document.getElementById('modal-enrich');
+        var CSRF = '{{ @csrfToken }}';
+        var btnEnrich = document.getElementById('btn-enrich-ai');
+        var modal = document.getElementById('modal-enrich');
 
         if (btnEnrich && modal) {
 
-            var btnClose    = document.getElementById('btn-modal-close');
-            var btnCancel   = document.getElementById('btn-enrich-cancel');
-            var btnConfirm  = document.getElementById('btn-enrich-confirm');
-            var btnRetry    = document.getElementById('btn-enrich-retry');
-            var divLoading  = document.getElementById('enrich-loading');
-            var divError    = document.getElementById('enrich-error');
-            var divPreview  = document.getElementById('enrich-preview');
-            var divContent  = document.getElementById('enrich-preview-content');
+            var btnClose = document.getElementById('btn-modal-close');
+            var btnCancel = document.getElementById('btn-enrich-cancel');
+            var btnConfirm = document.getElementById('btn-enrich-confirm');
+            var btnRetry = document.getElementById('btn-enrich-retry');
+            var divLoading = document.getElementById('enrich-loading');
+            var divError = document.getElementById('enrich-error');
+            var divPreview = document.getElementById('enrich-preview');
+            var divContent = document.getElementById('enrich-preview-content');
             var pendingHtml = '';
 
             function openModal() {
@@ -590,61 +719,61 @@
                     },
                     body: JSON.stringify({
                         character_id: {{ @character.id | raw }},
-                        description: currentHtml
-                    })
+            description: currentHtml
+        })
                 })
-                .then(function(r) { return r.json(); })
-                .then(function(data) {
-                    divLoading.style.display = 'none';
-                    if (!data.success) {
-                        divError.textContent = data.error || 'Une erreur est survenue.';
-                        divError.style.display = 'block';
-                        btnRetry.style.display = 'inline-flex';
-                        return;
-                    }
-                    pendingHtml = data.html || '';
-                    divContent.innerHTML = pendingHtml;
-                    divPreview.style.display = 'block';
-                    btnConfirm.style.display = 'inline-flex';
-                    btnRetry.style.display = 'inline-flex';
-                })
-                .catch(function(err) {
-                    divLoading.style.display = 'none';
-                    divError.textContent = 'Erreur réseau : ' + err.message;
-                    divError.style.display = 'block';
-                    btnRetry.style.display = 'inline-flex';
-                });
+                .then(function (r) { return r.json(); })
+        .then(function (data) {
+            divLoading.style.display = 'none';
+            if (!data.success) {
+                divError.textContent = data.error || 'Une erreur est survenue.';
+                divError.style.display = 'block';
+                btnRetry.style.display = 'inline-flex';
+                return;
+            }
+            pendingHtml = data.html || '';
+            divContent.innerHTML = pendingHtml;
+            divPreview.style.display = 'block';
+            btnConfirm.style.display = 'inline-flex';
+            btnRetry.style.display = 'inline-flex';
+        })
+        .catch(function (err) {
+            divLoading.style.display = 'none';
+            divError.textContent = 'Erreur réseau : ' + err.message;
+            divError.style.display = 'block';
+            btnRetry.style.display = 'inline-flex';
+        });
             }
 
-            btnEnrich.addEventListener('click', openModal);
-            btnClose.addEventListener('click', closeModal);
-            btnCancel.addEventListener('click', closeModal);
+    btnEnrich.addEventListener('click', openModal);
+    btnClose.addEventListener('click', closeModal);
+    btnCancel.addEventListener('click', closeModal);
 
-            btnRetry.addEventListener('click', function() {
-                divPreview.style.display = 'none';
-                runEnrich();
-            });
+    btnRetry.addEventListener('click', function () {
+        divPreview.style.display = 'none';
+        runEnrich();
+    });
 
-            btnConfirm.addEventListener('click', function() {
-                if (pendingHtml && QuillTools.quill) {
-                    QuillTools.quill.clipboard.dangerouslyPasteHTML(pendingHtml);
-                    // Sync hidden input
-                    var html = QuillTools.quill.root.innerHTML;
-                    html = QuillTools.cleanQuillHtml(html);
-                    document.querySelector('input[name="description"]').value = html;
-                }
-                closeModal();
-            });
+    btnConfirm.addEventListener('click', function () {
+        if (pendingHtml && QuillTools.quill) {
+            QuillTools.quill.clipboard.dangerouslyPasteHTML(pendingHtml);
+            // Sync hidden input
+            var html = QuillTools.quill.root.innerHTML;
+            html = QuillTools.cleanQuillHtml(html);
+            document.querySelector('input[name="description"]').value = html;
+        }
+        closeModal();
+    });
 
-            // Close on overlay click
-            modal.addEventListener('click', function(e) {
-                if (e.target === modal) closeModal();
-            });
+    // Close on overlay click
+    modal.addEventListener('click', function (e) {
+        if (e.target === modal) closeModal();
+    });
 
-            // Close on Escape
-            document.addEventListener('keydown', function(e) {
-                if (e.key === 'Escape' && modal.style.display !== 'none') closeModal();
-            });
+    // Close on Escape
+    document.addEventListener('keydown', function (e) {
+        if (e.key === 'Escape' && modal.style.display !== 'none') closeModal();
+    });
 
         }
 

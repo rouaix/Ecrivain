@@ -287,6 +287,16 @@ class ProjectController extends ProjectBaseController
         $wpp        = $project['words_per_page'] ?: 350;
         $lpp        = $project['lines_per_page'] ?: 38;
 
+        // Strip HTML tags (including <style>/<script> content) and normalize whitespace for word counting
+        $cleanForWordCount = function (string $html): string {
+            $s = preg_replace('/<style\b[^>]*>.*?<\/style>/is', '', $html);
+            $s = preg_replace('/<script\b[^>]*>.*?<\/script>/is', '', $s);
+            $s = strip_tags($s);
+            $s = html_entity_decode($s, ENT_QUOTES | ENT_HTML5, 'UTF-8');
+            $s = str_replace("\xC2\xA0", ' ', $s); // non-breaking space → regular space
+            return trim(preg_replace('/\s+/', ' ', $s));
+        };
+
         // TEMPLATE SYSTEM: Load template configuration
         $template            = null;
         $templateElements    = [];
@@ -363,16 +373,16 @@ class ProjectController extends ProjectBaseController
                             $customElementsByType[$tid] = [];
                         }
 
-                        $cleanContent       = strip_tags(html_entity_decode($elem['content'] ?? ''));
-                        $elem['wc']         = str_word_count($cleanContent);
+                        $cleanContent       = $cleanForWordCount($elem['content'] ?? '');
+                        $elem['wc']         = $cleanContent !== '' ? str_word_count($cleanContent) : 0;
                         $elem['is_exported_attr'] = ($elem['is_exported'] ?? 1) ? 'checked' : '';
 
                         $elem['subs'] = [];
                         $subsWc = 0;
                         if (isset($subElementsByParent[$elem['id']])) {
                             foreach ($subElementsByParent[$elem['id']] as $sub) {
-                                $cleanSubContent        = strip_tags(html_entity_decode($sub['content'] ?? ''));
-                                $sub['wc']              = str_word_count($cleanSubContent);
+                                $cleanSubContent        = $cleanForWordCount($sub['content'] ?? '');
+                                $sub['wc']              = $cleanSubContent !== '' ? str_word_count($cleanSubContent) : 0;
                                 $sub['is_exported_attr'] = ($sub['is_exported'] ?? 1) ? 'checked' : '';
                                 $subsWc                += $sub['wc'];
                                 $elem['subs'][]        = $sub;
@@ -526,10 +536,10 @@ class ProjectController extends ProjectBaseController
         $totalWords = 0;
         $totalLines = 0;
 
-        $calculateStats = function ($content, $accumulate = true) use (&$totalWords, &$totalLines, $lpp, $wpp) {
-            $cleanContent = strip_tags(html_entity_decode($content ?? ''));
-            $wc    = str_word_count($cleanContent);
-            $lines = $cleanContent !== '' ? ceil(strlen($cleanContent) / 80) : 0;
+        $calculateStats = function ($content, $accumulate = true) use (&$totalWords, &$totalLines, $lpp, $wpp, $cleanForWordCount) {
+            $cleanContent = $cleanForWordCount($content ?? '');
+            $wc    = $cleanContent !== '' ? str_word_count($cleanContent) : 0;
+            $lines = $cleanContent !== '' ? ceil(mb_strlen($cleanContent) / 80) : 0;
 
             if ($accumulate) {
                 $totalWords += $wc;
@@ -820,11 +830,21 @@ class ProjectController extends ProjectBaseController
         $existingTags = $this->getProjectTags($pid);
         $projectData['tags_string'] = implode(', ', array_column($existingTags, 'name'));
 
+        $fileModel   = new ProjectFile();
+        $rawImgFiles = $fileModel->find(['project_id=? AND filetype LIKE ?', $pid, 'image/%']);
+        $imageFiles  = [];
+        if ($rawImgFiles) {
+            foreach ($rawImgFiles as $f) {
+                $imageFiles[] = $f->cast();
+            }
+        }
+
         $this->render('project/edit.html', [
-            'title'     => 'Modifier le projet',
-            'project'   => $projectData,
-            'templates' => $templates,
-            'errors'    => []
+            'title'      => 'Modifier le projet',
+            'project'    => $projectData,
+            'templates'  => $templates,
+            'imageFiles' => $imageFiles,
+            'errors'     => []
         ]);
     }
 
@@ -862,14 +882,15 @@ class ProjectController extends ProjectBaseController
             try { $this->f3->get('DB')->exec("ALTER TABLE projects ADD COLUMN settings TEXT"); } catch (\Exception $e) {}
             try { $this->f3->get('DB')->exec("ALTER TABLE projects ADD COLUMN cover_image TEXT"); } catch (\Exception $e) {}
 
-            if (isset($_FILES['cover_image'])) {
+            $coverFromFile   = intval($_POST['cover_from_file'] ?? 0);
+            $newFileUploaded = isset($_FILES['cover_image']) && $_FILES['cover_image']['error'] !== UPLOAD_ERR_NO_FILE;
+
+            if ($newFileUploaded) {
                 $validation = $this->validateImageUpload($_FILES['cover_image']);
 
                 if (!$validation['success']) {
-                    if ($_FILES['cover_image']['error'] !== UPLOAD_ERR_NO_FILE) {
-                        $errors[] = $validation['error'];
-                        error_log("Cover upload validation failed: " . $validation['error']);
-                    }
+                    $errors[] = $validation['error'];
+                    error_log("Cover upload validation failed: " . $validation['error']);
                 } else {
                     $uploadDir = 'data/' . $user['email'] . '/projects/' . $pid . '/';
 
@@ -898,6 +919,37 @@ class ProjectController extends ProjectBaseController
                         } else {
                             error_log("Failed to move uploaded file to: {$targetPath}");
                             $errors[] = 'Erreur lors de l\'upload de l\'image.';
+                        }
+                    }
+                }
+            } elseif ($coverFromFile > 0) {
+                $srcFileModel = new ProjectFile();
+                $srcFileModel->load(['id=? AND project_id=?', $coverFromFile, $pid]);
+
+                if (!$srcFileModel->dry()) {
+                    $absoluteSource = $this->f3->get('ROOT') . '/' . $srcFileModel->filepath;
+
+                    if (file_exists($absoluteSource)) {
+                        $ext       = strtolower(pathinfo($srcFileModel->filepath, PATHINFO_EXTENSION));
+                        $uploadDir = 'data/' . $user['email'] . '/projects/' . $pid . '/';
+
+                        if (!is_dir($uploadDir)) {
+                            mkdir($uploadDir, 0755, true);
+                        }
+
+                        $filename   = 'cover.' . $ext;
+                        $targetPath = $uploadDir . $filename;
+
+                        if (copy($absoluteSource, $targetPath)) {
+                            if (!empty($projectModel->cover_image) && $projectModel->cover_image !== $filename) {
+                                $oldFile = $uploadDir . $projectModel->cover_image;
+                                if (file_exists($oldFile)) {
+                                    unlink($oldFile);
+                                }
+                            }
+                            $projectModel->cover_image = $filename;
+                        } else {
+                            $errors[] = 'Erreur lors de la copie de l\'image existante.';
                         }
                     }
                 }
@@ -941,11 +993,20 @@ class ProjectController extends ProjectBaseController
             $templates     = $templateModel->getAllAvailable($user['id']);
         }
 
+        $rawImgFilesErr = (new ProjectFile())->find(['project_id=? AND filetype LIKE ?', $pid, 'image/%']);
+        $imageFilesErr  = [];
+        if ($rawImgFilesErr) {
+            foreach ($rawImgFilesErr as $f) {
+                $imageFilesErr[] = $f->cast();
+            }
+        }
+
         $this->render('project/edit.html', [
-            'title'     => 'Modifier le projet',
-            'project'   => $projectModel->cast(),
-            'templates' => $templates,
-            'errors'    => $errors,
+            'title'      => 'Modifier le projet',
+            'project'    => $projectModel->cast(),
+            'templates'  => $templates,
+            'imageFiles' => $imageFilesErr,
+            'errors'     => $errors,
         ]);
     }
 
