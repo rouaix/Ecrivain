@@ -16,7 +16,7 @@
 
     <meta name="csrf-token" content="{{ @csrfToken }}">
 
-    <check if="{{ @metaDescription }}">
+    <check if="{{ isset(@metaDescription) }}">
         <meta name="description" content="{{ @metaDescription | esc }}">
     <false>
         <meta name="description" content="Écrivain — logiciel d'écriture créative avec IA. Structurez vos romans, gérez vos personnages et exportez.">
@@ -33,7 +33,7 @@
 
     <meta property="og:title" content="{{ @title | esc }}">
 
-    <check if="{{ @metaDescription }}">
+    <check if="{{ isset(@metaDescription) }}">
         <meta property="og:description" content="{{ @metaDescription | esc }}">
     <false>
         <meta property="og:description" content="Écrivain — logiciel d'écriture créative avec IA. Structurez vos romans, gérez vos personnages et exportez.">
@@ -50,7 +50,7 @@
 
     <meta property="twitter:title" content="{{ @title | esc }}">
 
-    <check if="{{ @metaDescription }}">
+    <check if="{{ isset(@metaDescription) }}">
         <meta property="twitter:description" content="{{ @metaDescription | esc }}">
     <false>
         <meta property="twitter:description" content="Écrivain — logiciel d'écriture créative avec IA. Structurez vos romans, gérez vos personnages et exportez.">
