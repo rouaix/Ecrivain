@@ -13,18 +13,21 @@ class ProjectExportController extends ProjectBaseController
     public function export()
     {
         $pid = (int) $this->f3->get('PARAMS.id');
+        $this->requireProjectAccess($pid);
         $this->exportFile($pid, 'txt');
     }
 
     public function exportHtml()
     {
         $pid = (int) $this->f3->get('PARAMS.id');
+        $this->requireProjectAccess($pid);
         $this->exportFile($pid, 'html');
     }
 
     public function exportEpub()
     {
         $pid = (int) $this->f3->get('PARAMS.id');
+        $this->requireProjectAccess($pid);
         if (!class_exists('ZipArchive')) {
             $this->f3->error(500, 'ZipArchive extension missing');
             return;
@@ -35,24 +38,28 @@ class ProjectExportController extends ProjectBaseController
     public function exportVector()
     {
         $pid = (int) $this->f3->get('PARAMS.id');
+        $this->requireProjectAccess($pid);
         $this->exportFile($pid, 'vector');
     }
 
     public function exportClean()
     {
         $pid = (int) $this->f3->get('PARAMS.id');
+        $this->requireProjectAccess($pid);
         $this->exportFile($pid, 'clean');
     }
 
     public function exportSummaries()
     {
         $pid = (int) $this->f3->get('PARAMS.id');
+        $this->requireProjectAccess($pid);
         $this->exportFile($pid, 'summaries');
     }
 
     public function exportMarkdown()
     {
         $pid = (int) $this->f3->get('PARAMS.id');
+        $this->requireProjectAccess($pid);
         $this->exportFile($pid, 'markdown');
     }
 

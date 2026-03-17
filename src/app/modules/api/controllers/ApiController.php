@@ -18,12 +18,17 @@ class ApiController extends ApiBaseController
     public function listProjects()
     {
         $user = $this->currentUser();
+        [$offset, $limit] = $this->getPaginationParams();
+        $total = (int)$this->db->exec(
+            'SELECT COUNT(*) AS n FROM projects WHERE user_id = ?',
+            [$user['id']]
+        )[0]['n'];
         $rows = $this->db->exec(
             'SELECT id, title, description, created_at, updated_at
-             FROM projects WHERE user_id = ? ORDER BY updated_at DESC',
-            [$user['id']]
+             FROM projects WHERE user_id = ? ORDER BY updated_at DESC LIMIT ? OFFSET ?',
+            [$user['id'], $limit, $offset]
         );
-        $this->jsonOut(['projects' => $rows]);
+        $this->paginatedOut($rows, $total, $offset, $limit);
     }
 
     public function createProject()
@@ -106,17 +111,22 @@ class ApiController extends ApiBaseController
     {
         $pid = (int)$this->f3->get('PARAMS.pid');
         if (!$this->hasProjectAccess($pid)) $this->jsonError('Accès refusé.', 403, 'FORBIDDEN');
-        $acts = $this->db->exec(
+        [$offset, $limit] = $this->getPaginationParams();
+        $total = (int)$this->db->exec(
+            'SELECT COUNT(*) AS n FROM acts WHERE project_id = ?', [$pid]
+        )[0]['n'];
+        $rows = $this->db->exec(
             'SELECT a.id, a.title, a.description, a.resume, a.order_index,
                     COUNT(c.id) AS chapters_count
              FROM acts a
              LEFT JOIN chapters c ON c.act_id = a.id
              WHERE a.project_id = ?
              GROUP BY a.id
-             ORDER BY a.order_index ASC, a.id ASC',
-            [$pid]
+             ORDER BY a.order_index ASC, a.id ASC
+             LIMIT ? OFFSET ?',
+            [$pid, $limit, $offset]
         );
-        $this->jsonOut(['acts' => $acts]);
+        $this->paginatedOut($rows, $total, $offset, $limit);
     }
 
     public function createAct()
@@ -308,10 +318,15 @@ class ApiController extends ApiBaseController
     {
         $pid = (int)$this->f3->get('PARAMS.pid');
         if (!$this->hasProjectAccess($pid)) $this->jsonError('Accès refusé.', 403, 'FORBIDDEN');
+        [$offset, $limit] = $this->getPaginationParams();
+        $total = (int)$this->db->exec(
+            'SELECT COUNT(*) AS n FROM sections WHERE project_id = ?', [$pid]
+        )[0]['n'];
         $rows = $this->db->exec(
             'SELECT id, type, title, comment, image_path, order_index, updated_at
-             FROM sections WHERE project_id = ? ORDER BY order_index ASC, id ASC',
-            [$pid]
+             FROM sections WHERE project_id = ? ORDER BY order_index ASC, id ASC
+             LIMIT ? OFFSET ?',
+            [$pid, $limit, $offset]
         );
         $typeLabels = [
             'cover'        => 'Couverture',
@@ -327,7 +342,7 @@ class ApiController extends ApiBaseController
             $r['has_image']  = !empty($r['image_path']);
             unset($r['image_path']);
         }
-        $this->jsonOut(['sections' => $rows]);
+        $this->paginatedOut($rows, $total, $offset, $limit);
     }
 
     public function createSection()
@@ -394,11 +409,17 @@ class ApiController extends ApiBaseController
     {
         $pid = (int)$this->f3->get('PARAMS.pid');
         if (!$this->hasProjectAccess($pid)) $this->jsonError('Accès refusé.', 403, 'FORBIDDEN');
+        [$offset, $limit] = $this->getPaginationParams();
+        $total = (int)$this->db->exec(
+            'SELECT COUNT(*) AS n FROM notes WHERE project_id = ?', [$pid]
+        )[0]['n'];
         $rows = $this->db->exec(
-            'SELECT id, title, comment, order_index, updated_at FROM notes WHERE project_id = ? ORDER BY order_index ASC, id ASC',
-            [$pid]
+            'SELECT id, title, comment, order_index, updated_at
+             FROM notes WHERE project_id = ? ORDER BY order_index ASC, id ASC
+             LIMIT ? OFFSET ?',
+            [$pid, $limit, $offset]
         );
-        $this->jsonOut(['notes' => $rows]);
+        $this->paginatedOut($rows, $total, $offset, $limit);
     }
 
     public function createNote()
@@ -465,11 +486,17 @@ class ApiController extends ApiBaseController
     {
         $pid = (int)$this->f3->get('PARAMS.pid');
         if (!$this->hasProjectAccess($pid)) $this->jsonError('Accès refusé.', 403, 'FORBIDDEN');
+        [$offset, $limit] = $this->getPaginationParams();
+        $total = (int)$this->db->exec(
+            'SELECT COUNT(*) AS n FROM characters WHERE project_id = ?', [$pid]
+        )[0]['n'];
         $rows = $this->db->exec(
-            'SELECT id, name, description, comment, created_at, updated_at FROM characters WHERE project_id = ? ORDER BY name ASC',
-            [$pid]
+            'SELECT id, name, description, comment, created_at, updated_at
+             FROM characters WHERE project_id = ? ORDER BY name ASC
+             LIMIT ? OFFSET ?',
+            [$pid, $limit, $offset]
         );
-        $this->jsonOut(['characters' => $rows]);
+        $this->paginatedOut($rows, $total, $offset, $limit);
     }
 
     public function createCharacter()
@@ -564,21 +591,26 @@ class ApiController extends ApiBaseController
     {
         $pid = (int)$this->f3->get('PARAMS.pid');
         if (!$this->hasProjectAccess($pid)) $this->jsonError('Accès refusé.', 403, 'FORBIDDEN');
+        [$offset, $limit] = $this->getPaginationParams();
+        $total = (int)$this->db->exec(
+            'SELECT COUNT(*) AS n FROM elements WHERE project_id = ?', [$pid]
+        )[0]['n'];
         $rows = $this->db->exec(
             'SELECT e.id, e.title, e.parent_id, e.order_index, e.template_element_id,
                     te.element_type, te.config_json
              FROM elements e
              LEFT JOIN template_elements te ON te.id = e.template_element_id
              WHERE e.project_id = ?
-             ORDER BY te.display_order ASC, e.order_index ASC, e.id ASC',
-            [$pid]
+             ORDER BY te.display_order ASC, e.order_index ASC, e.id ASC
+             LIMIT ? OFFSET ?',
+            [$pid, $limit, $offset]
         );
         foreach ($rows as &$r) {
             $cfg = json_decode($r['config_json'] ?? '{}', true);
             $r['type_label'] = $cfg['label_singular'] ?? $cfg['label'] ?? $r['element_type'];
             unset($r['config_json']);
         }
-        $this->jsonOut(['elements' => $rows]);
+        $this->paginatedOut($rows, $total, $offset, $limit);
     }
 
     public function createElement()

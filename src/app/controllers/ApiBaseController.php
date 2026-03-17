@@ -49,6 +49,7 @@ abstract class ApiBaseController extends Controller
     {
         http_response_code($status);
         header('Content-Type: application/json; charset=utf-8');
+        header('X-API-Version: 1');
         echo json_encode($data, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES);
         exit;
     }
@@ -79,5 +80,40 @@ abstract class ApiBaseController extends Controller
         }
         $data = json_decode($raw, true);
         return is_array($data) ? $data : [];
+    }
+
+    // ──────────────────────────────────────────────────────────────────────────
+    // Pagination helpers
+    // ──────────────────────────────────────────────────────────────────────────
+
+    /**
+     * Parse ?offset= and ?limit= from the query string.
+     * Returns [offset, limit] with sane defaults (0, 50) and hard cap (200).
+     */
+    protected function getPaginationParams(int $defaultLimit = 50, int $maxLimit = 200): array
+    {
+        $offset = max(0, (int) ($_GET['offset'] ?? 0));
+        $limit  = min($maxLimit, max(1, (int) ($_GET['limit'] ?? $defaultLimit)));
+        return [$offset, $limit];
+    }
+
+    /**
+     * Wrap a list result with pagination metadata.
+     *
+     * @param array $items   The page of items
+     * @param int   $total   Total count (from COUNT(*) query)
+     * @param int   $offset
+     * @param int   $limit
+     */
+    protected function paginatedOut(array $items, int $total, int $offset, int $limit): never
+    {
+        $this->jsonOut([
+            'data'   => $items,
+            'meta'   => [
+                'total'  => $total,
+                'offset' => $offset,
+                'limit'  => $limit,
+            ],
+        ]);
     }
 }

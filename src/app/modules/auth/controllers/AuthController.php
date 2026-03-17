@@ -759,7 +759,6 @@ class AuthController extends Controller
 
             }
 
-        }
 
         // Sort by date desc
 

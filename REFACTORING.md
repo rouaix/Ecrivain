@@ -391,7 +391,7 @@ Préfixer les routes en `/api/v1/...` dès maintenant pour conserver la liberté
 
 ## Avancement — branche `refactoring/structure`
 
-> Dernière mise à jour : 2026-03-17 · commit `70447b7`
+> Dernière mise à jour : 2026-03-17 · commit `f5cb33a` → session P4/P5
 
 ### Légende
 - ✅ Terminé
@@ -412,12 +412,12 @@ Préfixer les routes en `/api/v1/...` dès maintenant pour conserver la liberté
 | 🟡 P3 | DAO `collab` (CollaboratorInvite, CollaborationRequest) | ✅ | `f5cb33a` |
 | 🟡 P3 | Guards `requireOwner/requireProjectAccess/requireAuth` | ✅ | `f5cb33a` |
 | 🟢 P4 | Handler `ONERROR` unifié | ✅ | `f5cb33a` |
-| 🟢 P4 | `ApiClient.js` centralisé | ⬜ | — |
-| 🟢 P4 | Découpage `ProjectExportController` | ⬜ | — |
-| 🟢 P4 | Pagination API | ⬜ | — |
-| 🔵 P5 | Rate limiting atomique (fichier lock) | ⬜ | — |
-| 🔵 P5 | Versionnement API `/v1/` | ⬜ | — |
-| 🔵 P5 | Migrations dry-run CLI | ⬜ | — |
+| 🟢 P4 | `ApiClient.js` centralisé | ✅ | session 3 |
+| 🟢 P4 | Guards fail-fast `ProjectExportController` | ✅ | session 3 |
+| 🟢 P4 | Pagination API (`offset`/`limit`) | ✅ | session 3 |
+| 🔵 P5 | Rate limiting atomique | ✅ | N/A — sessions PHP déjà atomiques |
+| 🔵 P5 | Versionnement API `/v1/` | ✅ | session 3 |
+| 🔵 P5 | Migrations dry-run CLI | ✅ | session 3 |
 
 ### Détail du commit `f5cb33a` (2026-03-17)
 
@@ -437,6 +437,27 @@ Préfixer les routes en `/api/v1/...` dès maintenant pour conserver la liberté
 | `Controller.php` | Ajout `requireOwner()`, `requireProjectAccess()`, `requireAuth()` |
 | `index.php` | Handler `ONERROR` unifié (JSON pour API, HTML pour browser) |
 | `config.ini` | `app/modules/collab/models/` ajouté à `AUTOLOAD` |
+
+---
+
+### Détail session 3 (2026-03-17) — P4/P5
+
+**5 fichiers touchés**
+
+| Fichier créé | Rôle |
+|---|---|
+| `src/public/js/api-client.js` | Couche réseau JS centralisée : `get`, `post`, `postForm`, `put`, `delete`. CSRF injecté automatiquement depuis `<meta name="csrf-token">`. |
+| `src/data/migrations/migrate.php` | CLI dry-run/run : `php src/data/migrations/migrate.php` affiche l'état ; `--run` applique les migrations pendantes sans F3. |
+
+| Fichier modifié | Ce qui a changé |
+|---|---|
+| `ApiBaseController.php` | Ajout `getPaginationParams()` + `paginatedOut()` — pagination uniforme pour tous les contrôleurs API ; header `X-API-Version: 1` dans `jsonOut()` |
+| `ApiController.php` | 6 endpoints `list*` paginés (`offset`/`limit`, méta `{data, meta:{total,offset,limit}}`) |
+| `ProjectExportController.php` | Guards `requireProjectAccess($pid)` ajoutés à toutes les méthodes publiques dispatcher (fail-fast avant toute requête DB) |
+| `config.ini` | Routes `/api/v1/...` ajoutées (canonical v1) ; routes `/api/...` conservées (rétrocompatibilité) |
+| `layouts/main.html` | `api-client.js?v=1` ajouté |
+
+**Note rate limiting** : `checkRateLimit()` est déjà atomique — PHP acquiert un verrou exclusif sur le fichier de session lors de `session_start()`. Deux requêtes concurrentes avec le même `session_id` sont sérialisées par le handler PHP natif.
 
 ---
 
