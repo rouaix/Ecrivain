@@ -22,6 +22,17 @@ class AuthController extends Controller
 
     }
 
+    public function home()
+    {
+        if ($this->currentUser()) {
+            $this->f3->reroute('/dashboard');
+        }
+
+        $this->render('auth/home.html', [
+            'title' => 'Écrivain — Assistant d\'écriture créative',
+        ]);
+    }
+
     public function login()
     {
 
