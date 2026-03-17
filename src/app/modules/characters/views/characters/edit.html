@@ -108,20 +108,20 @@
                                     }}</strong>
                                 en s'appuyant sur le contenu du livre et le modèle de fiche personnage.
                             </p>
-                            <div id="enrich-loading" style="display:none;" class="enrich-loading">
+                            <div id="enrich-loading" class="is-hidden" class="enrich-loading">
                                 <i class="fas fa-spinner fa-spin"></i> Génération en cours…
                             </div>
-                            <div id="enrich-error" class="enrich-error" style="display:none;"></div>
-                            <div id="enrich-preview" style="display:none;">
+                            <div id="enrich-error" class="enrich-error" class="is-hidden" ></div>
+                            <div id="enrich-preview" class="is-hidden" >
                                 <p class="enrich-preview-label"><strong>Aperçu du résultat :</strong></p>
                                 <div id="enrich-preview-content" class="enrich-preview-content"></div>
                             </div>
                         </div>
                         <div class="modal-footer">
-                            <button type="button" id="btn-enrich-confirm" class="button primary" style="display:none;">
+                            <button type="button" id="btn-enrich-confirm" class="button primary" class="is-hidden" >
                                 <i class="fas fa-check"></i> Insérer dans la description
                             </button>
-                            <button type="button" id="btn-enrich-retry" class="button secondary" style="display:none;">
+                            <button type="button" id="btn-enrich-retry" class="button secondary" class="is-hidden" >
                                 <i class="fas fa-redo"></i> Régénérer
                             </button>
                             <button type="button" id="btn-enrich-cancel" class="button">Annuler</button>
@@ -688,11 +688,11 @@
 
             function openModal() {
                 modal.classList.add('is-visible');
-                divLoading.style.display = 'none';
-                divError.style.display = 'none';
-                divPreview.style.display = 'none';
-                btnConfirm.style.display = 'none';
-                btnRetry.style.display = 'none';
+                divLoading.classList.add('is-hidden');
+                divError.classList.add('is-hidden');
+                divPreview.classList.add('is-hidden');
+                btnConfirm.classList.add('is-hidden');
+                btnRetry.classList.add('is-hidden');
                 pendingHtml = '';
                 runEnrich();
             }
@@ -702,11 +702,11 @@
             }
 
             function runEnrich() {
-                divLoading.style.display = 'block';
-                divError.style.display = 'none';
-                divPreview.style.display = 'none';
-                btnConfirm.style.display = 'none';
-                btnRetry.style.display = 'none';
+                divLoading.classList.remove('is-hidden');
+                divError.classList.add('is-hidden');
+                divPreview.classList.add('is-hidden');
+                btnConfirm.classList.add('is-hidden');
+                btnRetry.classList.add('is-hidden');
 
                 // Get current description from Quill
                 var currentHtml = QuillTools.quill ? QuillTools.quill.root.innerHTML : '';
@@ -724,23 +724,23 @@
                 })
                 .then(function (r) { return r.json(); })
         .then(function (data) {
-            divLoading.style.display = 'none';
+            divLoading.classList.add('is-hidden');
             if (!data.success) {
                 divError.textContent = data.error || 'Une erreur est survenue.';
-                divError.style.display = 'block';
+                divError.classList.remove('is-hidden');
                 btnRetry.style.display = 'inline-flex';
                 return;
             }
             pendingHtml = data.html || '';
             divContent.innerHTML = pendingHtml;
-            divPreview.style.display = 'block';
+            divPreview.classList.remove('is-hidden');
             btnConfirm.style.display = 'inline-flex';
             btnRetry.style.display = 'inline-flex';
         })
         .catch(function (err) {
-            divLoading.style.display = 'none';
+            divLoading.classList.add('is-hidden');
             divError.textContent = 'Erreur réseau : ' + err.message;
-            divError.style.display = 'block';
+            divError.classList.remove('is-hidden');
             btnRetry.style.display = 'inline-flex';
         });
             }
@@ -750,7 +750,7 @@
     btnCancel.addEventListener('click', closeModal);
 
     btnRetry.addEventListener('click', function () {
-        divPreview.style.display = 'none';
+        divPreview.classList.add('is-hidden');
         runEnrich();
     });
 

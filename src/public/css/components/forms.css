@@ -3,7 +3,11 @@
    FORMS & INPUTS
    ========================================== */
 .form-group {
-    margin: 0;
+    margin-bottom: 16px;
+}
+
+.form-group:last-child {
+    margin-bottom: 0;
 }
 
 input,
@@ -109,7 +113,7 @@ label {
 
 .input-control:focus {
     border-color: var(--link-color);
-    box-shadow: 0 0 0 3px rgba(63, 81, 181, 0.1);
+    box-shadow: var(--focus-ring);
     outline: none;
 }
 

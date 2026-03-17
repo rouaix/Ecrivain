@@ -46,12 +46,12 @@
                 <div class="review-tabs">
                     <button class="review-tab active" data-tab="annotations" id="tabAnnotations"
                         title="Voir les annotations" title="Voir les annotations">
-                        <i class="fas fa-tags" style="margin-right:6px"></i> Annotations
+                        <i class="fas fa-tags icon-mr"></i> Annotations
                         <span class="review-panel-count" id="annotationCount">0</span>
                     </button>
                     <button class="review-tab" data-tab="suggestions" id="tabSuggestions" title="Voir les suggestions"
                         title="Voir les suggestions">
-                        <i class="fas fa-edit" style="margin-right:6px"></i> Suggestions
+                        <i class="fas fa-edit icon-mr"></i> Suggestions
                         <span class="review-panel-count suggestion-count-badge" id="suggestionCount">0</span>
                     </button>
                 </div>
@@ -74,7 +74,7 @@
                 </div>
 
                 <!-- Suggestion filters (shown only on suggestions tab) -->
-                <div class="review-filters" id="suggestionFilters" style="display:none">
+                <div class="review-filters" id="suggestionFilters" class="is-hidden" >
                     <button class="sug-filter active" data-sfilter="all">Tout</button>
                     <button class="sug-filter" data-sfilter="pending" title="En attente" title="En attente">
                         <span class="ann-dot" style="background:#8b5cf6"></span>
@@ -89,13 +89,13 @@
             </div>
 
             <div class="review-annotations-list" id="annotationsList"></div>
-            <div class="review-annotations-list" id="suggestionsList" style="display:none"></div>
+            <div class="review-annotations-list" id="suggestionsList" class="is-hidden" ></div>
         </div>
     </div>
 </div>
 
 <!-- Floating popup -->
-<div id="annotationPopup" class="annotation-popup" style="display:none;" role="dialog" aria-label="Nouvelle annotation">
+<div id="annotationPopup" class="annotation-popup" class="is-hidden" role="dialog" aria-label="Nouvelle annotation">
     <!-- Mode toggle -->
     <div class="popup-mode-toggle">
         <button class="popup-mode-btn active" id="modeAnnotation" title="Mode annotation" title="Mode annotation"><i
@@ -118,14 +118,14 @@
             rows="2"></textarea>
         <div class="annotation-popup-actions">
             <button id="annotationSubmit" class="button primary small" title="Enregistrer l'annotation"
-                title="Enregistrer l'annotation"><i class="fas fa-tag" style="margin-right:6px"></i>Annoter</button>
+                title="Enregistrer l'annotation"><i class="fas fa-tag icon-mr"></i>Annoter</button>
             <button id="annotationCancel" class="button small" title="Annuler l'annotation"
                 title="Annuler l'annotation">Annuler</button>
         </div>
     </div>
 
     <!-- Suggestion fields -->
-    <div id="suggestionFields" style="display:none">
+    <div id="suggestionFields" class="is-hidden" >
         <label class="popup-field-label">Texte original :</label>
         <div class="suggestion-original-preview" id="suggestionOriginalPreview"></div>
         <label class="popup-field-label">Correction proposée :</label>
@@ -493,10 +493,10 @@
 
             // Show popup temporarily offscreen to measure real height
             popup.style.visibility = 'hidden';
-            popup.style.display = 'block';
+            popup.classList.remove('is-hidden');
             var popupH = popup.offsetHeight;
             var popupW = popup.offsetWidth || 320;
-            popup.style.display = 'none';
+            popup.classList.add('is-hidden');
             popup.style.visibility = '';
 
             var headerH = 70; // sticky header clearance
@@ -509,12 +509,12 @@
             top = Math.max(headerH, top);
             popup.style.left = left + 'px';
             popup.style.top = top + 'px';
-            popup.style.display = 'block';
+            popup.classList.remove('is-hidden');
             document.getElementById('annotationCategory').focus();
         }
 
         function hidePopup() {
-            popup.style.display = 'none';
+            popup.classList.add('is-hidden');
             pendingSelection = null;
             if (window.getSelection) window.getSelection().removeAllRanges();
         }
@@ -1360,7 +1360,7 @@
             if (!tooltipEl) {
                 tooltipEl = document.createElement('div');
                 tooltipEl.className = 'glossary-tooltip';
-                tooltipEl.style.display = 'none';
+                tooltipEl.classList.add('is-hidden');
                 document.body.appendChild(tooltipEl);
             }
             return tooltipEl;
@@ -1386,7 +1386,7 @@
                     (cat ? ' <em style="font-weight:normal;font-size:.85em;color:var(--text-muted,#666)">(' + escHtml(cat) + ')</em>' : '') +
                     '</span>' +
                     (def ? escHtml(def) : '<em>Aucune définition.</em>');
-                tip.style.display = 'block';
+                tip.classList.remove('is-hidden');
                 positionTooltip(e);
             });
             el.addEventListener('mousemove', positionTooltip);

@@ -15,7 +15,7 @@
     <a href="{{ @base }}/profile" class="button secondary">
         <i class="fas fa-user"></i> Mon Profil
     </a>
-    <a href="{{ @base }}/ai/config" class="button secondary btn-purple">
+    <a href="{{ @base }}/ai/config" class="button primary">
         <i class="fas fa-robot"></i> Configuration IA
     </a>
     <a href="{{ @base }}/ai/usage" class="button secondary">
@@ -110,7 +110,7 @@
 </check>
 
 <!-- Kanban view (hidden by default) -->
-<div id="kanbanView" style="display:none">
+<div id="kanbanView" class="is-hidden" >
     <div class="kanban-board">
 
         <div class="kanban-col" data-status="active">
@@ -406,15 +406,15 @@
 
         function showView(view) {
             if (view === 'kanban') {
-                listView.style.display = 'none';
-                kanbanView.style.display = 'block';
+                listView.classList.add('is-hidden');
+                kanbanView.classList.remove('is-hidden');
                 btnList.classList.remove('active');
                 btnKanban.classList.add('active');
                 buildKanban();
                 localStorage.setItem(STORAGE_KEY, 'kanban');
             } else {
-                listView.style.display = 'block';
-                kanbanView.style.display = 'none';
+                listView.classList.remove('is-hidden');
+                kanbanView.classList.add('is-hidden');
                 btnList.classList.add('active');
                 btnKanban.classList.remove('active');
                 localStorage.setItem(STORAGE_KEY, 'list');

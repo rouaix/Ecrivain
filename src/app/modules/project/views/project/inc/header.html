@@ -37,8 +37,7 @@
                             title="Gérer les collaborateurs" title="Gérer les collaborateurs"><i
                                 class="fas fa-users"></i> Collaborateurs</a>
                     </check>
-                    <a class="button" style="display: none;"
-                        href="{{ @base }}/project/{{ @project.id }}/timeline">Timeline</a>
+                    <a class="button" class="is-hidden" href="{{ @base }}/project/{{ @project.id }}/timeline">Timeline</a>
                     <a class="button" href="{{ @base }}/project/{{ @project.id }}/mindmap">Carte mentale</a>
                     <a class="button" href="{{ @base }}/project/{{ @project.id }}/lecture">Lecture</a>
                     <a class="button" href="{{ @base }}/project/{{ @project.id }}/relecture">Relecture</a>
@@ -49,7 +48,7 @@
                 </div>
 
                 <div id="export-modal" class="modal-overlay">
-                    <div class="modal-content" style="max-width:480px">
+                    <div class="modal-content modal-sm">
                         <div class="modal-header export-modal-header">
                             <h3>Exporter le projet</h3>
                             <button class="modal-close button" id="export-modal-close" title="Fermer"

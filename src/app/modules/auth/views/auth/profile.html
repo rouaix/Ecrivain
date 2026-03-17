@@ -258,7 +258,7 @@
             <p class="mcp-loading"><i class="fas fa-spinner fa-spin"></i> Chargement…</p>
         </div>
 
-        <div id="mcp-new-token" class="mcp-new-token" style="display:none;">
+        <div id="mcp-new-token" class="mcp-new-token" class="is-hidden" >
 
             <label>Configuration Claude Desktop — copiez-la dans <code>claude_desktop_config.json</code> :</label>
 
@@ -479,7 +479,7 @@
                     </button>
                 </div>
             </div>
-            <div class="mcp-inline-config" id="config-${t.token_id}" style="display:none;">
+            <div class="mcp-inline-config" id="config-${t.token_id}" class="is-hidden" >
                 <pre class="mcp-config-block"></pre>
                 <button type="button" class="button secondary small mcp-inline-copy-btn">
                     <i class="fas fa-copy"></i> Copier
@@ -494,11 +494,11 @@
                     const pre = configEl.querySelector('pre');
                     if (configEl.style.display === 'none') {
                         pre.textContent = buildConfig(this.dataset.token);
-                        configEl.style.display = 'block';
+                        configEl.classList.remove('is-hidden');
                         row.style.borderRadius = '8px 8px 0 0';
                         this.innerHTML = '<i class="fas fa-eye-slash"></i> Masquer';
                     } else {
-                        configEl.style.display = 'none';
+                        configEl.classList.add('is-hidden');
                         row.style.borderRadius = '';
                         this.innerHTML = '<i class="fas fa-eye"></i> Voir config';
                     }

@@ -40,9 +40,9 @@
     <div class="editor-top-bar">
         <span id="autosave-indicator" class="autosave-indicator"></span>
         <div id="sessionGoalWidget" class="session-goal-widget" title="Cliquer pour définir un objectif de session"
-            style="display:none;">
+            class="is-hidden" >
             <span id="sessionGoalText" class="session-goal-text"></span>
-            <div id="sessionGoalTrack" class="session-goal-track" style="display:none;">
+            <div id="sessionGoalTrack" class="session-goal-track" class="is-hidden" >
                 <div id="sessionGoalFill" class="session-goal-fill"></div>
             </div>
         </div>
@@ -106,9 +106,9 @@
             <!-- Content Section -->
             <div class="edit-card-section focus-content">
                 <div class="form-group">
-                    <label for="content">
+                    <label for="content" style="display:flex;justify-content:space-between;align-items:baseline">
                         <span>Contenu</span>
-                        <span class="word-count inline" style="float: right;">
+                        <span class="word-count inline">
                             <span id="wordCount">0</span> mots
                         </span>
                     </label>
@@ -121,7 +121,7 @@
             </div>
 
             <!-- Glossaire - Termes détectés dans ce chapitre -->
-            <div id="glossaryFoundSection" class="edit-card-section" style="display:none;">
+            <div id="glossaryFoundSection" class="edit-card-section" class="is-hidden" >
                 <div class="grammar-header">
                     <label><i class="fas fa-book"></i> Termes du lexique présents</label>
                 </div>
@@ -129,7 +129,7 @@
             </div>
 
             <!-- Annotations Section -->
-            <div class="edit-card-section" id="annotationsSection" style="display:none;">
+            <div class="edit-card-section" id="annotationsSection" class="is-hidden" >
                 <div class="grammar-header">
                     <label>Annotations</label>
                 </div>
@@ -144,7 +144,7 @@
                         <span id="grammarStatus" class="grammar-status"></span>
                         <button type="button" id="btnGrammarCheck" class="button secondary"
                             title="Vérifier la grammaire" title="Vérifier la grammaire">
-                            <i class="fas fa-spell-check" style="margin-right: 10px;"></i>Vérifier
+                            <i class="fas fa-spell-check icon-mr"></i>Vérifier
                         </button>
                     </div>
                 </div>
@@ -166,7 +166,7 @@
                             {{ @chapter.resume | raw }}
                         </div>
                         <input type="hidden" name="resume" value="{{ @chapter.resume | esc }}">
-                        <p id="summarize-status" class="summarize-status" style="display:none;"></p>
+                        <p id="summarize-status" class="summarize-status" class="is-hidden" ></p>
                     </div>
                 </div>
             </check>
@@ -210,7 +210,7 @@
 
 <!-- Continuity Suggestions Modal -->
 <div class="modal-overlay" id="continuityModal">
-    <div class="modal-content" style="max-width: 600px;">
+    <div class="modal-content modal-md">
         <div class="modal-header">
             <h3><i class="fas fa-forward"></i> Suggestions d'ouverture</h3>
             <button type="button" class="modal-close" id="closeContinuityModal" title="Fermer"
@@ -221,7 +221,7 @@
             <div id="continuityLoading" style="display:none; text-align:center; padding:24px 0;">
                 <i class="fas fa-spinner fa-spin"></i> Génération en cours…
             </div>
-            <div id="continuityError" class="continuity-error" style="display:none;"></div>
+            <div id="continuityError" class="continuity-error" class="is-hidden" ></div>
             <ul id="continuityList" class="continuity-list"></ul>
         </div>
     </div>
@@ -229,7 +229,7 @@
 
 <!-- Inconsistency Detection Modal -->
 <div class="modal-overlay" id="inconsistencyModal">
-    <div class="modal-content" style="max-width: 660px; max-height: 80vh; display: flex; flex-direction: column;">
+    <div class="modal-content modal-md modal-tall">
         <div class="modal-header">
             <h3><i class="fas fa-search"></i> Détection d'incohérences</h3>
             <button type="button" class="modal-close" id="closeInconsistencyModal" title="Fermer"
@@ -240,7 +240,7 @@
                 <i class="fas fa-spinner fa-spin fa-2x"></i>
                 <p style="margin-top:12px; color:var(--text-muted,#777);">Analyse en cours…</p>
             </div>
-            <div id="inconsistencyResult" style="display:none;"></div>
+            <div id="inconsistencyResult" class="is-hidden" ></div>
         </div>
         <div class="modal-footer" style="padding:12px 20px; border-top:1px solid var(--border); text-align:right;">
             <button type="button" id="closeInconsistencyModalBtn" class="button secondary" title="Fermer la fenêtre"
@@ -251,7 +251,7 @@
 
 <!-- Glossary Modal -->
 <div class="modal-overlay" id="glossaryModal">
-    <div class="modal-content" style="max-width: 680px; max-height: 80vh; display: flex; flex-direction: column;">
+    <div class="modal-content modal-md modal-tall">
         <div class="modal-header">
             <h3><i class="fas fa-book"></i> Lexique du projet</h3>
             <button type="button" class="modal-close" id="closeGlossaryModal" title="Fermer"
@@ -265,7 +265,7 @@
             <div id="glossaryLoading" style="display:none; text-align:center; padding:24px 0;">
                 <i class="fas fa-spinner fa-spin"></i> Chargement…
             </div>
-            <div id="glossaryEmpty" style="display:none;" class="panel-empty">Aucun terme trouvé.</div>
+            <div id="glossaryEmpty" class="is-hidden" class="panel-empty">Aucun terme trouvé.</div>
             <div id="glossaryList" class="glossary-modal-list" style="flex:1; overflow-y:auto; margin-top:8px;"></div>
         </div>
         <div class="modal-footer" style="padding:12px 20px; border-top:1px solid var(--border); text-align:right;">
@@ -281,7 +281,7 @@
 
 <!-- AI Assistant Modal -->
 <div class="modal-overlay" id="aiAssistantModal">
-    <div class="modal-content" style="max-width: 900px; max-height: 80vh; display: flex; flex-direction: column;">
+    <div class="modal-content modal-lg modal-tall">
         <div class="modal-header">
             <h3><i class="fas fa-magic"></i> Assistant Narratif</h3>
             <button type="button" class="modal-close" id="closeAiAssistantModal" title="Fermer"
@@ -1114,7 +1114,7 @@
                 var statusEl = document.getElementById('summarize-status');
                 btnSummarizeAI.disabled = true;
                 btnSummarizeAI.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Génération…';
-                statusEl.style.display = 'none';
+                statusEl.classList.add('is-hidden');
 
                 fetch('{{ @base }}/ai/summarize-chapter', {
                     method: 'POST',
@@ -1135,12 +1135,12 @@
                             statusEl.className = 'summarize-status summarize-status--err';
                             statusEl.textContent = 'Erreur : ' + (data.error || 'inconnue');
                         }
-                        statusEl.style.display = 'block';
+                        statusEl.classList.remove('is-hidden');
                     })
                     .catch(function (e) {
                         statusEl.className = 'summarize-status summarize-status--err';
                         statusEl.textContent = 'Erreur réseau : ' + e.message;
-                        statusEl.style.display = 'block';
+                        statusEl.classList.remove('is-hidden');
                     })
                     .finally(function () {
                         btnSummarizeAI.disabled = false;
@@ -1171,8 +1171,8 @@
 
             btn.addEventListener('click', function () {
                 list.innerHTML = '';
-                errEl.style.display = 'none';
-                loading.style.display = 'block';
+                errEl.classList.add('is-hidden');
+                loading.classList.remove('is-hidden');
                 openModal();
 
                 fetch('{{ @base }}/ai/suggest-continuity', {
@@ -1182,15 +1182,15 @@
                 })
                     .then(function (r) { return r.json(); })
                     .then(function (data) {
-                        loading.style.display = 'none';
+                        loading.classList.add('is-hidden');
                         if (!data.success) {
                             errEl.textContent = data.error || 'Erreur inconnue.';
-                            errEl.style.display = 'block';
+                            errEl.classList.remove('is-hidden');
                             return;
                         }
                         if (!data.suggestions || !data.suggestions.length) {
                             errEl.textContent = 'Aucune suggestion retournée.';
-                            errEl.style.display = 'block';
+                            errEl.classList.remove('is-hidden');
                             return;
                         }
                         if (!data.has_previous) {
@@ -1217,9 +1217,9 @@
                         });
                     })
                     .catch(function (e) {
-                        loading.style.display = 'none';
+                        loading.classList.add('is-hidden');
                         errEl.textContent = 'Erreur réseau : ' + e.message;
-                        errEl.style.display = 'block';
+                        errEl.classList.remove('is-hidden');
                     });
             });
 
@@ -1237,8 +1237,8 @@
             var loading = document.getElementById('inconsistencyLoading');
             var result = document.getElementById('inconsistencyResult');
 
-            function openModal() { modal.style.display = 'flex'; }
-            function closeModal() { modal.style.display = 'none'; }
+            function openModal() { modal.classList.remove('is-hidden'); }
+            function closeModal() { modal.classList.add('is-hidden'); }
 
             function escHtml(s) {
                 return String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
@@ -1247,8 +1247,8 @@
             if (btn) {
                 btn.addEventListener('click', function () {
                     openModal();
-                    result.style.display = 'none';
-                    loading.style.display = 'block';
+                    result.classList.add('is-hidden');
+                    loading.classList.remove('is-hidden');
 
                     fetch('{{ @base }}/ai/detect-inconsistencies', {
                         method: 'POST',
@@ -1257,8 +1257,8 @@
                     })
                         .then(function (r) { return r.json(); })
                         .then(function (data) {
-                            loading.style.display = 'none';
-                            result.style.display = 'block';
+                            loading.classList.add('is-hidden');
+                            result.classList.remove('is-hidden');
 
                             if (!data.success) {
                                 result.innerHTML = '<div class="continuity-error">' + escHtml(data.error || 'Erreur inconnue') + '</div>';
@@ -1278,8 +1278,8 @@
                             }
                         })
                         .catch(function (e) {
-                            loading.style.display = 'none';
-                            result.style.display = 'block';
+                            loading.classList.add('is-hidden');
+                            result.classList.remove('is-hidden');
                             result.innerHTML = '<div class="continuity-error">Erreur réseau : ' + escHtml(e.message) + '</div>';
                         });
                 });
@@ -1313,10 +1313,10 @@
                     return !filter || t.term.toLowerCase().indexOf(filter) !== -1 || (t.definition || '').toLowerCase().indexOf(filter) !== -1;
                 });
                 if (visible.length === 0) {
-                    emptyEl.style.display = 'block';
+                    emptyEl.classList.remove('is-hidden');
                     return;
                 }
-                emptyEl.style.display = 'none';
+                emptyEl.classList.add('is-hidden');
                 visible.forEach(function (t) {
                     var div = document.createElement('div');
                     div.className = 'glossary-modal-entry';
@@ -1342,7 +1342,7 @@
                 });
 
                 if (found.length === 0) {
-                    section.style.display = 'none';
+                    section.classList.add('is-hidden');
                     return;
                 }
 
@@ -1378,28 +1378,28 @@
                 })
                 .catch(function () { /* silent fail */ });
 
-            function openModal() { modal.style.display = 'flex'; searchEl.value = ''; searchEl.focus(); }
-            function closeModal() { modal.style.display = 'none'; }
+            function openModal() { modal.classList.remove('is-hidden'); searchEl.value = ''; searchEl.focus(); }
+            function closeModal() { modal.classList.add('is-hidden'); }
 
             if (btn) {
                 btn.addEventListener('click', function () {
                     openModal();
                     if (terms !== null) { renderTerms(''); return; }
-                    loading.style.display = 'block';
+                    loading.classList.remove('is-hidden');
                     listEl.innerHTML = '';
-                    emptyEl.style.display = 'none';
+                    emptyEl.classList.add('is-hidden');
                     fetch('{{ @base }}/project/{{ @project.id }}/glossary/terms', {
                         headers: { 'X-CSRF-Token': window.CSRF_TOKEN }
                     })
                         .then(function (r) { return r.json(); })
                         .then(function (data) {
-                            loading.style.display = 'none';
+                            loading.classList.add('is-hidden');
                             terms = data;
                             renderTerms('');
                             scanGlossaryTerms();
                         })
                         .catch(function () {
-                            loading.style.display = 'none';
+                            loading.classList.add('is-hidden');
                             listEl.innerHTML = '<p class="continuity-error">Erreur lors du chargement.</p>';
                         });
                 });
@@ -1458,7 +1458,7 @@
             var listDiv = document.getElementById('commentsList');
             if (!section || !listDiv) return;
             if (!comments || comments.length === 0) {
-                section.style.display = 'none';
+                section.classList.add('is-hidden');
                 return;
             }
             section.style.display = '';
@@ -1877,14 +1877,14 @@
 
         function updateGoalWidget() {
             if (!sessionGoal) {
-                goalWidget.style.display = 'none';
+                goalWidget.classList.add('is-hidden');
                 return;
             }
-            goalWidget.style.display = 'flex';
+            goalWidget.classList.remove('is-hidden');
             var added = Math.max(0, getWordCount() - initialWords);
             var pct = Math.min(100, Math.round(added / sessionGoal * 100));
             goalText.textContent = added + '\u202f/\u202f' + sessionGoal + ' mots';
-            goalTrack.style.display = 'block';
+            goalTrack.classList.remove('is-hidden');
             goalFill.style.width = pct + '%';
             if (pct >= 100) {
                 goalFill.classList.add('done');

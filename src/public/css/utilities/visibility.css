@@ -3,18 +3,37 @@
    VISIBILITY UTILITIES
    Show/hide and display helper classes
    ========================================== */
-.is-hidden {
-    display: none !important;
-}
 
-.is-visible {
-    display: block !important;
-}
+/* Hide / show */
+.is-hidden  { display: none !important; }
+.is-visible { display: block !important; }
 
-.cursor-pointer {
-    cursor: pointer;
-}
+/* Invisible — cache visuellement mais préserve l'espace */
+.invisible { visibility: hidden; }
 
+/* Display helpers */
+.d-block       { display: block; }
+.d-inline      { display: inline; }
+.d-inline-block { display: inline-block; }
+.d-flex        { display: flex; }
+.d-inline-flex { display: inline-flex; }
+.d-flex-col    { display: flex; flex-direction: column; }
+
+/* Flex helpers courants */
+.flex-1          { flex: 1; }
+.flex-wrap       { flex-wrap: wrap; }
+.align-center    { align-items: center; }
+.justify-between { justify-content: space-between; }
+.justify-end     { justify-content: flex-end; }
+.gap-5           { gap: 5px; }
+.gap-10          { gap: 10px; }
+.gap-15          { gap: 15px; }
+.gap-20          { gap: 20px; }
+
+/* Cursor */
+.cursor-pointer { cursor: pointer; }
+
+/* Legacy — à ne plus utiliser dans les nouvelles vues */
 .cache {
     display: none !important;
     visibility: hidden !important;

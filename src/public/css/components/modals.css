@@ -1,2 +1,100 @@
 /* Modal and dialog styles */
-/* All modal styles are in ai/ai-modal.css */
+/* ==========================================
+   MODALS
+   ========================================== */
+
+/* Overlay */
+.modal-overlay {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.5);
+    z-index: 1000;
+    align-items: center;
+    justify-content: center;
+}
+
+.modal-overlay.is-visible {
+    display: flex;
+}
+
+/* Conteneur de base */
+.modal-content {
+    background: var(--card-bg);
+    border-radius: var(--radius-lg);
+    box-shadow: var(--shadow-md);
+    padding: 24px;
+    position: relative;
+    width: 560px;
+    max-width: 95vw;
+    max-height: 90vh;
+    overflow-y: auto;
+    color: var(--text-main);
+}
+
+.modal-content h2,
+.modal-content h3 {
+    margin-top: 0;
+    color: var(--text-main);
+}
+
+/* Tailles — max-width pour s'adapter aux petits écrans */
+.modal-content.modal-sm { max-width: 480px; }
+.modal-content.modal-md { max-width: 640px; }
+.modal-content.modal-lg { max-width: 900px; }
+.modal-content.modal-xl { max-width: min(95vw, 1100px); }
+
+/* Modal avec scroll interne (header + body + footer fixes) */
+.modal-content.modal-tall {
+    max-height: 85vh;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+}
+
+.modal-content.modal-tall .modal-body {
+    flex: 1;
+    overflow-y: auto;
+    padding: 4px 0;
+}
+
+/* Header / footer */
+.modal-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 16px;
+    padding-bottom: 12px;
+    border-bottom: 1px solid var(--border-light);
+}
+
+.modal-header h2,
+.modal-header h3 {
+    margin: 0;
+}
+
+.modal-close {
+    background: none;
+    border: none;
+    cursor: pointer;
+    color: var(--text-muted);
+    font-size: 1.2rem;
+    padding: 4px;
+    margin: 0;
+    line-height: 1;
+    transition: color var(--transition);
+}
+
+.modal-close:hover {
+    color: var(--text-main);
+    background: none;
+}
+
+.modal-footer {
+    display: flex;
+    justify-content: flex-end;
+    gap: 8px;
+    margin-top: 16px;
+    padding-top: 12px;
+    border-top: 1px solid var(--border-light);
+}

@@ -426,19 +426,19 @@
                         const range = selection.getRangeAt(0);
                         const rect = range.getBoundingClientRect();
 
-                        selectionPopup.style.display = 'flex';
+                        selectionPopup.classList.remove('is-hidden');
                         selectionPopup.style.left = rect.left + 'px';
                         selectionPopup.style.top = (rect.bottom + 5) + 'px';
                     }
                 } else {
-                    selectionPopup.style.display = 'none';
+                    selectionPopup.classList.add('is-hidden');
                 }
             });
 
             // Hide popup when clicking outside
             document.addEventListener('mousedown', function (e) {
                 if (!selectionPopup.contains(e.target) && !commentFormPopup.contains(e.target)) {
-                    selectionPopup.style.display = 'none';
+                    selectionPopup.classList.add('is-hidden');
                 }
             });
 
@@ -446,7 +446,7 @@
             copyBtn.addEventListener('click', function () {
                 navigator.clipboard.writeText(selectedText).then(function () {
                     alert('Texte copie !');
-                    selectionPopup.style.display = 'none';
+                    selectionPopup.classList.add('is-hidden');
                 });
             });
 
@@ -454,14 +454,14 @@
             commentBtn.addEventListener('click', function () {
                 selectedTextPreview.textContent = '"' + selectedText + '"';
                 commentTextarea.value = '';
-                selectionPopup.style.display = 'none';
-                commentFormPopup.style.display = 'flex';
+                selectionPopup.classList.add('is-hidden');
+                commentFormPopup.classList.remove('is-hidden');
                 commentTextarea.focus();
             });
 
             // Cancel comment
             cancelCommentBtn.addEventListener('click', function () {
-                commentFormPopup.style.display = 'none';
+                commentFormPopup.classList.add('is-hidden');
             });
 
             // Submit comment
@@ -489,7 +489,7 @@
                     .then(function (resp) {
                         if (resp.ok) {
                             alert('Remarque ajoutee avec succes !');
-                            commentFormPopup.style.display = 'none';
+                            commentFormPopup.classList.add('is-hidden');
                         } else {
                             alert('Erreur lors de l\'ajout de la remarque.');
                         }
@@ -727,7 +727,7 @@
                 if (!tooltipEl) {
                     tooltipEl = document.createElement('div');
                     tooltipEl.className = 'glossary-tooltip';
-                    tooltipEl.style.display = 'none';
+                    tooltipEl.classList.add('is-hidden');
                     document.body.appendChild(tooltipEl);
                 }
                 return tooltipEl;
@@ -753,7 +753,7 @@
                         (cat ? ' <em style="font-weight:normal;font-size:.85em;color:var(--text-muted,#666)">(' + escHtml(cat) + ')</em>' : '') +
                         '</span>' +
                         (def ? escHtml(def) : '<em>Aucune définition.</em>');
-                    tip.style.display = 'block';
+                    tip.classList.remove('is-hidden');
                     positionTooltip(e);
                 });
                 el.addEventListener('mousemove', positionTooltip);

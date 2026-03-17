@@ -1,5 +1,23 @@
 /* Helper classes */
 /* ==========================================
+   HELPERS — icônes, layout, edit page
+   ========================================== */
+
+/* Icônes inline suivies de texte */
+.icon-mr { margin-right: 6px; }
+.icon-ml { margin-left: 6px; }
+
+/* Séparateur flex entre titre et actions */
+.flex-spacer { flex: 1; }
+
+/* Texte + icône en ligne */
+.inline-flex-center {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+}
+
+/* ==========================================
    PROJECT EDIT PAGE STYLES
    ========================================== */
 .edit-page-layout {

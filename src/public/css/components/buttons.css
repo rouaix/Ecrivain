@@ -12,73 +12,53 @@ button:not(.ql-toolbar button),
     justify-content: center;
     padding: 0 10px;
     border: 1px solid rgba(0, 0, 0, 0.2);
-    /* Unified border */
-    border-radius: 4px;
-    /* Unified radius */
+    border-radius: var(--radius-sm);
     font-family: inherit;
-    /* Unified font */
     font-size: 12px;
-    /* Unified font-size */
     cursor: pointer;
     text-decoration: none;
     line-height: 1;
     background: var(--button-bg);
-    /* Default, overridden by classes */
     color: var(--button-text);
-    transition: all 0.2s ease;
+    transition: background-color var(--transition), filter var(--transition);
     margin: 2px;
+    white-space: nowrap;
 }
 
 button:not(.ql-toolbar button):hover,
-.button:not(.ql-toolbar button):hover {
+.button:not(.ql-toolbar button):hover,
+input[type="submit"]:hover {
     background-color: var(--button-hover-bg);
 }
 
-.button.delete:hover {
-    background-color: var(--button-delete-hover-bg);
-}
-
-/* Ensure specific input types also follow suit if they aren't covered by .button */
+/* submit = primary par défaut */
 input[type="submit"] {
     background: var(--button-primary-bg);
     color: var(--button-text);
 }
 
-/* a.button styles are now handled by the main block above,
-   but we keep the color modifiers */
-
-a.button {
-    /* Layout handled by generic rule */
-}
-
-/*
-a.button.delete {
-    background: var(--button-delete-bg);
-}
-
-a.button.secondary {
-    background: var(--button-secondary-bg);
-}
-*/
-/* Color variants */
-.button.secondary {
-    /*
-    background-color: var(--button-secondary-bg);
-    color: white;
-    */
-}
-
-.button:hover,
-button:not(.ql-toolbar button):hover,
 input[type="submit"]:hover {
-    /* filter: brightness(0.9);*/
+    background-color: var(--button-primary-hover-bg);
 }
 
-.button.small {
-    height: 28px;
-    /* Exception for intentionally small buttons */
-    font-size: 12px;
-    padding: 0 10px;
+/* ── Variantes couleur ─────────────────── */
+
+.button.primary {
+    background: var(--button-primary-bg);
+    color: var(--button-text);
+}
+
+.button.primary:hover {
+    background-color: var(--button-primary-hover-bg);
+}
+
+.button.secondary {
+    background: var(--button-secondary-bg);
+    color: var(--button-text);
+}
+
+.button.secondary:hover {
+    background-color: var(--button-secondary-hover-bg);
 }
 
 .button.delete {
@@ -88,73 +68,50 @@ input[type="submit"]:hover {
 }
 
 .button.delete:hover {
-    background-color: darkred;
+    background-color: var(--button-delete-hover-bg);
 }
 
-/* Specific AI Buttons */
-.button-ai-purple {
-    background-color: var(--button-primary-bg);
-    color: white;
-    border: none;
-    padding: 4px 8px;
-    cursor: pointer;
+/* ── Tailles ──────────────────────────── */
+
+.button.small {
+    height: 20px;
+    font-size: 11px;
+    padding: 0 8px;
 }
 
-.button-ai-green {
-    background-color: var(--button-bg);
-    color: white;
-    border: none;
-    padding: 4px 8px;
-    cursor: pointer;
+.button.large {
+    height: 32px;
+    font-size: 13px;
+    padding: 0 16px;
 }
 
-.button-ai-orange {
-    background-color: var(--button-secondary-bg);
-    color: white;
-    border: none;
-    padding: 4px 8px;
-    cursor: pointer;
-}
-
-.preview-btn {
-    margin-right: 5px;
-    background: var(--button-secondary-bg);
-    color: var(--button-text);
-    border: 1px solid var(--border-color);
-    padding: 2px 8px;
-    cursor: pointer;
-}
-
-.preview-btn:hover {
-    background: var(--button-black-bg);
-}
+/* ── Icônes dans les boutons ──────────── */
 
 span.button i,
-a.button i {
-    margin: 0 5px;
+a.button i,
+button i {
+    margin: 0 4px;
 }
 
-.btn-purple {
-    background-color: var(--button-primary-bg);
-    color: white;
-    border: none;
-}
-
-.btn-purple:hover {
-    background-color: var(--button-primary-bg);
-    filter: brightness(0.9);
-}
+/* ── Token button ─────────────────────── */
 
 #btn-generate-token {
     margin-bottom: 20px;
 }
 
-#searchToggleBtn {
-    margin-right: 15px;
+/* ── Preview button (hook JS + style secondaire) ─ */
+
+.preview-btn {
+    background: var(--button-secondary-bg);
+    color: var(--button-text);
 }
 
-.button i::before,
-button i::after {
-    margin: 0 5px;
-    padding: 0;
+.preview-btn:hover {
+    background: var(--button-secondary-hover-bg);
+}
+
+/* ── Toolbar search ───────────────────── */
+
+#searchToggleBtn {
+    margin-right: 15px;
 }

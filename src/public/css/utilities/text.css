@@ -3,31 +3,44 @@
    TEXT UTILITIES
    Helper classes for text styling
    ========================================== */
+
+/* Alignment */
+.text-center { text-align: center !important; }
+.text-right  { text-align: right !important; }
+.text-left   { text-align: left !important; }
+
+/* Colors */
+.text-muted   { color: var(--text-muted); }
+.text-main    { color: var(--text-main); }
+.text-success { color: var(--color-success); }
+.text-danger  { color: var(--color-danger); }
+.text-warning { color: var(--color-warning); }
+.text-info    { color: var(--color-info); }
+.text-error   { color: var(--error-text); }
+
+/* Sizes */
+.text-xs { font-size: 0.75em; }
+.text-sm { font-size: 0.875em; }
+.text-lg { font-size: 1.125em; }
+
+/* Weight / style */
+.fw-bold   { font-weight: 700; }
+.fw-normal { font-weight: 400; }
+.text-bold   { font-weight: 700; }
+.text-italic { font-style: italic; }
+
+/* Opacity */
+.opacity-60 { opacity: 0.6; }
+.opacity-80 { opacity: 0.8; }
+
+/* Misc */
 .small-text-muted {
     font-size: 0.9em;
     color: var(--text-muted);
 }
-.text-muted {
-    color: var(--text-muted);
-}
-.text-right {
-    text-align: right !important;
-}
-.text-center {
-    text-align: center !important;
-}
-.text-bold {
-    font-weight: 700;
-}
-.text-italic {
-    font-style: italic;
-}
-.text-success {
-    color: #2e7d32;
-}
-.text-error {
-    color: #c62828;
-}
-.text-info {
-    color: #1e88e5;
+
+.text-truncate {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
 }

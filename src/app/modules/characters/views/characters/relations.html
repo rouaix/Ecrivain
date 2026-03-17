@@ -96,7 +96,7 @@
                         <i class="fas fa-link"></i> Créer le lien
                     </button>
 
-                    <p id="relStatus" class="rel-status" style="display:none;"></p>
+                    <p id="relStatus" class="rel-status" class="is-hidden" ></p>
                 </div>
 
                 <!-- Relations list -->
@@ -134,8 +134,8 @@
 </div>
 
 <!-- Suggestions modal -->
-<div class="modal-overlay" id="suggestModal" style="display:none;">
-    <div class="modal-content" style="max-width:620px;max-height:80vh;display:flex;flex-direction:column;">
+<div class="modal-overlay" id="suggestModal" class="is-hidden" >
+    <div class="modal-content modal-md modal-tall">
         <div class="modal-header">
             <h3><i class="fas fa-magic"></i> Relations suggérées par l'IA</h3>
             <button type="button" class="modal-close" id="closeSuggestModal">&times;</button>
@@ -364,8 +364,8 @@
         var el = document.getElementById('relStatus');
         el.textContent = msg;
         el.className = 'rel-status rel-status--' + type;
-        el.style.display = 'block';
-        setTimeout(function () { el.style.display = 'none'; }, 3000);
+        el.classList.remove('is-hidden');
+        setTimeout(function () { el.classList.add('is-hidden'); }, 3000);
     }
 
     function escHtml(str) {
@@ -378,8 +378,8 @@
     var suggestLoading = document.getElementById('suggestLoading');
     var suggestList = document.getElementById('suggestList');
 
-    function openSuggestModal() { suggestModal.style.display = 'flex'; }
-    function closeSuggestModal() { suggestModal.style.display = 'none'; }
+    function openSuggestModal() { suggestModal.classList.remove('is-hidden'); }
+    function closeSuggestModal() { suggestModal.classList.add('is-hidden'); }
 
     document.getElementById('closeSuggestModal').addEventListener('click', closeSuggestModal);
     document.getElementById('closeSuggestModalBtn').addEventListener('click', closeSuggestModal);
@@ -387,7 +387,7 @@
 
     document.getElementById('btnSuggestRelations').addEventListener('click', function () {
         openSuggestModal();
-        suggestLoading.style.display = 'block';
+        suggestLoading.classList.remove('is-hidden');
         suggestList.innerHTML = '';
 
         fetch(BASE + '/ai/suggest-relations', {
@@ -397,7 +397,7 @@
         })
             .then(function (r) { return r.json(); })
             .then(function (data) {
-                suggestLoading.style.display = 'none';
+                suggestLoading.classList.add('is-hidden');
                 if (!data.success) {
                     suggestList.innerHTML = '<p class="rel-status rel-status--err">' + escHtml(data.error || 'Erreur') + '</p>';
                     return;
@@ -466,7 +466,7 @@
                 });
             })
             .catch(function () {
-                suggestLoading.style.display = 'none';
+                suggestLoading.classList.add('is-hidden');
                 suggestList.innerHTML = '<p class="rel-status rel-status--err">Erreur réseau.</p>';
             });
     });
