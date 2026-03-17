@@ -1,0 +1,208 @@
+/* ── Landing / Homepage styles ── */
+
+/* Layout */
+.landing {
+    max-width: 1100px;
+    margin: 0 auto;
+    padding: 0 20px 60px;
+}
+
+/* ── Hero ── */
+.landing-hero {
+    text-align: center;
+    padding: 70px 20px 60px;
+}
+
+.landing-hero-badge {
+    display: inline-block;
+    background: #000;
+    color: #fff;
+    border: 1px solid #000;
+    border-radius: 20px;
+    padding: 4px 16px;
+    font-size: .82rem;
+    font-weight: 600;
+    margin-bottom: 24px;
+    letter-spacing: .02em;
+}
+
+.landing-hero-title {
+    font-size: clamp(2rem, 5vw, 3.2rem);
+    font-weight: 700;
+    color: var(--text-main);
+    line-height: 1.2;
+    margin: 0 0 20px;
+}
+
+.landing-hero-accent {
+    color: var(--link-color);
+}
+
+.landing-hero-sub {
+    font-size: 1.1rem;
+    color: var(--text-muted);
+    max-width: 600px;
+    margin: 0 auto 36px;
+    line-height: 1.7;
+}
+
+.landing-hero-cta {
+    display: flex;
+    gap: 12px;
+    justify-content: center;
+    flex-wrap: wrap;
+}
+
+/* Hero CTA buttons — override the global small .button.large */
+.landing-hero-cta .button {
+    height: 44px;
+    font-size: 0.95rem;
+    padding: 0 24px;
+    border-radius: var(--radius-md);
+}
+
+.landing-btn-primary {
+    box-shadow: 0 4px 14px rgba(0, 0, 0, .2);
+}
+
+/* ── Section ── */
+.landing-section {
+    padding: 20px 0 40px;
+}
+
+.landing-section-title {
+    text-align: center;
+    font-size: 1.6rem;
+    font-weight: 700;
+    color: var(--text-main);
+    margin: 0 0 36px;
+}
+
+/* ── Features grid ── */
+.landing-features {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 20px;
+}
+
+.landing-feature-card {
+    background: var(--card-bg);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-lg);
+    padding: 22px 24px;
+    transition: box-shadow var(--transition), transform var(--transition);
+}
+
+.landing-feature-card:hover {
+    box-shadow: var(--shadow-md);
+    transform: translateY(-2px);
+}
+
+.landing-feature-icon {
+    width: 44px;
+    height: 44px;
+    border-radius: var(--radius-md);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.2rem;
+    margin-bottom: 14px;
+    flex-shrink: 0;
+}
+
+/* ── Icon badge colour variants ── */
+
+/* Light themes — use semantic CSS vars where available, hardcoded fallback otherwise */
+.landing-icon--blue   { background: var(--info-bg);    color: var(--color-info); }
+.landing-icon--green  { background: var(--success-bg); color: var(--color-success); }
+.landing-icon--yellow { background: var(--warning-bg); color: var(--color-warning); }
+.landing-icon--orange { background: #fff7ed; color: #ea580c; }
+.landing-icon--purple { background: #f5f3ff; color: #7c3aed; }
+.landing-icon--indigo { background: #eef2ff; color: #4338ca; }
+.landing-icon--teal   { background: #f0fdfa; color: #0d9488; }
+.landing-icon--pink   { background: #fdf2f8; color: #db2777; }
+
+/* Dark theme overrides */
+body.theme-dark .landing-icon--blue   { background: rgba(59,  130, 246, .15); color: #60a5fa; }
+body.theme-dark .landing-icon--green  { background: rgba(34,  197,  94, .15); color: #4ade80; }
+body.theme-dark .landing-icon--yellow { background: rgba(245, 158,  11, .15); color: #fbbf24; }
+body.theme-dark .landing-icon--orange { background: rgba(234,  88,  12, .15); color: #fb923c; }
+body.theme-dark .landing-icon--purple { background: rgba(124,  58, 237, .15); color: #a78bfa; }
+body.theme-dark .landing-icon--indigo { background: rgba(67,   56, 202, .15); color: #818cf8; }
+body.theme-dark .landing-icon--teal   { background: rgba(13,  148, 136, .15); color: #2dd4bf; }
+body.theme-dark .landing-icon--pink   { background: rgba(219,  39, 119, .15); color: #f472b6; }
+
+/* Default (black/white/red) theme — use accent colour for all icons */
+body.theme-default .landing-icon--blue,
+body.theme-default .landing-icon--green,
+body.theme-default .landing-icon--yellow,
+body.theme-default .landing-icon--orange,
+body.theme-default .landing-icon--purple,
+body.theme-default .landing-icon--indigo,
+body.theme-default .landing-icon--teal,
+body.theme-default .landing-icon--pink {
+    background: #f7f7f7;
+    color: var(--link-color);
+}
+
+.landing-feature-card h3 {
+    font-size: 1rem;
+    font-weight: 700;
+    color: var(--text-main);
+    margin: 0 0 8px;
+}
+
+.landing-feature-card p {
+    font-size: .88rem;
+    color: var(--text-muted);
+    line-height: 1.6;
+    margin: 0;
+}
+
+.landing-feature-card p kbd {
+    background: var(--table-header-bg);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-sm);
+    padding: 1px 5px;
+    font-size: .78rem;
+    font-family: inherit;
+}
+
+/* ── CTA bottom ── */
+.landing-cta-bottom {
+    text-align: center;
+    padding: 60px 20px;
+    background: var(--card-bg);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-lg);
+    margin-top: 20px;
+}
+
+.landing-cta-bottom h2 {
+    font-size: 1.8rem;
+    font-weight: 700;
+    color: var(--text-main);
+    margin: 0 0 12px;
+}
+
+.landing-cta-bottom p {
+    color: var(--text-muted);
+    font-size: 1rem;
+    margin: 0 0 28px;
+}
+
+/* ── Responsive ── */
+@media (max-width: 600px) {
+    .landing-hero {
+        padding: 40px 0 30px;
+    }
+
+    .landing-features {
+        grid-template-columns: 1fr;
+    }
+
+    .landing-hero-cta {
+        flex-direction: column;
+        align-items: center;
+    }
+}

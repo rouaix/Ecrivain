@@ -47,6 +47,7 @@
 @import 'css/auth/tokens.css';
 /* Features - Special features */
 @import 'css/dictation.css';
+@import 'css/features/landing.css';
 @import 'css/features/reading-mode.css';
 @import 'css/features/export.css';
 @import 'css/features/mindmap.css';
