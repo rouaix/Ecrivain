@@ -1,12 +1,5 @@
 # Idées de nouvelles fonctionnalités
 
-## Personnages
-
-- **Fiche de personnage enrichie** — Ajouter des champs structurés : âge, traits de caractère, motivations, arc narratif, défauts. Affichés en sections dépliables sur `characters/edit.html`.
-- **Photo / avatar de personnage** — Upload d'une image de portrait (comme la couverture de projet).
-- **Groupes de personnages** — Étiquettes (clan, famille, faction) pour filtrer et colorier les nœuds dans le graphe de relations.
-- **Relations bidirectionnelles** — Option pour créer automatiquement la relation inverse (A → B crée aussi B → A avec un label différent).
-
 ## Chapitres & Écriture
 
 - **Commentaires inline** — Annoter un passage du texte (comme Google Docs) sans interrompre le flux d'écriture.
