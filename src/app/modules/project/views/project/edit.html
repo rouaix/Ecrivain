@@ -7,7 +7,7 @@
         <a href="{{ @base }}/project/{{ @project.id }}" class="button" title="Retour au projet"
             title="Retour au projet">
 
-            <i class="fas fa-arrow-left"></i>
+            <i class="fas fa-arrow-left" aria-hidden="true"></i>
 
         </a>
 
@@ -39,7 +39,7 @@
 
         <div class="edit-card">
 
-            <h3><i class="fas fa-book"></i> Informations Générales</h3>
+            <h3><i class="fas fa-book" aria-hidden="true"></i> Informations Générales</h3>
 
             <div class="form-group">
 
@@ -88,7 +88,7 @@
 
             <div class="edit-card">
 
-                <h3><i class="fas fa-image"></i> Couverture</h3>
+                <h3><i class="fas fa-image" aria-hidden="true"></i> Couverture</h3>
 
                 <div class="cover-preview-container" id="cover-preview-container">
 
@@ -105,7 +105,7 @@
 
                             <div class="text-muted text-center" id="cover-placeholder">
 
-                                <i class="fas fa-image fa-3x cover-placeholder-icon"></i>
+                                <i class="fas fa-image fa-3x cover-placeholder-icon" aria-hidden="true"></i>
 
                                 Pas de couverture
 
@@ -122,11 +122,11 @@
                     <div class="cover-source-tabs">
 
                         <button type="button" class="cover-tab active" data-tab="upload">
-                            <i class="fas fa-upload"></i> Upload local
+                            <i class="fas fa-upload" aria-hidden="true"></i> Upload local
                         </button>
 
                         <button type="button" class="cover-tab" data-tab="existing">
-                            <i class="fas fa-photo-video"></i> Image existante ({{ count(@imageFiles) }})
+                            <i class="fas fa-photo-video" aria-hidden="true"></i> Image existante ({{ count(@imageFiles) }})
                         </button>
 
                     </div>
@@ -139,7 +139,7 @@
 
                     <div class="button secondary cover-upload-btn">
 
-                        <i class="fas fa-upload"></i> Choisir une image...
+                        <i class="fas fa-upload" aria-hidden="true"></i> Choisir une image...
 
                         <input type="file" id="cover_image" name="cover_image" accept="image/*">
 
@@ -151,7 +151,7 @@
 
                 <check if="{{ !empty(@imageFiles) }}">
 
-                    <div id="cover-tab-existing" style="display:none">
+                    <div id="cover-tab-existing" class="is-hidden" >
 
                         <div class="cover-existing-grid">
 
@@ -171,7 +171,7 @@
 
                         </div>
 
-                        <div class="helper-text text-center" style="margin-top:8px">Cliquez sur une image pour l'utiliser comme couverture.</div>
+                        <div class="helper-text text-center" class="mt-10">Cliquez sur une image pour l'utiliser comme couverture.</div>
 
                     </div>
 
@@ -183,7 +183,7 @@
 
             <div class="edit-card">
 
-                <h3><i class="fas fa-sliders-h"></i> Paramètres & Objectifs</h3>
+                <h3><i class="fas fa-sliders-h" aria-hidden="true"></i> Paramètres & Objectifs</h3>
 
                 <div class="form-group">
 
@@ -233,7 +233,7 @@
 
         <div class="edit-card" style="">
 
-            <h3><i class="fas fa-tags"></i> Tags</h3>
+            <h3><i class="fas fa-tags" aria-hidden="true"></i> Tags</h3>
 
             <div class="form-group">
 
@@ -252,7 +252,7 @@
 
         <div class="edit-card">
 
-            <h3><i class="fas fa-layer-group"></i> Template</h3>
+            <h3><i class="fas fa-layer-group" aria-hidden="true"></i> Template</h3>
 
             <div class="form-group">
 
@@ -285,7 +285,7 @@
 
         <div class="edit-card">
 
-            <h3><i class="fas fa-sticky-note"></i> Notes sur le projet</h3>
+            <h3><i class="fas fa-sticky-note" aria-hidden="true"></i> Notes sur le projet</h3>
 
             <div class="form-group">
 

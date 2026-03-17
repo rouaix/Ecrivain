@@ -2,47 +2,47 @@
 <div class="edit-page-layout">
     <div class="edit-header">
         <h2>Modifier le chapitre</h2>
-        <div style="display: flex; gap: 10px;">
+        <div class="d-flex gap-10">
             <button type="button" id="openAiModal" class="button secondary cache" title="Ouvrir l'assistant narratif"
                 title="Ouvrir l'assistant narratif">
-                <i class="fas fa-magic"></i>&nbsp;Assistant IA
+                <i class="fas fa-magic" aria-hidden="true"></i>&nbsp;Assistant IA
             </button>
             <button type="button" id="btnContinuity" class="button secondary" title="Suggestions d'ouverture IA"
                 title="Suggestions d'ouverture IA">
-                <i class="fas fa-forward"></i>&nbsp;Continuité
+                <i class="fas fa-forward" aria-hidden="true"></i>&nbsp;Continuité
             </button>
             <button type="button" id="btnGlossary" class="button secondary" title="Lexique du projet"
                 title="Lexique du projet">
-                <i class="fas fa-book"></i>&nbsp;Lexique
+                <i class="fas fa-book" aria-hidden="true"></i>&nbsp;Lexique
             </button>
             <button type="button" id="commentButton" class="button secondary" title="Annoter une sélection"
                 title="Annoter une sélection de texte">
-                <i class="fas fa-comment-alt"></i>&nbsp;Annoter
+                <i class="fas fa-comment-alt" aria-hidden="true"></i>&nbsp;Annoter
             </button>
             <button type="button" id="btnInconsistency" class="button secondary" title="Détecter les incohérences"
                 title="Détecter les incohérences avec les fiches personnages">
-                <i class="fas fa-search"></i>&nbsp;Incohérences
+                <i class="fas fa-search" aria-hidden="true"></i>&nbsp;Incohérences
             </button>
             <a href="{{ @base }}/chapter/{{ @chapter.id }}/versions" class="button secondary"
                 title="Historique des versions" title="Historique des versions">
-                <i class="fas fa-history"></i>
+                <i class="fas fa-history" aria-hidden="true"></i>
             </a>
             <button type="button" id="btnFocusMode" class="button secondary" title="Mode focus (F11)"
                 title="Mode focus plein écran">
-                <i class="fas fa-expand"></i>
+                <i class="fas fa-expand" aria-hidden="true"></i>
             </button>
             <a href="{{ @base }}/project/{{ @project.id }}" class="button" title="Retour au projet"
                 title="Retour au projet">
-                <i class="fas fa-arrow-left"></i>
+                <i class="fas fa-arrow-left" aria-hidden="true"></i>
             </a>
         </div>
     </div>
     <div class="editor-top-bar">
         <span id="autosave-indicator" class="autosave-indicator"></span>
         <div id="sessionGoalWidget" class="session-goal-widget" title="Cliquer pour définir un objectif de session"
-            style="display:none;">
+            class="is-hidden" >
             <span id="sessionGoalText" class="session-goal-text"></span>
-            <div id="sessionGoalTrack" class="session-goal-track" style="display:none;">
+            <div id="sessionGoalTrack" class="session-goal-track" class="is-hidden" >
                 <div id="sessionGoalFill" class="session-goal-fill"></div>
             </div>
         </div>
@@ -106,13 +106,13 @@
             <!-- Content Section -->
             <div class="edit-card-section focus-content">
                 <div class="form-group">
-                    <label for="content">
+                    <label for="content" class="d-flex justify-between align-baseline">
                         <span>Contenu</span>
-                        <span class="word-count inline" style="float: right;">
+                        <span class="word-count inline">
                             <span id="wordCount">0</span> mots
                         </span>
                     </label>
-                    <div style="clear: both;"></div>
+                    <div class="clearfix"></div>
                     <div id="editor" class="editor-surface editor-height-300">
                         {{ @chapter.content | raw }}
                     </div>
@@ -121,15 +121,15 @@
             </div>
 
             <!-- Glossaire - Termes détectés dans ce chapitre -->
-            <div id="glossaryFoundSection" class="edit-card-section" style="display:none;">
+            <div id="glossaryFoundSection" class="edit-card-section" class="is-hidden" >
                 <div class="grammar-header">
-                    <label><i class="fas fa-book"></i> Termes du lexique présents</label>
+                    <label><i class="fas fa-book" aria-hidden="true"></i> Termes du lexique présents</label>
                 </div>
                 <div id="glossaryFoundList" class="glossary-found-list"></div>
             </div>
 
             <!-- Annotations Section -->
-            <div class="edit-card-section" id="annotationsSection" style="display:none;">
+            <div class="edit-card-section" id="annotationsSection" class="is-hidden" >
                 <div class="grammar-header">
                     <label>Annotations</label>
                 </div>
@@ -144,7 +144,7 @@
                         <span id="grammarStatus" class="grammar-status"></span>
                         <button type="button" id="btnGrammarCheck" class="button secondary"
                             title="Vérifier la grammaire" title="Vérifier la grammaire">
-                            <i class="fas fa-spell-check" style="margin-right: 10px;"></i>Vérifier
+                            <i class="fas fa-spell-check icon-mr" aria-hidden="true"></i>Vérifier
                         </button>
                     </div>
                 </div>
@@ -159,14 +159,14 @@
                             <label for="resume">Résumé (IA ou Manuel)</label>
                             <button type="button" id="btnSummarizeAI" class="button secondary small"
                                 title="Résumer le chapitre avec l'IA" title="Résumer le chapitre avec l'IA">
-                                <i class="fas fa-robot"></i> Résumer avec l'IA
+                                <i class="fas fa-robot" aria-hidden="true"></i> Résumer avec l'IA
                             </button>
                         </div>
                         <div id="resume-editor" class="editor-surface editor-height-150">
                             {{ @chapter.resume | raw }}
                         </div>
                         <input type="hidden" name="resume" value="{{ @chapter.resume | esc }}">
-                        <p id="summarize-status" class="summarize-status" style="display:none;"></p>
+                        <p id="summarize-status" class="summarize-status" class="is-hidden" ></p>
                     </div>
                 </div>
             </check>
@@ -189,7 +189,7 @@
                 <check if="{{ @subChapterCount == 0 }}">
                     <a class="button delete js-confirm" href="{{ @base }}/chapter/{{ @chapter.id }}/delete"
                         data-confirm="Supprimer ce chapitre ?" title="Supprimer">
-                        <i class="fas fa-trash"></i> Supprimer
+                        <i class="fas fa-trash" aria-hidden="true"></i> Supprimer
                     </a>
                 </check>
             </div>
@@ -199,29 +199,29 @@
 
 <!-- Mobile FAB Save Button (visible on mobile only) -->
 <button type="button" class="mobile-fab-save" id="mobileSaveBtn" title="Enregistrer" title="Enregistrer le chapitre">
-    <i class="fas fa-save"></i>
+    <i class="fas fa-save" aria-hidden="true"></i>
 </button>
 
 <!-- Focus mode exit button (fixed, only visible in focus mode) -->
 <button type="button" id="focusExitBtn" class="focus-exit-btn" title="Quitter le mode focus (Échap)"
     title="Quitter le mode focus">
-    <i class="fas fa-compress"></i> Quitter le focus
+    <i class="fas fa-compress" aria-hidden="true"></i> Quitter le focus
 </button>
 
 <!-- Continuity Suggestions Modal -->
 <div class="modal-overlay" id="continuityModal">
-    <div class="modal-content" style="max-width: 600px;">
+    <div class="modal-content modal-md">
         <div class="modal-header">
-            <h3><i class="fas fa-forward"></i> Suggestions d'ouverture</h3>
+            <h3><i class="fas fa-forward" aria-hidden="true"></i> Suggestions d'ouverture</h3>
             <button type="button" class="modal-close" id="closeContinuityModal" title="Fermer"
                 title="Fermer">&times;</button>
         </div>
         <div class="modal-body">
             <p class="continuity-hint">Sélectionnez une suggestion pour l'insérer au début du chapitre.</p>
-            <div id="continuityLoading" style="display:none; text-align:center; padding:24px 0;">
-                <i class="fas fa-spinner fa-spin"></i> Génération en cours…
+            <div id="continuityLoading" class="is-hidden empty-state-block">
+                <i class="fas fa-spinner fa-spin" aria-hidden="true"></i> Génération en cours…
             </div>
-            <div id="continuityError" class="continuity-error" style="display:none;"></div>
+            <div id="continuityError" class="continuity-error" class="is-hidden" ></div>
             <ul id="continuityList" class="continuity-list"></ul>
         </div>
     </div>
@@ -229,18 +229,18 @@
 
 <!-- Inconsistency Detection Modal -->
 <div class="modal-overlay" id="inconsistencyModal">
-    <div class="modal-content" style="max-width: 660px; max-height: 80vh; display: flex; flex-direction: column;">
+    <div class="modal-content modal-md modal-tall">
         <div class="modal-header">
-            <h3><i class="fas fa-search"></i> Détection d'incohérences</h3>
+            <h3><i class="fas fa-search" aria-hidden="true"></i> Détection d'incohérences</h3>
             <button type="button" class="modal-close" id="closeInconsistencyModal" title="Fermer"
                 title="Fermer">&times;</button>
         </div>
         <div class="modal-body" style="flex:1; overflow-y:auto;">
             <div id="inconsistencyLoading" style="display:none; text-align:center; padding:32px 0;">
-                <i class="fas fa-spinner fa-spin fa-2x"></i>
+                <i class="fas fa-spinner fa-spin fa-2x" aria-hidden="true"></i>
                 <p style="margin-top:12px; color:var(--text-muted,#777);">Analyse en cours…</p>
             </div>
-            <div id="inconsistencyResult" style="display:none;"></div>
+            <div id="inconsistencyResult" class="is-hidden" ></div>
         </div>
         <div class="modal-footer" style="padding:12px 20px; border-top:1px solid var(--border); text-align:right;">
             <button type="button" id="closeInconsistencyModalBtn" class="button secondary" title="Fermer la fenêtre"
@@ -251,9 +251,9 @@
 
 <!-- Glossary Modal -->
 <div class="modal-overlay" id="glossaryModal">
-    <div class="modal-content" style="max-width: 680px; max-height: 80vh; display: flex; flex-direction: column;">
+    <div class="modal-content modal-md modal-tall">
         <div class="modal-header">
-            <h3><i class="fas fa-book"></i> Lexique du projet</h3>
+            <h3><i class="fas fa-book" aria-hidden="true"></i> Lexique du projet</h3>
             <button type="button" class="modal-close" id="closeGlossaryModal" title="Fermer"
                 title="Fermer">&times;</button>
         </div>
@@ -262,16 +262,16 @@
                 <input type="text" id="glossarySearch" placeholder="Rechercher un terme…" class="input-full"
                     autocomplete="off">
             </div>
-            <div id="glossaryLoading" style="display:none; text-align:center; padding:24px 0;">
-                <i class="fas fa-spinner fa-spin"></i> Chargement…
+            <div id="glossaryLoading" class="is-hidden empty-state-block">
+                <i class="fas fa-spinner fa-spin" aria-hidden="true"></i> Chargement…
             </div>
-            <div id="glossaryEmpty" style="display:none;" class="panel-empty">Aucun terme trouvé.</div>
+            <div id="glossaryEmpty" class="is-hidden" class="panel-empty">Aucun terme trouvé.</div>
             <div id="glossaryList" class="glossary-modal-list" style="flex:1; overflow-y:auto; margin-top:8px;"></div>
         </div>
         <div class="modal-footer" style="padding:12px 20px; border-top:1px solid var(--border); text-align:right;">
             <a id="glossaryManageLink" href="{{ @base }}/project/{{ @project.id }}/glossary" class="button secondary"
                 style="margin-right:8px;" title="Gérer le lexique" title="Gérer le lexique">
-                <i class="fas fa-cog"></i> Gérer
+                <i class="fas fa-cog" aria-hidden="true"></i> Gérer
             </a>
             <button type="button" id="closeGlossaryModalBtn" class="button secondary" title="Fermer le lexique"
                 title="Fermer le lexique">Fermer</button>
@@ -281,9 +281,9 @@
 
 <!-- AI Assistant Modal -->
 <div class="modal-overlay" id="aiAssistantModal">
-    <div class="modal-content" style="max-width: 900px; max-height: 80vh; display: flex; flex-direction: column;">
+    <div class="modal-content modal-lg modal-tall">
         <div class="modal-header">
-            <h3><i class="fas fa-magic"></i> Assistant Narratif</h3>
+            <h3><i class="fas fa-magic" aria-hidden="true"></i> Assistant Narratif</h3>
             <button type="button" class="modal-close" id="closeAiAssistantModal" title="Fermer"
                 title="Fermer">&times;</button>
         </div>
@@ -307,7 +307,7 @@
                         <span></span>
                         <button type="button" id="btnAiAsk" class="button secondary" title="Envoyer la question à l'IA"
                             title="Envoyer la question à l'IA">
-                            <i class="fas fa-paper-plane"></i> Envoyer
+                            <i class="fas fa-paper-plane" aria-hidden="true"></i> Envoyer
                         </button>
                     </div>
                 </div>
@@ -1113,8 +1113,8 @@
             btnSummarizeAI.addEventListener('click', function () {
                 var statusEl = document.getElementById('summarize-status');
                 btnSummarizeAI.disabled = true;
-                btnSummarizeAI.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Génération…';
-                statusEl.style.display = 'none';
+                btnSummarizeAI.innerHTML = '<i class="fas fa-spinner fa-spin" aria-hidden="true"></i> Génération…';
+                statusEl.classList.add('is-hidden');
 
                 fetch('{{ @base }}/ai/summarize-chapter', {
                     method: 'POST',
@@ -1135,16 +1135,16 @@
                             statusEl.className = 'summarize-status summarize-status--err';
                             statusEl.textContent = 'Erreur : ' + (data.error || 'inconnue');
                         }
-                        statusEl.style.display = 'block';
+                        statusEl.classList.remove('is-hidden');
                     })
                     .catch(function (e) {
                         statusEl.className = 'summarize-status summarize-status--err';
                         statusEl.textContent = 'Erreur réseau : ' + e.message;
-                        statusEl.style.display = 'block';
+                        statusEl.classList.remove('is-hidden');
                     })
                     .finally(function () {
                         btnSummarizeAI.disabled = false;
-                        btnSummarizeAI.innerHTML = '<i class="fas fa-robot"></i> Résumer avec l\'IA';
+                        btnSummarizeAI.innerHTML = '<i class="fas fa-robot" aria-hidden="true"></i> Résumer avec l\'IA';
                     });
             });
         }
@@ -1171,8 +1171,8 @@
 
             btn.addEventListener('click', function () {
                 list.innerHTML = '';
-                errEl.style.display = 'none';
-                loading.style.display = 'block';
+                errEl.classList.add('is-hidden');
+                loading.classList.remove('is-hidden');
                 openModal();
 
                 fetch('{{ @base }}/ai/suggest-continuity', {
@@ -1182,21 +1182,21 @@
                 })
                     .then(function (r) { return r.json(); })
                     .then(function (data) {
-                        loading.style.display = 'none';
+                        loading.classList.add('is-hidden');
                         if (!data.success) {
                             errEl.textContent = data.error || 'Erreur inconnue.';
-                            errEl.style.display = 'block';
+                            errEl.classList.remove('is-hidden');
                             return;
                         }
                         if (!data.suggestions || !data.suggestions.length) {
                             errEl.textContent = 'Aucune suggestion retournée.';
-                            errEl.style.display = 'block';
+                            errEl.classList.remove('is-hidden');
                             return;
                         }
                         if (!data.has_previous) {
                             var note = document.createElement('p');
                             note.className = 'continuity-note';
-                            note.innerHTML = '<i class="fas fa-info-circle"></i> Aucun chapitre précédent — suggestions basées sur le titre uniquement.';
+                            note.innerHTML = '<i class="fas fa-info-circle" aria-hidden="true"></i> Aucun chapitre précédent — suggestions basées sur le titre uniquement.';
                             list.appendChild(note);
                         }
                         data.suggestions.forEach(function (text) {
@@ -1217,9 +1217,9 @@
                         });
                     })
                     .catch(function (e) {
-                        loading.style.display = 'none';
+                        loading.classList.add('is-hidden');
                         errEl.textContent = 'Erreur réseau : ' + e.message;
-                        errEl.style.display = 'block';
+                        errEl.classList.remove('is-hidden');
                     });
             });
 
@@ -1237,8 +1237,8 @@
             var loading = document.getElementById('inconsistencyLoading');
             var result = document.getElementById('inconsistencyResult');
 
-            function openModal() { modal.style.display = 'flex'; }
-            function closeModal() { modal.style.display = 'none'; }
+            function openModal() { modal.classList.add('is-visible'); }
+            function closeModal() { modal.classList.remove('is-visible'); }
 
             function escHtml(s) {
                 return String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
@@ -1247,8 +1247,8 @@
             if (btn) {
                 btn.addEventListener('click', function () {
                     openModal();
-                    result.style.display = 'none';
-                    loading.style.display = 'block';
+                    result.classList.add('is-hidden');
+                    loading.classList.remove('is-hidden');
 
                     fetch('{{ @base }}/ai/detect-inconsistencies', {
                         method: 'POST',
@@ -1257,8 +1257,8 @@
                     })
                         .then(function (r) { return r.json(); })
                         .then(function (data) {
-                            loading.style.display = 'none';
-                            result.style.display = 'block';
+                            loading.classList.add('is-hidden');
+                            result.classList.remove('is-hidden');
 
                             if (!data.success) {
                                 result.innerHTML = '<div class="continuity-error">' + escHtml(data.error || 'Erreur inconnue') + '</div>';
@@ -1266,7 +1266,7 @@
                             }
 
                             if (data.clean) {
-                                result.innerHTML = '<div class="inconsistency-clean"><i class="fas fa-check-circle fa-lg"></i> Aucune incohérence détectée — le chapitre est cohérent avec les fiches personnages.</div>';
+                                result.innerHTML = '<div class="inconsistency-clean"><i class="fas fa-check-circle fa-lg" aria-hidden="true"></i> Aucune incohérence détectée — le chapitre est cohérent avec les fiches personnages.</div>';
                             } else {
                                 var html = '<p class="inconsistency-count">' + data.issues.length + ' incohérence(s) détectée(s)</p>';
                                 html += '<div class="inconsistency-issues">';
@@ -1278,8 +1278,8 @@
                             }
                         })
                         .catch(function (e) {
-                            loading.style.display = 'none';
-                            result.style.display = 'block';
+                            loading.classList.add('is-hidden');
+                            result.classList.remove('is-hidden');
                             result.innerHTML = '<div class="continuity-error">Erreur réseau : ' + escHtml(e.message) + '</div>';
                         });
                 });
@@ -1313,10 +1313,10 @@
                     return !filter || t.term.toLowerCase().indexOf(filter) !== -1 || (t.definition || '').toLowerCase().indexOf(filter) !== -1;
                 });
                 if (visible.length === 0) {
-                    emptyEl.style.display = 'block';
+                    emptyEl.classList.remove('is-hidden');
                     return;
                 }
-                emptyEl.style.display = 'none';
+                emptyEl.classList.add('is-hidden');
                 visible.forEach(function (t) {
                     var div = document.createElement('div');
                     div.className = 'glossary-modal-entry';
@@ -1342,7 +1342,7 @@
                 });
 
                 if (found.length === 0) {
-                    section.style.display = 'none';
+                    section.classList.add('is-hidden');
                     return;
                 }
 
@@ -1378,28 +1378,28 @@
                 })
                 .catch(function () { /* silent fail */ });
 
-            function openModal() { modal.style.display = 'flex'; searchEl.value = ''; searchEl.focus(); }
-            function closeModal() { modal.style.display = 'none'; }
+            function openModal() { modal.classList.add('is-visible'); searchEl.value = ''; searchEl.focus(); }
+            function closeModal() { modal.classList.remove('is-visible'); }
 
             if (btn) {
                 btn.addEventListener('click', function () {
                     openModal();
                     if (terms !== null) { renderTerms(''); return; }
-                    loading.style.display = 'block';
+                    loading.classList.remove('is-hidden');
                     listEl.innerHTML = '';
-                    emptyEl.style.display = 'none';
+                    emptyEl.classList.add('is-hidden');
                     fetch('{{ @base }}/project/{{ @project.id }}/glossary/terms', {
                         headers: { 'X-CSRF-Token': window.CSRF_TOKEN }
                     })
                         .then(function (r) { return r.json(); })
                         .then(function (data) {
-                            loading.style.display = 'none';
+                            loading.classList.add('is-hidden');
                             terms = data;
                             renderTerms('');
                             scanGlossaryTerms();
                         })
                         .catch(function () {
-                            loading.style.display = 'none';
+                            loading.classList.add('is-hidden');
                             listEl.innerHTML = '<p class="continuity-error">Erreur lors du chargement.</p>';
                         });
                 });
@@ -1458,7 +1458,7 @@
             var listDiv = document.getElementById('commentsList');
             if (!section || !listDiv) return;
             if (!comments || comments.length === 0) {
-                section.style.display = 'none';
+                section.classList.add('is-hidden');
                 return;
             }
             section.style.display = '';
@@ -1820,7 +1820,7 @@
 
         function enterFocus() {
             document.body.classList.add(FOCUS_CLASS);
-            document.getElementById('btnFocusMode').innerHTML = '<i class="fas fa-compress"></i>';
+            document.getElementById('btnFocusMode').innerHTML = '<i class="fas fa-compress" aria-hidden="true"></i>';
             document.getElementById('btnFocusMode').title = 'Quitter le mode focus (Échap)';
             if (typeof QuillTools !== 'undefined' && QuillTools.quill) {
                 QuillTools.quill.focus();
@@ -1829,7 +1829,7 @@
 
         function exitFocus() {
             document.body.classList.remove(FOCUS_CLASS);
-            document.getElementById('btnFocusMode').innerHTML = '<i class="fas fa-expand"></i>';
+            document.getElementById('btnFocusMode').innerHTML = '<i class="fas fa-expand" aria-hidden="true"></i>';
             document.getElementById('btnFocusMode').title = 'Mode focus (F11)';
         }
 
@@ -1877,14 +1877,14 @@
 
         function updateGoalWidget() {
             if (!sessionGoal) {
-                goalWidget.style.display = 'none';
+                goalWidget.classList.add('is-hidden');
                 return;
             }
-            goalWidget.style.display = 'flex';
+            goalWidget.classList.remove('is-hidden');
             var added = Math.max(0, getWordCount() - initialWords);
             var pct = Math.min(100, Math.round(added / sessionGoal * 100));
             goalText.textContent = added + '\u202f/\u202f' + sessionGoal + ' mots';
-            goalTrack.style.display = 'block';
+            goalTrack.classList.remove('is-hidden');
             goalFill.style.width = pct + '%';
             if (pct >= 100) {
                 goalFill.classList.add('done');

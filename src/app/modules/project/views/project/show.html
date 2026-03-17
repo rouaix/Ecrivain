@@ -774,7 +774,7 @@
 
                     } else {
 
-                        element.style.display = 'none';
+                        element.classList.add('is-hidden');
 
                     }
 
@@ -958,8 +958,8 @@
                     </div>
                 </div>
 
-                <div id="proposeDeleteArea" style="display:none">
-                    <p style="color:#b91c1c;font-weight:600"><i class="fas fa-exclamation-triangle"></i> Vous proposez
+                <div id="proposeDeleteArea" class="is-hidden" >
+                    <p class="text-danger fw-bold"><i class="fas fa-exclamation-triangle" aria-hidden="true"></i> Vous proposez
                         la suppression de cet élément. Expliquez votre demande ci-dessous.</p>
                 </div>
 
@@ -1043,11 +1043,11 @@
             var editorArea = document.getElementById('proposeEditorArea');
             var deleteArea = document.getElementById('proposeDeleteArea');
             if (type === 'delete') {
-                editorArea.style.display = 'none';
+                editorArea.classList.add('is-hidden');
                 deleteArea.style.display = '';
             } else {
                 editorArea.style.display = '';
-                deleteArea.style.display = 'none';
+                deleteArea.classList.add('is-hidden');
             }
         }
 

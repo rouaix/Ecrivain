@@ -89,11 +89,11 @@
 <check if="{{ @isCollaborator }}">
   <div class="collab-banner">
 
-    <i class="fas fa-users"></i>
+    <i class="fas fa-users" aria-hidden="true"></i>
     Vous consultez ce projet en tant que <strong>collaborateur</strong>
     <div class="collab-banner-buttons">
       <a href="{{ @base }}/project/{{ @project.id }}/collab/mes-demandes" class="button">
-        <i class="fas fa-inbox"></i> Mes demandes
+        <i class="fas fa-inbox" aria-hidden="true"></i> Mes demandes
       </a>
     </div>
   </div>
@@ -106,8 +106,8 @@
     <input type="text" id="globalSearchInput" class="search-input" placeholder="Filtrer le projet..."
       autocomplete="off">
     <button type="button" id="clearSearchBtn" class="button small" title="Effacer la recherche"
-      title="Effacer la recherche" style="display: none;">
-      <i class="fas fa-times"></i>
+      title="Effacer la recherche" class="is-hidden" >
+      <i class="fas fa-times" aria-hidden="true"></i>
     </button>
   </div>
 
@@ -134,7 +134,7 @@
               <check if="{{ @group.show_create }}">
 
                 <a class="button small" href="{{ @base }}/project/{{ @project.id }}/section/{{ @group.type }}"
-                  title="Créer" title="Créer"><i class="fas fa-plus"></i></a>
+                  title="Créer" title="Créer"><i class="fas fa-plus" aria-hidden="true"></i></a>
 
               </check>
 
@@ -186,17 +186,17 @@
                         <td class="compact-actions actions">
 
                           <button class="button small preview-btn" data-type="section" data-id="{{ @section.id }}"
-                            title="Voir" title="Prévisualiser le contenu"><i class="fas fa-eye"></i></button>
+                            title="Voir" title="Prévisualiser le contenu"><i class="fas fa-eye" aria-hidden="true"></i></button>
 
                           <check if="{{ !@isOwner }}">
                             <button class="button small propose-btn" data-type="section" data-id="{{ @section.id }}"
                               data-title="{{ @section.title | esc }}" title="Proposer une modification"
-                              title="Proposer une modification"><i class="fas fa-paper-plane"></i></button>
+                              title="Proposer une modification"><i class="fas fa-paper-plane" aria-hidden="true"></i></button>
                           </check>
 
                           <a class="button small"
                             href="{{ @base }}/project/{{ @project.id }}/section/{{ @group.type }}?id={{ @section.id }}"
-                            title="Modifier" title="Modifier"><i class="fas fa-edit"></i></a>
+                            title="Modifier" title="Modifier"><i class="fas fa-edit" aria-hidden="true"></i></a>
 
                           <a class="button small delete js-confirm" href="{{ @base }}/section/{{ @section.id }}/delete"
                             data-confirm="Supprimer cette section ?" title="Supprimer" title="Supprimer"><i
@@ -256,11 +256,11 @@
 
           <check if="{{ @panelConfig.has_acts }}">
             <a class="button" href="{{ @base }}/project/{{ @project.id }}/act/create"
-              title="Ajouter {{ @panelLabels.act.singular_lc }}"><i class="fas fa-folder-plus"></i></a>
+              title="Ajouter {{ @panelLabels.act.singular_lc }}"><i class="fas fa-folder-plus" aria-hidden="true"></i></a>
           </check>
 
           <a class="button" href="{{ @base }}/project/{{ @project.id }}/chapter/create"
-            title="Ajouter {{ @panelLabels.chapter.singular_lc }}"><i class="fas fa-plus"></i></a>
+            title="Ajouter {{ @panelLabels.chapter.singular_lc }}"><i class="fas fa-plus" aria-hidden="true"></i></a>
 
         </div>
 
@@ -313,7 +313,7 @@
                   <div class="act-actions">
 
                     <button class="button small ai-act-summary-btn js-stop-propagation" data-id="{{ @act.id }}"
-                      title="Résumé IA" title="Résumé IA"><i class="fas fa-magic"></i></button>
+                      title="Résumé IA" title="Résumé IA"><i class="fas fa-magic" aria-hidden="true"></i></button>
 
                     <a class="button small js-stop-propagation" href="{{ @base }}/act/{{ @act.id }}/edit"
                       title="Modifier ce {{ @panelLabels.act.singular_lc }}" title="Modifier"><i
@@ -323,7 +323,7 @@
                       <a class="button small delete js-confirm js-stop-propagation"
                         href="{{ @base }}/act/{{ @act.id }}/delete"
                         data-confirm="Supprimer ce {{ @panelLabels.act.singular_lc }} ?"
-                        title="Supprimer" title="Supprimer"><i class="fas fa-trash"></i></a>
+                        title="Supprimer" title="Supprimer"><i class="fas fa-trash" aria-hidden="true"></i></a>
                     </check>
 
                   </div>
@@ -476,27 +476,27 @@
                                   title="+ Sous-{{ @panelLabels.chapter.singular_lc }}"
                                   title="Ajouter un sous-chapitre">
 
-                                  <i class="fas fa-plus"></i></a>
+                                  <i class="fas fa-plus" aria-hidden="true"></i></a>
 
                                 <button class="button small ai-summary-btn" data-id="{{ @ch.id }}" title="Résumé IA"
-                                  title="Résumé IA"><i class="fas fa-magic"></i></button><br />
+                                  title="Résumé IA"><i class="fas fa-magic" aria-hidden="true"></i></button><br />
 
                                 <button class="button small preview-btn" data-type="chapter" data-id="{{ @ch.id }}"
-                                  title="Voir" title="Prévisualiser le contenu"><i class="fas fa-eye"></i></button>
+                                  title="Voir" title="Prévisualiser le contenu"><i class="fas fa-eye" aria-hidden="true"></i></button>
 
                                 <check if="{{ !@isOwner }}">
                                   <button class="button small propose-btn" data-type="chapter" data-id="{{ @ch.id }}"
                                     data-title="{{ @ch.title | esc }}" title="Proposer une modification"
-                                    title="Proposer une modification"><i class="fas fa-paper-plane"></i></button>
+                                    title="Proposer une modification"><i class="fas fa-paper-plane" aria-hidden="true"></i></button>
                                 </check>
 
                                 <a class="button small" href="{{ @base }}/chapter/{{ @ch.id }}" title="Éditer"
-                                  title="Éditer"><i class="fas fa-edit"></i></a>
+                                  title="Éditer"><i class="fas fa-edit" aria-hidden="true"></i></a>
 
                                 <check if="{{ count(@ch.subs) == 0 }}">
                                   <a class="button small delete js-confirm" href="{{ @base }}/chapter/{{ @ch.id }}/delete"
                                     data-confirm="Supprimer ce {{ @panelLabels.chapter.singular_lc }} ?" title="Supprimer"
-                                    title="Supprimer"><i class="fas fa-trash"></i></a>
+                                    title="Supprimer"><i class="fas fa-trash" aria-hidden="true"></i></a>
                                 </check>
 
                               </td>
@@ -551,21 +551,21 @@
                                 <td class="actions">
 
                                   <button class="button small preview-btn" data-type="chapter" data-id="{{ @sub.id }}"
-                                    title="Voir" title="Prévisualiser le contenu"><i class="fas fa-eye"></i></button>
+                                    title="Voir" title="Prévisualiser le contenu"><i class="fas fa-eye" aria-hidden="true"></i></button>
 
                                   <check if="{{ !@isOwner }}">
                                     <button class="button small propose-btn" data-type="chapter" data-id="{{ @sub.id }}"
                                       data-title="{{ @sub.title | esc }}" title="Proposer une modification"
-                                      title="Proposer une modification"><i class="fas fa-paper-plane"></i></button>
+                                      title="Proposer une modification"><i class="fas fa-paper-plane" aria-hidden="true"></i></button>
                                   </check>
 
                                   <a class="button small" href="{{ @base }}/chapter/{{ @sub.id }}" title="Éditer"
-                                    title="Éditer"><i class="fas fa-edit"></i></a>
+                                    title="Éditer"><i class="fas fa-edit" aria-hidden="true"></i></a>
 
                                   <a class="button small delete js-confirm"
                                     href="{{ @base }}/chapter/{{ @sub.id }}/delete"
                                     data-confirm="Supprimer ce sous-{{ @panelLabels.chapter.singular_lc }} ?"
-                                    title="Supprimer" title="Supprimer"><i class="fas fa-trash"></i></a>
+                                    title="Supprimer" title="Supprimer"><i class="fas fa-trash" aria-hidden="true"></i></a>
 
                                 </td>
 
@@ -664,21 +664,21 @@
                               <a class="button small"
                                 href="{{ @base }}/project/{{ @project.id }}/chapter/create?parent_id={{ @ch.id }}&act_id={{ @ch.act_id }}"
                                 title="+ Sous-{{ @panelLabels.chapter.singular_lc }}"
-                                title="Ajouter un sous-chapitre"><i class="fas fa-plus"></i></a>
+                                title="Ajouter un sous-chapitre"><i class="fas fa-plus" aria-hidden="true"></i></a>
                               <button class="button small ai-summary-btn" data-id="{{ @ch.id }}" title="Résumé IA"
-                                title="Résumé IA"><i class="fas fa-magic"></i></button><br />
+                                title="Résumé IA"><i class="fas fa-magic" aria-hidden="true"></i></button><br />
                               <button class="button small preview-btn" data-type="chapter" data-id="{{ @ch.id }}"
-                                title="Voir" title="Prévisualiser le contenu"><i class="fas fa-eye"></i></button>
+                                title="Voir" title="Prévisualiser le contenu"><i class="fas fa-eye" aria-hidden="true"></i></button>
                               <check if="{{ !@isOwner }}">
                                 <button class="button small propose-btn" data-type="chapter" data-id="{{ @ch.id }}"
                                   data-title="{{ @ch.title | esc }}" title="Proposer une modification"
-                                  title="Proposer une modification"><i class="fas fa-paper-plane"></i></button>
+                                  title="Proposer une modification"><i class="fas fa-paper-plane" aria-hidden="true"></i></button>
                               </check>
                               <a class="button small" href="{{ @base }}/chapter/{{ @ch.id }}" title="Éditer"
-                                title="Éditer"><i class="fas fa-edit"></i></a>
+                                title="Éditer"><i class="fas fa-edit" aria-hidden="true"></i></a>
                               <a class="button small delete js-confirm" href="{{ @base }}/chapter/{{ @ch.id }}/delete"
                                 data-confirm="Supprimer ce {{ @panelLabels.chapter.singular_lc }} ?" title="Supprimer"
-                                title="Supprimer"><i class="fas fa-trash"></i></a>
+                                title="Supprimer"><i class="fas fa-trash" aria-hidden="true"></i></a>
                             </td>
                           </tr>
                           <repeat group="{{ @ch.subs }}" value="{{ @sub }}">
@@ -699,18 +699,18 @@
                               </td>
                               <td class="actions">
                                 <button class="button small preview-btn" data-type="chapter" data-id="{{ @sub.id }}"
-                                  title="Voir" title="Prévisualiser le contenu"><i class="fas fa-eye"></i></button>
+                                  title="Voir" title="Prévisualiser le contenu"><i class="fas fa-eye" aria-hidden="true"></i></button>
                                 <check if="{{ !@isOwner }}">
                                   <button class="button small propose-btn" data-type="chapter" data-id="{{ @sub.id }}"
                                     data-title="{{ @sub.title | esc }}" title="Proposer une modification"
-                                    title="Proposer une modification"><i class="fas fa-paper-plane"></i></button>
+                                    title="Proposer une modification"><i class="fas fa-paper-plane" aria-hidden="true"></i></button>
                                 </check>
                                 <a class="button small" href="{{ @base }}/chapter/{{ @sub.id }}" title="Éditer"
-                                  title="Éditer"><i class="fas fa-edit"></i></a>
+                                  title="Éditer"><i class="fas fa-edit" aria-hidden="true"></i></a>
                                 <a class="button small delete js-confirm"
                                   href="{{ @base }}/chapter/{{ @sub.id }}/delete"
                                   data-confirm="Supprimer ce sous-{{ @panelLabels.chapter.singular_lc }} ?"
-                                  title="Supprimer" title="Supprimer"><i class="fas fa-trash"></i></a>
+                                  title="Supprimer" title="Supprimer"><i class="fas fa-trash" aria-hidden="true"></i></a>
                               </td>
                             </tr>
                           </repeat>
@@ -765,19 +765,19 @@
                           title="+ Sous-{{ @panelLabels.chapter.singular_lc }}" title="Ajouter un sous-chapitre"><i
                             class="fas fa-plus"></i></a>
                         <button class="button small ai-summary-btn" data-id="{{ @ch.id }}" title="Résumé IA"
-                          title="Résumé IA"><i class="fas fa-magic"></i></button><br />
+                          title="Résumé IA"><i class="fas fa-magic" aria-hidden="true"></i></button><br />
                         <button class="button small preview-btn" data-type="chapter" data-id="{{ @ch.id }}" title="Voir"
-                          title="Prévisualiser le contenu"><i class="fas fa-eye"></i></button>
+                          title="Prévisualiser le contenu"><i class="fas fa-eye" aria-hidden="true"></i></button>
                         <check if="{{ !@isOwner }}">
                           <button class="button small propose-btn" data-type="chapter" data-id="{{ @ch.id }}"
                             data-title="{{ @ch.title | esc }}" title="Proposer une modification"
-                            title="Proposer une modification"><i class="fas fa-paper-plane"></i></button>
+                            title="Proposer une modification"><i class="fas fa-paper-plane" aria-hidden="true"></i></button>
                         </check>
                         <a class="button small" href="{{ @base }}/chapter/{{ @ch.id }}" title="Éditer" title="Éditer"><i
                             class="fas fa-edit"></i></a>
                         <a class="button small delete js-confirm" href="{{ @base }}/chapter/{{ @ch.id }}/delete"
                           data-confirm="Supprimer ce {{ @panelLabels.chapter.singular_lc }} ?" title="Supprimer"
-                          title="Supprimer"><i class="fas fa-trash"></i></a>
+                          title="Supprimer"><i class="fas fa-trash" aria-hidden="true"></i></a>
                       </td>
                     </tr>
                     <repeat group="{{ @ch.subs }}" value="{{ @sub }}">
@@ -795,17 +795,17 @@
                         <td class="stats">{{ @sub.wc }} mots<br>{{ @sub.lines }} lignes<br>{{ @sub.pages }} pages</td>
                         <td class="actions">
                           <button class="button small preview-btn" data-type="chapter" data-id="{{ @sub.id }}"
-                            title="Voir" title="Prévisualiser le contenu"><i class="fas fa-eye"></i></button>
+                            title="Voir" title="Prévisualiser le contenu"><i class="fas fa-eye" aria-hidden="true"></i></button>
                           <check if="{{ !@isOwner }}">
                             <button class="button small propose-btn" data-type="chapter" data-id="{{ @sub.id }}"
                               data-title="{{ @sub.title | esc }}" title="Proposer une modification"
-                              title="Proposer une modification"><i class="fas fa-paper-plane"></i></button>
+                              title="Proposer une modification"><i class="fas fa-paper-plane" aria-hidden="true"></i></button>
                           </check>
                           <a class="button small" href="{{ @base }}/chapter/{{ @sub.id }}" title="Éditer"
-                            title="Éditer"><i class="fas fa-edit"></i></a>
+                            title="Éditer"><i class="fas fa-edit" aria-hidden="true"></i></a>
                           <a class="button small delete js-confirm" href="{{ @base }}/chapter/{{ @sub.id }}/delete"
                             data-confirm="Supprimer ce sous-{{ @panelLabels.chapter.singular_lc }} ?" title="Supprimer"
-                            title="Supprimer"><i class="fas fa-trash"></i></a>
+                            title="Supprimer"><i class="fas fa-trash" aria-hidden="true"></i></a>
                         </td>
                       </tr>
                     </repeat>
@@ -835,7 +835,7 @@
       <div class="section-group-block" data-type="files">
         <div class="section-group-heading">
           <a class="button" href="{{ @base }}/project/{{ @project.id }}/element/create?type={{ @cep.id }}">
-            <i class="fas fa-plus"></i>
+            <i class="fas fa-plus" aria-hidden="true"></i>
           </a>
         </div>
         <check if="{{ @cep.count > 0 }}">
@@ -872,24 +872,24 @@
                       <a class="button small"
                         href="{{ @base }}/project/{{ @project.id }}/element/create?type={{ @cep.id }}&parent_id={{ @ce.id }}"
                         title="+ Sous-élément" title="Ajouter un sous-élément">
-                        <i class="fas fa-plus"></i>
+                        <i class="fas fa-plus" aria-hidden="true"></i>
                       </a>
                       <button class="button small preview-btn" data-type="element" data-id="{{ @ce.id }}"
                         title="Prévisualiser" title="Prévisualiser">
-                        <i class="fas fa-eye"></i>
+                        <i class="fas fa-eye" aria-hidden="true"></i>
                       </button>
                       <check if="{{ !@isOwner }}">
                         <button class="button small propose-btn" data-type="element" data-id="{{ @ce.id }}"
                           data-title="{{ @ce.title | esc }}" title="Proposer une modification"
-                          title="Proposer une modification"><i class="fas fa-paper-plane"></i></button>
+                          title="Proposer une modification"><i class="fas fa-paper-plane" aria-hidden="true"></i></button>
                       </check>
                       <a class="button small" href="{{ @base }}/element/{{ @ce.id }}" title="Éditer" title="Éditer">
-                        <i class="fas fa-edit"></i>
+                        <i class="fas fa-edit" aria-hidden="true"></i>
                       </a>
                       <check if="{{ !isset(@ce.subs) || count(@ce.subs) == 0 }}">
                         <a class="button small delete js-confirm" href="{{ @base }}/element/{{ @ce.id }}/delete"
                           data-confirm="Supprimer cet élément ?" title="Supprimer" title="Supprimer">
-                          <i class="fas fa-trash"></i>
+                          <i class="fas fa-trash" aria-hidden="true"></i>
                         </a>
                       </check>
                     </td>
@@ -910,19 +910,19 @@
                       <td class="compact-actions actions">
                         <button class="button small preview-btn" data-type="element" data-id="{{ @sub.id }}"
                           title="Prévisualiser" title="Prévisualiser">
-                          <i class="fas fa-eye"></i>
+                          <i class="fas fa-eye" aria-hidden="true"></i>
                         </button>
                         <check if="{{ !@isOwner }}">
                           <button class="button small propose-btn" data-type="element" data-id="{{ @sub.id }}"
                             data-title="{{ @sub.title | esc }}" title="Proposer une modification"
-                            title="Proposer une modification"><i class="fas fa-paper-plane"></i></button>
+                            title="Proposer une modification"><i class="fas fa-paper-plane" aria-hidden="true"></i></button>
                         </check>
                         <a class="button small" href="{{ @base }}/element/{{ @sub.id }}" title="Éditer" title="Éditer">
-                          <i class="fas fa-edit"></i>
+                          <i class="fas fa-edit" aria-hidden="true"></i>
                         </a>
                         <a class="button small delete js-confirm" href="{{ @base }}/element/{{ @sub.id }}/delete"
                           data-confirm="Supprimer ce sous-élément ?" title="Supprimer" title="Supprimer">
-                          <i class="fas fa-trash"></i>
+                          <i class="fas fa-trash" aria-hidden="true"></i>
                         </a>
                       </td>
                     </tr>
@@ -964,14 +964,14 @@
               <check if="{{ @group.show_add }}">
 
                 <a class="button small" href="{{ @base }}/project/{{ @project.id }}/section/{{ @group.type }}"
-                  title="+ Ajouter une annexe" title="+ Ajouter une annexe"><i class="fas fa-plus"></i></a>
+                  title="+ Ajouter une annexe" title="+ Ajouter une annexe"><i class="fas fa-plus" aria-hidden="true"></i></a>
 
               </check>
 
               <check if="{{ @group.show_create }}">
 
                 <a class="button small" href="{{ @base }}/project/{{ @project.id }}/section/{{ @group.type }}"
-                  title="Créer" title="Créer"><i class="fas fa-plus"></i></a>
+                  title="Créer" title="Créer"><i class="fas fa-plus" aria-hidden="true"></i></a>
 
               </check>
 
@@ -1023,17 +1023,17 @@
                         <td class="compact-actions compact-actions--wide">
 
                           <button class="button small preview-btn" data-type="section" data-id="{{ @section.id }}"
-                            title="Voir" title="Prévisualiser le contenu"><i class="fas fa-eye"></i></button>
+                            title="Voir" title="Prévisualiser le contenu"><i class="fas fa-eye" aria-hidden="true"></i></button>
 
                           <check if="{{ !@isOwner }}">
                             <button class="button small propose-btn" data-type="section" data-id="{{ @section.id }}"
                               data-title="{{ @section.title | esc }}" title="Proposer une modification"
-                              title="Proposer une modification"><i class="fas fa-paper-plane"></i></button>
+                              title="Proposer une modification"><i class="fas fa-paper-plane" aria-hidden="true"></i></button>
                           </check>
 
                           <a class="button small"
                             href="{{ @base }}/project/{{ @project.id }}/section/{{ @group.type }}?id={{ @section.id }}"
-                            title="Modifier" title="Modifier"><i class="fas fa-edit"></i></a>
+                            title="Modifier" title="Modifier"><i class="fas fa-edit" aria-hidden="true"></i></a>
 
                           <a class="button small delete js-confirm" href="{{ @base }}/section/{{ @section.id }}/delete"
                             data-confirm="Supprimer cette section ?" title="Supprimer" title="Supprimer"><i
@@ -1114,7 +1114,7 @@
       <div class="panel-actions panel-actions-row">
 
         <a class="button small" href="{{ @base }}/project/{{ @project.id }}/characters" title="Gérer les personnages"
-          title="Gérer les personnages"><i class="fas fa-users-cog"></i></a>
+          title="Gérer les personnages"><i class="fas fa-users-cog" aria-hidden="true"></i></a>
 
       </div>
 
@@ -1131,7 +1131,7 @@
 
         <div class="section-group-heading">
           <a class="button small" href="{{ @base }}/project/{{ @project.id }}/scenariste/new" title="Nouveau scénario"
-            title="Nouveau scénario"><i class="fas fa-plus"></i></a>
+            title="Nouveau scénario"><i class="fas fa-plus" aria-hidden="true"></i></a>
         </div>
 
         <check if="{{ !empty(@scenarios) }}">
@@ -1150,11 +1150,11 @@
                     </td>
                     <td class="compact-actions compact-actions--wide actions">
                       <button class="button small preview-btn" data-type="scenario" data-id="{{ @sc.id }}"
-                        title="Prévisualiser"><i class="fas fa-eye"></i></button>
+                        title="Prévisualiser"><i class="fas fa-eye" aria-hidden="true"></i></button>
                       <a class="button small" href="{{ @base }}/scenariste/{{ @sc.id }}/edit" title="Éditer"
-                        title="Éditer"><i class="fas fa-edit"></i></a>
+                        title="Éditer"><i class="fas fa-edit" aria-hidden="true"></i></a>
                       <a class="button small" href="{{ @base }}/scenariste/{{ @sc.id }}/download"
-                        title="Télécharger .md" title="Télécharger .md"><i class="fas fa-download"></i></a>
+                        title="Télécharger .md" title="Télécharger .md"><i class="fas fa-download" aria-hidden="true"></i></a>
                       <a class="button small delete js-confirm" href="{{ @base }}/scenariste/{{ @sc.id }}/delete"
                         data-confirm="Supprimer ce scénario ?" title="Supprimer" title="Supprimer"><i
                           class="fas fa-trash"></i></a>
@@ -1186,7 +1186,7 @@
 
         <div class="section-group-heading">
           <a class="button small" href="{{ @base }}/project/{{ @project.id }}/note/edit" title="+ Ajouter une note"
-            title="Ajouter une note"><i class="fas fa-plus"></i></a>
+            title="Ajouter une note"><i class="fas fa-plus" aria-hidden="true"></i></a>
         </div>
 
         <check if="{{ !empty(@notes) }}">
@@ -1237,11 +1237,11 @@
                       <check if="{{ !@isOwner }}">
                         <button class="button small propose-btn" data-type="note" data-id="{{ @note.id }}"
                           data-title="{{ @note.title | esc }}" title="Proposer une modification"
-                          title="Proposer une modification"><i class="fas fa-paper-plane"></i></button>
+                          title="Proposer une modification"><i class="fas fa-paper-plane" aria-hidden="true"></i></button>
                       </check>
 
                       <a class="button small" href="{{ @base }}/project/{{ @project.id }}/note/edit?id={{ @note.id }}"
-                        title="Modifier" title="Modifier"><i class="fas fa-edit"></i></a>
+                        title="Modifier" title="Modifier"><i class="fas fa-edit" aria-hidden="true"></i></a>
 
                       <a class="button small delete js-confirm" href="{{ @base }}/note/{{ @note.id }}/delete"
                         data-confirm="Supprimer cette note ?" title="Supprimer" title="Supprimer"><i
@@ -1282,9 +1282,9 @@
 
         <div class="section-group-heading">
           <button type="button" class="button small" id="addFileBtn" title="+ Ajouter un fichier"
-            title="Ajouter un fichier"><i class="fas fa-plus"></i></button>
+            title="Ajouter un fichier"><i class="fas fa-plus" aria-hidden="true"></i></button>
           <button type="button" class="button small" id="sortFilesBtn" title="Trier par ordre alphabétique"
-            title="Trier alphabétiquement"><i class="fas fa-sort-alpha-down"></i></button>
+            title="Trier alphabétiquement"><i class="fas fa-sort-alpha-down" aria-hidden="true"></i></button>
         </div>
 
         <check if="{{ !empty(@files) }}">
@@ -1303,7 +1303,7 @@
 
                       <div class="file-actions">
 
-                        <i class="fas fa-file"></i>
+                        <i class="fas fa-file" aria-hidden="true"></i>
 
                         {{ @file.filename }}
 
@@ -1327,10 +1327,10 @@
 
                       <button class="button small preview-file-btn" data-id="{{ @file.id }}"
                         data-filename="{{ @file.filename }}" data-type="{{ @file.filetype }}" title="Prévisualiser"
-                        title="Prévisualiser"><i class="fas fa-eye"></i></button>
+                        title="Prévisualiser"><i class="fas fa-eye" aria-hidden="true"></i></button>
 
                       <a class="button small" href="{{ @base }}/project/{{ @project.id }}/file/{{ @file.id }}/download"
-                        title="Télécharger" title="Télécharger" download><i class="fas fa-download"></i></a>
+                        title="Télécharger" title="Télécharger" download><i class="fas fa-download" aria-hidden="true"></i></a>
 
                       <a class="button small delete js-confirm"
                         href="{{ @base }}/project/{{ @project.id }}/file/{{ @file.id }}/delete"

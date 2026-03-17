@@ -3,15 +3,33 @@
    SPACING UTILITIES
    Margin and padding helper classes
    ========================================== */
-.mt-10 {
-    margin-top: 10px;
-}
-.mt-20 {
-    margin-top: 20px;
-}
-.mb-10 {
-    margin-bottom: 10px;
-}
-.mb-20 {
-    margin-bottom: 20px;
-}
+
+/* Margin top */
+.mt-0  { margin-top: 0 !important; }
+.mt-5  { margin-top: 5px; }
+.mt-10 { margin-top: 10px; }
+.mt-15 { margin-top: 15px; }
+.mt-20 { margin-top: 20px; }
+.mt-30 { margin-top: 30px; }
+
+/* Margin bottom */
+.mb-0  { margin-bottom: 0 !important; }
+.mb-5  { margin-bottom: 5px; }
+.mb-10 { margin-bottom: 10px; }
+.mb-15 { margin-bottom: 15px; }
+.mb-20 { margin-bottom: 20px; }
+.mb-30 { margin-bottom: 30px; }
+
+/* Margin left/right */
+.ml-auto { margin-left: auto; }
+.mr-auto { margin-right: auto; }
+
+/* Padding top/bottom */
+.pt-0 { padding-top: 0 !important; }
+.pt-5 { padding-top: 5px; }
+.pb-0 { padding-bottom: 0 !important; }
+.pb-5 { padding-bottom: 5px; }
+
+/* No padding/margin */
+.p-0  { padding: 0 !important; }
+.m-0  { margin: 0 !important; }

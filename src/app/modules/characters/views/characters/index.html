@@ -6,14 +6,14 @@
 
         <a href="{{ @base }}/project/{{ @project.id }}/characters/relations" class="button secondary"
             title="Graphe des relations" title="Graphe des relations">
-            <i class="fas fa-project-diagram"></i>
+            <i class="fas fa-project-diagram" aria-hidden="true"></i>
         </a>
 
         <a href="{{ @base }}/project/{{ @project.id }}/character/create" class="button" title="Nouveau personnage"
-            title="Nouveau personnage"><i class="fas fa-plus"></i></a>
+            title="Nouveau personnage"><i class="fas fa-plus" aria-hidden="true"></i></a>
 
         <a href="{{ @base }}/project/{{ @project.id }}" class="button" title="Retour au projet"
-            title="Retour au projet"><i class="fas fa-arrow-left"></i></a>
+            title="Retour au projet"><i class="fas fa-arrow-left" aria-hidden="true"></i></a>
 
     </span>
 
@@ -43,16 +43,15 @@
 
                         <h3 class="character-name">{{ @char.name }}
 
-                            <div class="character-actions"
-                                style="border: none;float: right; width: 60px;display: inline;margin:0;padding:0;">
+                            <div class="character-actions">
 
                                 <a class="button small" href="{{ @base }}/character/{{ @char.id }}/edit"
-                                    title="Modifier" title="Modifier le personnage"><i class="fas fa-edit"></i></a>
+                                    title="Modifier" title="Modifier le personnage"><i class="fas fa-edit" aria-hidden="true"></i></a>
 
                                 <a class="button small delete js-confirm"
                                     href="{{ @base }}/character/{{ @char.id }}/delete"
                                     data-confirm="Confirmer la suppression de ce personnage ?" title="Supprimer"
-                                    title="Supprimer le personnage"><i class="fas fa-trash"></i></a>
+                                    title="Supprimer le personnage"><i class="fas fa-trash" aria-hidden="true"></i></a>
 
                             </div>
 
@@ -69,11 +68,11 @@
                     <div class="character-actions">
 
                         <a class="button small" href="{{ @base }}/character/{{ @char.id }}/edit" title="Modifier"
-                            title="Modifier le personnage"><i class="fas fa-edit"></i></a>
+                            title="Modifier le personnage"><i class="fas fa-edit" aria-hidden="true"></i></a>
 
                         <a class="button small delete js-confirm" href="{{ @base }}/character/{{ @char.id }}/delete"
                             data-confirm="Confirmer la suppression de ce personnage ?" title="Supprimer"
-                            title="Supprimer le personnage"><i class="fas fa-trash"></i></a>
+                            title="Supprimer le personnage"><i class="fas fa-trash" aria-hidden="true"></i></a>
 
                     </div>
 

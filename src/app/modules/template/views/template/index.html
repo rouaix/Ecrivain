@@ -1,18 +1,18 @@
 <div class="edit-page-layout">
     <div class="edit-header">
-        <h2><i class="fas fa-layer-group"></i> Templates de projet</h2>
+        <h2><i class="fas fa-layer-group" aria-hidden="true"></i> Templates de projet</h2>
         <div class="header-actions">
             <a href="{{ @base }}/template/create" class="button primary" title="Créer un template"
                 title="Créer un template">
-                <i class="fas fa-plus"></i> Nouveau
+                <i class="fas fa-plus" aria-hidden="true"></i> Nouveau
             </a>
             <a href="{{ @base }}/template/import" class="button secondary" title="Importer un template JSON"
                 title="Importer un template JSON">
-                <i class="fas fa-file-import"></i> Importer
+                <i class="fas fa-file-import" aria-hidden="true"></i> Importer
             </a>
             <a href="{{ @base }}/dashboard" class="button" title="Retour au tableau de bord"
                 title="Retour au tableau de bord">
-                <i class="fas fa-arrow-left"></i>
+                <i class="fas fa-arrow-left" aria-hidden="true"></i>
             </a>
         </div>
     </div>
@@ -29,7 +29,7 @@
 
     <div class="edit-card">
         <div class="edit-card-section">
-            <h3><i class="fas fa-info-circle"></i> A propos</h3>
+            <h3><i class="fas fa-info-circle" aria-hidden="true"></i> A propos</h3>
             <p class="text-muted-para">
                 Les templates definissent la structure de vos projets (ordre des sections, actes, chapitres, notes,
                 etc.).
@@ -38,7 +38,7 @@
         </div>
 
         <div class="edit-card-section">
-            <h3><i class="fas fa-th-list"></i> Vos templates</h3>
+            <h3><i class="fas fa-th-list" aria-hidden="true"></i> Vos templates</h3>
 
             <check if="{{ !empty(@templates) }}">
                 <true>
@@ -80,13 +80,13 @@
                                             <true>
                                                 <a href="{{ @base }}/template/{{ @tpl.id }}/edit" class="button small"
                                                     title="Editer" title="Éditer le template">
-                                                    <i class="fas fa-edit"></i>
+                                                    <i class="fas fa-edit" aria-hidden="true"></i>
                                                 </a>
                                             </true>
                                             <false>
                                                 <span class="button small disabled"
                                                     title="Template systeme non modifiable">
-                                                    <i class="fas fa-lock"></i>
+                                                    <i class="fas fa-lock" aria-hidden="true"></i>
                                                 </span>
                                             </false>
                                         </check>
@@ -94,7 +94,7 @@
                                         <a href="{{ @base }}/template/{{ @tpl.id }}/export"
                                             class="button small secondary" title="Exporter en JSON"
                                             title="Exporter en JSON">
-                                            <i class="fas fa-file-export"></i>
+                                            <i class="fas fa-file-export" aria-hidden="true"></i>
                                         </a>
 
                                         <check if="{{ @tpl.can_edit && !@tpl.is_system }}">
@@ -102,7 +102,7 @@
                                                 title="Copier en template système" title="Copier en template système"
                                                 data-id="{{ @tpl.id }}" data-name="{{ @tpl.name | esc }}"
                                                 data-description="{{ @tpl.description | esc }}">
-                                                <i class="fas fa-arrow-up"></i>
+                                                <i class="fas fa-arrow-up" aria-hidden="true"></i>
                                             </button>
                                         </check>
 
@@ -112,13 +112,13 @@
                                                     class="button small delete js-confirm" title="Supprimer"
                                                     title="Supprimer le template"
                                                     data-confirm="Etes-vous sur de vouloir supprimer ce template ?">
-                                                    <i class="fas fa-trash"></i>
+                                                    <i class="fas fa-trash" aria-hidden="true"></i>
                                                 </a>
                                             </true>
                                             <false>
                                                 <check if="{{ @tpl.usage_count > 0 }}">
                                                     <span class="button small disabled" title="Template en usage">
-                                                        <i class="fas fa-trash"></i>
+                                                        <i class="fas fa-trash" aria-hidden="true"></i>
                                                     </span>
                                                 </check>
                                             </false>
@@ -141,7 +141,7 @@
 <div id="promoteModal" class="modal-overlay">
     <div class="modal-content">
         <div class="modal-header">
-            <h3><i class="fas fa-arrow-up"></i> Copier en template système</h3>
+            <h3><i class="fas fa-arrow-up" aria-hidden="true"></i> Copier en template système</h3>
             <button type="button" class="modal-close" id="closePromoteModal" title="Fermer"
                 title="Fermer la fenêtre">&times;</button>
         </div>

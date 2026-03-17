@@ -1,29 +1,29 @@
 <div class="edit-page-layout">
     <div class="edit-header">
-        <h2><i class="fas fa-inbox"></i> Demandes des collaborateurs — {{ @project.title | esc }}</h2>
+        <h2><i class="fas fa-inbox" aria-hidden="true"></i> Demandes des collaborateurs — {{ @project.title | esc }}</h2>
         <div class="header-actions">
             <a href="{{ @base }}/project/{{ @project.id }}/collaborateurs" class="button secondary"
                 title="Gérer les collaborateurs" title="Gérer les collaborateurs">
-                <i class="fas fa-users"></i> Collaborateurs
+                <i class="fas fa-users" aria-hidden="true"></i> Collaborateurs
             </a>
             <a href="{{ @base }}/project/{{ @project.id }}" class="button secondary" title="Retour au projet"
                 title="Retour au projet">
-                <i class="fas fa-arrow-left"></i> Retour
+                <i class="fas fa-arrow-left" aria-hidden="true"></i> Retour
             </a>
         </div>
     </div>
 
     <check if="{{ count(@requests) == 0 }}">
-        <div class="edit-card" style="margin-top:1.5rem">
-            <p class="text-muted-para" style="text-align:center;padding:2rem 0">
-                <i class="fas fa-check-circle"
-                    style="font-size:2rem;color:#22c55e;display:block;margin-bottom:.5rem"></i>
+        <div class="edit-card" class="mt-20">
+            <p class="text-muted-para" class="empty-state-block">
+                <i class="fas fa-check-circle" aria-hidden="true"
+                    class="d-block text-success mb-10" style="font-size:2rem"></i>
                 Aucune demande en attente.
             </p>
         </div>
     </check>
 
-    <div id="requestsList" style="margin-top:1.5rem">
+    <div id="requestsList" class="mt-20">
         <repeat group="{{ @requests }}" value="{{ @req }}">
             <div class="edit-card collab-request-card {{ @req.status }}" id="req-{{ @req.id }}">
                 <div class="collab-req-header">
@@ -34,7 +34,7 @@
                         <check if="{{ @req.content_title }}">
                             <strong>{{ @req.content_title | esc }}</strong>
                         </check>
-                        <span class="text-muted-para" style="font-size:.8rem">par {{ @req.collab_username | esc }} · {{
+                        <span class="text-muted-para" class="text-xs">par {{ @req.collab_username | esc }} · {{
                             @req.created_at }}</span>
                     </div>
                     <span class="collab-req-status collab-req-status-{{ @req.status }}">
@@ -45,7 +45,7 @@
                 </div>
 
                 <check if="{{ @req.message }}">
-                    <p class="collab-req-message"><i class="fas fa-comment"></i> {{ @req.message | esc }}</p>
+                    <p class="collab-req-message"><i class="fas fa-comment" aria-hidden="true"></i> {{ @req.message | esc }}</p>
                 </check>
 
                 <check if="{{ @req.current_snapshot || @req.proposed_content }}">
@@ -66,21 +66,21 @@
                 </check>
 
                 <check if="{{ @req.owner_note }}">
-                    <p class="collab-req-owner-note"><i class="fas fa-reply"></i> {{ @req.owner_note | esc }}</p>
+                    <p class="collab-req-owner-note"><i class="fas fa-reply" aria-hidden="true"></i> {{ @req.owner_note | esc }}</p>
                 </check>
 
                 <check if="{{ @req.status == 'pending' }}">
                     <div class="collab-req-actions">
                         <button class="button small btn-approve" data-id="{{ @req.id }}" title="Approuver et appliquer"
                             title="Approuver et appliquer">
-                            <i class="fas fa-check"></i> Approuver &amp; appliquer
+                            <i class="fas fa-check" aria-hidden="true"></i> Approuver &amp; appliquer
                         </button>
                         <div class="collab-reject-form" style="display:flex;gap:.5rem;align-items:center">
                             <input type="text" class="input-control reject-note" placeholder="Note de refus (optionnel)"
                                 style="flex:1;font-size:.85rem">
                             <button class="button small delete btn-reject" data-id="{{ @req.id }}"
                                 title="Refuser la demande" title="Refuser la demande">
-                                <i class="fas fa-times"></i> Refuser
+                                <i class="fas fa-times" aria-hidden="true"></i> Refuser
                             </button>
                         </div>
                     </div>

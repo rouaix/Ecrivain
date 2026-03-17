@@ -7,7 +7,7 @@
     <title>{{ @title | esc }}</title>
     <link rel="stylesheet" href="{{ @base }}/public/style.css?v=28">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link rel="stylesheet" href="{{ @base }}/public/theme-default.css">
+    <link rel="stylesheet" href="{{ @base }}/public/css/themes/theme-default.css">
     <style>
         .share-banner { background: #fff3cd; border-bottom: 1px solid #ffc107; padding: .5rem 1rem; font-size: .85rem; text-align: center; color: #856404; }
         .share-banner i { margin-right: .4rem; }
@@ -24,7 +24,7 @@
 <body class="theme-default">
 
 <div class="share-banner">
-    <i class="fas fa-lock"></i> Accès partagé en lecture seule
+    <i class="fas fa-lock" aria-hidden="true"></i> Accès partagé en lecture seule
 </div>
 
 <div class="share-public-header">
@@ -39,13 +39,13 @@
             <p>{{ @proj.description | esc }}</p>
             <div class="share-project-modes">
                 <a href="{{ @base }}/s/{{ @token }}/{{ @proj.id }}/lecture" class="button">
-                    <i class="fas fa-book-open"></i> Lecture
+                    <i class="fas fa-book-open" aria-hidden="true"></i> Lecture
                 </a>
                 <a href="{{ @base }}/s/{{ @token }}/{{ @proj.id }}/relecture" class="button secondary">
-                    <i class="fas fa-glasses"></i> Relecture
+                    <i class="fas fa-glasses" aria-hidden="true"></i> Relecture
                 </a>
                 <a href="{{ @base }}/s/{{ @token }}/{{ @proj.id }}/mindmap" class="button secondary">
-                    <i class="fas fa-project-diagram"></i> Carte mentale
+                    <i class="fas fa-project-diagram" aria-hidden="true"></i> Carte mentale
                 </a>
             </div>
         </div>

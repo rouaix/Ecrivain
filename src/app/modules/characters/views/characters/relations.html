@@ -1,20 +1,20 @@
 <div class="edit-page-layout">
 
     <div class="edit-header">
-        <h2><i class="fas fa-project-diagram"></i> Relations — {{ @project.title | esc }}</h2>
-        <div style="display:flex;gap:8px;">
+        <h2><i class="fas fa-project-diagram" aria-hidden="true"></i> Relations — {{ @project.title | esc }}</h2>
+        <div class="d-flex gap-8">
             <button type="button" id="btnSuggestRelations" class="button secondary"
                 title="Suggérer des relations depuis les chapitres"
                 title="Analyser les chapitres avec l'IA pour suggérer des relations">
-                <i class="fas fa-magic"></i>&nbsp;Suggérer
+                <i class="fas fa-magic" aria-hidden="true"></i>&nbsp;Suggérer
             </button>
             <a href="{{ @base }}/project/{{ @project.id }}/characters" class="button secondary"
                 title="Liste des personnages" title="Liste des personnages">
-                <i class="fas fa-users"></i>
+                <i class="fas fa-users" aria-hidden="true"></i>
             </a>
             <a href="{{ @base }}/project/{{ @project.id }}" class="button" title="Retour au projet"
                 title="Retour au projet">
-                <i class="fas fa-arrow-left"></i>
+                <i class="fas fa-arrow-left" aria-hidden="true"></i>
             </a>
         </div>
     </div>
@@ -33,14 +33,14 @@
             <!-- Graph panel -->
             <div class="relations-graph-panel">
                 <div id="charGraph" class="char-graph"></div>
-                <p class="char-graph-hint"><i class="fas fa-info-circle"></i> Faites glisser les nœuds pour réorganiser.
+                <p class="char-graph-hint"><i class="fas fa-info-circle" aria-hidden="true"></i> Faites glisser les nœuds pour réorganiser.
                     Cliquez sur un lien puis <kbd>Suppr</kbd> pour le supprimer.</p>
             </div>
 
             <!-- Form panel -->
             <div class="relations-form-panel">
                 <div class="edit-card">
-                    <h3><i class="fas fa-plus-circle"></i> Ajouter un lien</h3>
+                    <h3><i class="fas fa-plus-circle" aria-hidden="true"></i> Ajouter un lien</h3>
 
                     <div class="form-group">
                         <label>De</label>
@@ -72,20 +72,20 @@
                         <label>Couleur du lien</label>
                         <div class="color-presets">
                             <button type="button" class="color-preset active" data-color="#94a3b8"
-                                style="background:#94a3b8" title="Neutre" title="Neutre"></button>
-                            <button type="button" class="color-preset" data-color="#ef4444" style="background:#ef4444"
+                                class="relation-dot relation-dot--neutral" title="Neutre" title="Neutre"></button>
+                            <button type="button" class="color-preset" data-color="#ef4444" class="relation-dot relation-dot--danger"
                                 title="Conflit" title="Conflit"></button>
-                            <button type="button" class="color-preset" data-color="#f97316" style="background:#f97316"
+                            <button type="button" class="color-preset" data-color="#f97316" class="relation-dot relation-dot--orange"
                                 title="Tension" title="Tension"></button>
-                            <button type="button" class="color-preset" data-color="#eab308" style="background:#eab308"
+                            <button type="button" class="color-preset" data-color="#eab308" class="relation-dot relation-dot--warning"
                                 title="Alliance" title="Alliance"></button>
-                            <button type="button" class="color-preset" data-color="#22c55e" style="background:#22c55e"
+                            <button type="button" class="color-preset" data-color="#22c55e" class="relation-dot relation-dot--success"
                                 title="Amitié" title="Amitié"></button>
-                            <button type="button" class="color-preset" data-color="#ec4899" style="background:#ec4899"
+                            <button type="button" class="color-preset" data-color="#ec4899" class="relation-dot relation-dot--pink"
                                 title="Amour" title="Amour"></button>
-                            <button type="button" class="color-preset" data-color="#3b82f6" style="background:#3b82f6"
+                            <button type="button" class="color-preset" data-color="#3b82f6" class="relation-dot relation-dot--info"
                                 title="Famille" title="Famille"></button>
-                            <button type="button" class="color-preset" data-color="#8b5cf6" style="background:#8b5cf6"
+                            <button type="button" class="color-preset" data-color="#8b5cf6" class="relation-dot relation-dot--purple"
                                 title="Magie/Lien spirituel" title="Magie/Lien spirituel"></button>
                         </div>
                         <input type="color" id="relColor" value="#94a3b8" class="color-custom-input">
@@ -93,15 +93,15 @@
 
                     <button type="button" id="btnAddRelation" class="button primary"
                         title="Créer le lien entre personnages" title="Créer le lien entre personnages">
-                        <i class="fas fa-link"></i> Créer le lien
+                        <i class="fas fa-link" aria-hidden="true"></i> Créer le lien
                     </button>
 
-                    <p id="relStatus" class="rel-status" style="display:none;"></p>
+                    <p id="relStatus" class="rel-status" class="is-hidden" ></p>
                 </div>
 
                 <!-- Relations list -->
                 <div class="edit-card" id="relListCard">
-                    <h3><i class="fas fa-list"></i> Liens existants</h3>
+                    <h3><i class="fas fa-list" aria-hidden="true"></i> Liens existants</h3>
                     <div id="relList" class="rel-list">
                         <check if="{{ empty(@relations) }}">
                             <p class="text-muted" id="relEmptyMsg">Aucun lien défini.</p>
@@ -112,13 +112,13 @@
                                     <span class="rel-dot" style="background:{{ @r.color }};"></span>
                                     <span class="rel-names">
                                         <strong>{{ @r.name_from | esc }}</strong>
-                                        <i class="fas fa-arrow-right rel-arrow"></i>
+                                        <i class="fas fa-arrow-right rel-arrow" aria-hidden="true"></i>
                                         <strong>{{ @r.name_to | esc }}</strong>
                                     </span>
                                     <span class="rel-label-badge">{{ @r.label | esc }}</span>
                                     <button type="button" class="button small delete btn-delete-rel"
                                         data-rid="{{ @r.id }}" title="Supprimer" title="Supprimer ce lien">
-                                        <i class="fas fa-trash"></i>
+                                        <i class="fas fa-trash" aria-hidden="true"></i>
                                     </button>
                                 </div>
                             </repeat>
@@ -134,15 +134,15 @@
 </div>
 
 <!-- Suggestions modal -->
-<div class="modal-overlay" id="suggestModal" style="display:none;">
-    <div class="modal-content" style="max-width:620px;max-height:80vh;display:flex;flex-direction:column;">
+<div class="modal-overlay" id="suggestModal" class="is-hidden" >
+    <div class="modal-content modal-md modal-tall">
         <div class="modal-header">
-            <h3><i class="fas fa-magic"></i> Relations suggérées par l'IA</h3>
+            <h3><i class="fas fa-magic" aria-hidden="true"></i> Relations suggérées par l'IA</h3>
             <button type="button" class="modal-close" id="closeSuggestModal">&times;</button>
         </div>
-        <div class="modal-body" style="flex:1;overflow-y:auto;">
-            <div id="suggestLoading" style="display:none;text-align:center;padding:32px 0;">
-                <i class="fas fa-spinner fa-spin fa-2x"></i>
+        <div class="modal-body" class="flex-1" style="overflow-y:auto">
+            <div id="suggestLoading" class="is-hidden empty-state-block">
+                <i class="fas fa-spinner fa-spin fa-2x" aria-hidden="true"></i>
                 <p style="margin-top:12px;color:var(--text-muted,#777);">Analyse des chapitres en cours…</p>
             </div>
             <div id="suggestList"></div>
@@ -352,11 +352,11 @@
         item.innerHTML =
             '<span class="rel-dot" style="background:' + r.color + ';"></span>' +
             '<span class="rel-names"><strong>' + escHtml(r.name_from) + '</strong>' +
-            ' <i class="fas fa-arrow-right rel-arrow"></i> ' +
+            ' <i class="fas fa-arrow-right rel-arrow" aria-hidden="true"></i> ' +
             '<strong>' + escHtml(r.name_to) + '</strong></span>' +
             '<span class="rel-label-badge">' + escHtml(r.label) + '</span>' +
             '<button type="button" class="button small delete btn-delete-rel" data-rid="' + r.id + '" title="Supprimer">' +
-            '<i class="fas fa-trash"></i></button>';
+            '<i class="fas fa-trash" aria-hidden="true"></i></button>';
         document.getElementById('relList').appendChild(item);
     }
 
@@ -364,8 +364,8 @@
         var el = document.getElementById('relStatus');
         el.textContent = msg;
         el.className = 'rel-status rel-status--' + type;
-        el.style.display = 'block';
-        setTimeout(function () { el.style.display = 'none'; }, 3000);
+        el.classList.remove('is-hidden');
+        setTimeout(function () { el.classList.add('is-hidden'); }, 3000);
     }
 
     function escHtml(str) {
@@ -378,8 +378,8 @@
     var suggestLoading = document.getElementById('suggestLoading');
     var suggestList = document.getElementById('suggestList');
 
-    function openSuggestModal() { suggestModal.style.display = 'flex'; }
-    function closeSuggestModal() { suggestModal.style.display = 'none'; }
+    function openSuggestModal() { suggestModal.classList.remove('is-hidden'); }
+    function closeSuggestModal() { suggestModal.classList.add('is-hidden'); }
 
     document.getElementById('closeSuggestModal').addEventListener('click', closeSuggestModal);
     document.getElementById('closeSuggestModalBtn').addEventListener('click', closeSuggestModal);
@@ -387,7 +387,7 @@
 
     document.getElementById('btnSuggestRelations').addEventListener('click', function () {
         openSuggestModal();
-        suggestLoading.style.display = 'block';
+        suggestLoading.classList.remove('is-hidden');
         suggestList.innerHTML = '';
 
         fetch(BASE + '/ai/suggest-relations', {
@@ -397,7 +397,7 @@
         })
             .then(function (r) { return r.json(); })
             .then(function (data) {
-                suggestLoading.style.display = 'none';
+                suggestLoading.classList.add('is-hidden');
                 if (!data.success) {
                     suggestList.innerHTML = '<p class="rel-status rel-status--err">' + escHtml(data.error || 'Erreur') + '</p>';
                     return;
@@ -415,7 +415,7 @@
                     html += '<div class="rel-item" id="sug-' + i + '">'
                         + '<span class="rel-dot" style="background:' + escHtml(s.color) + ';"></span>'
                         + '<span class="rel-names"><strong>' + escHtml(s.from_name) + '</strong>'
-                        + ' <i class="fas fa-arrow-right rel-arrow"></i> '
+                        + ' <i class="fas fa-arrow-right rel-arrow" aria-hidden="true"></i> '
                         + '<strong>' + escHtml(s.to_name) + '</strong></span>'
                         + '<span class="rel-label-badge">' + escHtml(s.label) + '</span>'
                         + '<button type="button" class="button small primary btn-accept-sug" '
@@ -466,7 +466,7 @@
                 });
             })
             .catch(function () {
-                suggestLoading.style.display = 'none';
+                suggestLoading.classList.add('is-hidden');
                 suggestList.innerHTML = '<p class="rel-status rel-status--err">Erreur réseau.</p>';
             });
     });

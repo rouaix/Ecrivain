@@ -10,28 +10,28 @@
 
 <div class="navigation-toolbar dashboard-toolbar">
     <a href="{{ @base }}/project/create" class="button secondary">
-        <i class="fas fa-plus"></i> Nouveau projet
+        <i class="fas fa-plus" aria-hidden="true"></i> Nouveau projet
     </a>
     <a href="{{ @base }}/profile" class="button secondary">
-        <i class="fas fa-user"></i> Mon Profil
+        <i class="fas fa-user" aria-hidden="true"></i> Mon Profil
     </a>
-    <a href="{{ @base }}/ai/config" class="button secondary btn-purple">
-        <i class="fas fa-robot"></i> Configuration IA
+    <a href="{{ @base }}/ai/config" class="button secondary">
+        <i class="fas fa-robot" aria-hidden="true"></i> Configuration IA
     </a>
     <a href="{{ @base }}/ai/usage" class="button secondary">
-        <i class="fas fa-chart-line"></i> Consommation IA
+        <i class="fas fa-chart-line" aria-hidden="true"></i> Consommation IA
     </a>
     <a href="{{ @base }}/templates" class="button secondary">
-        <i class="fas fa-layer-group"></i> Templates
+        <i class="fas fa-layer-group" aria-hidden="true"></i> Templates
     </a>
-    <div class="view-toggle" style="margin-left:auto;display:none;">
+    <div class="view-toggle" class="ml-auto is-hidden" style="display:none;">
         <button type="button" id="btnViewList" class="button secondary view-toggle-btn active" title="Vue liste"
             title="Vue liste">
-            <i class="fas fa-th-large"></i>
+            <i class="fas fa-th-large" aria-hidden="true"></i>
         </button>
         <button type="button" id="btnViewKanban" class="button secondary view-toggle-btn" title="Vue Kanban"
             title="Vue Kanban">
-            <i class="fas fa-columns"></i>
+            <i class="fas fa-columns" aria-hidden="true"></i>
         </button>
     </div>
 </div>
@@ -76,7 +76,7 @@
 <!-- Tag filter bar -->
 <check if="{{ !empty(@allTags) }}">
     <div class="tag-filter-bar">
-        <span class="tag-filter-label"><i class="fas fa-filter"></i></span>
+        <span class="tag-filter-label"><i class="fas fa-filter" aria-hidden="true"></i></span>
         <button type="button" class="tag-filter-btn active" data-tag="">Tous</button>
         <repeat group="{{ @allTags }}" value="{{ @t }}">
             <button type="button" class="tag-filter-btn" data-tag="{{ @t.name | esc }}">{{ @t.name | esc }}</button>
@@ -89,7 +89,7 @@
     <div class="dash-goal-widget">
         <div class="dash-goal-info">
             <span class="dash-goal-label">
-                <i class="fas fa-sun"></i> Objectif du jour
+                <i class="fas fa-sun" aria-hidden="true"></i> Objectif du jour
             </span>
             <span class="dash-goal-numbers">
                 {{ number_format(@wordsToday, 0, ',', "\u{202f}") }}
@@ -104,13 +104,14 @@
                 style="width:{{ @dailyPct }}%"></div>
         </div>
         <check if="{{ @dailyPct >= 100 }}">
-            <p class="dash-goal-congrats"><i class="fas fa-check-circle"></i> Objectif du jour atteint !</p>
+            <p class="dash-goal-congrats"><i class="fas fa-check-circle" aria-hidden="true"></i> Objectif du jour
+                atteint !</p>
         </check>
     </div>
 </check>
 
 <!-- Kanban view (hidden by default) -->
-<div id="kanbanView" style="display:none">
+<div id="kanbanView" class="is-hidden">
     <div class="kanban-board">
 
         <div class="kanban-col" data-status="active">
@@ -196,11 +197,11 @@
                         <div class="project-card__actions">
                             <a href="{{ @base }}/project/{{ @proj.id }}/edit" class="button small secondary"
                                 title="Modifier">
-                                <i class="fas fa-edit"></i>
+                                <i class="fas fa-edit" aria-hidden="true"></i>
                             </a>
                             <a href="#" class="button small delete js-delete-project" title="Supprimer"
                                 data-url="{{ @base }}/project/{{ @proj.id }}/delete">
-                                <i class="fas fa-trash"></i>
+                                <i class="fas fa-trash" aria-hidden="true"></i>
                             </a>
                         </div>
                     </div>
@@ -218,10 +219,10 @@
 
 <!-- Invitations en attente -->
 <check if="{{ count(@pendingInvitations) > 0 }}">
-    <div class="alert alert-info" style="margin-bottom:1rem">
-        <i class="fas fa-envelope"></i>
+    <div class="alert alert-info" class="mb-15">
+        <i class="fas fa-envelope" aria-hidden="true"></i>
         Vous avez <strong>{{ count(@pendingInvitations) }}</strong> invitation(s) en attente.
-        <a href="{{ @base }}/collab/invitations" class="button small" style="margin-left:.75rem">Voir les
+        <a href="{{ @base }}/collab/invitations" class="button small" class="ml-10">Voir les
             invitations</a>
     </div>
 </check>
@@ -229,7 +230,7 @@
 <!-- Projets partagés -->
 <check if="{{ count(@sharedProjects) > 0 }}">
     <h3 style="margin-top:1.5rem;margin-bottom:.75rem">
-        <i class="fas fa-users"></i> Projets partagés avec moi
+        <i class="fas fa-users" aria-hidden="true"></i> Projets partagés avec moi
     </h3>
     <div class="projects-grid">
         <repeat group="{{ @sharedProjects }}" value="{{ @proj }}">
@@ -250,7 +251,8 @@
                     <div class="project-card__info">
                         <h3 class="project-card__title">{{ @proj.title }}</h3>
                         <div class="project-card__description">
-                            <i class="fas fa-user" style="opacity:.6"></i> {{ @proj.owner_username | esc }}
+                            <i class="fas fa-user" aria-hidden="true" style="opacity:.6"></i> {{ @proj.owner_username |
+                            esc }}
                         </div>
                         <div class="project-card__meta">
                             <span>Accepté le : {{ date('d/m/Y', strtotime(@proj.accepted_at)) }}</span>
@@ -260,14 +262,14 @@
                 <div class="project-card__actions">
                     <a href="{{ @base }}/project/{{ @proj.id }}/relecture" class="button small secondary"
                         title="Relecture">
-                        <i class="fas fa-glasses"></i>
+                        <i class="fas fa-glasses" aria-hidden="true"></i>
                     </a>
                     <a href="{{ @base }}/project/{{ @proj.id }}/collab/mes-demandes" class="button small secondary"
                         title="Mes demandes">
-                        <i class="fas fa-paper-plane"></i>
+                        <i class="fas fa-paper-plane" aria-hidden="true"></i>
                     </a>
                     <a href="{{ @base }}/project/{{ @proj.id }}/export" class="button small secondary" title="Exporter">
-                        <i class="fas fa-download"></i>
+                        <i class="fas fa-download" aria-hidden="true"></i>
                     </a>
                 </div>
             </div>
@@ -342,13 +344,13 @@
             var otherCols = COLS.filter(function (s) { return s !== p.status; });
             var moveButtons = otherCols.map(function (s) {
                 return '<button type="button" class="kanban-move-btn" data-to="' + s + '" data-pid="' + p.pid + '">'
-                    + '<i class="fas fa-arrow-right"></i> ' + LABELS[s] + '</button>';
+                    + '<i class="fas fa-arrow-right" aria-hidden="true"></i> ' + LABELS[s] + '</button>';
             }).join('');
 
             card.innerHTML =
                 '<a href="' + escHtml(p.url) + '" class="kanban-card-title">' + escHtml(p.title) + '</a>' +
                 '<div class="kanban-card-actions">' + moveButtons +
-                '<a href="' + escHtml(p.editUrl) + '" class="kanban-edit-btn" title="Modifier"><i class="fas fa-edit"></i></a>' +
+                '<a href="' + escHtml(p.editUrl) + '" class="kanban-edit-btn" title="Modifier"><i class="fas fa-edit" aria-hidden="true"></i></a>' +
                 '</div>';
 
             // Drag-and-drop
@@ -406,15 +408,15 @@
 
         function showView(view) {
             if (view === 'kanban') {
-                listView.style.display = 'none';
-                kanbanView.style.display = 'block';
+                listView.classList.add('is-hidden');
+                kanbanView.classList.remove('is-hidden');
                 btnList.classList.remove('active');
                 btnKanban.classList.add('active');
                 buildKanban();
                 localStorage.setItem(STORAGE_KEY, 'kanban');
             } else {
-                listView.style.display = 'block';
-                kanbanView.style.display = 'none';
+                listView.classList.remove('is-hidden');
+                kanbanView.classList.add('is-hidden');
                 btnList.classList.add('active');
                 btnKanban.classList.remove('active');
                 localStorage.setItem(STORAGE_KEY, 'list');

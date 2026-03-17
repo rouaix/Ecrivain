@@ -28,16 +28,16 @@
             <div class="project-hero__actions">
                 <div class="project-hero__actions-group">
                     <check if="{{ @isCollaborator }}">
-                        <a class="button secondary" href="{{ @base }}/project/{{ @project.id }}/collab/mes-demandes"
+                        <a class="button" href="{{ @base }}/project/{{ @project.id }}/collab/mes-demandes"
                             title="Mes demandes de modification" title="Mes demandes de modification"><i
                                 class="fas fa-paper-plane"></i> Mes demandes</a>
                     </check>
                     <check if="{{ @isOwner }}">
-                        <a class="button secondary" href="{{ @base }}/project/{{ @project.id }}/collaborateurs"
+                        <a class="button" href="{{ @base }}/project/{{ @project.id }}/collaborateurs"
                             title="Gérer les collaborateurs" title="Gérer les collaborateurs"><i
                                 class="fas fa-users"></i> Collaborateurs</a>
                     </check>
-                    <a class="button" style="display: none;"
+                    <a class="button" class="is-hidden" style="display:none;"
                         href="{{ @base }}/project/{{ @project.id }}/timeline">Timeline</a>
                     <a class="button" href="{{ @base }}/project/{{ @project.id }}/mindmap">Carte mentale</a>
                     <a class="button" href="{{ @base }}/project/{{ @project.id }}/lecture">Lecture</a>
@@ -49,7 +49,7 @@
                 </div>
 
                 <div id="export-modal" class="modal-overlay">
-                    <div class="modal-content" style="max-width:480px">
+                    <div class="modal-content modal-sm">
                         <div class="modal-header export-modal-header">
                             <h3>Exporter le projet</h3>
                             <button class="modal-close button" id="export-modal-close" title="Fermer"
@@ -79,7 +79,8 @@
                                     <span class="export-format-desc">Format liseuse numérique</span>
                                 </li>
                                 <li>
-                                    <a class="button" href="{{ @base }}/project/{{ @project.id }}/export/odt">OpenDocument
+                                    <a class="button"
+                                        href="{{ @base }}/project/{{ @project.id }}/export/odt">OpenDocument
                                         (.odt)</a>
                                     <span class="export-format-desc">Compatible LibreOffice et Microsoft Word</span>
                                 </li>

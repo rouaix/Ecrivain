@@ -7,8 +7,8 @@
     <title>{{ @title | esc }}</title>
     <link rel="stylesheet" href="{{ @base }}/public/style.css?v=28">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link rel="stylesheet" href="{{ @base }}/public/theme-default.css">
-    <link rel="stylesheet" href="{{ @base }}/public/reading.css?v=10">
+    <link rel="stylesheet" href="{{ @base }}/public/css/themes/theme-default.css">
+    <link rel="stylesheet" href="{{ @base }}/public/css/features/reading.css?v=10">
     <style>
         body.reading-mode header, body.reading-mode footer, body.reading-mode nav:not(.reading-toolbar *) { display: none !important; }
         body.reading-mode main.reading-content { padding: 0 !important; max-width: 100% !important; }
@@ -26,17 +26,17 @@
 
 <div class="reading-toolbar">
     <div class="toolbar-title">{{ @project.title | esc }}</div>
-    <span class="share-readonly-badge"><i class="fas fa-lock"></i> Lecture seule</span>
-    <button class="toolbar-btn" id="toggleToc"><i class="fas fa-list"></i> Table</button>
-    <button class="toolbar-btn" id="toggleFullscreen"><i class="fas fa-expand"></i></button>
+    <span class="share-readonly-badge"><i class="fas fa-lock" aria-hidden="true"></i> Lecture seule</span>
+    <button class="toolbar-btn" id="toggleToc"><i class="fas fa-list" aria-hidden="true"></i> Table</button>
+    <button class="toolbar-btn" id="toggleFullscreen"><i class="fas fa-expand" aria-hidden="true"></i></button>
     <a href="{{ @base }}/s/{{ @token }}/{{ @project.id }}/relecture" class="toolbar-btn" title="Mode relecture">
-        <i class="fas fa-glasses"></i>
+        <i class="fas fa-glasses" aria-hidden="true"></i>
     </a>
     <a href="{{ @base }}/s/{{ @token }}/{{ @project.id }}/mindmap" class="toolbar-btn" title="Carte mentale">
-        <i class="fas fa-project-diagram"></i>
+        <i class="fas fa-project-diagram" aria-hidden="true"></i>
     </a>
     <a href="{{ @base }}/s/{{ @token }}" class="toolbar-btn" title="Retour à la liste">
-        <i class="fas fa-arrow-left"></i>
+        <i class="fas fa-arrow-left" aria-hidden="true"></i>
     </a>
 </div>
 
@@ -106,10 +106,10 @@ document.querySelectorAll('.toc-item').forEach(function(item) {
 document.getElementById('toggleFullscreen').addEventListener('click', function() {
     if (!document.fullscreenElement) {
         document.documentElement.requestFullscreen && document.documentElement.requestFullscreen();
-        this.innerHTML = '<i class="fas fa-compress"></i>';
+        this.innerHTML = '<i class="fas fa-compress" aria-hidden="true"></i>';
     } else {
         document.exitFullscreen && document.exitFullscreen();
-        this.innerHTML = '<i class="fas fa-expand"></i>';
+        this.innerHTML = '<i class="fas fa-expand" aria-hidden="true"></i>';
     }
 });
 </script>

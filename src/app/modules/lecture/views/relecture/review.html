@@ -1,19 +1,19 @@
 <div class="edit-page-layout">
     <div class="edit-header">
-        <h2><i class="fas fa-glasses"></i> Relecture : {{ @project.title | esc }}</h2>
+        <h2><i class="fas fa-glasses" aria-hidden="true"></i> Relecture : {{ @project.title | esc }}</h2>
         <div class="header-actions">
             <a href="{{ @base }}/project/{{ @project.id }}/relecture/rapport" class="button secondary"
                 title="Rapport d'annotations">
-                <i class="fas fa-file-alt"></i> Rapport
+                <i class="fas fa-file-alt" aria-hidden="true"></i> Rapport
             </a>
             <a href="{{ @base }}/project/{{ @project.id }}/lecture" class="button" title="Mode lecture">
-                <i class="fas fa-book-open"></i>
+                <i class="fas fa-book-open" aria-hidden="true"></i>
             </a>
         </div>
     </div>
 
     <p class="text-muted-para review-hint">
-        <i class="fas fa-info-circle"></i>
+        <i class="fas fa-info-circle" aria-hidden="true"></i>
         Sélectionnez un passage pour l'annoter ou proposer une correction. Cliquez sur un surlignage pour retrouver
         l'entrée dans le panneau.
     </p>
@@ -46,12 +46,12 @@
                 <div class="review-tabs">
                     <button class="review-tab active" data-tab="annotations" id="tabAnnotations"
                         title="Voir les annotations" title="Voir les annotations">
-                        <i class="fas fa-tags" style="margin-right:6px"></i> Annotations
+                        <i class="fas fa-tags icon-mr" aria-hidden="true"></i> Annotations
                         <span class="review-panel-count" id="annotationCount">0</span>
                     </button>
                     <button class="review-tab" data-tab="suggestions" id="tabSuggestions" title="Voir les suggestions"
                         title="Voir les suggestions">
-                        <i class="fas fa-edit" style="margin-right:6px"></i> Suggestions
+                        <i class="fas fa-edit icon-mr" aria-hidden="true"></i> Suggestions
                         <span class="review-panel-count suggestion-count-badge" id="suggestionCount">0</span>
                     </button>
                 </div>
@@ -74,34 +74,34 @@
                 </div>
 
                 <!-- Suggestion filters (shown only on suggestions tab) -->
-                <div class="review-filters" id="suggestionFilters" style="display:none">
+                <div class="review-filters" id="suggestionFilters" class="is-hidden" >
                     <button class="sug-filter active" data-sfilter="all">Tout</button>
                     <button class="sug-filter" data-sfilter="pending" title="En attente" title="En attente">
-                        <span class="ann-dot" style="background:#8b5cf6"></span>
+                        <span class="ann-dot" class="relation-dot relation-dot--purple"></span>
                     </button>
                     <button class="sug-filter" data-sfilter="accepted" title="Acceptée" title="Acceptée">
-                        <span class="ann-dot" style="background:#22c55e"></span>
+                        <span class="ann-dot" class="relation-dot relation-dot--success"></span>
                     </button>
                     <button class="sug-filter" data-sfilter="rejected" title="Rejetée" title="Rejetée">
-                        <span class="ann-dot" style="background:#ef4444"></span>
+                        <span class="ann-dot" class="relation-dot relation-dot--danger"></span>
                     </button>
                 </div>
             </div>
 
             <div class="review-annotations-list" id="annotationsList"></div>
-            <div class="review-annotations-list" id="suggestionsList" style="display:none"></div>
+            <div class="review-annotations-list" id="suggestionsList" class="is-hidden" ></div>
         </div>
     </div>
 </div>
 
 <!-- Floating popup -->
-<div id="annotationPopup" class="annotation-popup" style="display:none;" role="dialog" aria-label="Nouvelle annotation">
+<div id="annotationPopup" class="annotation-popup" class="is-hidden" role="dialog" aria-label="Nouvelle annotation">
     <!-- Mode toggle -->
     <div class="popup-mode-toggle">
         <button class="popup-mode-btn active" id="modeAnnotation" title="Mode annotation" title="Mode annotation"><i
-                class="fas fa-tag" style="margin-right:6px"></i> Annoter</button>
+                class="fas fa-tag" class="icon-mr"></i> Annoter</button>
         <button class="popup-mode-btn" id="modeSuggestion" title="Mode suggestion" title="Mode suggestion"><i
-                class="fas fa-edit" style="margin-right:6px"></i> Suggérer</button>
+                class="fas fa-edit" class="icon-mr"></i> Suggérer</button>
     </div>
 
     <div class="annotation-popup-text" id="annotationPopupText"></div>
@@ -118,14 +118,14 @@
             rows="2"></textarea>
         <div class="annotation-popup-actions">
             <button id="annotationSubmit" class="button primary small" title="Enregistrer l'annotation"
-                title="Enregistrer l'annotation"><i class="fas fa-tag" style="margin-right:6px"></i>Annoter</button>
+                title="Enregistrer l'annotation"><i class="fas fa-tag icon-mr" aria-hidden="true"></i>Annoter</button>
             <button id="annotationCancel" class="button small" title="Annuler l'annotation"
                 title="Annuler l'annotation">Annuler</button>
         </div>
     </div>
 
     <!-- Suggestion fields -->
-    <div id="suggestionFields" style="display:none">
+    <div id="suggestionFields" class="is-hidden" >
         <label class="popup-field-label">Texte original :</label>
         <div class="suggestion-original-preview" id="suggestionOriginalPreview"></div>
         <label class="popup-field-label">Correction proposée :</label>
@@ -135,8 +135,8 @@
             rows="2"></textarea>
         <div class="annotation-popup-actions">
             <button id="suggestionSubmit" class="button small sug-btn-primary" title="Envoyer la suggestion"
-                title="Envoyer la suggestion"><i class="fas fa-paper-plane"
-                    style="margin-right:6px"></i>Proposer</button>
+                title="Envoyer la suggestion"><i class="fas fa-paper-plane" aria-hidden="true"
+                    class="icon-mr"></i>Proposer</button>
             <button id="suggestionCancel" class="button small" title="Annuler la suggestion"
                 title="Annuler la suggestion">Annuler</button>
         </div>
@@ -358,11 +358,11 @@
                 return '<div class="annotation-card" id="ann-card-ann-' + ann.id + '">' +
                     '<div class="annotation-card-header">' +
                     '<span class="annotation-cat-badge" style="background:' + cat.color + '">' + escHtml(cat.label) + '</span>' +
-                    (canDelete ? '<button class="annotation-delete-btn" data-id="' + ann.id + '" title="Supprimer"><i class="fas fa-times"></i></button>' : '') +
+                    (canDelete ? '<button class="annotation-delete-btn" data-id="' + ann.id + '" title="Supprimer"><i class="fas fa-times" aria-hidden="true"></i></button>' : '') +
                     '</div>' +
                     '<div class="annotation-selected-text">&ldquo;' + escHtml(ann.selected_text) + '&rdquo;</div>' +
                     (ann.comment ? '<div class="annotation-comment">' + escHtml(ann.comment) + '</div>' : '') +
-                    (isOtherUser ? '<div class="annotation-author"><i class="fas fa-user-circle"></i> ' + escHtml(ann.author_name || '') + ' <span class="annotation-author-email">&lt;' + escHtml(ann.author_email || '') + '&gt;</span></div>' : '') +
+                    (isOtherUser ? '<div class="annotation-author"><i class="fas fa-user-circle" aria-hidden="true"></i> ' + escHtml(ann.author_name || '') + ' <span class="annotation-author-email">&lt;' + escHtml(ann.author_email || '') + '&gt;</span></div>' : '') +
                     '</div>';
             }).join('');
 
@@ -395,7 +395,7 @@
                 var html = '<div class="annotation-card sug-card" id="ann-card-sug-' + sug.id + '">' +
                     '<div class="annotation-card-header">' +
                     '<span class="annotation-cat-badge" style="background:' + st.color + '">' + escHtml(st.label) + '</span>' +
-                    (canDelete ? '<button class="sug-delete-btn" data-id="' + sug.id + '" title="Supprimer"><i class="fas fa-times"></i></button>' : '') +
+                    (canDelete ? '<button class="sug-delete-btn" data-id="' + sug.id + '" title="Supprimer"><i class="fas fa-times" aria-hidden="true"></i></button>' : '') +
                     '</div>' +
                     '<div class="sug-original">' +
                     '<span class="sug-label">Original :</span> &ldquo;' + escHtml(sug.original_text) + '&rdquo;' +
@@ -404,11 +404,11 @@
                     '<span class="sug-label">Suggestion :</span> &ldquo;' + escHtml(sug.suggested_text) + '&rdquo;' +
                     '</div>' +
                     (sug.comment ? '<div class="annotation-comment">' + escHtml(sug.comment) + '</div>' : '') +
-                    (isOtherUser ? '<div class="annotation-author"><i class="fas fa-user-circle"></i> ' + escHtml(sug.author_name || '') + ' <span class="annotation-author-email">&lt;' + escHtml(sug.author_email || '') + '&gt;</span></div>' : '') +
+                    (isOtherUser ? '<div class="annotation-author"><i class="fas fa-user-circle" aria-hidden="true"></i> ' + escHtml(sug.author_name || '') + ' <span class="annotation-author-email">&lt;' + escHtml(sug.author_email || '') + '&gt;</span></div>' : '') +
                     (canAction ?
                         '<div class="sug-actions">' +
-                        '<button class="sug-accept-btn button small" data-id="' + sug.id + '"><i class="fas fa-check"></i> Accepter</button>' +
-                        '<button class="sug-reject-btn button small secondary" data-id="' + sug.id + '"><i class="fas fa-times"></i> Rejeter</button>' +
+                        '<button class="sug-accept-btn button small" data-id="' + sug.id + '"><i class="fas fa-check" aria-hidden="true"></i> Accepter</button>' +
+                        '<button class="sug-reject-btn button small secondary" data-id="' + sug.id + '"><i class="fas fa-times" aria-hidden="true"></i> Rejeter</button>' +
                         '</div>' : '') +
                     '</div>';
                 return html;
@@ -493,10 +493,10 @@
 
             // Show popup temporarily offscreen to measure real height
             popup.style.visibility = 'hidden';
-            popup.style.display = 'block';
+            popup.classList.remove('is-hidden');
             var popupH = popup.offsetHeight;
             var popupW = popup.offsetWidth || 320;
-            popup.style.display = 'none';
+            popup.classList.add('is-hidden');
             popup.style.visibility = '';
 
             var headerH = 70; // sticky header clearance
@@ -509,12 +509,12 @@
             top = Math.max(headerH, top);
             popup.style.left = left + 'px';
             popup.style.top = top + 'px';
-            popup.style.display = 'block';
+            popup.classList.remove('is-hidden');
             document.getElementById('annotationCategory').focus();
         }
 
         function hidePopup() {
-            popup.style.display = 'none';
+            popup.classList.add('is-hidden');
             pendingSelection = null;
             if (window.getSelection) window.getSelection().removeAllRanges();
         }
@@ -1334,10 +1334,10 @@
             var actionsDiv = document.createElement('div');
             actionsDiv.className = 'review-header-actions';
             actionsDiv.innerHTML =
-                '<a href="{{ @base }}/project/{{ @project.id }}/relecture/rapport" class="review-header-btn" title="Rapport d\'annotations"><i class="fas fa-file-alt"></i> Rapport</a>' +
-                '<button type="button" id="toggleGlossary" class="review-header-btn" title="Liens vers le lexique"><i class="fas fa-book"></i> Lexique</button>' +
-                '<a href="{{ @base }}/project/{{ @project.id }}/lecture" class="review-header-btn" title="Mode lecture"><i class="fas fa-book-open"></i></a>' +
-                '<a href="{{ @base }}/project/{{ @project.id }}" class="review-header-btn" title="Retour au projet"><i class="fas fa-arrow-left"></i></a>';
+                '<a href="{{ @base }}/project/{{ @project.id }}/relecture/rapport" class="review-header-btn" title="Rapport d\'annotations"><i class="fas fa-file-alt" aria-hidden="true"></i> Rapport</a>' +
+                '<button type="button" id="toggleGlossary" class="review-header-btn" title="Liens vers le lexique"><i class="fas fa-book" aria-hidden="true"></i> Lexique</button>' +
+                '<a href="{{ @base }}/project/{{ @project.id }}/lecture" class="review-header-btn" title="Mode lecture"><i class="fas fa-book-open" aria-hidden="true"></i></a>' +
+                '<a href="{{ @base }}/project/{{ @project.id }}" class="review-header-btn" title="Retour au projet"><i class="fas fa-arrow-left" aria-hidden="true"></i></a>';
             siteHeader.appendChild(actionsDiv);
         }
 
@@ -1360,7 +1360,7 @@
             if (!tooltipEl) {
                 tooltipEl = document.createElement('div');
                 tooltipEl.className = 'glossary-tooltip';
-                tooltipEl.style.display = 'none';
+                tooltipEl.classList.add('is-hidden');
                 document.body.appendChild(tooltipEl);
             }
             return tooltipEl;
@@ -1386,7 +1386,7 @@
                     (cat ? ' <em style="font-weight:normal;font-size:.85em;color:var(--text-muted,#666)">(' + escHtml(cat) + ')</em>' : '') +
                     '</span>' +
                     (def ? escHtml(def) : '<em>Aucune définition.</em>');
-                tip.style.display = 'block';
+                tip.classList.remove('is-hidden');
                 positionTooltip(e);
             });
             el.addEventListener('mousemove', positionTooltip);
@@ -1466,7 +1466,7 @@
                 return;
             }
             btn.disabled = true;
-            btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i>';
+            btn.innerHTML = '<i class="fas fa-spinner fa-spin" aria-hidden="true"></i>';
             fetch('{{ @base }}/project/{{ @project.id }}/glossary/terms', {
                 headers: { 'X-CSRF-Token': '{{ @csrfToken }}' }
             })
@@ -1474,7 +1474,7 @@
                 .then(function (data) {
                     glossaryTerms = data;
                     btn.disabled = false;
-                    btn.innerHTML = '<i class="fas fa-book"></i> Lexique';
+                    btn.innerHTML = '<i class="fas fa-book" aria-hidden="true"></i> Lexique';
                     if (!data.length) { alert('Aucun terme dans le lexique de ce projet.'); return; }
                     highlightTerms(data);
                     highlighted = true;
@@ -1482,7 +1482,7 @@
                 })
                 .catch(function () {
                     btn.disabled = false;
-                    btn.innerHTML = '<i class="fas fa-book"></i> Lexique';
+                    btn.innerHTML = '<i class="fas fa-book" aria-hidden="true"></i> Lexique';
                 });
         });
     }());

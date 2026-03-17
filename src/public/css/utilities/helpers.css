@@ -1,5 +1,23 @@
 /* Helper classes */
 /* ==========================================
+   HELPERS — icônes, layout, edit page
+   ========================================== */
+
+/* Icônes inline suivies de texte */
+.icon-mr { margin-right: 6px; }
+.icon-ml { margin-left: 6px; }
+
+/* Séparateur flex entre titre et actions */
+.flex-spacer { flex: 1; }
+
+/* Texte + icône en ligne */
+.inline-flex-center {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+}
+
+/* ==========================================
    PROJECT EDIT PAGE STYLES
    ========================================== */
 .edit-page-layout {
@@ -330,6 +348,25 @@
 .empty-state {
     color: var(--text-muted);
     font-style: italic;
+}
+
+/* Empty state centré avec grande icône */
+.empty-state-block {
+    text-align: center;
+    padding: 2rem 0;
+    color: var(--text-muted);
+}
+
+.empty-state-block .empty-state-icon {
+    font-size: 2rem;
+    opacity: 0.3;
+    display: block;
+    margin-bottom: 0.5rem;
+}
+
+.empty-state-block .empty-state-icon--success {
+    opacity: 1;
+    color: var(--color-success);
 }
 
 .help-text {

@@ -1,13 +1,13 @@
 <div class="edit-page-layout">
     <div class="edit-header">
-        <h2><i class="fas fa-envelope-open-text"></i> Mes invitations &amp; collaborations</h2>
+        <h2><i class="fas fa-envelope-open-text" aria-hidden="true"></i> Mes invitations &amp; collaborations</h2>
     </div>
 
-    <div class="edit-card" style="margin-top:1.5rem">
+    <div class="edit-card" class="mt-20">
         <div class="edit-card-section">
             <check if="{{ count(@invitations) == 0 }}">
-                <p class="text-muted-para" style="text-align:center;padding:2rem 0">
-                    <i class="fas fa-inbox" style="font-size:2rem;opacity:.3;display:block;margin-bottom:.5rem"></i>
+                <p class="text-muted-para" class="empty-state-block">
+                    <i class="fas fa-inbox" aria-hidden="true" style="font-size:2rem;opacity:.3;display:block;margin-bottom:.5rem"></i>
                     Aucune invitation reçue.
                 </p>
             </check>
@@ -44,22 +44,22 @@
                                     <check if="{{ @inv.status == 'accepted' }}">
                                         <a href="{{ @base }}/project/{{ @inv.project_id }}" class="button small"
                                             title="Voir le projet" title="Voir le projet">
-                                            <i class="fas fa-eye"></i> Voir
+                                            <i class="fas fa-eye" aria-hidden="true"></i> Voir
                                         </a>
                                         <a href="{{ @base }}/project/{{ @inv.project_id }}/collab/mes-demandes"
                                             class="button small secondary" title="Mes demandes" title="Mes demandes">
-                                            <i class="fas fa-paper-plane"></i> Mes demandes
+                                            <i class="fas fa-paper-plane" aria-hidden="true"></i> Mes demandes
                                         </a>
                                     </check>
                                     <check if="{{ @inv.status == 'pending' }}">
                                         <form method="post" action="{{ @base }}/collab/invitation/{{ @inv.id }}/accept"
-                                            style="display:inline">
+                                            class="d-inline">
                                             <input type="hidden" name="csrf_token" value="{{ @csrfToken }}">
                                             <button type="submit" class="button small" title="Accepter l'invitation"
                                                 title="Accepter l'invitation">Accepter</button>
                                         </form>
                                         <form method="post" action="{{ @base }}/collab/invitation/{{ @inv.id }}/decline"
-                                            style="display:inline">
+                                            class="d-inline">
                                             <input type="hidden" name="csrf_token" value="{{ @csrfToken }}">
                                             <button type="submit" class="button small secondary"
                                                 title="Refuser l'invitation"

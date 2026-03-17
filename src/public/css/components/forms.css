@@ -3,7 +3,11 @@
    FORMS & INPUTS
    ========================================== */
 .form-group {
-    margin: 0;
+    margin-bottom: 16px;
+}
+
+.form-group:last-child {
+    margin-bottom: 0;
 }
 
 input,
@@ -67,14 +71,6 @@ label {
     flex: 1;
 }
 
-.form-group--mt-15 {
-    margin-top: 15px;
-}
-
-.form-group--mt-20 {
-    margin-top: 20px;
-}
-
 .form-actions-right {
     margin-top: 30px;
     text-align: right;
@@ -102,14 +98,14 @@ label {
     background: var(--input-bg);
     color: var(--input-text);
     font-family: inherit;
-    transition: all 0.2s;
+    transition: all var(--transition);
     box-sizing: border-box;
     /* Important for width 100% */
 }
 
 .input-control:focus {
     border-color: var(--link-color);
-    box-shadow: 0 0 0 3px rgba(63, 81, 181, 0.1);
+    box-shadow: var(--focus-ring);
     outline: none;
 }
 

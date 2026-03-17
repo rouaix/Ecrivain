@@ -2,15 +2,15 @@
 <div class="edit-page-layout">
     <div class="edit-header">
         <h2>Modifier : {{ @config.label_singular ?? 'Élément' }}</h2>
-        <div style="display: flex; gap: 10px;">
+        <div class="d-flex gap-10">
             <!---
             <button type="button" id="openAiModal" class="button secondary" title="Ouvrir l'assistant narratif">
-                <i class="fas fa-magic"></i>&nbsp;Assistant IA
+                <i class="fas fa-magic" aria-hidden="true"></i>&nbsp;Assistant IA
             </button>
             -->
             <a href="{{ @base }}/project/{{ @project.id }}" class="button" title="Retour au projet"
                 title="Retour au projet">
-                <i class="fas fa-arrow-left"></i>
+                <i class="fas fa-arrow-left" aria-hidden="true"></i>
             </a>
         </div>
     </div>
@@ -40,8 +40,8 @@
                         class="input-control title-input">
                 </div>
 
-                <div style="display: flex; gap: 16px;">
-                    <div class="form-group" style="flex: 1;">
+                <div class="d-flex gap-16">
+                    <div class="form-group" class="flex-1">
                         <label for="parent_id">Sous-élément de</label>
                         <select id="parent_id" name="parent_id" class="input-control">
                             <option value="">-- Aucun (élément principal) --</option>
@@ -80,13 +80,13 @@
             <!-- Content Section -->
             <div class="edit-card-section">
                 <div class="form-group">
-                    <label for="content">
+                    <label for="content" class="d-flex justify-between align-baseline">
                         <span>Contenu</span>
-                        <span class="word-count inline" style="float: right;">
+                        <span class="word-count inline">
                             <span id="wordCount">0</span> mots
                         </span>
                     </label>
-                    <div style="clear: both;"></div>
+                    <div class="clearfix"></div>
                     <div id="editor" class="editor-surface editor-height-300">
                         {{ @element.content | raw }}
                     </div>
@@ -114,7 +114,7 @@
                 <check if="{{ @subElementCount == 0 }}">
                     <a class="button delete js-confirm" href="{{ @base }}/element/{{ @element.id }}/delete"
                         data-confirm="Supprimer cet élément ?" title="Supprimer">
-                        <i class="fas fa-trash"></i> Supprimer
+                        <i class="fas fa-trash" aria-hidden="true"></i> Supprimer
                     </a>
                 </check>
             </div>

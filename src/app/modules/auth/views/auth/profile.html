@@ -4,7 +4,7 @@
 
         <div class="profile-card-header">
 
-            <h2><i class="fas fa-user-circle"></i> Mon Profil</h2>
+            <h2><i class="fas fa-user-circle" aria-hidden="true"></i> Mon Profil</h2>
 
             <p>Gérez vos informations personnelles et paramètres</p>
 
@@ -163,7 +163,7 @@
 
                     <button type="button" id="btnRequestNotif" class="button secondary"
                         title="Autoriser les notifications" title="Autoriser les notifications">
-                        <i class="fas fa-bell"></i> Autoriser les notifications
+                        <i class="fas fa-bell" aria-hidden="true"></i> Autoriser les notifications
                     </button>
 
                     <small id="notifPermStatus"></small>
@@ -208,13 +208,13 @@
 
 <!-- ── Section MCP ──────────────────────────────────────────────────────── -->
 
-<div class="profile-container" style="padding-top: 0;">
+<div class="profile-container" class="pt-0">
 
     <div class="profile-card">
 
         <div class="profile-card-header">
 
-            <h2><i class="fas fa-robot"></i> Accès IA — MCP</h2>
+            <h2><i class="fas fa-robot" aria-hidden="true"></i> Accès IA — MCP</h2>
 
             <p>Connectez une IA à vos projets via le protocole MCP</p>
 
@@ -245,7 +245,7 @@
             </div>
 
             <p class="mcp-note">
-                <i class="fas fa-shield-alt"></i>
+                <i class="fas fa-shield-alt" aria-hidden="true"></i>
                 Un token donne un <strong>accès complet</strong> à vos projets.
                 Ne le partagez pas. Révoquez-le immédiatement s'il est compromis.
             </p>
@@ -255,29 +255,29 @@
         <div class="section-divider">Tokens actifs</div>
 
         <div id="mcp-tokens-list">
-            <p class="mcp-loading"><i class="fas fa-spinner fa-spin"></i> Chargement…</p>
+            <p class="mcp-loading"><i class="fas fa-spinner fa-spin" aria-hidden="true"></i> Chargement…</p>
         </div>
 
-        <div id="mcp-new-token" class="mcp-new-token" style="display:none;">
+        <div id="mcp-new-token" class="mcp-new-token" class="is-hidden" >
 
             <label>Configuration Claude Desktop — copiez-la dans <code>claude_desktop_config.json</code> :</label>
 
             <pre id="mcp-config-block" class="mcp-config-block"></pre>
 
-            <div style="margin-top: .75rem;">
+            <div class="mt-10">
                 <button type="button" class="button secondary small" id="mcp-copy-btn"
                     title="Copier la configuration MCP" title="Copier la configuration MCP">
-                    <i class="fas fa-copy"></i> Copier la configuration
+                    <i class="fas fa-copy" aria-hidden="true"></i> Copier la configuration
                 </button>
             </div>
 
         </div>
 
-        <div style="margin-top: 1.5rem;">
+        <div class="mt-20">
 
             <button type="button" class="button primary" id="mcp-generate-btn" title="Générer un token MCP"
                 title="Générer un token MCP">
-                <i class="fas fa-key"></i> Générer un token
+                <i class="fas fa-key" aria-hidden="true"></i> Générer un token
             </button>
 
         </div>
@@ -288,13 +288,13 @@
 
 <!-- ── Section Accès rapide ──────────────────────────────────────────────── -->
 
-<div class="profile-container" style="padding-top: 0;">
+<div class="profile-container" class="pt-0">
 
     <div class="profile-card">
 
         <div class="profile-card-header">
 
-            <h2><i class="fas fa-link"></i> Accès rapide</h2>
+            <h2><i class="fas fa-link" aria-hidden="true"></i> Accès rapide</h2>
 
             <p>Générez des liens d'auto-login pour accéder rapidement à votre compte</p>
 
@@ -302,13 +302,13 @@
 
         <button id="btn-generate-token" class="button primary" title="Créer un lien d'auto-login"
             title="Créer un lien d'auto-login">
-            <i class="fas fa-plus"></i> Générer un lien d'auto-login pour votre compte
+            <i class="fas fa-plus" aria-hidden="true"></i> Générer un lien d'auto-login pour votre compte
         </button>
 
         <div class="mt-20">
             <div class="section-divider">Vos liens actifs</div>
             <div id="token-list" class="mt-10">
-                <p class="mcp-loading"><i class="fas fa-spinner fa-spin"></i> Chargement…</p>
+                <p class="mcp-loading"><i class="fas fa-spinner fa-spin" aria-hidden="true"></i> Chargement…</p>
             </div>
         </div>
 
@@ -328,7 +328,7 @@
                 const data = await response.json();
 
                 if (!data.tokens || data.tokens.length === 0) {
-                    listDiv.innerHTML = '<p style="color:var(--text-muted);font-size:.9rem;">Aucun lien actif.</p>';
+                    listDiv.innerHTML = '<p class="text-muted text-sm">Aucun lien actif.</p>';
                     return;
                 }
 
@@ -374,7 +374,7 @@
         async function generateAutoLoginToken() {
             const btn = document.getElementById('btn-generate-token');
             btn.disabled = true;
-            btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Génération…';
+            btn.innerHTML = '<i class="fas fa-spinner fa-spin" aria-hidden="true"></i> Génération…';
 
             try {
                 const response = await fetch(BASE_AL + '/auth/token/generate', {
@@ -387,7 +387,7 @@
                 alert('Erreur : ' + e.message);
             } finally {
                 btn.disabled = false;
-                btn.innerHTML = '<i class="fas fa-plus"></i> Générer un lien d\'auto-login pour votre compte';
+                btn.innerHTML = '<i class="fas fa-plus" aria-hidden="true"></i> Générer un lien d\'auto-login pour votre compte';
             }
         }
 
@@ -459,30 +459,30 @@
         function renderTokens(tokens) {
             const el = document.getElementById('mcp-tokens-list');
             if (!tokens.length) {
-                el.innerHTML = '<p style="color:var(--text-muted);font-size:.9rem;">Aucun token actif.</p>';
+                el.innerHTML = '<p class="text-muted text-sm">Aucun token actif.</p>';
                 return;
             }
             el.innerHTML = tokens.map(t => `
             <div class="mcp-token-row">
                 <div class="mcp-token-meta">
-                    <i class="fas fa-key"></i>
+                    <i class="fas fa-key" aria-hidden="true"></i>
                     <span>Créé le ${t.created_at ? t.created_at.substring(0, 10) : '—'}</span>
                     <code class="mcp-token-id">${t.token_id.substring(0, 8)}…</code>
                 </div>
                 <div class="mcp-token-actions">
                     ${t.token ? `<button class="button secondary small mcp-showconfig-btn cacher" data-token="${t.token}">
-                        <i class="fas fa-eye"></i> Voir config
+                        <i class="fas fa-eye" aria-hidden="true"></i> Voir config
                     </button>` : ''}
                     <button class="button danger small mcp-revoke-btn"
                             data-id="${t.token_id}" data-token="${t.token || ''}">
-                        <i class="fas fa-trash"></i> Révoquer
+                        <i class="fas fa-trash" aria-hidden="true"></i> Révoquer
                     </button>
                 </div>
             </div>
-            <div class="mcp-inline-config" id="config-${t.token_id}" style="display:none;">
+            <div class="mcp-inline-config" id="config-${t.token_id}" class="is-hidden" >
                 <pre class="mcp-config-block"></pre>
                 <button type="button" class="button secondary small mcp-inline-copy-btn">
-                    <i class="fas fa-copy"></i> Copier
+                    <i class="fas fa-copy" aria-hidden="true"></i> Copier
                 </button>
             </div>
         `).join('');
@@ -494,13 +494,13 @@
                     const pre = configEl.querySelector('pre');
                     if (configEl.style.display === 'none') {
                         pre.textContent = buildConfig(this.dataset.token);
-                        configEl.style.display = 'block';
+                        configEl.classList.remove('is-hidden');
                         row.style.borderRadius = '8px 8px 0 0';
-                        this.innerHTML = '<i class="fas fa-eye-slash"></i> Masquer';
+                        this.innerHTML = '<i class="fas fa-eye-slash" aria-hidden="true"></i> Masquer';
                     } else {
-                        configEl.style.display = 'none';
+                        configEl.classList.add('is-hidden');
                         row.style.borderRadius = '';
-                        this.innerHTML = '<i class="fas fa-eye"></i> Voir config';
+                        this.innerHTML = '<i class="fas fa-eye" aria-hidden="true"></i> Voir config';
                     }
                 });
             });
@@ -509,8 +509,8 @@
                 btn.addEventListener('click', function () {
                     const text = this.previousElementSibling.textContent;
                     navigator.clipboard.writeText(text).then(() => {
-                        this.innerHTML = '<i class="fas fa-check"></i> Copié !';
-                        setTimeout(() => { this.innerHTML = '<i class="fas fa-copy"></i> Copier'; }, 2000);
+                        this.innerHTML = '<i class="fas fa-check" aria-hidden="true"></i> Copié !';
+                        setTimeout(() => { this.innerHTML = '<i class="fas fa-copy" aria-hidden="true"></i> Copier'; }, 2000);
                     });
                 });
             });
@@ -524,7 +524,7 @@
 
         document.getElementById('mcp-generate-btn').addEventListener('click', function () {
             this.disabled = true;
-            this.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Génération…';
+            this.innerHTML = '<i class="fas fa-spinner fa-spin" aria-hidden="true"></i> Génération…';
 
             fetch(BASE + '/auth/token/generate', {
                 method: 'POST',
@@ -538,13 +538,13 @@
                     document.getElementById('mcp-config-block').textContent =
                         buildConfig(data.token);
                     document.getElementById('mcp-new-token').style.display = 'block';
-                    this.innerHTML = '<i class="fas fa-key"></i> Générer un token';
+                    this.innerHTML = '<i class="fas fa-key" aria-hidden="true"></i> Générer un token';
                     this.disabled = false;
                     loadTokens();
                 })
                 .catch(() => {
                     alert('Erreur lors de la génération du token.');
-                    this.innerHTML = '<i class="fas fa-key"></i> Générer un token';
+                    this.innerHTML = '<i class="fas fa-key" aria-hidden="true"></i> Générer un token';
                     this.disabled = false;
                 });
         });
@@ -554,8 +554,8 @@
         document.getElementById('mcp-copy-btn').addEventListener('click', function () {
             const text = document.getElementById('mcp-config-block').textContent;
             navigator.clipboard.writeText(text).then(() => {
-                this.innerHTML = '<i class="fas fa-check"></i> Copié !';
-                setTimeout(() => { this.innerHTML = '<i class="fas fa-copy"></i> Copier la configuration'; }, 2000);
+                this.innerHTML = '<i class="fas fa-check" aria-hidden="true"></i> Copié !';
+                setTimeout(() => { this.innerHTML = '<i class="fas fa-copy" aria-hidden="true"></i> Copier la configuration'; }, 2000);
             });
         });
 

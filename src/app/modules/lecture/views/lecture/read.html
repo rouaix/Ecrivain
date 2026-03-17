@@ -9,8 +9,8 @@
     <link rel="stylesheet" href="{{ @base }}/public/style.css?v=5">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <set selectedTheme="{{ isset(@COOKIE.theme) ? @COOKIE.theme : 'default' }}" />
-    <link rel="stylesheet" href="{{ @base }}/public/theme-{{ @selectedTheme }}.css?v=2">
-    <link rel="stylesheet" href="{{ @base }}/public/reading.css?v=10">
+    <link rel="stylesheet" href="{{ @base }}/public/css/themes/theme-{{ @selectedTheme }}.css?v=2">
+    <link rel="stylesheet" href="{{ @base }}/public/css/features/reading.css?v=10">
     <script src="{{ @base }}/public/js/offline-reader.js?v=1" nonce="{{ @nonce }}"></script>
     <style>
         /* Critical overrides for reading mode */
@@ -166,18 +166,18 @@
     <div class="reading-toolbar">
         <div class="toolbar-title">{{ @project.title | esc }}</div>
         <button class="toolbar-btn" id="toggleToc" title="Afficher la table des matières"
-            title="Afficher la table des matières"><i class="fas fa-list"></i> Table des matieres</button>
+            title="Afficher la table des matières"><i class="fas fa-list" aria-hidden="true"></i> Table des matieres</button>
         <button class="toolbar-btn" id="toggleFullscreen" title="Basculer en plein écran"
-            title="Basculer en plein écran"><i class="fas fa-expand"></i> Plein ecran</button>
+            title="Basculer en plein écran"><i class="fas fa-expand" aria-hidden="true"></i> Plein ecran</button>
         <button class="toolbar-btn" id="saveBookmark" title="Enregistrer la position" title="Enregistrer la position"><i
                 class="fas fa-bookmark"></i>
             Marque-page</button>
         <button class="toolbar-btn" id="offlineSaveBtn" title="Enregistrer pour lecture hors-ligne"
-            title="Enregistrer pour lecture hors-ligne"><i class="fas fa-download"></i>
+            title="Enregistrer pour lecture hors-ligne"><i class="fas fa-download" aria-hidden="true"></i>
             Hors-ligne</button>
-        <button class="toolbar-btn" id="toggleGlossary" title="Afficher les termes du lexique dans le texte"><i class="fas fa-book"></i> Lexique</button>
+        <button class="toolbar-btn" id="toggleGlossary" title="Afficher les termes du lexique dans le texte"><i class="fas fa-book" aria-hidden="true"></i> Lexique</button>
         <a href="{{ @base }}/project/{{ @project.id }}" class="toolbar-btn button" title="Retour au projet"
-            title="Retour au projet"><i class="fas fa-arrow-left"></i></a>
+            title="Retour au projet"><i class="fas fa-arrow-left" aria-hidden="true"></i></a>
     </div>
 
     <div class="reading-container">
@@ -253,8 +253,8 @@
 
             <!-- Selection Popup -->
             <div id="selectionPopup" class="selection-popup">
-                <button id="copyBtn" class="popup-btn"><i class="fas fa-copy"></i> &nbsp;Copier</button>
-                <button id="commentBtn" class="popup-btn"><i class="fas fa-comment-dots"></i> &nbsp;Ajouter une
+                <button id="copyBtn" class="popup-btn"><i class="fas fa-copy" aria-hidden="true"></i> &nbsp;Copier</button>
+                <button id="commentBtn" class="popup-btn"><i class="fas fa-comment-dots" aria-hidden="true"></i> &nbsp;Ajouter une
                     remarque</button>
             </div>
 
@@ -326,11 +326,11 @@
                 if (!document.fullscreenElement) {
                     document.documentElement.requestFullscreen();
                     document.body.classList.add('fullscreen-mode');
-                    toggleFullscreenBtn.innerHTML = '<i class="fas fa-compress"></i> Quitter plein ecran';
+                    toggleFullscreenBtn.innerHTML = '<i class="fas fa-compress" aria-hidden="true"></i> Quitter plein ecran';
                 } else {
                     document.exitFullscreen();
                     document.body.classList.remove('fullscreen-mode');
-                    toggleFullscreenBtn.innerHTML = '<i class="fas fa-expand"></i> Plein ecran';
+                    toggleFullscreenBtn.innerHTML = '<i class="fas fa-expand" aria-hidden="true"></i> Plein ecran';
                 }
             });
 
@@ -338,7 +338,7 @@
             document.addEventListener('fullscreenchange', function () {
                 if (!document.fullscreenElement) {
                     document.body.classList.remove('fullscreen-mode');
-                    toggleFullscreenBtn.innerHTML = '<i class="fas fa-expand"></i> Plein ecran';
+                    toggleFullscreenBtn.innerHTML = '<i class="fas fa-expand" aria-hidden="true"></i> Plein ecran';
                 }
             });
 
@@ -426,19 +426,19 @@
                         const range = selection.getRangeAt(0);
                         const rect = range.getBoundingClientRect();
 
-                        selectionPopup.style.display = 'flex';
+                        selectionPopup.classList.remove('is-hidden');
                         selectionPopup.style.left = rect.left + 'px';
                         selectionPopup.style.top = (rect.bottom + 5) + 'px';
                     }
                 } else {
-                    selectionPopup.style.display = 'none';
+                    selectionPopup.classList.add('is-hidden');
                 }
             });
 
             // Hide popup when clicking outside
             document.addEventListener('mousedown', function (e) {
                 if (!selectionPopup.contains(e.target) && !commentFormPopup.contains(e.target)) {
-                    selectionPopup.style.display = 'none';
+                    selectionPopup.classList.add('is-hidden');
                 }
             });
 
@@ -446,7 +446,7 @@
             copyBtn.addEventListener('click', function () {
                 navigator.clipboard.writeText(selectedText).then(function () {
                     alert('Texte copie !');
-                    selectionPopup.style.display = 'none';
+                    selectionPopup.classList.add('is-hidden');
                 });
             });
 
@@ -454,14 +454,14 @@
             commentBtn.addEventListener('click', function () {
                 selectedTextPreview.textContent = '"' + selectedText + '"';
                 commentTextarea.value = '';
-                selectionPopup.style.display = 'none';
-                commentFormPopup.style.display = 'flex';
+                selectionPopup.classList.add('is-hidden');
+                commentFormPopup.classList.remove('is-hidden');
                 commentTextarea.focus();
             });
 
             // Cancel comment
             cancelCommentBtn.addEventListener('click', function () {
-                commentFormPopup.style.display = 'none';
+                commentFormPopup.classList.add('is-hidden');
             });
 
             // Submit comment
@@ -489,7 +489,7 @@
                     .then(function (resp) {
                         if (resp.ok) {
                             alert('Remarque ajoutee avec succes !');
-                            commentFormPopup.style.display = 'none';
+                            commentFormPopup.classList.add('is-hidden');
                         } else {
                             alert('Erreur lors de l\'ajout de la remarque.');
                         }
@@ -559,9 +559,9 @@
                     .then(function (resp) {
                         if (resp.ok) {
                             if (!silent) {
-                                saveBookmarkBtn.innerHTML = '<i class="fas fa-check"></i> Sauvegarde';
+                                saveBookmarkBtn.innerHTML = '<i class="fas fa-check" aria-hidden="true"></i> Sauvegarde';
                                 setTimeout(function () {
-                                    saveBookmarkBtn.innerHTML = '<i class="fas fa-bookmark"></i> Marque-page';
+                                    saveBookmarkBtn.innerHTML = '<i class="fas fa-bookmark" aria-hidden="true"></i> Marque-page';
                                 }, 2000);
                             } else {
                                 console.log('Auto-saved position', scrollPosition);
@@ -615,7 +615,7 @@
                             const bookmarkBtn = document.getElementById('saveBookmark');
                             if (bookmarkBtn) {
                                 const originalHtml = bookmarkBtn.innerHTML;
-                                bookmarkBtn.innerHTML = '<i class="fas fa-check"></i> Position restauree';
+                                bookmarkBtn.innerHTML = '<i class="fas fa-check" aria-hidden="true"></i> Position restauree';
                                 setTimeout(() => bookmarkBtn.innerHTML = originalHtml, 3000);
                             }
 
@@ -668,14 +668,14 @@
             return OfflineReader.saveProject(projectId, projectTitle, html)
                 .then(function () {
                     if (!silent && offlineBtn) {
-                        offlineBtn.innerHTML = '<i class="fas fa-check"></i> Sauvegarde';
+                        offlineBtn.innerHTML = '<i class="fas fa-check" aria-hidden="true"></i> Sauvegarde';
                         offlineBtn.title = 'Sauvegarde — cliquer pour ouvrir le lecteur hors-ligne';
                         offlineBtn.dataset.saved = '1';
                     }
                 })
                 .catch(function () {
                     if (!silent && offlineBtn) {
-                        offlineBtn.innerHTML = '<i class="fas fa-exclamation-triangle"></i> Erreur';
+                        offlineBtn.innerHTML = '<i class="fas fa-exclamation-triangle" aria-hidden="true"></i> Erreur';
                     }
                 });
         }
@@ -686,7 +686,7 @@
                 OfflineReader && OfflineReader.loadProject(projectId).then(function (cached) {
                     if (cached) {
                         offlineBtn.title = 'En cache — 1 clic pour actualiser, 2 clics pour ouvrir le lecteur';
-                        offlineBtn.innerHTML = '<i class="fas fa-check"></i> Hors-ligne';
+                        offlineBtn.innerHTML = '<i class="fas fa-check" aria-hidden="true"></i> Hors-ligne';
                         offlineBtn.dataset.saved = '1';
                     }
                     saveOffline(true);
@@ -700,7 +700,7 @@
                     return;
                 }
                 offlineBtn.disabled = true;
-                offlineBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i>';
+                offlineBtn.innerHTML = '<i class="fas fa-spinner fa-spin" aria-hidden="true"></i>';
                 saveOffline(false).finally(function () {
                     offlineBtn.disabled = false;
                 });
@@ -727,7 +727,7 @@
                 if (!tooltipEl) {
                     tooltipEl = document.createElement('div');
                     tooltipEl.className = 'glossary-tooltip';
-                    tooltipEl.style.display = 'none';
+                    tooltipEl.classList.add('is-hidden');
                     document.body.appendChild(tooltipEl);
                 }
                 return tooltipEl;
@@ -753,7 +753,7 @@
                         (cat ? ' <em style="font-weight:normal;font-size:.85em;color:var(--text-muted,#666)">(' + escHtml(cat) + ')</em>' : '') +
                         '</span>' +
                         (def ? escHtml(def) : '<em>Aucune définition.</em>');
-                    tip.style.display = 'block';
+                    tip.classList.remove('is-hidden');
                     positionTooltip(e);
                 });
                 el.addEventListener('mousemove', positionTooltip);
@@ -837,7 +837,7 @@
                     return;
                 }
                 btn.disabled = true;
-                btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i>';
+                btn.innerHTML = '<i class="fas fa-spinner fa-spin" aria-hidden="true"></i>';
                 fetch('{{ @base }}/project/{{ @project.id }}/glossary/terms', {
                     headers: { 'X-CSRF-Token': window.CSRF_TOKEN }
                 })
@@ -845,7 +845,7 @@
                 .then(function (data) {
                     glossaryTerms = data;
                     btn.disabled = false;
-                    btn.innerHTML = '<i class="fas fa-book"></i> Lexique';
+                    btn.innerHTML = '<i class="fas fa-book" aria-hidden="true"></i> Lexique';
                     if (!data.length) { alert('Aucun terme dans le lexique de ce projet.'); return; }
                     highlightTerms(data);
                     highlighted = true;
@@ -853,7 +853,7 @@
                 })
                 .catch(function () {
                     btn.disabled = false;
-                    btn.innerHTML = '<i class="fas fa-book"></i> Lexique';
+                    btn.innerHTML = '<i class="fas fa-book" aria-hidden="true"></i> Lexique';
                 });
             });
         }());

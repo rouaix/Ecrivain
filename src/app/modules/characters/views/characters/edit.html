@@ -9,7 +9,7 @@
         <a class="button" href="{{ @base }}/project/{{ @project.id }}/characters"
             title="Retour à la liste des personnages" title="Retour à la liste des personnages">
 
-            <i class="fas fa-arrow-left"></i>
+            <i class="fas fa-arrow-left" aria-hidden="true"></i>
 
         </a>
 
@@ -70,7 +70,7 @@
                             <check if="{{ @character.id }}">
                                 <button type="button" id="btn-enrich-ai" class="button secondary small"
                                     title="Enrichir et structurer la description avec l'IA selon le modèle de personnage">
-                                    <i class="fas fa-magic"></i> Enrichir avec l'IA
+                                    <i class="fas fa-magic" aria-hidden="true"></i> Enrichir avec l'IA
                                 </button>
                             </check>
 
@@ -98,7 +98,7 @@
                     aria-labelledby="modal-enrich-title">
                     <div class="modal-box">
                         <div class="modal-header">
-                            <h3 id="modal-enrich-title"><i class="fas fa-magic"></i> Enrichir avec l'IA</h3>
+                            <h3 id="modal-enrich-title"><i class="fas fa-magic" aria-hidden="true"></i> Enrichir avec l'IA</h3>
                             <button type="button" class="modal-close" id="btn-modal-close"
                                 aria-label="Fermer">&times;</button>
                         </div>
@@ -108,21 +108,21 @@
                                     }}</strong>
                                 en s'appuyant sur le contenu du livre et le modèle de fiche personnage.
                             </p>
-                            <div id="enrich-loading" style="display:none;" class="enrich-loading">
-                                <i class="fas fa-spinner fa-spin"></i> Génération en cours…
+                            <div id="enrich-loading" class="is-hidden" class="enrich-loading">
+                                <i class="fas fa-spinner fa-spin" aria-hidden="true"></i> Génération en cours…
                             </div>
-                            <div id="enrich-error" class="enrich-error" style="display:none;"></div>
-                            <div id="enrich-preview" style="display:none;">
+                            <div id="enrich-error" class="enrich-error" class="is-hidden" ></div>
+                            <div id="enrich-preview" class="is-hidden" >
                                 <p class="enrich-preview-label"><strong>Aperçu du résultat :</strong></p>
                                 <div id="enrich-preview-content" class="enrich-preview-content"></div>
                             </div>
                         </div>
                         <div class="modal-footer">
-                            <button type="button" id="btn-enrich-confirm" class="button primary" style="display:none;">
-                                <i class="fas fa-check"></i> Insérer dans la description
+                            <button type="button" id="btn-enrich-confirm" class="button primary" class="is-hidden" >
+                                <i class="fas fa-check" aria-hidden="true"></i> Insérer dans la description
                             </button>
-                            <button type="button" id="btn-enrich-retry" class="button secondary" style="display:none;">
-                                <i class="fas fa-redo"></i> Régénérer
+                            <button type="button" id="btn-enrich-retry" class="button secondary" class="is-hidden" >
+                                <i class="fas fa-redo" aria-hidden="true"></i> Régénérer
                             </button>
                             <button type="button" id="btn-enrich-cancel" class="button">Annuler</button>
                         </div>
@@ -168,7 +168,7 @@
         <div class="edit-card char-mentions-card">
 
             <div class="char-mentions-header">
-                <h3><i class="fas fa-stream"></i> Chronologie</h3>
+                <h3><i class="fas fa-stream" aria-hidden="true"></i> Chronologie</h3>
                 <span class="char-timeline-count">
                     <check if="{{ @mentionCount > 0 }}">
                         <span class="char-timeline-badge char-timeline-badge--on">{{ @mentionCount }} / {{
@@ -210,9 +210,9 @@
                             <div class="char-mentions-act-label">{{ @act.label | esc }}</div>
                             <repeat group="{{ @act.chapters }}" value="{{ @ch }}">
                                 <a href="{{ @base }}/chapter/{{ @ch.id }}" class="char-mentions-chapter">
-                                    <i class="fas fa-book-open"></i>
+                                    <i class="fas fa-book-open" aria-hidden="true"></i>
                                     <span>{{ @ch.title | esc }}</span>
-                                    <i class="fas fa-chevron-right char-mentions-arrow"></i>
+                                    <i class="fas fa-chevron-right char-mentions-arrow" aria-hidden="true"></i>
                                 </a>
                             </repeat>
                         </div>
@@ -688,11 +688,11 @@
 
             function openModal() {
                 modal.classList.add('is-visible');
-                divLoading.style.display = 'none';
-                divError.style.display = 'none';
-                divPreview.style.display = 'none';
-                btnConfirm.style.display = 'none';
-                btnRetry.style.display = 'none';
+                divLoading.classList.add('is-hidden');
+                divError.classList.add('is-hidden');
+                divPreview.classList.add('is-hidden');
+                btnConfirm.classList.add('is-hidden');
+                btnRetry.classList.add('is-hidden');
                 pendingHtml = '';
                 runEnrich();
             }
@@ -702,11 +702,11 @@
             }
 
             function runEnrich() {
-                divLoading.style.display = 'block';
-                divError.style.display = 'none';
-                divPreview.style.display = 'none';
-                btnConfirm.style.display = 'none';
-                btnRetry.style.display = 'none';
+                divLoading.classList.remove('is-hidden');
+                divError.classList.add('is-hidden');
+                divPreview.classList.add('is-hidden');
+                btnConfirm.classList.add('is-hidden');
+                btnRetry.classList.add('is-hidden');
 
                 // Get current description from Quill
                 var currentHtml = QuillTools.quill ? QuillTools.quill.root.innerHTML : '';
@@ -724,23 +724,23 @@
                 })
                 .then(function (r) { return r.json(); })
         .then(function (data) {
-            divLoading.style.display = 'none';
+            divLoading.classList.add('is-hidden');
             if (!data.success) {
                 divError.textContent = data.error || 'Une erreur est survenue.';
-                divError.style.display = 'block';
+                divError.classList.remove('is-hidden');
                 btnRetry.style.display = 'inline-flex';
                 return;
             }
             pendingHtml = data.html || '';
             divContent.innerHTML = pendingHtml;
-            divPreview.style.display = 'block';
+            divPreview.classList.remove('is-hidden');
             btnConfirm.style.display = 'inline-flex';
             btnRetry.style.display = 'inline-flex';
         })
         .catch(function (err) {
-            divLoading.style.display = 'none';
+            divLoading.classList.add('is-hidden');
             divError.textContent = 'Erreur réseau : ' + err.message;
-            divError.style.display = 'block';
+            divError.classList.remove('is-hidden');
             btnRetry.style.display = 'inline-flex';
         });
             }
@@ -750,7 +750,7 @@
     btnCancel.addEventListener('click', closeModal);
 
     btnRetry.addEventListener('click', function () {
-        divPreview.style.display = 'none';
+        divPreview.classList.add('is-hidden');
         runEnrich();
     });
 

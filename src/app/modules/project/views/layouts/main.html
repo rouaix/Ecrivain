@@ -56,13 +56,13 @@
 
     <script nonce="{{ @nonce }}" src="{{ @base }}/public/js/notifications.js?v=1"></script>
 
-    <link rel="stylesheet" href="{{ @base }}/public/style.css?v=34">
+    <link rel="stylesheet" href="{{ @base }}/public/style.css?v=36">
 
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 
     <set selectedTheme="{{ (isset(@COOKIE.theme) && @COOKIE.theme != '') ? @COOKIE.theme : 'default' }}" />
 
-    <link rel="stylesheet" href="{{ @base }}/public/theme-{{ @selectedTheme }}.css">
+    <link rel="stylesheet" href="{{ @base }}/public/css/themes/theme-{{ @selectedTheme }}.css">
 
 </head>
 
@@ -88,7 +88,7 @@
 
                     <a href="{{ @base }}/collab/invitations" title="Invitations et collaborations"
                         class="nav-collab-link">
-                        <i class="fas fa-users"></i>
+                        <i class="fas fa-users" aria-hidden="true"></i>
                         <check if="{{ @pendingCollabCount > 0 }}">
                             <span class="nav-badge">{{ @pendingCollabCount }}</span>
                         </check>
@@ -96,7 +96,7 @@
 
                     <button type="button" id="searchToggleBtn" class="nav-search-btn" title="Rechercher (Ctrl+K)"
                         aria-label="Ouvrir la recherche">
-                        <i class="fas fa-search"></i>
+                        <i class="fas fa-search" aria-hidden="true"></i>
                     </button>
 
                     <a href="{{ @base }}/logout">Déconnexion</a>
@@ -135,7 +135,7 @@
             <div id="searchOverlayBox">
                 <form method="get" action="{{ @base }}/search" id="searchOverlayForm">
                     <div class="search-overlay-input-wrap">
-                        <i class="fas fa-search search-overlay-icon"></i>
+                        <i class="fas fa-search search-overlay-icon" aria-hidden="true"></i>
                         <input type="text" name="q" id="searchOverlayInput" placeholder="Rechercher dans vos textes…"
                             autocomplete="off" spellcheck="false">
                         <kbd class="search-overlay-esc">Esc</kbd>
@@ -388,7 +388,7 @@
 
                         </select>
 
-                        <textarea id="aiUserPrompt" class="input-block" rows="5" style="margin-top: 10px;"
+                        <textarea id="aiUserPrompt" class="input-block" rows="5" class="mt-10"
                             placeholder="Votre demande..."></textarea>
 
                     </div>

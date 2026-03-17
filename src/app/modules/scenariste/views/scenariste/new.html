@@ -3,11 +3,11 @@
   <div class="edit-header">
     <h2>Nouveau scénario</h2>
     <a href="{{ @base }}/project/{{ @project.id }}" class="button" title="Retour au projet" title="Retour au projet">
-      <i class="fas fa-arrow-left"></i>
+      <i class="fas fa-arrow-left" aria-hidden="true"></i>
     </a>
   </div>
 
-  <div id="generate-error" class="error edit-error" style="display:none;"></div>
+  <div id="generate-error" class="error edit-error" class="is-hidden" ></div>
 
   <form id="scenariste-form">
 
@@ -46,7 +46,7 @@
         </div>
 
         <div class="form-group">
-          <label for="ep-title">Titre de l'épisode <span style="font-weight:normal;color:var(--text-muted)">(optionnel —
+          <label for="ep-title">Titre de l'épisode <span class="fw-normal text-muted">(optionnel —
               l'IA peut en proposer un)</span></label>
           <input type="text" id="ep-title" name="title" class="input-control" placeholder="ex: Les cendres du passé">
         </div>
@@ -77,13 +77,13 @@
 
       <!-- Source : fichier uploadé -->
       <div class="edit-card-section">
-        <h3>Source externe <span style="font-weight:normal;color:var(--text-muted)">(.md ou .txt)</span></h3>
+        <h3>Source externe <span class="fw-normal text-muted">(.md ou .txt)</span></h3>
         <p class="form-hint">Uploadez un fichier texte comme source alternative ou complémentaire.</p>
         <div class="form-group">
           <input type="file" id="source-file" accept=".md,.txt" class="input-control">
-          <p id="upload-status" class="form-hint" style="display:none;"></p>
+          <p id="upload-status" class="form-hint" class="is-hidden" ></p>
         </div>
-        <textarea id="uploaded-content" name="uploaded_content" style="display:none;"></textarea>
+        <textarea id="uploaded-content" name="uploaded_content" class="is-hidden" ></textarea>
       </div>
 
       <!-- Contexte libre -->
@@ -118,7 +118,7 @@
       <div class="edit-actions">
         <button type="submit" id="generate-btn" class="button primary large">
           <span id="btn-label">Générer le scénario</span>
-          <span id="btn-spinner" style="display:none;">Génération en cours…</span>
+          <span id="btn-spinner" class="is-hidden" >Génération en cours…</span>
         </button>
         <a href="{{ @base }}/project/{{ @project.id }}" class="button">Annuler</a>
       </div>
@@ -207,11 +207,11 @@
       var ext = file.name.split('.').pop().toLowerCase();
       if (!['md', 'txt'].includes(ext)) {
         uploadStatus.textContent = 'Format non supporté (.md ou .txt uniquement)';
-        uploadStatus.style.display = 'block';
+        uploadStatus.classList.remove('is-hidden');
         return;
       }
       uploadStatus.textContent = 'Chargement…';
-      uploadStatus.style.display = 'block';
+      uploadStatus.classList.remove('is-hidden');
       var fd = new FormData();
       fd.append('file', file);
       fd.append('csrf_token', csrfToken);
@@ -266,7 +266,7 @@
   if (form) {
     form.addEventListener('submit', function (e) {
       e.preventDefault();
-      errorEl.style.display = 'none';
+      errorEl.classList.add('is-hidden');
 
       var chapterChecked = form.querySelectorAll('input[name="chapter_ids[]"]:checked').length;
       var hasUpload = uploadedContent && uploadedContent.value.trim().length > 0;
@@ -274,12 +274,12 @@
 
       if (!chapterChecked && !hasUpload && !hasFree) {
         errorEl.textContent = 'Sélectionnez au moins un chapitre, uploadez un fichier, ou saisissez un contexte libre.';
-        errorEl.style.display = 'block';
+        errorEl.classList.remove('is-hidden');
         return;
       }
 
-      overlay.style.display = 'flex';
-      btnLabel.style.display = 'none';
+      overlay.classList.remove('is-hidden');
+      btnLabel.classList.add('is-hidden');
       btnSpinner.style.display = 'inline';
       generateBtn.disabled = true;
       startSteps();
@@ -293,22 +293,22 @@
           if (data.success) {
             window.location.href = base + data.redirect;
           } else {
-            overlay.style.display = 'none';
+            overlay.classList.add('is-hidden');
             btnLabel.style.display = 'inline';
-            btnSpinner.style.display = 'none';
+            btnSpinner.classList.add('is-hidden');
             generateBtn.disabled = false;
             errorEl.textContent = data.error || 'Une erreur est survenue.';
-            errorEl.style.display = 'block';
+            errorEl.classList.remove('is-hidden');
           }
         })
         .catch(function () {
           stopSteps();
-          overlay.style.display = 'none';
+          overlay.classList.add('is-hidden');
           btnLabel.style.display = 'inline';
-          btnSpinner.style.display = 'none';
+          btnSpinner.classList.add('is-hidden');
           generateBtn.disabled = false;
           errorEl.textContent = 'Erreur réseau. Vérifiez votre connexion.';
-          errorEl.style.display = 'block';
+          errorEl.classList.remove('is-hidden');
         });
     });
   }

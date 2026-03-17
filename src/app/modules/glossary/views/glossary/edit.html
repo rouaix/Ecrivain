@@ -4,13 +4,13 @@
         <h2>{{ @title }}</h2>
         <div class="header-actions">
             <a href="{{ @base }}/project/{{ @project.id }}/glossary" class="button secondary" title="Retour au lexique"
-                title="Retour au lexique"><i class="fas fa-arrow-left"></i></a>
+                title="Retour au lexique"><i class="fas fa-arrow-left" aria-hidden="true"></i></a>
         </div>
     </div>
 
     <check if="{{ !empty(@errors) }}">
         <true>
-            <div class="alert alert-error" style="margin-top:1.5rem">
+            <div class="alert alert-error" class="mt-20">
                 <repeat group="{{ @errors }}" value="{{ @err }}">
                     <p>{{ @err }}</p>
                 </repeat>
@@ -18,13 +18,13 @@
         </true>
     </check>
 
-    <div class="edit-card" style="margin-top:1.5rem">
+    <div class="edit-card" class="mt-20">
         <form method="POST"
             action="{{ @base }}/project/{{ @project.id }}/glossary{{ @entry.id ? '/' . @entry.id . '/edit' : '/create' }}">
             <input type="hidden" name="csrf_token" value="{{ @csrfToken }}">
 
             <div class="edit-card-section">
-                <h3><i class="fas fa-tag"></i> Terme</h3>
+                <h3><i class="fas fa-tag" aria-hidden="true"></i> Terme</h3>
 
                 <div class="form-group">
                     <label for="term">Terme <span class="required">*</span></label>
