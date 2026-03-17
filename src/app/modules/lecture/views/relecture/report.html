@@ -1,13 +1,13 @@
 <div class="edit-page-layout">
     <div class="edit-header">
-        <h2><i class="fas fa-file-alt"></i> Rapport de relecture — {{ @project.title | esc }}</h2>
+        <h2><i class="fas fa-file-alt" aria-hidden="true"></i> Rapport de relecture — {{ @project.title | esc }}</h2>
         <div class="header-actions">
             <button id="printBtn" class="button secondary" title="Imprimer" title="Imprimer le rapport">
-                <i class="fas fa-print icon-mr"></i>Imprimer
+                <i class="fas fa-print icon-mr" aria-hidden="true"></i>Imprimer
             </button>
             <a href="{{ @base }}/project/{{ @project.id }}/relecture" class="button" title="Retour à la relecture"
                 title="Retour à la relecture">
-                <i class="fas fa-arrow-left icon-mr"></i>Relecture
+                <i class="fas fa-arrow-left icon-mr" aria-hidden="true"></i>Relecture
             </a>
         </div>
     </div>
@@ -30,7 +30,7 @@
                 <repeat group="{{ @grouped }}" value="{{ @group }}">
                     <div class="report-group edit-card-section">
                         <h3 class="report-group-title">
-                            <i class="fas fa-book-open"></i> {{ @group.title | esc }}
+                            <i class="fas fa-book-open" aria-hidden="true"></i> {{ @group.title | esc }}
                         </h3>
                         <div class="report-annotations">
                             <repeat group="{{ @group.annotations }}" value="{{ @ann }}">
@@ -47,7 +47,7 @@
                                         <span class="report-comment"> — {{ @ann.comment | esc }}</span>
                                     </check>
                                     <check if="{{ @isOwner && @ann.user_id != @currentUserId }}">
-                                        <span class="report-annotation-author"><i class="fas fa-user-circle"></i> {{
+                                        <span class="report-annotation-author"><i class="fas fa-user-circle" aria-hidden="true"></i> {{
                                             @ann.author_name | esc }} <span
                                                 class="report-annotation-author-email">&lt;{{ @ann.author_email | esc
                                                 }}&gt;</span></span>

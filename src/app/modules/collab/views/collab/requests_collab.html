@@ -1,25 +1,25 @@
 <div class="edit-page-layout">
     <div class="edit-header">
-        <h2><i class="fas fa-paper-plane"></i> Mes demandes — {{ @project.title | esc }}</h2>
+        <h2><i class="fas fa-paper-plane" aria-hidden="true"></i> Mes demandes — {{ @project.title | esc }}</h2>
         <div class="header-actions">
             <a href="{{ @base }}/project/{{ @project.id }}" class="button secondary" title="Retour au projet"
                 title="Retour au projet">
-                <i class="fas fa-arrow-left"></i> Retour au projet
+                <i class="fas fa-arrow-left" aria-hidden="true"></i> Retour au projet
             </a>
         </div>
     </div>
 
     <check if="{{ count(@requests) == 0 }}">
-        <div class="edit-card" style="margin-top:1.5rem">
-            <p class="text-muted-para" style="text-align:center;padding:2rem 0">
-                <i class="fas fa-paper-plane" style="font-size:2rem;opacity:.3;display:block;margin-bottom:.5rem"></i>
+        <div class="edit-card" class="mt-20">
+            <p class="text-muted-para" class="empty-state-block">
+                <i class="fas fa-paper-plane" aria-hidden="true" style="font-size:2rem;opacity:.3;display:block;margin-bottom:.5rem"></i>
                 Vous n'avez soumis aucune demande sur ce projet.
             </p>
         </div>
     </check>
 
     <check if="{{ count(@requests) > 0 }}">
-        <div style="margin-top:1.5rem">
+        <div class="mt-20">
             <repeat group="{{ @requests }}" value="{{ @req }}">
                 <div class="edit-card collab-request-card {{ @req.status }}" id="req-{{ @req.id }}">
                     <div class="collab-req-header">
@@ -30,13 +30,13 @@
                             <check if="{{ @req.content_title }}">
                                 <strong>{{ @req.content_title | esc }}</strong>
                             </check>
-                            <span class="text-muted-para" style="font-size:.8rem">{{ @req.created_at }}</span>
+                            <span class="text-muted-para" class="text-xs">{{ @req.created_at }}</span>
                         </div>
                         <span class="collab-req-status collab-req-status-{{ @req.status }}">
-                            <check if="{{ @req.status == 'pending' }}"><i class="fas fa-clock"></i> En attente</check>
-                            <check if="{{ @req.status == 'approved' }}"><i class="fas fa-check-circle"></i> Approuvée
+                            <check if="{{ @req.status == 'pending' }}"><i class="fas fa-clock" aria-hidden="true"></i> En attente</check>
+                            <check if="{{ @req.status == 'approved' }}"><i class="fas fa-check-circle" aria-hidden="true"></i> Approuvée
                             </check>
-                            <check if="{{ @req.status == 'rejected' }}"><i class="fas fa-times-circle"></i> Refusée
+                            <check if="{{ @req.status == 'rejected' }}"><i class="fas fa-times-circle" aria-hidden="true"></i> Refusée
                             </check>
                         </span>
                     </div>
@@ -54,7 +54,7 @@
                         <div style="margin-top:.75rem">
                             <button class="button small delete btn-cancel" data-id="{{ @req.id }}"
                                 title="Annuler cette demande" title="Annuler cette demande">
-                                <i class="fas fa-trash"></i> Annuler la demande
+                                <i class="fas fa-trash" aria-hidden="true"></i> Annuler la demande
                             </button>
                         </div>
                     </check>

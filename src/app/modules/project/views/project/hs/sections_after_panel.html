@@ -21,14 +21,14 @@
           <check if="{{ @group.show_add }}">
 
             <a class="button small" href="{{ @base }}/project/{{ @project.id }}/section/{{ @group.type }}"
-              title="+ Ajouter une annexe"><i class="fas fa-plus"></i></a>
+              title="+ Ajouter une annexe"><i class="fas fa-plus" aria-hidden="true"></i></a>
 
           </check>
 
           <check if="{{ @group.show_create }}">
 
             <a class="button small" href="{{ @base }}/project/{{ @project.id }}/section/{{ @group.type }}"
-              title="Cr&eacute;er"><i class="fas fa-plus"></i></a>
+              title="Cr&eacute;er"><i class="fas fa-plus" aria-hidden="true"></i></a>
 
           </check>
 
@@ -79,14 +79,14 @@
                     <td class="compact-actions compact-actions--wide">
 
                       <button class="button small preview-btn" data-type="section" data-id="{{ @section.id }}"
-                        title="Voir"><i class="fas fa-eye"></i></button>
+                        title="Voir"><i class="fas fa-eye" aria-hidden="true"></i></button>
 
                       <a class="button small"
                         href="{{ @base }}/project/{{ @project.id }}/section/{{ @group.type }}?id={{ @section.id }}"
-                        title="Modifier"><i class="fas fa-edit"></i></a>
+                        title="Modifier"><i class="fas fa-edit" aria-hidden="true"></i></a>
 
                       <a class="button small delete js-confirm" href="{{ @base }}/section/{{ @section.id }}/delete"
-                        data-confirm="Supprimer cette section ?" title="Supprimer"><i class="fas fa-trash"></i></a>
+                        data-confirm="Supprimer cette section ?" title="Supprimer"><i class="fas fa-trash" aria-hidden="true"></i></a>
 
                     </td>
 

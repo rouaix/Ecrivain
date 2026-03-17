@@ -19,7 +19,7 @@
         <a href="{{ @base }}/project/{{ @project.id }}" class="button" title="Retour au projet"
             title="Retour au projet">
 
-            <i class="fas fa-arrow-left"></i>
+            <i class="fas fa-arrow-left" aria-hidden="true"></i>
 
         </a>
 
@@ -126,7 +126,7 @@
                 <check if="{{ @note.id }}">
                     <a class="button delete js-confirm" href="{{ @base }}/note/{{ @note.id }}/delete"
                         data-confirm="Supprimer cette note ?" title="Supprimer">
-                        <i class="fas fa-trash"></i> Supprimer
+                        <i class="fas fa-trash" aria-hidden="true"></i> Supprimer
                     </a>
                 </check>
 

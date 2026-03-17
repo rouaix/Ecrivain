@@ -3,7 +3,7 @@
   <div class="edit-header">
     <h2>Nouveau scénario</h2>
     <a href="{{ @base }}/project/{{ @project.id }}" class="button" title="Retour au projet" title="Retour au projet">
-      <i class="fas fa-arrow-left"></i>
+      <i class="fas fa-arrow-left" aria-hidden="true"></i>
     </a>
   </div>
 
@@ -46,7 +46,7 @@
         </div>
 
         <div class="form-group">
-          <label for="ep-title">Titre de l'épisode <span style="font-weight:normal;color:var(--text-muted)">(optionnel —
+          <label for="ep-title">Titre de l'épisode <span class="fw-normal text-muted">(optionnel —
               l'IA peut en proposer un)</span></label>
           <input type="text" id="ep-title" name="title" class="input-control" placeholder="ex: Les cendres du passé">
         </div>
@@ -77,7 +77,7 @@
 
       <!-- Source : fichier uploadé -->
       <div class="edit-card-section">
-        <h3>Source externe <span style="font-weight:normal;color:var(--text-muted)">(.md ou .txt)</span></h3>
+        <h3>Source externe <span class="fw-normal text-muted">(.md ou .txt)</span></h3>
         <p class="form-hint">Uploadez un fichier texte comme source alternative ou complémentaire.</p>
         <div class="form-group">
           <input type="file" id="source-file" accept=".md,.txt" class="input-control">

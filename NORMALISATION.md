@@ -492,7 +492,23 @@ Les icônes dans les boutons texte/icône n'ont pas `aria-hidden="true"`. Non bl
 | 🟡 P3 | Compléter utilitaires (spacing, text, visibility, modals, forms) | ✅ |
 | 🟢 P4 | Consolider classes boutons (supprimer doublons) | ✅ |
 | 🔵 P5 | Supprimer styles inline dans les vues | ✅ |
-| ⚪ P6 | Nettoyage final (variables inutilisées, aria) | ⬜ |
+| ⚪ P6 | Nettoyage final (variables inutilisées, aria) | ✅ |
+
+### Session 2 — P6 (2026-03-17)
+
+**CSS modifiés :**
+- `forms.css` : suppression `.form-group--mt-15/20` (non utilisés), `transition: all 0.2s` → `var(--transition)`
+- `visibility.css` : ajout `.align-end`, `.justify-center`, `.ml-10`, `.gap-8`, `.gap-16`, `.clearfix`, `.d-block`
+- `helpers.css` : ajout `.empty-state-block`, `.empty-state-icon`, `.empty-state-icon--success`
+- `characters.css` : ajout `.relation-dot` + 8 variantes couleur (neutral/danger/orange/warning/success/pink/info/purple)
+
+**Vues modifiées :**
+- 431× `<i class="fas...">` → `aria-hidden="true"` ajouté (65 fichiers)
+- 26× patterns flex/spacing → classes utilitaires (12 fichiers)
+- 13× couleurs de badges/état → classes sémantiques `.relation-dot--*`, `.text-success`, `.text-danger.fw-bold` (4 fichiers)
+- 4× empty-state inline → `.empty-state-block` + `.empty-state-icon` (4 fichiers)
+- 30× patterns flex/margin/text restants → classes utilitaires (19 fichiers)
+- **Styles inline restants : 17** (tous légitimes — 4 dynamiques JS `.color`, reste = contraintes layout spécifiques)
 
 ### Session 1 — détail (2026-03-17)
 

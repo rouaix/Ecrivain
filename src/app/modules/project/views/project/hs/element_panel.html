@@ -36,25 +36,25 @@ $customElems = $customElemsByType[$elemId] ?? [];
                                 {{ @ce.title }}
                                 <!-- Debug: show subs count -->
                                 <check if="{{ isset(@ce.subs) }}">
-                                    <span style="font-size:0.8em;color:#999;">({{ count(@ce.subs) }} sub(s))</span>
+                                    <span class="text-xs text-muted">({{ count(@ce.subs) }} sub(s))</span>
                                 </check>
                             </td>
                             <td class="compact-meta stats">{{ @ce.wc }} mots</td>
                             <td class="compact-actions actions">
                                 <a class="button small" href="{{ @base }}/project/{{ @project.id }}/element/create?type={{ @elemConfig.id }}&parent_id={{ @ce.id }}"
                                     title="+ Sous-élément">
-                                    <i class="fas fa-plus"></i>
+                                    <i class="fas fa-plus" aria-hidden="true"></i>
                                 </a>
                                 <button class="button small preview-btn" data-type="element" data-id="{{ @ce.id }}"
                                     title="Prévisualiser">
-                                    <i class="fas fa-eye"></i>
+                                    <i class="fas fa-eye" aria-hidden="true"></i>
                                 </button>
                                 <a class="button small" href="{{ @base }}/element/{{ @ce.id }}" title="Éditer">
-                                    <i class="fas fa-edit"></i>
+                                    <i class="fas fa-edit" aria-hidden="true"></i>
                                 </a>
                                 <a class="button small delete js-confirm" href="{{ @base }}/element/{{ @ce.id }}/delete"
                                     data-confirm="Supprimer cet élément ?" title="Supprimer">
-                                    <i class="fas fa-trash"></i>
+                                    <i class="fas fa-trash" aria-hidden="true"></i>
                                 </a>
                             </td>
                         </tr>
@@ -74,14 +74,14 @@ $customElems = $customElemsByType[$elemId] ?? [];
                                 <td class="compact-actions actions">
                                     <button class="button small preview-btn" data-type="element" data-id="{{ @sub.id }}"
                                         title="Prévisualiser">
-                                        <i class="fas fa-eye"></i>
+                                        <i class="fas fa-eye" aria-hidden="true"></i>
                                     </button>
                                     <a class="button small" href="{{ @base }}/element/{{ @sub.id }}" title="Éditer">
-                                        <i class="fas fa-edit"></i>
+                                        <i class="fas fa-edit" aria-hidden="true"></i>
                                     </a>
                                     <a class="button small delete js-confirm" href="{{ @base }}/element/{{ @sub.id }}/delete"
                                         data-confirm="Supprimer ce sous-élément ?" title="Supprimer">
-                                        <i class="fas fa-trash"></i>
+                                        <i class="fas fa-trash" aria-hidden="true"></i>
                                     </a>
                                 </td>
                             </tr>
@@ -100,7 +100,7 @@ $customElems = $customElemsByType[$elemId] ?? [];
         $cfg = json_decode($elemConfig['config_json'] ?? '{}', true);
         ?>
         <a class="button" href="{{ @base }}/project/{{ @project.id }}/element/create?type={{ @elemConfig.id }}">
-            <i class="fas fa-plus"></i> Ajouter
+            <i class="fas fa-plus" aria-hidden="true"></i> Ajouter
             <?= mb_strtolower($cfg['label_singular'] ?? 'un élément') ?>
         </a>
     </div>

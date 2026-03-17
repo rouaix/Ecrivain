@@ -3,14 +3,14 @@
   <div class="edit-header">
     <h2>Scénario {{ @note.title }}</h2>
     <a href="{{ @base }}/project/{{ @project.id }}" class="button" title="Retour au projet" title="Retour au projet">
-      <i class="fas fa-arrow-left"></i>
+      <i class="fas fa-arrow-left" aria-hidden="true"></i>
     </a>
   </div>
 
   <check if="{{ @saved }}">
     <true>
-      <div class="success edit-success" style="margin-bottom:1rem;">
-        <i class="fas fa-check"></i> Scénario sauvegardé.
+      <div class="success edit-success" class="mb-15">
+        <i class="fas fa-check" aria-hidden="true"></i> Scénario sauvegardé.
       </div>
     </true>
   </check>
@@ -32,10 +32,10 @@
             <true>
               <div class="form-group">
                 <label>Référence</label>
-                <div class="input-control" style="display:flex;gap:.5rem;align-items:center;cursor:default;">
+                <div class="input-control" class="d-flex gap-8 align-center">
                   <strong>S{{ @meta.saison }}E{{ @meta.episode }}</strong>
                   <check if="{{ @meta.genre }}">
-                    <true><span style="font-size:.85rem;color:var(--text-muted);">{{ @meta.genre }}</span></true>
+                    <true><span class="text-sm text-muted">{{ @meta.genre }}</span></true>
                   </check>
                 </div>
               </div>
@@ -52,25 +52,25 @@
             <span class="form-hint"><kbd>Ctrl+S</kbd> pour sauvegarder</span>
             <span id="word-count" class="form-hint" class="ml-auto">0 mots</span>
           </label>
-          <div style="clear:both;"></div>
+          <div class="clearfix"></div>
           <div id="screenplay-editor" class="editor-surface">{{ @note.content | raw }}</div>
           <input type="hidden" name="content" id="content-input">
         </div>
       </div>
 
       <!-- Actions -->
-      <div class="edit-actions" style="display:flex;gap:.75rem;align-items:center;flex-wrap:wrap;">
+      <div class="edit-actions" class="d-flex gap-10 align-center flex-wrap">
         <button type="submit" id="save-btn" class="button primary large">
-          <i class="fas fa-save"></i> <span id="save-label">Sauvegarder</span>
+          <i class="fas fa-save" aria-hidden="true"></i> <span id="save-label">Sauvegarder</span>
         </button>
         <a href="{{ @base }}/scenariste/{{ @note.id }}/download" class="button large">
-          <i class="fas fa-download"></i> Télécharger .md
+          <i class="fas fa-download" aria-hidden="true"></i> Télécharger .md
         </a>
         <span id="save-status" style="font-size:.85rem;color:var(--success-color,#16a34a);"></span>
-        <span style="flex:1;"></span>
+        <span class="flex-1"></span>
         <a href="{{ @base }}/scenariste/{{ @note.id }}/delete" class="button delete"
           onclick="return confirm('Supprimer ce scénario définitivement ?')" title="Supprimer" title="Supprimer">
-          <i class="fas fa-trash"></i>
+          <i class="fas fa-trash" aria-hidden="true"></i>
         </a>
       </div>
 

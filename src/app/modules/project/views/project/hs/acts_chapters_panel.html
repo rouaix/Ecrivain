@@ -61,10 +61,10 @@
             <div class="act-actions">
 
               <button class="button small ai-act-summary-btn js-stop-propagation" data-id="{{ @act.id }}"
-                title="R&eacute;sum&eacute; IA"><i class="fas fa-magic"></i></button>
+                title="R&eacute;sum&eacute; IA"><i class="fas fa-magic" aria-hidden="true"></i></button>
 
               <a class="button small js-stop-propagation" href="{{ @base }}/act/{{ @act.id }}/edit"
-                title="Modifier l'acte"><i class="fas fa-edit"></i></a>
+                title="Modifier l'acte"><i class="fas fa-edit" aria-hidden="true"></i></a>
 
               <a class="button small delete js-confirm js-stop-propagation" href="{{ @base }}/act/{{ @act.id }}/delete"
                 data-confirm="Supprimer cet acte et tous ses chapitres ?" title="Supprimer"><i
@@ -198,19 +198,19 @@
                             href="{{ @base }}/project/{{ @project.id }}/chapter/create?parent_id={{ @ch.id }}&act_id={{ @ch.act_id }}"
                             title="+ Sous-chapitre">
 
-                            <i class="fas fa-plus"></i></a>
+                            <i class="fas fa-plus" aria-hidden="true"></i></a>
 
                           <button class="button small ai-summary-btn" data-id="{{ @ch.id }}" title="R&eacute;sum&eacute; IA"><i
                               class="fas fa-magic"></i></button><br />
 
                           <button class="button small preview-btn" data-type="chapter" data-id="{{ @ch.id }}"
-                            title="Voir"><i class="fas fa-eye"></i></button>
+                            title="Voir"><i class="fas fa-eye" aria-hidden="true"></i></button>
 
                           <a class="button small" href="{{ @base }}/chapter/{{ @ch.id }}" title="&Eacute;diter"><i
                               class="fas fa-edit"></i></a>
 
                           <a class="button small delete js-confirm" href="{{ @base }}/chapter/{{ @ch.id }}/delete"
-                            data-confirm="Supprimer ce chapitre ?" title="Supprimer"><i class="fas fa-trash"></i></a>
+                            data-confirm="Supprimer ce chapitre ?" title="Supprimer"><i class="fas fa-trash" aria-hidden="true"></i></a>
 
                         </td>
 
@@ -261,7 +261,7 @@
                           <td class="actions">
 
                             <button class="button small preview-btn" data-type="chapter" data-id="{{ @sub.id }}"
-                              title="Voir"><i class="fas fa-eye"></i></button>
+                              title="Voir"><i class="fas fa-eye" aria-hidden="true"></i></button>
 
                             <a class="button small" href="{{ @base }}/chapter/{{ @sub.id }}" title="&Eacute;diter"><i
                                 class="fas fa-edit"></i></a>
@@ -410,19 +410,19 @@
                         href="{{ @base }}/project/{{ @project.id }}/chapter/create?parent_id={{ @ch.id }}&act_id={{ @ch.act_id }}"
                         title="+ Sous-chapitre">
 
-                        <i class="fas fa-plus"></i></a>
+                        <i class="fas fa-plus" aria-hidden="true"></i></a>
 
                       <button class="button small ai-summary-btn" data-id="{{ @ch.id }}" title="R&eacute;sum&eacute; IA"><i
                           class="fas fa-magic"></i></button><br />
 
                       <button class="button small preview-btn" data-type="chapter" data-id="{{ @ch.id }}"
-                        title="Voir"><i class="fas fa-eye"></i></button>
+                        title="Voir"><i class="fas fa-eye" aria-hidden="true"></i></button>
 
                       <a class="button small" href="{{ @base }}/chapter/{{ @ch.id }}" title="&Eacute;diter"><i
                           class="fas fa-edit"></i></a>
 
                       <a class="button small delete js-confirm" href="{{ @base }}/chapter/{{ @ch.id }}/delete"
-                        data-confirm="Supprimer ce chapitre ?" title="Supprimer"><i class="fas fa-trash"></i></a>
+                        data-confirm="Supprimer ce chapitre ?" title="Supprimer"><i class="fas fa-trash" aria-hidden="true"></i></a>
 
                     </td>
 
@@ -465,13 +465,13 @@
                       <td class="actions">
 
                         <button class="button small preview-btn" data-type="chapter" data-id="{{ @sub.id }}"
-                          title="Voir"><i class="fas fa-eye"></i></button>
+                          title="Voir"><i class="fas fa-eye" aria-hidden="true"></i></button>
 
                         <a class="button small" href="{{ @base }}/chapter/{{ @sub.id }}" title="&Eacute;diter"><i
                             class="fas fa-edit"></i></a>
 
                         <a class="button small delete js-confirm" href="{{ @base }}/chapter/{{ @sub.id }}/delete"
-                          data-confirm="Supprimer ce sous-chapitre ?" title="Supprimer"><i class="fas fa-trash"></i></a>
+                          data-confirm="Supprimer ce sous-chapitre ?" title="Supprimer"><i class="fas fa-trash" aria-hidden="true"></i></a>
 
                       </td>
 

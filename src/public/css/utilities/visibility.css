@@ -23,12 +23,25 @@
 .flex-1          { flex: 1; }
 .flex-wrap       { flex-wrap: wrap; }
 .align-center    { align-items: center; }
+.align-end       { align-items: flex-end; }
+.align-baseline  { align-items: baseline; }
 .justify-between { justify-content: space-between; }
 .justify-end     { justify-content: flex-end; }
+.justify-center  { justify-content: center; }
+.ml-10           { margin-left: 10px; }
 .gap-5           { gap: 5px; }
+.gap-8           { gap: 8px; }
 .gap-10          { gap: 10px; }
 .gap-15          { gap: 15px; }
+.gap-16          { gap: 16px; }
 .gap-20          { gap: 20px; }
+
+/* Clear */
+.clearfix::after {
+    content: '';
+    display: table;
+    clear: both;
+}
 
 /* Cursor */
 .cursor-pointer { cursor: pointer; }

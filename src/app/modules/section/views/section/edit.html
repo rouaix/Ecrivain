@@ -19,7 +19,7 @@
         </h2>
 
         <a href="{{ @base }}/project/{{ @project.id }}" class="button" title="Retour au projet"
-            title="Retour au projet"><i class="fas fa-arrow-left"></i></a>
+            title="Retour au projet"><i class="fas fa-arrow-left" aria-hidden="true"></i></a>
 
     </div>
 
@@ -88,7 +88,7 @@
 
                                 <form method="post"
                                     action="{{ @base }}/project/{{ @project.id }}/section/{{ @sectionType }}/image/delete"
-                                    style="margin-top:0.5rem">
+                                    class="mt-5">
                                     <input type="hidden" name="csrf_token" value="{{ @csrfToken }}">
                                     <div><button type="submit" class="button delete small" title="Supprimer l'image"
                                             title="Supprimer l'image">Supprimer l'image</button>
@@ -175,7 +175,7 @@
                 <check if="{{ @section.id }}">
                     <a class="button delete js-confirm" href="{{ @base }}/section/{{ @section.id }}/delete"
                         data-confirm="Supprimer cette section ?" title="Supprimer">
-                        <i class="fas fa-trash"></i> Supprimer
+                        <i class="fas fa-trash" aria-hidden="true"></i> Supprimer
                     </a>
                 </check>
 

@@ -1,6 +1,6 @@
 <div class="edit-page-layout">
     <div class="edit-header">
-        <h2><i class="fas fa-search"></i> Recherche</h2>
+        <h2><i class="fas fa-search" aria-hidden="true"></i> Recherche</h2>
     </div>
 
     <div class="search-page">
@@ -28,7 +28,7 @@
         <check if="{{ !empty(@q) && empty(@error) }}">
             <check if="{{ empty(@results) }}">
                 <div class="search-empty">
-                    <i class="fas fa-search" style="font-size:2rem;opacity:.3;"></i>
+                    <i class="fas fa-search" aria-hidden="true" style="font-size:2rem;opacity:.3;"></i>
                     <p>Aucun résultat pour « <strong>{{ @q | esc }}</strong> ».</p>
                 </div>
             </check>
@@ -40,7 +40,7 @@
                     <repeat group="{{ @results }}" value="{{ @res }}">
                         <a href="{{ @base }}{{ @res.url }}" class="search-result-card">
                             <div class="search-result-type">
-                                <i class="fas {{ @res.icon }}"></i>
+                                <i class="fas {{ @res.icon }}" aria-hidden="true"></i>
                                 {{ @res.type }}
                             </div>
                             <div class="search-result-body">

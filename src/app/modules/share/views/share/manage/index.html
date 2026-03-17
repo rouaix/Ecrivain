@@ -1,10 +1,10 @@
 <div class="edit-page-layout">
     <div class="edit-header">
-        <h2><i class="fas fa-share-alt"></i> Mes partages</h2>
+        <h2><i class="fas fa-share-alt" aria-hidden="true"></i> Mes partages</h2>
         <div class="header-actions">
             <a href="{{ @base }}/share/create" class="button" title="Créer un nouveau lien"
                 title="Créer un nouveau lien">
-                <i class="fas fa-plus"></i> Nouveau lien
+                <i class="fas fa-plus" aria-hidden="true"></i> Nouveau lien
             </a>
         </div>
     </div>
@@ -28,16 +28,16 @@
                 <code id="url-{{ @sl.id }}">{{ @sl.public_url | esc }}</code>
                 <button type="button" class="button secondary btn-copy" data-url="{{ @sl.public_url | esc }}"
                     title="Copier le lien" title="Copier le lien">
-                    <i class="fas fa-copy"></i>
+                    <i class="fas fa-copy" aria-hidden="true"></i>
                 </button>
                 <a href="{{ @sl.public_url }}" target="_blank" class="button secondary" title="Ouvrir"
                     title="Ouvrir le lien">
-                    <i class="fas fa-external-link-alt"></i>
+                    <i class="fas fa-external-link-alt" aria-hidden="true"></i>
                 </a>
             </div>
 
             <div class="share-link-projects">
-                <small><i class="fas fa-book"></i>
+                <small><i class="fas fa-book" aria-hidden="true"></i>
                     <repeat group="{{ @sl.projects }}" value="{{ @proj }}" counter="{{ @pcount }}">
                         <check if="{{ @pcount > 1 }}">, </check>{{ @proj.title | esc }}
                     </repeat>
@@ -49,18 +49,18 @@
                 <button type="button" class="button secondary btn-toggle" data-id="{{ @sl.id }}"
                     data-active="{{ @sl.is_active }}" title="{{ @sl.is_active ? 'Désactiver' : 'Activer' }}"
                     title="{{ @sl.is_active ? 'Désactiver le lien' : 'Activer le lien' }}">
-                    <i class="fas {{ @sl.is_active ? 'fa-toggle-on' : 'fa-toggle-off' }}"></i>&nbsp;{{ @sl.is_active ?
+                    <i class="fas {{ @sl.is_active ? 'fa-toggle-on' : 'fa-toggle-off' }}" aria-hidden="true"></i>&nbsp;{{ @sl.is_active ?
                     'Désactiver' : 'Activer' }}
                 </button>
                 <a href="{{ @base }}/share/{{ @sl.id }}/edit" class="button secondary" title="Modifier le lien"
                     title="Modifier le lien">
-                    <i class="fas fa-edit"></i> Modifier
+                    <i class="fas fa-edit" aria-hidden="true"></i> Modifier
                 </a>
-                <form method="post" action="{{ @base }}/share/{{ @sl.id }}/delete" style="display:inline"
+                <form method="post" action="{{ @base }}/share/{{ @sl.id }}/delete" class="d-inline"
                     onsubmit="return confirm('Supprimer ce lien de partage ?')">
                     <input type="hidden" name="csrf_token" value="{{ @csrfToken }}">
                     <button type="submit" class="button delete" title="Supprimer le lien" title="Supprimer le lien">
-                        <i class="fas fa-trash"></i>
+                        <i class="fas fa-trash" aria-hidden="true"></i>
                     </button>
                 </form>
             </div>
@@ -135,7 +135,7 @@
         btn.addEventListener('click', function () {
             navigator.clipboard.writeText(this.dataset.url).then(() => {
                 const orig = this.innerHTML;
-                this.innerHTML = '<i class="fas fa-check"></i>';
+                this.innerHTML = '<i class="fas fa-check" aria-hidden="true"></i>';
                 setTimeout(() => this.innerHTML = orig, 1500);
             });
         });
@@ -159,8 +159,8 @@
                     badge.className = 'share-badge ' + (active ? 'badge-active' : 'badge-inactive');
                     this.dataset.active = active;
                     this.innerHTML = active
-                        ? '<i class="fas fa-toggle-on"></i>&nbsp;Désactiver'
-                        : '<i class="fas fa-toggle-off"></i>&nbsp;Activer';
+                        ? '<i class="fas fa-toggle-on" aria-hidden="true"></i>&nbsp;Désactiver'
+                        : '<i class="fas fa-toggle-off" aria-hidden="true"></i>&nbsp;Activer';
                 });
         });
     });

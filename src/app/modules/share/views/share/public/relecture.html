@@ -53,15 +53,15 @@
 <body class="theme-default">
 
 <div class="share-toolbar">
-    <div class="share-toolbar-title"><i class="fas fa-glasses"></i> {{ @project.title | esc }}</div>
-    <span class="share-toolbar-badge"><i class="fas fa-lock"></i> Lecture seule</span>
-    <a href="{{ @base }}/s/{{ @token }}/{{ @project.id }}/lecture" title="Mode lecture"><i class="fas fa-book-open"></i></a>
-    <a href="{{ @base }}/s/{{ @token }}/{{ @project.id }}/mindmap" title="Carte mentale"><i class="fas fa-project-diagram"></i></a>
-    <a href="{{ @base }}/s/{{ @token }}" title="Retour"><i class="fas fa-arrow-left"></i></a>
+    <div class="share-toolbar-title"><i class="fas fa-glasses" aria-hidden="true"></i> {{ @project.title | esc }}</div>
+    <span class="share-toolbar-badge"><i class="fas fa-lock" aria-hidden="true"></i> Lecture seule</span>
+    <a href="{{ @base }}/s/{{ @token }}/{{ @project.id }}/lecture" title="Mode lecture"><i class="fas fa-book-open" aria-hidden="true"></i></a>
+    <a href="{{ @base }}/s/{{ @token }}/{{ @project.id }}/mindmap" title="Carte mentale"><i class="fas fa-project-diagram" aria-hidden="true"></i></a>
+    <a href="{{ @base }}/s/{{ @token }}" title="Retour"><i class="fas fa-arrow-left" aria-hidden="true"></i></a>
 </div>
 
 <div class="share-readonly-notice">
-    <i class="fas fa-info-circle"></i>
+    <i class="fas fa-info-circle" aria-hidden="true"></i>
     Les annotations affichées appartiennent à l'auteur. Aucune modification n'est possible.
 </div>
 
@@ -92,7 +92,7 @@
     <div class="review-panel" id="reviewPanel">
         <div class="review-panel-header">
             <div class="review-panel-title">
-                <i class="fas fa-tags"></i> Annotations
+                <i class="fas fa-tags" aria-hidden="true"></i> Annotations
                 <span class="review-panel-count" id="annotationCount">0</span>
             </div>
             <div class="review-filters">

@@ -1,9 +1,9 @@
 <div class="edit-page-layout">
     <div class="edit-header">
-        <h2><i class="fas fa-layer-group"></i> {{ @template.name }}</h2>
+        <h2><i class="fas fa-layer-group" aria-hidden="true"></i> {{ @template.name }}</h2>
         <div class="header-actions">
             <a href="{{ @base }}/templates" class="button" title="Retour aux templates" title="Retour aux templates">
-                <i class="fas fa-arrow-left"></i>
+                <i class="fas fa-arrow-left" aria-hidden="true"></i>
             </a>
         </div>
     </div>
@@ -32,7 +32,7 @@
         <input type="hidden" name="csrf_token" value="{{ @csrfToken }}">
         <div class="edit-card">
             <div class="edit-card-section">
-                <h3><i class="fas fa-info-circle"></i> Informations generales</h3>
+                <h3><i class="fas fa-info-circle" aria-hidden="true"></i> Informations generales</h3>
                 <div class="form-group">
                     <label for="name">Nom du template</label>
                     <input type="text" id="name" name="name" value="{{ @template.name }}" required
@@ -47,7 +47,7 @@
 
             <!-- Elements du template -->
             <div class="edit-card-section">
-                <h3><i class="fas fa-th-list"></i> Elements du template</h3>
+                <h3><i class="fas fa-th-list" aria-hidden="true"></i> Elements du template</h3>
 
                 <check if="{{ !empty(@elements) }}">
                     <table class="data-table" id="elementsTable">
@@ -66,9 +66,9 @@
                                 <tr data-id="{{ @elem.id }}">
                                     <td class="order-cell">
                                         <button type="button" class="button small move-up" title="Monter"
-                                            title="Monter"><i class="fas fa-arrow-up"></i></button>
+                                            title="Monter"><i class="fas fa-arrow-up" aria-hidden="true"></i></button>
                                         <button type="button" class="button small move-down" title="Descendre"
-                                            title="Descendre"><i class="fas fa-arrow-down"></i></button>
+                                            title="Descendre"><i class="fas fa-arrow-down" aria-hidden="true"></i></button>
                                     </td>
                                     <td>
                                         {{ @elem.type_label }}
@@ -100,11 +100,11 @@
                                             data-label="{{ @elem.main_label | esc }}"
                                             data-label-plural="{{ @elem.plural_label | esc }}" title="Modifier"
                                             title="Modifier cet élément">
-                                            <i class="fas fa-pencil-alt"></i>
+                                            <i class="fas fa-pencil-alt" aria-hidden="true"></i>
                                         </button>
                                         <button type="button" class="button small delete delete-elem-btn"
                                             data-id="{{ @elem.id }}" title="Supprimer" title="Supprimer cet élément">
-                                            <i class="fas fa-trash"></i>
+                                            <i class="fas fa-trash" aria-hidden="true"></i>
                                         </button>
                                     </td>
                                 </tr>
@@ -128,7 +128,7 @@
     <!-- Ajouter un element -->
     <div class="edit-card">
         <div class="edit-card-section">
-            <h3><i class="fas fa-plus-circle"></i> Ajouter un element</h3>
+            <h3><i class="fas fa-plus-circle" aria-hidden="true"></i> Ajouter un element</h3>
             <form method="post" action="{{ @base }}/template/{{ @template.id }}/element/add" id="addElementForm">
                 <input type="hidden" name="csrf_token" value="{{ @csrfToken }}">
 
@@ -203,7 +203,7 @@
 <div id="editElemModal" class="modal-overlay">
     <div class="modal-content tpl-modal-box">
         <div class="modal-header">
-            <h3><i class="fas fa-pencil-alt"></i> Modifier l'element</h3>
+            <h3><i class="fas fa-pencil-alt" aria-hidden="true"></i> Modifier l'element</h3>
             <button type="button" class="modal-close" id="closeEditModal">&times;</button>
         </div>
         <form id="editElemForm" method="post" action="">
