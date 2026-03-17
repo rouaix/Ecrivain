@@ -545,14 +545,20 @@ class AiController extends Controller
             }
         }
 
-        // Personnages — 150 chars max par description
+        // Personnages — 150 chars max par description + résumé champs structurés
         $characterModel = new \Character($db);
         $characters = $characterModel->find(['project_id=?', $projectId]);
         if ($characters) {
             $charLines = [];
             foreach ($characters as $char) {
                 $desc = $truncate(trim(strip_tags($char->description ?? '')), 150);
-                $charLines[] = $char->name . (!empty($desc) ? ": " . $desc : "");
+                $extra = [];
+                if (!empty($char->group_name)) $extra[] = 'groupe: ' . $char->group_name;
+                if (!empty($char->traits))     $extra[] = 'traits: ' . $truncate(trim($char->traits), 60);
+                $line = $char->name;
+                if ($desc) $line .= ': ' . $desc;
+                if ($extra) $line .= ' [' . implode(', ', $extra) . ']';
+                $charLines[] = $line;
             }
             if ($charLines) {
                 $lines[] = "Personnages: " . implode(" | ", $charLines);
@@ -1126,7 +1132,7 @@ class AiController extends Controller
 
         // Load characters for this project
         $characters = $db->exec(
-            'SELECT name, description FROM characters WHERE project_id = ? ORDER BY name ASC',
+            'SELECT name, description, age, traits, motivations, arc, flaws, group_name FROM characters WHERE project_id = ? ORDER BY name ASC',
             [$chapter->project_id]
         ) ?: [];
 
@@ -1140,7 +1146,14 @@ class AiController extends Controller
         foreach ($characters as $char) {
             $desc = trim(strip_tags(html_entity_decode($char['description'] ?? '')));
             $desc = mb_substr($desc, 0, 600);
-            $charContext .= "— {$char['name']} : " . ($desc ?: '(pas de description)') . "\n";
+            $charContext .= "— {$char['name']}";
+            if (!empty($char['group_name'])) $charContext .= " ({$char['group_name']})";
+            $charContext .= " : " . ($desc ?: '(pas de description)') . "\n";
+            if (!empty($char['age']))         $charContext .= "  Âge : {$char['age']}\n";
+            if (!empty($char['traits']))      $charContext .= "  Traits : " . mb_substr(trim($char['traits']), 0, 150) . "\n";
+            if (!empty($char['flaws']))       $charContext .= "  Défauts : " . mb_substr(trim($char['flaws']), 0, 150) . "\n";
+            if (!empty($char['motivations'])) $charContext .= "  Motivations : " . mb_substr(trim($char['motivations']), 0, 150) . "\n";
+            if (!empty($char['arc']))         $charContext .= "  Arc : " . mb_substr(trim($char['arc']), 0, 150) . "\n";
         }
 
         // Build chapter content: own text + sub-chapters
@@ -1258,7 +1271,7 @@ class AiController extends Controller
         }
 
         // Load characters
-        $characters = $db->exec('SELECT id, name, description FROM characters WHERE project_id = ? ORDER BY name ASC', [$pid]) ?: [];
+        $characters = $db->exec('SELECT id, name, description, group_name FROM characters WHERE project_id = ? ORDER BY name ASC', [$pid]) ?: [];
         if (count($characters) < 2) {
             echo json_encode(['success' => false, 'error' => 'Il faut au moins 2 personnages pour suggérer des relations.']);
             return;
@@ -1270,7 +1283,9 @@ class AiController extends Controller
         foreach ($characters as $c) {
             $nameToId[mb_strtolower($c['name'])] = (int) $c['id'];
             $desc = mb_substr(trim(strip_tags(html_entity_decode($c['description'] ?? ''))), 0, 200);
-            $charContext .= "- {$c['name']}" . ($desc ? " : $desc" : '') . "\n";
+            $charContext .= "- {$c['name']}";
+            if (!empty($c['group_name'])) $charContext .= " ({$c['group_name']})";
+            $charContext .= ($desc ? " : $desc" : '') . "\n";
         }
 
         // Load chapters (title + content, truncated)
@@ -1399,7 +1414,7 @@ class AiController extends Controller
         // Load character and verify ownership
         $db        = $this->f3->get('DB');
         $charRows  = $db->exec(
-            'SELECT c.id, c.name, c.description, c.project_id
+            'SELECT c.id, c.name, c.description, c.project_id, c.age, c.traits, c.motivations, c.arc, c.flaws, c.group_name
              FROM characters c
              JOIN projects p ON p.id = c.project_id
              WHERE c.id = ? AND p.user_id = ?',
@@ -1467,6 +1482,16 @@ class AiController extends Controller
 
         $charName = $character['name'];
 
+        // Build existing structured fields context
+        $structuredParts = [];
+        if (!empty($character['age']))         $structuredParts[] = "Âge : " . $character['age'];
+        if (!empty($character['group_name']))  $structuredParts[] = "Groupe/Faction : " . $character['group_name'];
+        if (!empty($character['traits']))      $structuredParts[] = "Traits : " . $character['traits'];
+        if (!empty($character['flaws']))       $structuredParts[] = "Défauts : " . $character['flaws'];
+        if (!empty($character['motivations'])) $structuredParts[] = "Motivations : " . $character['motivations'];
+        if (!empty($character['arc']))         $structuredParts[] = "Arc narratif : " . $character['arc'];
+        $structuredContext = $structuredParts ? implode("\n", $structuredParts) : '';
+
         $systemPrompt = "Tu es un assistant littéraire expert en création de personnages. "
             . "Tu produis des fiches de personnages riches, cohérentes avec l'univers du livre. "
             . "Tu réponds UNIQUEMENT en HTML valide (balises <h2> et <p> uniquement, sans <html>/<body>/<head>). "
@@ -1478,12 +1503,13 @@ class AiController extends Controller
             . "## Description brute saisie par l'auteur :\n"
             . ($rawDesc ?: '(aucune description saisie)')
             . "\n\n"
+            . ($structuredContext ? "## Champs structurés déjà renseignés :\n{$structuredContext}\n\n" : '')
             . ($otherCharContext ? "## Autres personnages du projet :\n{$otherCharContext}\n\n" : '')
             . ($chapContext ? "## Extraits des chapitres :\n{$chapContext}\n\n" : '')
             . "## Modèle de structure à respecter :\n{$template}\n\n"
             . "---\n\n"
             . "Produis la fiche complète du personnage **{$charName}** en HTML, "
-            . "en t'appuyant sur la description brute et le contexte du livre. "
+            . "en t'appuyant sur la description brute, les champs structurés et le contexte du livre. "
             . "Chaque section du modèle doit apparaître comme un `<h2>` suivi de `<p>`. "
             . "Enrichis et complète les informations manquantes si le contexte du livre le permet, "
             . "sinon indique « Non défini. ». "
