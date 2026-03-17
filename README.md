@@ -32,6 +32,23 @@ Plateforme de rédaction créative et d'aide à l'écriture de livres, avec des 
 | Auth | firebase/php-jwt |
 | Export PDF | spipu/html2pdf |
 
+## Checklist de déploiement rapide
+
+Pour un déploiement sur un nouveau serveur :
+
+- [ ] PHP 8.4 + extensions (`pdo_mysql`, `mbstring`, `openssl`, `dom`, `simplexml`)
+- [ ] MySQL 8.0+ — créer la base de données
+- [ ] Apache 2.4+ avec `mod_rewrite` activé
+- [ ] `git clone` du dépôt
+- [ ] `cd src && composer install --no-dev`
+- [ ] Copier et remplir `src/.env` (DB, SESSION_DOMAIN, JWT_SECRET)
+- [ ] Permissions en écriture : `src/tmp/`, `src/logs/`, `src/public/uploads/`, `src/data/`
+- [ ] Configurer le VirtualHost Apache (DocumentRoot + FollowSymLinks)
+- [ ] Ouvrir l'application dans le navigateur → migrations auto au premier chargement
+- [ ] Créer un compte via `/register`
+
+---
+
 ## Prérequis
 
 - PHP 8.4 avec les extensions : `pdo`, `pdo_mysql`, `dom`, `simplexml`, `mbstring`, `openssl`
@@ -223,12 +240,67 @@ systemctl restart apache2
 
 ### 7. Permissions
 
+Les répertoires suivants doivent être accessibles en écriture par le serveur web :
+
+| Répertoire | Contenu |
+|------------|---------|
+| `src/tmp/` | Cache F3 (sessions, templates compilés) |
+| `src/logs/` | Logs applicatifs |
+| `src/public/uploads/` | Images de couverture et fichiers uploadés |
+| `src/data/` | Configurations IA par utilisateur, tokens JWT, OAuth |
+
 ```bash
-chmod -R 775 src/tmp src/logs src/public/uploads
-chown -R www-data:www-data src/tmp src/logs src/public/uploads
+chmod -R 775 src/tmp src/logs src/public/uploads src/data
+chown -R www-data:www-data src/tmp src/logs src/public/uploads src/data
 ```
 
-### 8. Vérifier l'installation
+> **Important** : `src/data/` contient des données utilisateur sensibles (clés API chiffrées, tokens). Vérifiez que ce dossier n'est pas accessible publiquement — le `.htaccess` bloque déjà l'accès direct à `src/`, mais assurez-vous que `DocumentRoot` ne pointe pas sur la racine du projet sans cette protection.
+
+### 8. HTTPS (recommandé en production)
+
+Avec Let's Encrypt (Certbot) sur Debian/Ubuntu :
+
+```bash
+apt install certbot python3-certbot-apache
+certbot --apache -d votre-domaine.com
+```
+
+VirtualHost HTTPS minimal :
+
+```apache
+<VirtualHost *:443>
+    ServerName votre-domaine.com
+    DocumentRoot /var/www/ecrivain
+
+    SSLEngine on
+    SSLCertificateFile    /etc/letsencrypt/live/votre-domaine.com/fullchain.pem
+    SSLCertificateKeyFile /etc/letsencrypt/live/votre-domaine.com/privkey.pem
+
+    <Directory /var/www/ecrivain>
+        AllowOverride All
+        Require all granted
+        Options FollowSymLinks
+    </Directory>
+</VirtualHost>
+
+# Redirection HTTP → HTTPS
+<VirtualHost *:80>
+    ServerName votre-domaine.com
+    Redirect permanent / https://votre-domaine.com/
+</VirtualHost>
+```
+
+> Pensez à mettre `SESSION_DOMAIN=.votre-domaine.com` dans `src/.env` pour que le cookie de session soit correctement scopé.
+
+### 9. Installation des extensions PHP (Debian/Ubuntu)
+
+```bash
+apt install php8.4 php8.4-mysql php8.4-mbstring php8.4-xml php8.4-curl php8.4-zip php8.4-intl
+a2enmod rewrite
+systemctl restart apache2
+```
+
+### 10. Vérifier l'installation
 
 Accédez à l'application dans votre navigateur. Les migrations de base de données s'exécutent automatiquement au premier chargement.
 
