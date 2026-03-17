@@ -486,6 +486,42 @@ abstract class Controller
         return ['success' => true, 'error' => null, 'extension' => $ext];
     }
 
+    // ──────────────────────────────────────────────────────────────────────────
+    // Permission guards — abort with 403/redirect instead of duplicating the
+    // if (!$this->isOwner()) { $f3->error(403); return; } pattern everywhere.
+    // ──────────────────────────────────────────────────────────────────────────
+
+    /**
+     * Abort with 403 unless the current user owns the project.
+     * Call at the top of any owner-only action.
+     */
+    protected function requireOwner(int $projectId): void
+    {
+        if (!$this->isOwner($projectId)) {
+            $this->f3->error(403);
+        }
+    }
+
+    /**
+     * Abort with 403 unless the current user has read access (owner or accepted collaborator).
+     */
+    protected function requireProjectAccess(int $projectId): void
+    {
+        if (!$this->hasProjectAccess($projectId)) {
+            $this->f3->error(403);
+        }
+    }
+
+    /**
+     * Redirect to /login unless a user is authenticated.
+     */
+    protected function requireAuth(): void
+    {
+        if (!$this->currentUser()) {
+            $this->f3->reroute('/login');
+        }
+    }
+
     /**
      * Returns true if the current user owns the given project.
      */

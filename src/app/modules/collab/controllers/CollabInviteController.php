@@ -15,31 +15,16 @@ class CollabInviteController extends Controller
      */
     public function index()
     {
-        $pid  = (int) $this->f3->get('PARAMS.pid');
-        $user = $this->currentUser();
+        $pid = (int) $this->f3->get('PARAMS.pid');
+        $this->requireOwner($pid);
 
-        if (!$this->isOwner($pid)) {
-            $this->f3->error(403, 'Accès réservé au propriétaire.');
-            return;
-        }
-
-        $projectModel = new Project();
-        $project = $projectModel->findAndCast(['id=?', $pid]);
-        $project = $project ? $project[0] : null;
-
-        $collaborators = $this->db->exec(
-            'SELECT pc.*, u.username, u.email
-             FROM project_collaborators pc
-             JOIN users u ON u.id = pc.user_id
-             WHERE pc.project_id = ?
-             ORDER BY pc.created_at ASC',
-            [$pid]
-        ) ?: [];
+        $invite  = new CollaboratorInvite();
+        $project = $this->loadProject($pid);
 
         $this->render('collab/invite.html', [
             'title'         => 'Collaborateurs — ' . ($project['title'] ?? ''),
             'project'       => $project,
-            'collaborators' => $collaborators,
+            'collaborators' => $invite->findByProject($pid),
             'errors'        => [],
         ]);
     }
@@ -49,14 +34,11 @@ class CollabInviteController extends Controller
      */
     public function invite()
     {
-        $pid  = (int) $this->f3->get('PARAMS.pid');
-        $user = $this->currentUser();
+        $pid    = (int) $this->f3->get('PARAMS.pid');
+        $user   = $this->currentUser();
+        $this->requireOwner($pid);
 
-        if (!$this->isOwner($pid)) {
-            $this->f3->error(403);
-            return;
-        }
-
+        $invite = new CollaboratorInvite();
         $email  = trim($_POST['email'] ?? '');
         $errors = [];
 
@@ -65,38 +47,24 @@ class CollabInviteController extends Controller
         } elseif (strtolower($email) === strtolower($user['email'])) {
             $errors[] = 'Vous ne pouvez pas vous inviter vous-même.';
         } else {
-            $target = $this->db->exec(
-                'SELECT id FROM users WHERE LOWER(email) = LOWER(?)',
-                [$email]
-            );
+            $target = $this->db->exec('SELECT id FROM users WHERE LOWER(email) = LOWER(?)', [$email]);
             if (empty($target)) {
                 $errors[] = 'Aucun compte trouvé pour cette adresse e-mail.';
             } else {
                 $targetId = (int) $target[0]['id'];
-                $exists = $this->db->exec(
-                    'SELECT id FROM project_collaborators WHERE project_id = ? AND user_id = ?',
-                    [$pid, $targetId]
-                );
-                if ($exists) {
+                if ($invite->existsForUser($pid, $targetId)) {
                     $errors[] = 'Cet utilisateur a déjà été invité sur ce projet.';
                 } else {
-                    $this->db->exec(
-                        'INSERT INTO project_collaborators (project_id, owner_id, user_id) VALUES (?, ?, ?)',
-                        [$pid, $user['id'], $targetId]
-                    );
+                    $invite->invite($pid, $user['id'], $targetId);
 
-                    // Envoyer l'email de notification
-                    $projectRow = $this->db->exec('SELECT title FROM projects WHERE id = ?', [$pid]);
+                    $projectRow   = $this->db->exec('SELECT title FROM projects WHERE id = ?', [$pid]);
                     $projectTitle = $projectRow[0]['title'] ?? 'un projet';
-                    $scheme = (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off') ? 'https' : 'http';
+                    $scheme       = (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off') ? 'https' : 'http';
                     $invitationsUrl = $scheme . '://' . ($_SERVER['HTTP_HOST'] ?? 'localhost')
                         . $this->f3->get('BASE') . '/collab/invitations';
 
                     (new NotificationService())->sendCollabInvitationEmail(
-                        $email,
-                        $user['username'],
-                        $projectTitle,
-                        $invitationsUrl
+                        $email, $user['username'], $projectTitle, $invitationsUrl
                     );
 
                     $this->f3->reroute('/project/' . $pid . '/collaborateurs');
@@ -105,22 +73,11 @@ class CollabInviteController extends Controller
             }
         }
 
-        $projectModel  = new Project();
-        $project       = $projectModel->findAndCast(['id=?', $pid]);
-        $project       = $project ? $project[0] : null;
-        $collaborators = $this->db->exec(
-            'SELECT pc.*, u.username, u.email
-             FROM project_collaborators pc
-             JOIN users u ON u.id = pc.user_id
-             WHERE pc.project_id = ?
-             ORDER BY pc.created_at ASC',
-            [$pid]
-        ) ?: [];
-
+        $project = $this->loadProject($pid);
         $this->render('collab/invite.html', [
             'title'         => 'Collaborateurs — ' . ($project['title'] ?? ''),
             'project'       => $project,
-            'collaborators' => $collaborators,
+            'collaborators' => $invite->findByProject($pid),
             'errors'        => $errors,
         ]);
     }
@@ -132,17 +89,9 @@ class CollabInviteController extends Controller
     {
         $pid = (int) $this->f3->get('PARAMS.pid');
         $uid = (int) $this->f3->get('PARAMS.uid');
+        $this->requireOwner($pid);
 
-        if (!$this->isOwner($pid)) {
-            $this->f3->error(403);
-            return;
-        }
-
-        $this->db->exec(
-            'DELETE FROM project_collaborators WHERE project_id = ? AND user_id = ?',
-            [$pid, $uid]
-        );
-
+        (new CollaboratorInvite())->removeUser($pid, $uid);
         $this->f3->reroute('/project/' . $pid . '/collaborateurs');
     }
 
@@ -151,21 +100,12 @@ class CollabInviteController extends Controller
      */
     public function myInvitations()
     {
-        $user = $this->currentUser();
-
-        $invitations = $this->db->exec(
-            'SELECT pc.*, p.title AS project_title, u.username AS owner_username
-             FROM project_collaborators pc
-             JOIN projects p ON p.id = pc.project_id
-             JOIN users u ON u.id = pc.owner_id
-             WHERE pc.user_id = ?
-             ORDER BY pc.created_at DESC',
-            [$user['id']]
-        ) ?: [];
+        $user   = $this->currentUser();
+        $invite = new CollaboratorInvite();
 
         $this->render('collab/my_invitations.html', [
             'title'       => 'Mes invitations',
-            'invitations' => $invitations,
+            'invitations' => $invite->findByUser($user['id']),
         ]);
     }
 
@@ -176,13 +116,7 @@ class CollabInviteController extends Controller
     {
         $id   = (int) $this->f3->get('PARAMS.id');
         $user = $this->currentUser();
-
-        $this->db->exec(
-            'UPDATE project_collaborators SET status = "accepted", accepted_at = NOW()
-             WHERE id = ? AND user_id = ? AND status = "pending"',
-            [$id, $user['id']]
-        );
-
+        (new CollaboratorInvite())->accept($id, $user['id']);
         $this->f3->reroute('/collab/invitations');
     }
 
@@ -193,13 +127,15 @@ class CollabInviteController extends Controller
     {
         $id   = (int) $this->f3->get('PARAMS.id');
         $user = $this->currentUser();
-
-        $this->db->exec(
-            'UPDATE project_collaborators SET status = "declined"
-             WHERE id = ? AND user_id = ? AND status = "pending"',
-            [$id, $user['id']]
-        );
-
+        (new CollaboratorInvite())->decline($id, $user['id']);
         $this->f3->reroute('/collab/invitations');
+    }
+
+    // ── Helpers privés ────────────────────────────────────────────────────────
+
+    private function loadProject(int $pid): ?array
+    {
+        $rows = (new Project())->findAndCast(['id=?', $pid]);
+        return $rows ? $rows[0] : null;
     }
 }
