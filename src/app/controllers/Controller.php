@@ -8,10 +8,22 @@ abstract class Controller
     /** @var DB\SQL */
     protected $db;
 
+    private ?TokenService $_tokenService = null;
+
     public function __construct()
     {
         $this->f3 = Base::instance();
         $this->db = $this->f3->get('DB');
+    }
+
+    /** Lazy-initialised TokenService (one instance per request). */
+    protected function tokenService(): TokenService
+    {
+        if ($this->_tokenService === null) {
+            $secret = getenv('JWT_SECRET') ?: $_ENV['JWT_SECRET'] ?? '';
+            $this->_tokenService = new TokenService($secret);
+        }
+        return $this->_tokenService;
     }
     /**
      * Middleware executed before routing to the action.
@@ -27,132 +39,63 @@ abstract class Controller
             $this->requireCsrf();
         }
     }
-    protected function checkAutoLogin(Base $f3)
+    protected function checkAutoLogin(Base $f3): void
     {
         $token = $f3->get('GET.token');
         if (!$token) {
             return;
         }
 
+        $svc    = $this->tokenService();
         $userId = null;
-        $tokenId = null;
 
-        // Get JWT secret from environment
-        $jwtSecret = getenv('JWT_SECRET') ?: $_ENV['JWT_SECRET'] ?? null;
-
-        // Try to decode as JWT (new secure format)
-        if ($jwtSecret && strpos($token, '.') !== false && substr_count($token, '.') === 2) {
-            try {
-                $decoded = \Firebase\JWT\JWT::decode($token, new \Firebase\JWT\Key($jwtSecret, 'HS256'));
-
-                // Validate token type
-                if (isset($decoded->type) && $decoded->type === 'auth_token') {
-                    $userId = (int)$decoded->sub;
-                    $tokenId = $decoded->jti ?? null;
-
-                    // Verify token hasn't been revoked
-                    if ($tokenId && $userId) {
-                        // Need to find user's email to locate token file
-                        $userModel = new User();
-                        $userModel->load(['id=?', $userId]);
-                        if (!$userModel->dry()) {
-                            $email = $userModel->email;
-                            $checkFile = $this->getUserDataDir($email) . '/tokens.json';
-
-                            if (file_exists($checkFile)) {
-                                try {
-                                    $encryptedContent = file_get_contents($checkFile);
-                                    $decryptedContent = $this->decryptData($encryptedContent);
-                                    $data = json_decode($decryptedContent, true);
-                                } catch (Exception $e) {
-                                    // Legacy unencrypted format
-                                    $content = file_get_contents($checkFile);
-                                    $data = json_decode($content, true);
-                                }
-
-                                // Check if token still exists (not revoked)
-                                if (json_last_error() !== JSON_ERROR_NONE || !isset($data['tokens'][$tokenId])) {
-                                    $userId = null; // Token revoked
-                                }
-                            } else {
-                                $userId = null; // No token file = revoked
-                            }
-                        } else {
-                            $userId = null; // User not found
+        // 1. New JWT format (3 dot-separated parts)
+        if (substr_count($token, '.') === 2) {
+            $decoded = $svc->decodeJwt($token);
+            if ($decoded && ($decoded->type ?? '') === 'auth_token') {
+                $uid = (int) ($decoded->sub ?? 0);
+                $jti = $decoded->jti ?? null;
+                if ($uid && $jti) {
+                    $userModel = new User();
+                    $userModel->load(['id=?', $uid]);
+                    if (!$userModel->dry()) {
+                        $tokenFile = $this->getUserDataDir($userModel->email) . '/tokens.json';
+                        if ($svc->isTokenInFile($tokenFile, $jti)) {
+                            $userId = $uid;
                         }
                     }
                 }
-            } catch (\Firebase\JWT\ExpiredException $e) {
-                // Token expired
-                error_log('JWT expired: ' . $e->getMessage());
-            } catch (\Firebase\JWT\SignatureInvalidException $e) {
-                // Invalid signature - potential tampering
-                error_log('JWT signature invalid: ' . $e->getMessage());
-            } catch (Exception $e) {
-                // Other JWT errors
-                error_log('JWT decode error: ' . $e->getMessage());
             }
         }
 
-        // BACKWARD COMPATIBILITY: Check for old format base64(email).hex
-        if (!$userId && strpos($token, '.') !== false && substr_count($token, '.') === 1) {
-            list($b64Email,) = explode('.', $token, 2);
+        // 2. BACKWARD COMPAT: legacy base64(email).hex format (1 dot separator)
+        if (!$userId && substr_count($token, '.') === 1) {
+            [$b64Email] = explode('.', $token, 2);
             $email = base64_decode($b64Email, true);
-
             if ($email) {
-                $checkFile = $this->getUserDataDir($email) . '/tokens.json';
-                if (file_exists($checkFile)) {
-                    try {
-                        $encryptedContent = file_get_contents($checkFile);
-                        $decryptedContent = $this->decryptData($encryptedContent);
-                        $data = json_decode($decryptedContent, true);
-                    } catch (Exception $e) {
-                        $content = file_get_contents($checkFile);
-                        $data = json_decode($content, true);
-                    }
-                    if (json_last_error() === JSON_ERROR_NONE && isset($data['tokens'][$token])) {
-                        $tokenData = $data['tokens'][$token];
-                        $userId = $tokenData['user_id'];
-                    }
+                $filePath = $this->getUserDataDir($email) . '/tokens.json';
+                $data     = $svc->readTokenFile($filePath);
+                if ($data && isset($data['tokens'][$token])) {
+                    $userId = (int) $data['tokens'][$token]['user_id'];
                 }
             }
         }
 
-        // BACKWARD COMPATIBILITY: Legacy global file
+        // 3. BACKWARD COMPAT: global unencrypted auth_tokens.json
         if (!$userId) {
-            $jsonFile = 'data/auth_tokens.json';
-            if (file_exists($jsonFile)) {
-                $content = file_get_contents($jsonFile);
-                $data = json_decode($content, true);
-
-                if (json_last_error() === JSON_ERROR_NONE && isset($data['tokens'][$token])) {
-                    $tokenData = $data['tokens'][$token];
-                    $userId = $tokenData['user_id'];
-                }
-            }
+            $userId = $svc->validateGlobalFallback($token, 'data/auth_tokens.json');
         }
 
         if (!$userId) {
             return;
         }
 
-        // Regenerate session ID to prevent session fixation attacks
         session_regenerate_id(true);
-
-        // Login
         $_SESSION['user_id'] = $userId;
-
-        // Explicitly close session to ensure write before redirect
         session_write_close();
 
-        // Redirect to remove token from URL
         $pattern = $f3->get('PATTERN');
-        // If on home or login page, go to dashboard
-        if ($pattern === '/' || $pattern === '/login') {
-            $f3->reroute('/dashboard');
-        } else {
-            $f3->reroute($pattern);
-        }
+        $f3->reroute(($pattern === '/' || $pattern === '/login') ? '/dashboard' : $pattern);
     }
     /**
      * Get safe user data directory path.
@@ -198,36 +141,12 @@ abstract class Controller
         return $cleaned;
     }
     /**
-     * Decrypt data with AES-256-GCM
+     * Decrypt data with AES-256-GCM.
+     * Delegates to TokenService — kept here for backward compatibility with callers.
      */
     protected function decryptData(string $encryptedData): string
     {
-        $jwtSecret = getenv('JWT_SECRET') ?: $_ENV['JWT_SECRET'] ?? null;
-        if (!$jwtSecret) {
-            throw new Exception('JWT_SECRET not configured');
-        }
-
-        $key = hash('sha256', $jwtSecret . 'encryption', true);
-        $cipher = 'aes-256-gcm';
-        $ivLen = openssl_cipher_iv_length($cipher);
-        $tagLen = 16;
-
-        $data = base64_decode($encryptedData);
-        if ($data === false || strlen($data) < $ivLen + $tagLen) {
-            throw new Exception('Invalid encrypted data');
-        }
-
-        $iv = substr($data, 0, $ivLen);
-        $tag = substr($data, $ivLen, $tagLen);
-        $ciphertext = substr($data, $ivLen + $tagLen);
-
-        $decrypted = openssl_decrypt($ciphertext, $cipher, $key, OPENSSL_RAW_DATA, $iv, $tag);
-
-        if ($decrypted === false) {
-            throw new Exception('Decryption failed');
-        }
-
-        return $decrypted;
+        return $this->tokenService()->decrypt($encryptedData);
     }
     /**
      * Validate a Bearer token (or ?token= fallback) for API routes.
@@ -236,78 +155,53 @@ abstract class Controller
      */
     protected function authenticateApiRequest(): ?int
     {
-        $authHeader = $_SERVER['HTTP_AUTHORIZATION'] ?? '';
-        if (empty($authHeader) && function_exists('apache_request_headers')) {
-            $headers = apache_request_headers();
-            $authHeader = $headers['Authorization'] ?? '';
-        }
-
-        $token = null;
-        if (preg_match('/^Bearer\s+(.+)$/i', trim($authHeader), $m)) {
-            $token = trim($m[1]);
-        }
-
-        if (!$token) {
-            $token = $this->f3->get('GET.token');
-        }
-
-        if (!$token) {
+        $token = $this->extractBearerToken();
+        if (!$token || substr_count($token, '.') !== 2) {
             return null;
         }
 
-        $jwtSecret = getenv('JWT_SECRET') ?: $_ENV['JWT_SECRET'] ?? null;
+        $svc     = $this->tokenService();
+        $decoded = $svc->decodeJwt($token);
 
-        if ($jwtSecret && substr_count($token, '.') === 2) {
-            try {
-                $decoded = \Firebase\JWT\JWT::decode($token, new \Firebase\JWT\Key($jwtSecret, 'HS256'));
-                if (isset($decoded->type) && $decoded->type === 'auth_token') {
-                    $uid     = (int) $decoded->sub;
-                    $tokenId = $decoded->jti ?? null;
-                    if ($tokenId && $uid) {
-                        $userModel = new User();
-                        $userModel->load(['id=?', $uid]);
-                        if (!$userModel->dry()) {
-                            $checkFile = $this->getUserDataDir($userModel->email) . '/tokens.json';
-                            if (file_exists($checkFile)) {
-                                try {
-                                    $data = json_decode($this->decryptData(file_get_contents($checkFile)), true);
-                                } catch (Exception $e) {
-                                    $data = json_decode(file_get_contents($checkFile), true);
-                                }
-                                if (json_last_error() === JSON_ERROR_NONE && isset($data['tokens'][$tokenId])) {
-                                    return $uid;
-                                }
-                                $this->logAuthDebug('token_not_in_file', $tokenId, $checkFile, json_last_error_msg());
-                            } else {
-                                $this->logAuthDebug('tokens_file_missing', $tokenId, $checkFile);
-                            }
-                        } else {
-                            $this->logAuthDebug('user_not_found', (string) $uid);
-                        }
-                    }
-                } else {
-                    $this->logAuthDebug('wrong_type', $decoded->type ?? 'none');
-                }
-            } catch (Exception $e) {
-                $this->logAuthDebug('jwt_exception', $e->getMessage());
-            }
+        if (!$decoded || ($decoded->type ?? '') !== 'auth_token') {
+            Logger::warn('auth', 'API token rejected', ['reason' => 'wrong_type', 'uri' => $_SERVER['REQUEST_URI'] ?? '-']);
+            return null;
         }
 
-        return null;
+        $uid = (int) ($decoded->sub ?? 0);
+        $jti = $decoded->jti ?? null;
+        if (!$uid || !$jti) {
+            return null;
+        }
+
+        $userModel = new User();
+        $userModel->load(['id=?', $uid]);
+        if ($userModel->dry()) {
+            Logger::warn('auth', 'API token: user not found', ['uid' => $uid]);
+            return null;
+        }
+
+        $tokenFile = $this->getUserDataDir($userModel->email) . '/tokens.json';
+        if (!$svc->isTokenInFile($tokenFile, $jti)) {
+            Logger::warn('auth', 'API token: not in file or revoked', ['jti' => $jti, 'file' => $tokenFile]);
+            return null;
+        }
+
+        return $uid;
     }
 
-    private function logAuthDebug(string $reason, string ...$context): void
+    /** Extract the Bearer token from the Authorization header, or fall back to ?token= query param. */
+    private function extractBearerToken(): ?string
     {
-        try {
-            $logDir = $this->f3->get('ROOT') . '/logs';
-            if (!is_dir($logDir)) {
-                mkdir($logDir, 0755, true);
-            }
-            $line = date('Y-m-d H:i:s') . ' [auth_debug] reason=' . $reason
-                . ' ctx=' . implode(' | ', $context)
-                . ' uri=' . ($_SERVER['REQUEST_URI'] ?? '-') . "\n";
-            file_put_contents($logDir . '/auth_debug.log', $line, FILE_APPEND | LOCK_EX);
-        } catch (\Throwable) {}
+        $authHeader = $_SERVER['HTTP_AUTHORIZATION'] ?? '';
+        if (empty($authHeader) && function_exists('apache_request_headers')) {
+            $headers    = apache_request_headers();
+            $authHeader = $headers['Authorization'] ?? '';
+        }
+        if (preg_match('/^Bearer\s+(.+)$/i', trim($authHeader), $m)) {
+            return trim($m[1]);
+        }
+        return $this->f3->get('GET.token') ?: null;
     }
 
     /**
@@ -461,30 +355,12 @@ abstract class Controller
         return array_merge($builtins, $custom);
     }
     /**
-     * Encrypt data with AES-256-GCM (vulnerability #4 fix)
+     * Encrypt data with AES-256-GCM.
+     * Delegates to TokenService — kept here for backward compatibility with callers.
      */
     protected function encryptData(string $data): string
     {
-        $jwtSecret = getenv('JWT_SECRET') ?: $_ENV['JWT_SECRET'] ?? null;
-        if (!$jwtSecret) {
-            throw new Exception('JWT_SECRET not configured');
-        }
-
-        // Derive encryption key from JWT_SECRET
-        $key = hash('sha256', $jwtSecret . 'encryption', true);
-        $cipher = 'aes-256-gcm';
-        $ivLen = openssl_cipher_iv_length($cipher);
-        $iv = random_bytes($ivLen);
-        $tag = '';
-
-        $encrypted = openssl_encrypt($data, $cipher, $key, OPENSSL_RAW_DATA, $iv, $tag, '', 16);
-
-        if ($encrypted === false) {
-            throw new Exception('Encryption failed');
-        }
-
-        // Return: base64(iv + tag + ciphertext)
-        return base64_encode($iv . $tag . $encrypted);
+        return $this->tokenService()->encrypt($data);
     }
     /**
      * Log AI usage and check usage-alert threshold.

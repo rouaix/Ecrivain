@@ -8,21 +8,8 @@
  * No session       : user context resolved from token on every request.
  * No CSRF          : token-based authentication replaces CSRF protection.
  */
-class ApiController extends Controller
+class ApiController extends ApiBaseController
 {
-    // ──────────────────────────────────────────────────────────────
-    // Lifecycle
-    // ──────────────────────────────────────────────────────────────
-
-    public function beforeRoute(Base $f3)
-    {
-        $userId = $this->authenticateApiRequest();
-        if (!$userId) {
-            $this->jsonError('Token manquant ou invalide.', 401, 'UNAUTHORIZED');
-        }
-        // Inject user into session so currentUser() works normally downstream.
-        $_SESSION['user_id'] = $userId;
-    }
 
     // ──────────────────────────────────────────────────────────────
     // PROJECTS
@@ -1010,42 +997,14 @@ class ApiController extends Controller
     // Utility helpers
     // ──────────────────────────────────────────────────────────────
 
-    private function jsonOut(array $data, int $status = 200): void
-    {
-        http_response_code($status);
-        header('Content-Type: application/json; charset=utf-8');
-        echo json_encode($data, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES);
-        exit;
-    }
-
-    private function jsonError(string $message, int $status, string $code): void
-    {
-        http_response_code($status);
-        header('Content-Type: application/json; charset=utf-8');
-        echo json_encode(['error' => $message, 'code' => $code], JSON_UNESCAPED_UNICODE);
-        exit;
-    }
-
-    private function getBody(): array
-    {
-        $raw = $this->f3->get('BODY') ?: file_get_contents('php://input');
-        if (empty($raw)) return [];
-        $data = json_decode($raw, true);
-        return is_array($data) ? $data : [];
-    }
-
     private function htmlToText(string $html): string
     {
-        if (empty($html)) return '';
-        $text = str_replace(['</p>', '<br>', '<br/>', '<br />', '</li>', '</h1>', '</h2>', '</h3>'], "\n", $html);
-        $text = strip_tags($text);
-        $text = html_entity_decode($text, ENT_QUOTES | ENT_HTML5, 'UTF-8');
-        return trim(preg_replace('/\n{3,}/', "\n\n", $text));
+        return ContentTransformer::htmlToText($html);
     }
 
     private function countWords(string $html): int
     {
-        return str_word_count($this->htmlToText($html));
+        return ContentTransformer::countWords($html);
     }
 
     private function saveChapterVersion(int $chapterId, ?string $content, int $wordCount): void

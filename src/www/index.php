@@ -114,12 +114,6 @@ if (!is_dir($logDir)) {
 
 }
 
-$logFile = $logDir . '/app.log';
-
-// Log entry
-
-file_put_contents($logFile, date('[Y-m-d H:i:s] ') . "Application started\n", FILE_APPEND);
-
 // Load configuration
 
 $f3->config($docRoot . '/app/config.ini');
@@ -129,6 +123,9 @@ $f3->config($docRoot . '/app/config.ini');
 // Local development detection
 
 $isLocal = strpos($docRoot, 'Projets') !== false;
+
+// Centralized structured logger (writes to logs/app.jsonl)
+Logger::configure($logDir, $isLocal ? Logger::DEBUG : Logger::INFO);
 
 if ($isLocal) {
 

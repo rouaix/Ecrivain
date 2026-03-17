@@ -21,121 +21,16 @@ class AiController extends Controller
         $stats = $usageModel->getStatsByUser($user['id']);
         $recent = $usageModel->getRecentUsage($user['id']);
 
-        // Calculate estimated cost
+        // Calculate estimated cost — pricing driven by src/app/ai_pricing.json
+        $pricing = new AiPricingService();
         foreach ($stats as &$stat) {
-            $cost = 0;
-            $model = $stat['model_name'];
-            $prompt = $stat['total_prompt'];
-            $completion = $stat['total_completion'];
-
-            // Pricing per 1M tokens (USD)
-            // Sources: platform.openai.com/docs/pricing, platform.claude.com/docs/en/about-claude/pricing,
-            //          ai.google.dev/gemini-api/docs/pricing, docs.mistral.ai/deployment/ai-studio/pricing (Feb 2026)
-
-            // --- OpenAI ---
-            if (strpos($model, 'gpt-4.1-mini') !== false) {
-                // GPT-4.1 Mini: $0.40 / $1.60
-                $cost = ($prompt / 1000000 * 0.40) + ($completion / 1000000 * 1.60);
-            } elseif (strpos($model, 'gpt-4o-mini') !== false) {
-                // GPT-4o Mini: $0.15 / $0.60
-                $cost = ($prompt / 1000000 * 0.15) + ($completion / 1000000 * 0.60);
-            } elseif (strpos($model, 'o1-pro') !== false) {
-                // o1-pro: $150.00 / $600.00
-                $cost = ($prompt / 1000000 * 150.00) + ($completion / 1000000 * 600.00);
-            } elseif (strpos($model, 'o1-mini') !== false) {
-                // o1-mini (deprecated): $1.10 / $4.40
-                $cost = ($prompt / 1000000 * 1.10) + ($completion / 1000000 * 4.40);
-            } elseif (strpos($model, 'o1') !== false) {
-                // o1: $15.00 / $60.00
-                $cost = ($prompt / 1000000 * 15.00) + ($completion / 1000000 * 60.00);
-            } elseif (strpos($model, 'o3-mini') !== false) {
-                // o3-mini: $1.10 / $4.40
-                $cost = ($prompt / 1000000 * 1.10) + ($completion / 1000000 * 4.40);
-            } elseif (strpos($model, 'o4-mini') !== false) {
-                // o4-mini: $1.10 / $4.40
-                $cost = ($prompt / 1000000 * 1.10) + ($completion / 1000000 * 4.40);
-            } elseif (strpos($model, 'o3') !== false) {
-                // o3: $2.00 / $8.00
-                $cost = ($prompt / 1000000 * 2.00) + ($completion / 1000000 * 8.00);
-            } elseif (strpos($model, 'gpt-4.1') !== false) {
-                // GPT-4.1: $2.00 / $8.00
-                $cost = ($prompt / 1000000 * 2.00) + ($completion / 1000000 * 8.00);
-            } elseif (strpos($model, 'gpt-4o') !== false) {
-                // GPT-4o: $2.50 / $10.00
-                $cost = ($prompt / 1000000 * 2.50) + ($completion / 1000000 * 10.00);
-            } elseif (strpos($model, 'gpt-3.5') !== false) {
-                // GPT-3.5 Turbo: $0.50 / $1.50
-                $cost = ($prompt / 1000000 * 0.50) + ($completion / 1000000 * 1.50);
-            } elseif (strpos($model, 'gpt-4') !== false) {
-                // GPT-4 classique: $30.00 / $60.00
-                $cost = ($prompt / 1000000 * 30.00) + ($completion / 1000000 * 60.00);
-
-            // --- Mistral ---
-            } elseif (strpos($model, 'mistral-large') !== false) {
-                // mistral-large-latest (2411): $2.00 / $6.00
-                $cost = ($prompt / 1000000 * 2.00) + ($completion / 1000000 * 6.00);
-            } elseif (strpos($model, 'mistral-medium') !== false) {
-                // mistral-medium-latest (Medium 3): $0.40 / $2.00
-                $cost = ($prompt / 1000000 * 0.40) + ($completion / 1000000 * 2.00);
-            } elseif (strpos($model, 'mistral-small') !== false) {
-                // mistral-small-latest: $0.10 / $0.30
-                $cost = ($prompt / 1000000 * 0.10) + ($completion / 1000000 * 0.30);
-            } elseif (strpos($model, 'codestral') !== false) {
-                // codestral-latest: $0.30 / $0.90
-                $cost = ($prompt / 1000000 * 0.30) + ($completion / 1000000 * 0.90);
-            } elseif (strpos($model, 'ministral-3') !== false) {
-                // ministral-3b-latest: $0.04 / $0.04
-                $cost = ($prompt / 1000000 * 0.04) + ($completion / 1000000 * 0.04);
-            } elseif (strpos($model, 'ministral-8') !== false) {
-                // ministral-8b-latest: $0.10 / $0.10
-                $cost = ($prompt / 1000000 * 0.10) + ($completion / 1000000 * 0.10);
-            } elseif (strpos($model, 'open-mistral-nemo') !== false || strpos($model, 'mistral-nemo') !== false) {
-                // open-mistral-nemo: $0.02 / $0.04
-                $cost = ($prompt / 1000000 * 0.02) + ($completion / 1000000 * 0.04);
-            } elseif (strpos($model, 'mixtral') !== false) {
-                // mixtral-8x7b: $0.54 / $0.54
-                $cost = ($prompt / 1000000 * 0.54) + ($completion / 1000000 * 0.54);
-
-            // --- Anthropic ---
-            } elseif (strpos($model, 'claude-opus-4-5') !== false || strpos($model, 'claude-opus-4-6') !== false) {
-                // Claude Opus 4.5 / 4.6: $5.00 / $25.00
-                $cost = ($prompt / 1000000 * 5.00) + ($completion / 1000000 * 25.00);
-            } elseif (strpos($model, 'claude-opus') !== false) {
-                // Claude Opus 3 / 4 / 4.1 (anciens): $15.00 / $75.00
-                $cost = ($prompt / 1000000 * 15.00) + ($completion / 1000000 * 75.00);
-            } elseif (strpos($model, 'claude-sonnet') !== false) {
-                // Claude Sonnet (toutes versions): $3.00 / $15.00
-                $cost = ($prompt / 1000000 * 3.00) + ($completion / 1000000 * 15.00);
-            } elseif (strpos($model, 'claude-haiku-4-5') !== false) {
-                // Claude Haiku 4.5: $1.00 / $5.00
-                $cost = ($prompt / 1000000 * 1.00) + ($completion / 1000000 * 5.00);
-            } elseif (strpos($model, 'claude-haiku') !== false) {
-                // Claude Haiku 3.5 et antérieur: $0.80 / $4.00
-                $cost = ($prompt / 1000000 * 0.80) + ($completion / 1000000 * 4.00);
-
-            // --- Gemini ---
-            } elseif (strpos($model, 'gemini-2.5-pro') !== false) {
-                // Gemini 2.5 Pro: $1.25 / $10.00 (≤200k tokens)
-                $cost = ($prompt / 1000000 * 1.25) + ($completion / 1000000 * 10.00);
-            } elseif (strpos($model, 'gemini-2.5-flash') !== false) {
-                // Gemini 2.5 Flash: $0.30 / $2.50
-                $cost = ($prompt / 1000000 * 0.30) + ($completion / 1000000 * 2.50);
-            } elseif (strpos($model, 'gemini-2.0-flash') !== false) {
-                // Gemini 2.0 Flash: $0.10 / $0.40
-                $cost = ($prompt / 1000000 * 0.10) + ($completion / 1000000 * 0.40);
-            } elseif (strpos($model, 'gemini-1.5-pro') !== false) {
-                // Gemini 1.5 Pro (legacy): $1.25 / $5.00
-                $cost = ($prompt / 1000000 * 1.25) + ($completion / 1000000 * 5.00);
-            } elseif (strpos($model, 'gemini-1.5-flash') !== false) {
-                // Gemini 1.5 Flash (legacy): $0.075 / $0.30
-                $cost = ($prompt / 1000000 * 0.075) + ($completion / 1000000 * 0.30);
-            } elseif (strpos($model, 'gemini') !== false) {
-                // Gemini générique: $0.10 / $0.40
-                $cost = ($prompt / 1000000 * 0.10) + ($completion / 1000000 * 0.40);
-            }
-
-            $stat['estimated_cost'] = $cost;
+            $stat['estimated_cost'] = $pricing->computeCost(
+                $stat['model_name'],
+                (int) $stat['total_prompt'],
+                (int) $stat['total_completion']
+            );
         }
+        unset($stat);
 
         $this->render('ai/usage.html', [
             'title' => 'Consommation IA',

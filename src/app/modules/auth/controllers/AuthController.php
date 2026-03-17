@@ -128,18 +128,12 @@ class AuthController extends Controller
                 error_log('AuthController: weekly stats notification failed — ' . $e->getMessage());
             }
 
-            // Explicitly close session to ensure write before redirect
             $redirectAfterLogin = $_SESSION['post_login_redirect'] ?? '';
-            if (isset($_SESSION['post_login_redirect'])) {
-                unset($_SESSION['post_login_redirect']);
-            }
+            unset($_SESSION['post_login_redirect']);
 
-            // Explicitly close session to ensure write before redirect
             session_write_close();
 
-            $this->f3->reroute('/dashboard');
             $this->f3->reroute($redirectAfterLogin ?: '/dashboard');
-            //$this->f3->reroute('/dashboard');
 
         } else {
 
@@ -682,61 +676,17 @@ class AuthController extends Controller
 
         }
 
-        $tokens = [];
-
-        if (file_exists($jsonFile)) {
-
-            try {
-
-                $encryptedContent = file_get_contents($jsonFile);
-
-                $decryptedContent = $this->decryptData($encryptedContent);
-
-                $data = json_decode($decryptedContent, true);
-
-                if (json_last_error() === JSON_ERROR_NONE && isset($data['tokens'])) {
-
-                    $tokens = $data['tokens'];
-
-                }
-
-            } catch (Exception $e) {
-
-                // File might be legacy unencrypted format - try direct JSON
-
-                $content = file_get_contents($jsonFile);
-
-                $data = json_decode($content, true);
-
-                if (json_last_error() === JSON_ERROR_NONE && isset($data['tokens'])) {
-
-                    $tokens = $data['tokens'];
-
-                }
-
-            }
-
-        }
-
-        // Store token metadata (jti => user_id mapping for revocation)
+        $svc    = $this->tokenService();
+        $data   = $svc->readTokenFile($jsonFile);
+        $tokens = $data['tokens'] ?? [];
 
         $tokens[$tokenId] = [
-
-            'user_id' => $currentUser['id'],
-
+            'user_id'    => $currentUser['id'],
             'created_at' => date('Y-m-d H:i:s'),
-
-            'iat' => $iat
-
+            'iat'        => $iat,
         ];
 
-        // Encrypt before writing (vulnerability #4 fix)
-
-        $jsonData = json_encode(['tokens' => $tokens], JSON_PRETTY_PRINT);
-
-        $encryptedData = $this->encryptData($jsonData);
-
-        file_put_contents($jsonFile, $encryptedData);
+        $svc->writeTokenFile($jsonFile, ['tokens' => $tokens]);
 
         echo json_encode(['token' => $jwt]);
 
@@ -763,27 +713,9 @@ class AuthController extends Controller
 
         $userTokens = [];
 
-        $jwtSecret = getenv('JWT_SECRET') ?: $_ENV['JWT_SECRET'] ?? null;
+        $data = $this->tokenService()->readTokenFile($jsonFile);
 
-        if (file_exists($jsonFile)) {
-
-            try {
-
-                $encryptedContent = file_get_contents($jsonFile);
-
-                $decryptedContent = $this->decryptData($encryptedContent);
-
-                $data = json_decode($decryptedContent, true);
-
-            } catch (Exception $e) {
-
-                $content = file_get_contents($jsonFile);
-
-                $data = json_decode($content, true);
-
-            }
-
-            if (json_last_error() === JSON_ERROR_NONE && isset($data['tokens'])) {
+        if ($data && isset($data['tokens'])) {
 
                 foreach ($data['tokens'] as $tokenId => $info) {
 
@@ -880,23 +812,10 @@ class AuthController extends Controller
 
         }
 
-        try {
+        $svc  = $this->tokenService();
+        $data = $svc->readTokenFile($jsonFile);
 
-            $encryptedContent = file_get_contents($jsonFile);
-
-            $decryptedContent = $this->decryptData($encryptedContent);
-
-            $data = json_decode($decryptedContent, true);
-
-        } catch (Exception $e) {
-
-            $content = file_get_contents($jsonFile);
-
-            $data = json_decode($content, true);
-
-        }
-
-        if (json_last_error() !== JSON_ERROR_NONE || !isset($data['tokens'])) {
+        if (!$data || !isset($data['tokens'])) {
 
             echo json_encode(['count' => 0]);
 
@@ -936,86 +855,23 @@ class AuthController extends Controller
 
         }
 
-        // Encrypt before writing
-
-        $jsonData = json_encode(['tokens' => $tokens], JSON_PRETTY_PRINT);
-
-        $encryptedData = $this->encryptData($jsonData);
-
-        file_put_contents($jsonFile, $encryptedData);
+        $svc->writeTokenFile($jsonFile, ['tokens' => $tokens]);
 
         echo json_encode(['count' => $count]);
 
     }
 
-    /**
-
-     * Build and sign an auto-login JWT so we can redisplay the links.
-
-     */
-
+    /** Build and sign an auto-login JWT. Delegates to TokenService. */
     private function encodeAutoLoginToken(string $tokenId, int $userId, int $iat): string
     {
-
-        $jwtSecret = getenv('JWT_SECRET') ?: $_ENV['JWT_SECRET'] ?? null;
-
-        if (!$jwtSecret) {
-
-            throw new Exception('JWT_SECRET not configured');
-
-        }
-
-        $payload = [
-
-            'iat' => $iat,
-
-            'jti' => $tokenId,
-
-            'sub' => (string) $userId,
-
-            'type' => 'auth_token'
-
-        ];
-
-        return \Firebase\JWT\JWT::encode($payload, $jwtSecret, 'HS256');
-
+        return $this->tokenService()->encodeAuthJwt($tokenId, $userId, $iat);
     }
 
-    /**
-
-     * Extract token ID (jti) from a provided JWT, returning null on failure.
-
-     */
-
+    /** Extract the JTI claim from a JWT, returning null on failure. */
     private function resolveTokenIdFromJwt(string $token): ?string
     {
-
-        $jwtSecret = getenv('JWT_SECRET') ?: $_ENV['JWT_SECRET'] ?? null;
-
-        if (!$jwtSecret || strpos($token, '.') === false) {
-
-            return null;
-
-        }
-
-        try {
-
-            $decoded = \Firebase\JWT\JWT::decode($token, new \Firebase\JWT\Key($jwtSecret, 'HS256'));
-
-            if (isset($decoded->jti)) {
-
-                return (string) $decoded->jti;
-
-            }
-
-        } catch (Exception $e) {
-
-            // Ignore invalid tokens, we simply can't resolve the ID
-
-        }
-
-        return null;
-
+        $decoded = $this->tokenService()->decodeJwt($token);
+        return $decoded ? ($decoded->jti ?? null) : null;
     }
 
     /* Rate Limiting Implementation (File-based) */
