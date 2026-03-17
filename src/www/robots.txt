@@ -1,2 +1,26 @@
 User-agent: *
-Disallow:
+Disallow: /dashboard
+Disallow: /project/
+Disallow: /chapter/
+Disallow: /character/
+Disallow: /note/
+Disallow: /act/
+Disallow: /section/
+Disallow: /element/
+Disallow: /glossary/
+Disallow: /profile
+Disallow: /logout
+Disallow: /ai/
+Disallow: /api/
+Disallow: /mcp
+Disallow: /collab/
+Disallow: /stats
+Disallow: /search
+Disallow: /share
+Disallow: /auth/
+Disallow: /oauth/
+Disallow: /password/
+
+Allow: /
+Allow: /login
+Allow: /register

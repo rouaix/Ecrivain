@@ -29,7 +29,8 @@ class AuthController extends Controller
         }
 
         $this->render('auth/home.html', [
-            'title' => 'Écrivain — Assistant d\'écriture créative',
+            'title'           => 'Écrivain — Logiciel d\'écriture créative gratuit avec IA',
+            'metaDescription' => 'Écrivain est un logiciel d\'écriture créative gratuit et open-source. Structurez vos romans en actes et chapitres, gérez vos personnages, collaborez, utilisez l\'IA (OpenAI, Gemini, Anthropic, Mistral) et exportez en PDF, DOCX ou HTML.',
         ]);
     }
 

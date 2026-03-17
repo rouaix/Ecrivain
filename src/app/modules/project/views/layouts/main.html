@@ -16,17 +16,19 @@
 
     <meta name="csrf-token" content="{{ @csrfToken }}">
 
-    <meta name="description" content="Assistant d'écriture créative propulsé par l'IA.">
+    <meta name="description" content="{{ @metaDescription ?: 'Écrivain — logiciel d\'écriture créative avec IA. Structurez vos romans, gérez vos personnages et exportez.' | esc }}">
+
+    <link rel="canonical" href="{{ @SCHEME }}://{{ @HOST }}{{ @PATH }}">
 
     <!-- Open Graph / Facebook -->
 
-    <meta property="og:type" content="website">
+    <meta property="og:type" content="{{ @ogType ?: 'website' }}">
 
-    <meta property="og:url" content="{{ @SCHEME }}://{{ @HOST }}{{ @base }}">
+    <meta property="og:url" content="{{ @SCHEME }}://{{ @HOST }}{{ @PATH }}">
 
     <meta property="og:title" content="{{ @title | esc }}">
 
-    <meta property="og:description" content="Assistant d'écriture créative propulsé par l'IA.">
+    <meta property="og:description" content="{{ @metaDescription ?: 'Écrivain — logiciel d\'écriture créative avec IA. Structurez vos romans, gérez vos personnages et exportez.' | esc }}">
 
     <meta property="og:image" content="{{ @base }}/public/icons/icon-512.png">
 
@@ -34,11 +36,11 @@
 
     <meta property="twitter:card" content="summary_large_image">
 
-    <meta property="twitter:url" content="{{ @SCHEME }}://{{ @HOST }}{{ @base }}">
+    <meta property="twitter:url" content="{{ @SCHEME }}://{{ @HOST }}{{ @PATH }}">
 
     <meta property="twitter:title" content="{{ @title | esc }}">
 
-    <meta property="twitter:description" content="Assistant d'écriture créative propulsé par l'IA.">
+    <meta property="twitter:description" content="{{ @metaDescription ?: 'Écrivain — logiciel d\'écriture créative avec IA. Structurez vos romans, gérez vos personnages et exportez.' | esc }}">
 
     <meta property="twitter:image" content="{{ @base }}/public/icons/icon-512.png">
 
