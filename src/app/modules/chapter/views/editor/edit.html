@@ -1237,8 +1237,8 @@
             var loading = document.getElementById('inconsistencyLoading');
             var result = document.getElementById('inconsistencyResult');
 
-            function openModal() { modal.classList.remove('is-hidden'); }
-            function closeModal() { modal.classList.add('is-hidden'); }
+            function openModal() { modal.classList.add('is-visible'); }
+            function closeModal() { modal.classList.remove('is-visible'); }
 
             function escHtml(s) {
                 return String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
@@ -1378,8 +1378,8 @@
                 })
                 .catch(function () { /* silent fail */ });
 
-            function openModal() { modal.classList.remove('is-hidden'); searchEl.value = ''; searchEl.focus(); }
-            function closeModal() { modal.classList.add('is-hidden'); }
+            function openModal() { modal.classList.add('is-visible'); searchEl.value = ''; searchEl.focus(); }
+            function closeModal() { modal.classList.remove('is-visible'); }
 
             if (btn) {
                 btn.addEventListener('click', function () {
