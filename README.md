@@ -112,6 +112,12 @@ FLUSH PRIVILEGES;
 | `share_link_projects` | Association liens ↔ projets partagés (migration 010) |
 | `project_collaborators` | Invitations et statut des collaborateurs (migration 011) |
 | `collaboration_requests` | Demandes de modification soumises par les collaborateurs (migration 012) |
+| `project_tags` | Tags de projet (migration 013) |
+| `project_tag_links` | Association tags ↔ projets (migration 013) |
+| `character_relations` | Relations entre personnages (migration 014) |
+| `glossary_entries` | Entrées du lexique par projet (migration 016) |
+| `inline_suggestions` | Suggestions IA inline dans l'éditeur (migration 017) |
+| `scenarios` | Scénarios alternatifs (migration 020) |
 
 ### 4. Configurer l'environnement
 
@@ -428,20 +434,33 @@ Le système de migrations (`src/app/core/Migrations.php`) s'exécute automatique
 Regardez les fichiers existants dans `src/data/migrations/` et incrémentez le numéro le plus élevé :
 
 ```
-000_init_schema.sql            ← schéma complet
-002_create_template_system.sql ← système de templates
-003_fix_template_data.sql      ← correctifs templates
-004_writing_stats.sql          ← statistiques d'écriture
-005_chapter_versions.sql       ← historique des versions
-006_project_dictionary.sql     ← dictionnaire par projet
-007_new_templates.sql          ← nouveaux templates prédéfinis
-008_annotations.sql            ← annotations relecture
-009_share_links.sql            ← liens de partage public
-010_share_link_projects.sql    ← association liens ↔ projets
-011_project_collaborators.sql  ← système de collaboration
-012_collaboration_requests.sql ← demandes de modification
-013_ma_nouvelle_migration.sql  ← à créer
+000_init_schema.sql              ← schéma complet + templates système
+002_create_template_system.sql   ← système de templates (idempotent)
+003_fix_template_data.sql        ← correctifs templates
+004_writing_stats.sql            ← statistiques journalières d'écriture
+005_chapter_versions.sql         ← historique des versions de chapitres
+006_project_dictionary.sql       ← dictionnaire de mots ignorés par projet
+007_new_templates.sql            ← nouveaux templates prédéfinis
+008_annotations.sql              ← annotations du mode relecture
+009_share_links.sql              ← liens de partage public
+010_share_link_projects.sql      ← association liens ↔ projets partagés
+011_project_collaborators.sql    ← invitations collaborateurs
+012_collaboration_requests.sql   ← demandes de modification
+013_project_tags.sql             ← tags de projet
+014_character_relations.sql      ← relations entre personnages
+015_project_status.sql           ← statut des projets
+016_glossary.sql                 ← lexique par projet
+017_inline_suggestions.sql       ← suggestions IA inline
+018_notes_type.sql               ← types de notes
+019_notes_meta.sql               ← métadonnées des notes
+020_scenarios_table.sql          ← table scénarios
+021_template_element_type_scenario.sql ← type scénario dans les templates
+022_scenario_template_element.sql      ← lien scénario ↔ template element
+023_scenario_is_exported.sql     ← flag export des scénarios
+024_ma_nouvelle_migration.sql    ← à créer (prochain numéro disponible)
 ```
+
+> **Note** : il n'existe pas de fichier `001_` — le numéro a été sauté lors de la réorganisation initiale du schéma. Le système de migrations fonctionne par ordre alphabétique et ne requiert pas une numérotation continue.
 
 **2. Créer le fichier SQL**
 
