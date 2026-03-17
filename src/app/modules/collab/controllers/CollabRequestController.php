@@ -43,20 +43,12 @@ class CollabRequestController extends Controller
             return;
         }
 
-        $this->db->exec(
-            'INSERT INTO collaboration_requests
-                (project_id, user_id, request_type, content_type, content_id,
-                 content_title, current_snapshot, proposed_content, message)
-             VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)',
-            [
-                $pid, $user['id'], $requestType, $contentType, $contentId,
-                $contentTitle ?: null, $currentSnapshot, $proposedContent,
-                $message ?: null,
-            ]
+        $req = new CollaborationRequest();
+        $id  = $req->submit(
+            $pid, $user['id'], $requestType, $contentType, $contentId,
+            $contentTitle, $currentSnapshot, $proposedContent, $message
         );
-
-        $rows = $this->db->exec('SELECT LAST_INSERT_ID() AS id');
-        echo json_encode(['status' => 'ok', 'id' => (int)($rows[0]['id'] ?? 0)]);
+        echo json_encode(['status' => 'ok', 'id' => $id]);
     }
 
     /**
@@ -66,22 +58,10 @@ class CollabRequestController extends Controller
     {
         $pid  = (int) $this->f3->get('PARAMS.pid');
         $user = $this->currentUser();
+        if (!$this->isCollaborator($pid)) { $this->f3->error(403); return; }
 
-        if (!$this->isCollaborator($pid)) {
-            $this->f3->error(403);
-            return;
-        }
-
-        $projectModel = new Project();
-        $project = $projectModel->findAndCast(['id=?', $pid]);
-        $project = $project ? $project[0] : null;
-
-        $requests = $this->db->exec(
-            'SELECT * FROM collaboration_requests
-             WHERE project_id = ? AND user_id = ?
-             ORDER BY created_at DESC',
-            [$pid, $user['id']]
-        ) ?: [];
+        $project  = $this->loadProject($pid);
+        $requests = (new CollaborationRequest())->findByProjectAndUser($pid, $user['id']);
 
         $this->render('collab/requests_collab.html', [
             'title'    => 'Mes demandes — ' . ($project['title'] ?? ''),
@@ -99,17 +79,13 @@ class CollabRequestController extends Controller
         $rid  = (int) $this->f3->get('PARAMS.rid');
         $user = $this->currentUser();
 
-        $rows = $this->db->exec(
-            'SELECT id FROM collaboration_requests WHERE id = ? AND user_id = ? AND status = "pending"',
-            [$rid, $user['id']]
-        );
-
-        if (empty($rows)) {
+        $req = new CollaborationRequest();
+        if (!$req->findPendingByIdAndUser($rid, $user['id'])) {
             echo json_encode(['status' => 'error', 'message' => 'Demande introuvable.']);
             return;
         }
 
-        $this->db->exec('DELETE FROM collaboration_requests WHERE id = ?', [$rid]);
+        $req->cancelByUser($rid, $user['id']);
         echo json_encode(['status' => 'ok']);
     }
 
@@ -120,25 +96,11 @@ class CollabRequestController extends Controller
      */
     public function ownerQueue()
     {
-        $pid  = (int) $this->f3->get('PARAMS.pid');
+        $pid = (int) $this->f3->get('PARAMS.pid');
+        $this->requireOwner($pid);
 
-        if (!$this->isOwner($pid)) {
-            $this->f3->error(403);
-            return;
-        }
-
-        $projectModel = new Project();
-        $project = $projectModel->findAndCast(['id=?', $pid]);
-        $project = $project ? $project[0] : null;
-
-        $requests = $this->db->exec(
-            'SELECT cr.*, u.username AS collab_username
-             FROM collaboration_requests cr
-             JOIN users u ON u.id = cr.user_id
-             WHERE cr.project_id = ?
-             ORDER BY cr.status ASC, cr.created_at DESC',
-            [$pid]
-        ) ?: [];
+        $project  = $this->loadProject($pid);
+        $requests = (new CollaborationRequest())->findByProject($pid);
 
         $this->render('collab/requests_owner.html', [
             'title'    => 'Demandes des collaborateurs — ' . ($project['title'] ?? ''),
@@ -156,34 +118,22 @@ class CollabRequestController extends Controller
         $rid  = (int) $this->f3->get('PARAMS.rid');
         $user = $this->currentUser();
 
-        $rows = $this->db->exec(
-            'SELECT cr.* FROM collaboration_requests cr
-             JOIN projects p ON p.id = cr.project_id
-             WHERE cr.id = ? AND p.user_id = ? AND cr.status = "pending"',
-            [$rid, $user['id']]
-        );
+        $req    = new CollaborationRequest();
+        $record = $req->findPendingForOwner($rid, $user['id']);
 
-        if (empty($rows)) {
+        if (!$record) {
             echo json_encode(['status' => 'error', 'message' => 'Demande introuvable.']);
             return;
         }
 
-        $req = $rows[0];
-
         try {
-            $this->applyRequest($req);
+            $this->applyRequest($record);
         } catch (\Exception $e) {
             echo json_encode(['status' => 'error', 'message' => $e->getMessage()]);
             return;
         }
 
-        $this->db->exec(
-            'UPDATE collaboration_requests
-             SET status = "approved", reviewed_at = NOW(), reviewed_by = ?
-             WHERE id = ?',
-            [$user['id'], $rid]
-        );
-
+        $req->approve($rid, $user['id']);
         echo json_encode(['status' => 'ok']);
     }
 
@@ -197,25 +147,13 @@ class CollabRequestController extends Controller
         $user = $this->currentUser();
         $note = trim($_POST['owner_note'] ?? '');
 
-        $rows = $this->db->exec(
-            'SELECT cr.id FROM collaboration_requests cr
-             JOIN projects p ON p.id = cr.project_id
-             WHERE cr.id = ? AND p.user_id = ? AND cr.status = "pending"',
-            [$rid, $user['id']]
-        );
-
-        if (empty($rows)) {
+        $req = new CollaborationRequest();
+        if (!$req->findPendingForOwner($rid, $user['id'])) {
             echo json_encode(['status' => 'error', 'message' => 'Demande introuvable.']);
             return;
         }
 
-        $this->db->exec(
-            'UPDATE collaboration_requests
-             SET status = "rejected", owner_note = ?, reviewed_at = NOW(), reviewed_by = ?
-             WHERE id = ?',
-            [$note ?: null, $user['id'], $rid]
-        );
-
+        $req->reject($rid, $user['id'], $note ?: null);
         echo json_encode(['status' => 'ok']);
     }
 
@@ -296,6 +234,12 @@ class CollabRequestController extends Controller
         } else {
             throw new \Exception('Type d\'ajout non supporté : ' . $ct);
         }
+    }
+
+    private function loadProject(int $pid): ?array
+    {
+        $rows = (new Project())->findAndCast(['id=?', $pid]);
+        return $rows ? $rows[0] : null;
     }
 
     private function applyDelete(string $ct, int $cid): void

@@ -146,12 +146,7 @@ class McpController extends Controller
 
     private function htmlToText(string $html): string
     {
-        $text = preg_replace('/<br\s*\/?>/i', "\n", $html);
-        $text = preg_replace('/<\/p>/i', "\n\n", $text);
-        $text = strip_tags($text);
-        $text = html_entity_decode($text, ENT_QUOTES | ENT_HTML5, 'UTF-8');
-        $text = preg_replace("/\n{3,}/", "\n\n", $text);
-        return trim($text);
+        return ContentTransformer::htmlToText($html);
     }
 
     private function ok(string $text): array

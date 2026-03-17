@@ -5,7 +5,7 @@ class ProjectController extends ProjectBaseController
     public function beforeRoute(Base $f3)
     {
         $pattern = $f3->get('PATTERN');
-        file_put_contents($f3->get('ROOT') . '/logs/theme_debug.log', date('[Y-m-d H:i:s] ') . "ProjectController::beforeRoute - PATTERN: '$pattern' | VERB: " . $f3->get('VERB') . "\n", FILE_APPEND);
+        Logger::debug('project', 'beforeRoute', ['pattern' => $pattern, 'verb' => $f3->get('VERB')]);
 
         // Skip login check AND CSRF check for setTheme to allow theme switching on login/register pages
         if ($pattern === '/theme') {
@@ -22,14 +22,13 @@ class ProjectController extends ProjectBaseController
 
     public function setTheme()
     {
-        $theme   = $this->f3->get('POST.theme');
-        $logFile = $this->f3->get('ROOT') . '/logs/theme_debug.log';
-        file_put_contents($logFile, date('[Y-m-d H:i:s] ') . "setTheme called. Theme: $theme\n", FILE_APPEND);
+        $theme = $this->f3->get('POST.theme');
+        Logger::debug('project', 'setTheme called', ['theme' => $theme]);
 
         if (in_array($theme, ['default', 'sepia', 'dark', 'modern', 'paper', 'midnight', 'deep', 'studio', 'writer', 'rouge', 'blue', 'forest', 'moderne'])) {
 
             if (headers_sent($file, $line)) {
-                file_put_contents($logFile, date('[Y-m-d H:i:s] ') . "ERROR: Headers already sent in $file on line $line\n", FILE_APPEND);
+                Logger::warn('project', 'setTheme: headers already sent', ['file' => $file, 'line' => $line]);
                 return;
             }
 
@@ -37,7 +36,7 @@ class ProjectController extends ProjectBaseController
                 || (!empty($_SERVER['HTTP_X_FORWARDED_PROTO']) && $_SERVER['HTTP_X_FORWARDED_PROTO'] === 'https');
 
             $domain = $this->f3->get('SESSION_DOMAIN');
-            file_put_contents($logFile, date('[Y-m-d H:i:s] ') . "Setting cookie - Domain: '$domain' | HTTPS: " . ($isHttps ? 'Yes' : 'No') . "\n", FILE_APPEND);
+            Logger::debug('project', 'setTheme: setting cookie', ['domain' => $domain, 'https' => $isHttps]);
 
             setcookie('theme', '', time() - 3600, '/', '', $isHttps, false);
             setcookie('theme', '', time() - 3600, '/', $this->f3->get('HOST'), $isHttps, false);
@@ -55,12 +54,12 @@ class ProjectController extends ProjectBaseController
                 ]
             );
 
-            file_put_contents($logFile, date('[Y-m-d H:i:s] ') . "setcookie result: " . ($res ? 'Success' : 'Failure') . "\n", FILE_APPEND);
+            Logger::debug('project', 'setTheme: cookie result', ['success' => $res]);
 
             $_COOKIE['theme'] = $theme;
             $this->f3->sync('COOKIE');
         } else {
-            file_put_contents($logFile, date('[Y-m-d H:i:s] ') . "Invalid theme: $theme\n", FILE_APPEND);
+            Logger::warn('project', 'setTheme: invalid theme', ['theme' => $theme]);
         }
 
         // Prevent open redirect - only allow internal redirects
@@ -77,96 +76,37 @@ class ProjectController extends ProjectBaseController
 
     public function dashboard()
     {
-        $projectModel = new Project();
-        $user         = $this->currentUser();
-        $projects     = $projectModel->findAndCast(['user_id=?', $user['id']], ['order' => 'created_at DESC']);
+        $user = $this->currentUser();
+        $svc  = new ProjectService($this->db);
 
+        $projects = $svc->getOwnedProjects($user['id']);
+
+        // Attach tags to each owned project
+        $projectIds = array_map('intval', array_column($projects, 'id'));
+        $tagsMap    = $svc->getTagsForProjects($projectIds);
         foreach ($projects as &$proj) {
-            $wpp = $proj['words_per_page'] ?: 350;
-            $proj['pages_count'] = ceil($proj['target_words'] / $wpp);
-            $proj['status'] = $proj['status'] ?? 'active';
-        }
-
-        $sharedProjects = $this->db->exec(
-            'SELECT p.*, pc.accepted_at, u.username AS owner_username
-             FROM projects p
-             JOIN project_collaborators pc ON pc.project_id = p.id
-             JOIN users u ON u.id = p.user_id
-             WHERE pc.user_id = ? AND pc.status = "accepted"
-             ORDER BY p.updated_at DESC',
-            [$user['id']]
-        ) ?: [];
-
-        $pendingInvitations = $this->db->exec(
-            'SELECT pc.id, p.title AS project_title, u.username AS owner_username
-             FROM project_collaborators pc
-             JOIN projects p ON p.id = pc.project_id
-             JOIN users u ON u.id = pc.owner_id
-             WHERE pc.user_id = ? AND pc.status = "pending"',
-            [$user['id']]
-        ) ?: [];
-
-        // --- Tags per project ---
-        $projectIds = array_column($projects, 'id');
-        $tagsMap    = $this->getTagsForProjects(array_map('intval', $projectIds));
-        foreach ($projects as &$proj) {
-            $proj['tags'] = $tagsMap[(int)$proj['id']] ?? [];
+            $proj['tags'] = $tagsMap[(int) $proj['id']] ?? [];
         }
         unset($proj);
 
-        // All tags of the user for the filter bar
-        $allTags = $this->db->exec(
-            'SELECT DISTINCT pt.name FROM project_tags pt
-             JOIN project_tag_links ptl ON ptl.tag_id = pt.id
-             JOIN projects p ON p.id = ptl.project_id
-             WHERE p.user_id = ?
-             ORDER BY pt.name ASC',
-            [$user['id']]
-        ) ?: [];
-
-        // --- Daily writing goal widget ---
+        // Daily goal widget
         $profileFile = $this->getUserDataDir($user['email']) . 'profile.json';
         $profileData = file_exists($profileFile)
             ? (json_decode(file_get_contents($profileFile), true) ?: [])
             : [];
-        $dailyGoal = max(0, (int) ($profileData['daily_goal'] ?? 0));
-
-        $wordsToday = 0;
-        if ($dailyGoal > 0) {
-            $todayStr = date('Y-m-d');
-            $snapRows = $this->db->exec(
-                'SELECT ws.chapter_id, ws.word_count
-                 FROM writing_stats ws
-                 WHERE ws.user_id = ? AND ws.stat_date = ?',
-                [$user['id'], $todayStr]
-            ) ?: [];
-            $prevRows = $this->db->exec(
-                'SELECT ws.chapter_id, ws.word_count
-                 FROM writing_stats ws
-                 WHERE ws.user_id = ? AND ws.stat_date = DATE_SUB(?, INTERVAL 1 DAY)',
-                [$user['id'], $todayStr]
-            ) ?: [];
-            $prevMap = [];
-            foreach ($prevRows as $r) {
-                $prevMap[$r['chapter_id']] = (int) $r['word_count'];
-            }
-            foreach ($snapRows as $r) {
-                $delta = (int) $r['word_count'] - ($prevMap[$r['chapter_id']] ?? 0);
-                if ($delta > 0) $wordsToday += $delta;
-            }
-        }
-        $dailyPct = ($dailyGoal > 0) ? min(100, (int) round($wordsToday / $dailyGoal * 100)) : 0;
+        $dailyGoal   = max(0, (int) ($profileData['daily_goal'] ?? 0));
+        $daily       = $svc->getDailyProgress($user['id'], $dailyGoal);
 
         $this->render('project/dashboard', [
             'title'              => 'Tableau de bord',
             'projects'           => $projects,
             'user'               => $user,
-            'sharedProjects'     => $sharedProjects,
-            'pendingInvitations' => $pendingInvitations,
+            'sharedProjects'     => $svc->getSharedProjects($user['id']),
+            'pendingInvitations' => $svc->getPendingInvitations($user['id']),
+            'allTags'            => $svc->getAllTags($user['id']),
             'dailyGoal'          => $dailyGoal,
-            'wordsToday'         => $wordsToday,
-            'dailyPct'           => $dailyPct,
-            'allTags'            => $allTags,
+            'wordsToday'         => $daily['wordsToday'],
+            'dailyPct'           => $daily['dailyPct'],
         ]);
     }
 
@@ -1134,23 +1074,4 @@ class ProjectController extends ProjectBaseController
         ) ?: [];
     }
 
-    private function getTagsForProjects(array $projectIds): array
-    {
-        if (empty($projectIds)) return [];
-        $placeholders = implode(',', array_fill(0, count($projectIds), '?'));
-        $rows = $this->db->exec(
-            "SELECT ptl.project_id, pt.name
-             FROM project_tags pt
-             JOIN project_tag_links ptl ON ptl.tag_id = pt.id
-             WHERE ptl.project_id IN ($placeholders)
-             ORDER BY pt.name ASC",
-            $projectIds
-        ) ?: [];
-
-        $map = [];
-        foreach ($rows as $r) {
-            $map[(int)$r['project_id']][] = $r['name'];
-        }
-        return $map;
-    }
 }

@@ -114,12 +114,6 @@ if (!is_dir($logDir)) {
 
 }
 
-$logFile = $logDir . '/app.log';
-
-// Log entry
-
-file_put_contents($logFile, date('[Y-m-d H:i:s] ') . "Application started\n", FILE_APPEND);
-
 // Load configuration
 
 $f3->config($docRoot . '/app/config.ini');
@@ -129,6 +123,9 @@ $f3->config($docRoot . '/app/config.ini');
 // Local development detection
 
 $isLocal = strpos($docRoot, 'Projets') !== false;
+
+// Centralized structured logger (writes to logs/app.jsonl)
+Logger::configure($logDir, $isLocal ? Logger::DEBUG : Logger::INFO);
 
 if ($isLocal) {
 
@@ -279,17 +276,35 @@ session_set_cookie_params([
 
 ]);
 
-// Log session info in development only
-
-if ($isLocal && isset($logFile)) {
-
-    file_put_contents($logFile, date('[Y-m-d H:i:s] ') . "Session Params: " . json_encode(session_get_cookie_params()) . " | HTTPS: " . ($isHttps ? 'Yes' : 'No') . "\n", FILE_APPEND);
-
-}
-
 session_start();
 
-// Session Debugging removed
+// Unified error handler: JSON for API/AJAX routes, HTML for browser routes.
+$f3->set('ONERROR', function (Base $f3) {
+    $code = (int) $f3->get('ERROR.code');
+    $text = (string) $f3->get('ERROR.text');
+    $path = (string) $f3->get('PATH');
+
+    $isApiRoute = str_starts_with($path, '/api/')
+        || str_starts_with($path, '/mcp')
+        || (bool) $f3->get('AJAX');
+
+    if ($isApiRoute) {
+        http_response_code($code);
+        header('Content-Type: application/json; charset=utf-8');
+        echo json_encode(['error' => $text, 'code' => $code], JSON_UNESCAPED_UNICODE);
+    } else {
+        http_response_code($code);
+        $f3->set('error_code', $code);
+        $f3->set('error_text', $text);
+        // Fall back to F3's built-in error page if the custom view is unavailable
+        if (is_file($f3->get('UI') ? explode('|', $f3->get('UI'))[0] . 'error.html' : '')) {
+            echo \Template::instance()->render('error.html');
+        } else {
+            echo '<!DOCTYPE html><html><body><h1>' . $code . '</h1><p>' . htmlspecialchars($text) . '</p></body></html>';
+        }
+    }
+    exit;
+});
 
 $f3->run();
 
