@@ -389,26 +389,59 @@ Préfixer les routes en `/api/v1/...` dès maintenant pour conserver la liberté
 
 ---
 
-## Ordre de priorité recommandé
+## Avancement — branche `refactoring/structure`
 
-| Priorité | Tâche | Effort | Impact |
+> Dernière mise à jour : 2026-03-17 · commit `70447b7`
+
+### Légende
+- ✅ Terminé
+- 🚧 En cours
+- ⬜ À faire
+
+### Tableau de bord
+
+| Priorité | Tâche | Statut | Commit |
 |----------|-------|--------|--------|
-| 🔴 P1 | Fix unreachable code `AuthController::login()` | 5 min | Correctif bug |
-| 🔴 P1 | Extraire `TokenService` | 1j | Sécurité |
-| 🟠 P2 | `ApiBaseController` abstrait | 2h | Réduction duplication |
-| 🟠 P2 | `AiPricingService` + `ai_pricing.json` | 3h | Maintenabilité |
-| 🟠 P2 | `ContentTransformer` partagé | 2h | DRY |
-| 🟡 P3 | `ProjectService` (découper dashboard) | 4h | Lisibilité |
-| 🟡 P3 | DAO `collab` (CollaboratorInvite, CollaborationRequest) | 3h | Cohérence |
-| 🟡 P3 | Middleware permissions dans `beforeRoute` | 3h | DRY |
-| 🟡 P3 | Logger centralisé | 2h | Débogage |
-| 🟢 P4 | Handler `ONERROR` unifié | 2h | UX erreurs |
-| 🟢 P4 | `ApiClient.js` centralisé | 3h | JS qualité |
-| 🟢 P4 | Découpage `ProjectExportController` | 1j | Taille fichier |
-| 🟢 P4 | Pagination API | 2h | Perf |
-| 🔵 P5 | Rate limiting atomique (fichier lock) | 2h | Sécurité robustesse |
-| 🔵 P5 | Versionnement API `/v1/` | 2h | Évolutivité |
-| 🔵 P5 | Migrations dry-run CLI | 3h | Ops |
+| 🔴 P1 | Fix unreachable code `AuthController::authenticate()` | ✅ | `70447b7` |
+| 🔴 P1 | Extraire `TokenService` | ✅ | `70447b7` |
+| 🟠 P2 | `ApiBaseController` abstrait | ✅ | `70447b7` |
+| 🟠 P2 | `AiPricingService` + `ai_pricing.json` | ✅ | `70447b7` |
+| 🟠 P2 | `ContentTransformer` partagé | ✅ | `70447b7` |
+| 🟡 P3 | Logger centralisé | ✅ | `70447b7` |
+| 🟡 P3 | `ProjectService` (découper dashboard) | ⬜ | — |
+| 🟡 P3 | DAO `collab` (CollaboratorInvite, CollaborationRequest) | ⬜ | — |
+| 🟡 P3 | Middleware permissions dans `beforeRoute` | ⬜ | — |
+| 🟢 P4 | Handler `ONERROR` unifié | ⬜ | — |
+| 🟢 P4 | `ApiClient.js` centralisé | ⬜ | — |
+| 🟢 P4 | Découpage `ProjectExportController` | ⬜ | — |
+| 🟢 P4 | Pagination API | ⬜ | — |
+| 🔵 P5 | Rate limiting atomique (fichier lock) | ⬜ | — |
+| 🔵 P5 | Versionnement API `/v1/` | ⬜ | — |
+| 🔵 P5 | Migrations dry-run CLI | ⬜ | — |
+
+### Détail du commit `70447b7` (2026-03-17)
+
+**7 fichiers créés, 7 modifiés — net : −533 lignes**
+
+| Fichier créé | Rôle |
+|---|---|
+| `src/app/core/TokenService.php` | JWT + AES-256-GCM + lecture/écriture token files |
+| `src/app/core/Logger.php` | Logs JSON structurés → `logs/app.jsonl` |
+| `src/app/core/ContentTransformer.php` | `htmlToText()`, `countWords()`, `cleanQuillHtml()` |
+| `src/app/services/AiPricingService.php` | Calcul de coût IA délégué au JSON |
+| `src/app/controllers/ApiBaseController.php` | Socle JWT pour `ApiController` et `McpController` |
+| `src/app/ai_pricing.json` | Table de tarifs IA (éditable sans déploiement PHP) |
+| `REFACTORING.md` | Ce fichier |
+
+| Fichier modifié | Ce qui a changé |
+|---|---|
+| `Controller.php` | `checkAutoLogin` et `authenticateApiRequest` → délèguent à `TokenService` ; `encryptData`/`decryptData` → façades |
+| `ApiController.php` | Hérite de `ApiBaseController` ; suppression de 4 méthodes privées |
+| `McpController.php` | `htmlToText()` → `ContentTransformer::htmlToText()` |
+| `AiController.php` | 112 lignes de pricing → `(new AiPricingService())->computeCost()` |
+| `AuthController.php` | Bug `reroute` mort corrigé ; `encodeAutoLoginToken`, opérations fichiers token → `TokenService` |
+| `config.ini` | `app/core/` et `app/services/` ajoutés à l'`AUTOLOAD` |
+| `index.php` | `Logger::configure()` appelé au démarrage |
 
 ---
 
