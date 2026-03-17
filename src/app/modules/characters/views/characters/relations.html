@@ -91,6 +91,19 @@
                         <input type="color" id="relColor" value="#94a3b8" class="color-custom-input">
                     </div>
 
+                    <div class="form-group">
+                        <label class="checkbox-label">
+                            <input type="checkbox" id="relBidirectional">
+                            Bidirectionnel (créer aussi la relation inverse)
+                        </label>
+                    </div>
+
+                    <div class="form-group" id="relReverseLabelGroup" style="display:none">
+                        <label for="relReverseLabel">Relation inverse</label>
+                        <input type="text" id="relReverseLabel" class="input-control" placeholder="ex: fils de, rival de…" maxlength="100">
+                        <p class="field-hint">Laisser vide pour utiliser le même libellé.</p>
+                    </div>
+
                     <button type="button" id="btnAddRelation" class="button primary"
                         title="Créer le lien entre personnages" title="Créer le lien entre personnages">
                         <i class="fas fa-link" aria-hidden="true"></i> Créer le lien
@@ -134,7 +147,7 @@
 </div>
 
 <!-- Suggestions modal -->
-<div class="modal-overlay" id="suggestModal" class="is-hidden" >
+<div class="modal-overlay" id="suggestModal">
     <div class="modal-content modal-md modal-tall">
         <div class="modal-header">
             <h3><i class="fas fa-magic" aria-hidden="true"></i> Relations suggérées par l'IA</h3>
@@ -166,7 +179,7 @@
 
     var charData = [
         <repeat group="{{ @characters }}" value="{{ @c }}" counter="{{ @i }}">
-            {id: {{ @c.id }}, label: {{ json_encode(@c.name) | raw}} }<check if="{{ @i < count(@characters) }}">,</check>
+            {id: {{ @c.id }}, label: {{ json_encode(@c.name) | raw}}, groupColor: {{ json_encode(@c.group_color) | raw}}, groupName: {{ json_encode(@c.group_name) | raw}} }<check if="{{ @i < count(@characters) }}">,</check>
         </repeat>
     ];
 
@@ -179,16 +192,18 @@
     // ── vis.js setup ─────────────────────────────────────────────────────────
 
     var nodes = new vis.DataSet(charData.map(function (c) {
+        var bg = c.groupColor || '#e8eaf6';
+        var nodeLabel = c.groupName ? c.label + '\n(' + c.groupName + ')' : c.label;
         return {
             id: c.id,
-            label: c.label,
+            label: nodeLabel,
             shape: 'box',
             borderRadius: 8,
             color: {
-                background: '#e8eaf6',
+                background: bg,
                 border: '#5c6bc0',
-                highlight: { background: '#c5cae9', border: '#3f51b5' },
-                hover: { background: '#d1d5fb', border: '#3f51b5' }
+                highlight: { background: bg, border: '#3f51b5' },
+                hover: { background: bg, border: '#3f51b5' }
             },
             font: { size: 14, face: 'system-ui, sans-serif', color: '#1e1e2e', bold: { size: 14 } },
             margin: { top: 10, right: 16, bottom: 10, left: 16 },
@@ -243,6 +258,12 @@
         });
     }
 
+    // ── Bidirectional checkbox ────────────────────────────────────────────────
+
+    document.getElementById('relBidirectional').addEventListener('change', function () {
+        document.getElementById('relReverseLabelGroup').style.display = this.checked ? '' : 'none';
+    });
+
     // ── Color presets ─────────────────────────────────────────────────────────
 
     var selectedColor = '#94a3b8';
@@ -282,10 +303,14 @@
         var btn = this;
         btn.disabled = true;
 
+        var isBidi = document.getElementById('relBidirectional').checked;
+        var reverseLabel = document.getElementById('relReverseLabel').value.trim();
+
         fetch(BASE + '/project/' + PID + '/characters/relation/add', {
             method: 'POST',
             headers: { 'Content-Type': 'application/x-www-form-urlencoded', 'X-CSRF-Token': CSRF },
-            body: new URLSearchParams({ char_from: fromId, char_to: toId, label: label, color: selectedColor, csrf_token: CSRF })
+            body: new URLSearchParams({ char_from: fromId, char_to: toId, label: label, color: selectedColor,
+                bidirectional: isBidi ? '1' : '', reverse_label: reverseLabel, csrf_token: CSRF })
         })
             .then(function (r) { return r.json(); })
             .then(function (data) {
@@ -294,11 +319,19 @@
 
                 // Add to graph
                 edges.add(edgeFromRel({ id: r.id, from: r.char_from, to: r.char_to, label: r.label, color: r.color }));
-
-                // Add to list
                 addRelToList(r);
 
+                // Bidirectional reverse
+                if (data.reverse) {
+                    var rv = data.reverse;
+                    edges.add(edgeFromRel({ id: rv.id, from: rv.char_from, to: rv.char_to, label: rv.label, color: rv.color }));
+                    addRelToList(rv);
+                }
+
                 document.getElementById('relLabel').value = '';
+                document.getElementById('relBidirectional').checked = false;
+                document.getElementById('relReverseLabel').value = '';
+                document.getElementById('relReverseLabelGroup').style.display = 'none';
                 showStatus('Lien créé.', 'ok');
             })
             .catch(function (e) { showStatus('Erreur réseau.', 'err'); })
@@ -378,8 +411,8 @@
     var suggestLoading = document.getElementById('suggestLoading');
     var suggestList = document.getElementById('suggestList');
 
-    function openSuggestModal() { suggestModal.classList.remove('is-hidden'); }
-    function closeSuggestModal() { suggestModal.classList.add('is-hidden'); }
+    function openSuggestModal() { suggestModal.classList.add('is-visible'); }
+    function closeSuggestModal() { suggestModal.classList.remove('is-visible'); }
 
     document.getElementById('closeSuggestModal').addEventListener('click', closeSuggestModal);
     document.getElementById('closeSuggestModalBtn').addEventListener('click', closeSuggestModal);

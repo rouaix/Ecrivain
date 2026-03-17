@@ -2,6 +2,11 @@
 
 class CharacterController extends Controller
 {
+    private $palette = [
+        '#e8eaf6', '#fce4ec', '#e8f5e9', '#fff3e0',
+        '#e3f2fd', '#f3e5f5', '#e0f7fa', '#fef9c3',
+    ];
+
     public function beforeRoute(Base $f3)
     {
         parent::beforeRoute($f3);
@@ -24,9 +29,9 @@ class CharacterController extends Controller
         $characters = $charModel->getAllByProject($pid);
 
         $this->render('characters/index.html', [
-            'title' => 'Personnages - ' . $project['title'],
-            'project' => $project,
-            'characters' => $characters
+            'title'      => 'Personnages - ' . $project['title'],
+            'project'    => $project,
+            'characters' => $characters,
         ]);
     }
 
@@ -41,10 +46,14 @@ class CharacterController extends Controller
         $project = $projectModel->findAndCast(['id=?', $pid])[0];
 
         $this->render('characters/edit.html', [
-            'title' => 'Nouveau personnage',
-            'project' => $project,
-            'character' => ['name' => '', 'description' => '', 'comment' => '', 'id' => null],
-            'errors' => []
+            'title'     => 'Nouveau personnage',
+            'project'   => $project,
+            'character' => [
+                'id' => null, 'name' => '', 'description' => '', 'comment' => '',
+                'age' => '', 'traits' => '', 'motivations' => '', 'arc' => '',
+                'flaws' => '', 'avatar' => '', 'group_name' => '',
+            ],
+            'errors' => [],
         ]);
     }
 
@@ -57,27 +66,45 @@ class CharacterController extends Controller
             return;
         }
 
-        $name = trim($_POST['name'] ?? '');
+        $name        = trim($_POST['name'] ?? '');
         $description = trim($_POST['description'] ?? '');
-        $comment = $_POST['comment'] ?? '';
-        $comment = $this->cleanQuillHtml($comment);
+        $comment     = $this->cleanQuillHtml($_POST['comment'] ?? '');
+        $age         = mb_substr(trim($_POST['age']         ?? ''), 0, 50);
+        $traits      = trim($_POST['traits']      ?? '');
+        $motivations = trim($_POST['motivations'] ?? '');
+        $arc         = trim($_POST['arc']         ?? '');
+        $flaws       = trim($_POST['flaws']       ?? '');
+        $group_name  = mb_substr(trim($_POST['group_name'] ?? ''), 0, 100);
 
         if (!$name) {
             $this->render('characters/edit.html', [
-                'title' => 'Nouveau personnage',
-                'project' => $projectModel->findAndCast(['id=?', $pid])[0],
-                'character' => ['name' => $name, 'description' => $description, 'comment' => $comment, 'id' => null],
-                'errors' => ['Le nom est obligatoire']
+                'title'     => 'Nouveau personnage',
+                'project'   => $projectModel->findAndCast(['id=?', $pid])[0],
+                'character' => compact('name', 'description', 'comment', 'age', 'traits', 'motivations', 'arc', 'flaws', 'group_name') + ['id' => null, 'avatar' => ''],
+                'errors'    => ['Le nom est obligatoire'],
             ]);
             return;
         }
 
-        $charModel = new Character();
-        $charModel->project_id = $pid;
-        $charModel->name = $name;
+        $charModel              = new Character();
+        $charModel->project_id  = $pid;
+        $charModel->name        = $name;
         $charModel->description = $description;
-        $charModel->comment = $comment;
+        $charModel->comment     = $comment;
+        $charModel->age         = $age;
+        $charModel->traits      = $traits;
+        $charModel->motivations = $motivations;
+        $charModel->arc         = $arc;
+        $charModel->flaws       = $flaws;
+        $charModel->group_name  = $group_name;
         $charModel->save();
+
+        // Avatar upload after save (need ID)
+        $avatar = $this->saveAvatarUpload($_FILES['avatar'] ?? null, (int) $charModel->id);
+        if ($avatar !== null) {
+            $charModel->avatar = $avatar;
+            $charModel->save();
+        }
 
         $this->f3->reroute('/project/' . $pid . '/characters');
     }
@@ -156,7 +183,7 @@ class CharacterController extends Controller
             'timeline'      => array_values($timeline),
             'totalChapters' => count($allChapters),
             'mentionCount'  => count($mentionedIds),
-            'errors'        => []
+            'errors'        => [],
         ]);
     }
 
@@ -176,24 +203,45 @@ class CharacterController extends Controller
             return;
         }
 
-        $name = trim($_POST['name'] ?? '');
+        $name        = trim($_POST['name'] ?? '');
         $description = trim($_POST['description'] ?? '');
-        $comment = $_POST['comment'] ?? '';
-        $comment = $this->cleanQuillHtml($comment);
+        $comment     = $this->cleanQuillHtml($_POST['comment'] ?? '');
+        $age         = mb_substr(trim($_POST['age']         ?? ''), 0, 50);
+        $traits      = trim($_POST['traits']      ?? '');
+        $motivations = trim($_POST['motivations'] ?? '');
+        $arc         = trim($_POST['arc']         ?? '');
+        $flaws       = trim($_POST['flaws']       ?? '');
+        $group_name  = mb_substr(trim($_POST['group_name'] ?? ''), 0, 100);
 
         if (!$name) {
             $this->render('characters/edit.html', [
-                'title' => 'Modifier personnage',
-                'project' => $projectModel->findAndCast(['id=?', $charModel->project_id])[0],
-                'character' => ['id' => $id, 'name' => $name, 'description' => $description, 'comment' => $comment],
-                'errors' => ['Le nom est obligatoire']
+                'title'     => 'Modifier personnage',
+                'project'   => $projectModel->findAndCast(['id=?', $charModel->project_id])[0],
+                'character' => ['id' => $id, 'name' => $name, 'description' => $description, 'comment' => $comment,
+                                'age' => $age, 'traits' => $traits, 'motivations' => $motivations,
+                                'arc' => $arc, 'flaws' => $flaws, 'group_name' => $group_name,
+                                'avatar' => $charModel->avatar],
+                'errors'    => ['Le nom est obligatoire'],
             ]);
             return;
         }
 
-        $charModel->name = $name;
+        $charModel->name        = $name;
         $charModel->description = $description;
-        $charModel->comment = $comment;
+        $charModel->comment     = $comment;
+        $charModel->age         = $age;
+        $charModel->traits      = $traits;
+        $charModel->motivations = $motivations;
+        $charModel->arc         = $arc;
+        $charModel->flaws       = $flaws;
+        $charModel->group_name  = $group_name;
+
+        // Avatar upload (optional — only replace if a new file is uploaded)
+        $avatar = $this->saveAvatarUpload($_FILES['avatar'] ?? null, $id);
+        if ($avatar !== null) {
+            $charModel->avatar = $avatar;
+        }
+
         $charModel->save();
 
         $this->f3->reroute('/project/' . $charModel->project_id . '/characters');
@@ -232,6 +280,23 @@ class CharacterController extends Controller
         $charModel  = new Character();
         $characters = $charModel->getAllByProject($pid);
 
+        // Assign a palette color per unique group_name
+        $groupColors = [];
+        $colorIndex  = 0;
+        foreach ($characters as &$c) {
+            $g = $c['group_name'] ?? '';
+            if ($g !== '') {
+                if (!isset($groupColors[$g])) {
+                    $groupColors[$g] = $this->palette[$colorIndex % count($this->palette)];
+                    $colorIndex++;
+                }
+                $c['group_color'] = $groupColors[$g];
+            } else {
+                $c['group_color'] = '';
+            }
+        }
+        unset($c);
+
         $relations = $this->db->exec(
             'SELECT cr.id, cr.char_from, cr.char_to, cr.label, cr.color,
                     cf.name AS name_from, ct.name AS name_to
@@ -260,10 +325,12 @@ class CharacterController extends Controller
             return;
         }
 
-        $charFrom = (int) ($_POST['char_from'] ?? 0);
-        $charTo   = (int) ($_POST['char_to']   ?? 0);
-        $label    = mb_substr(trim($_POST['label'] ?? ''), 0, 100);
-        $color    = preg_match('/^#[0-9a-fA-F]{6}$/', $_POST['color'] ?? '') ? $_POST['color'] : '#94a3b8';
+        $charFrom     = (int) ($_POST['char_from']     ?? 0);
+        $charTo       = (int) ($_POST['char_to']       ?? 0);
+        $label        = mb_substr(trim($_POST['label'] ?? ''), 0, 100);
+        $color        = preg_match('/^#[0-9a-fA-F]{6}$/', $_POST['color'] ?? '') ? $_POST['color'] : '#94a3b8';
+        $bidirectional = !empty($_POST['bidirectional']);
+        $reverseLabel  = mb_substr(trim($_POST['reverse_label'] ?? ''), 0, 100);
 
         if (!$charFrom || !$charTo || $charFrom === $charTo) {
             echo json_encode(['success' => false, 'error' => 'Personnages invalides']);
@@ -287,9 +354,9 @@ class CharacterController extends Controller
         $nameFrom = $this->db->exec('SELECT name FROM characters WHERE id=?', [$charFrom])[0]['name'] ?? '';
         $nameTo   = $this->db->exec('SELECT name FROM characters WHERE id=?', [$charTo])[0]['name'] ?? '';
 
-        echo json_encode([
-            'success'   => true,
-            'relation'  => [
+        $result = [
+            'success'  => true,
+            'relation' => [
                 'id'        => $rid,
                 'char_from' => $charFrom,
                 'char_to'   => $charTo,
@@ -297,8 +364,28 @@ class CharacterController extends Controller
                 'color'     => $color,
                 'name_from' => $nameFrom,
                 'name_to'   => $nameTo,
-            ]
-        ]);
+            ],
+        ];
+
+        if ($bidirectional) {
+            $revLabel = $reverseLabel ?: $label;
+            $this->db->exec(
+                'INSERT INTO character_relations (project_id, char_from, char_to, label, color) VALUES (?, ?, ?, ?, ?)',
+                [$pid, $charTo, $charFrom, $revLabel, $color]
+            );
+            $revId = (int) $this->db->exec('SELECT LAST_INSERT_ID() AS id')[0]['id'];
+            $result['reverse'] = [
+                'id'        => $revId,
+                'char_from' => $charTo,
+                'char_to'   => $charFrom,
+                'label'     => $revLabel,
+                'color'     => $color,
+                'name_from' => $nameTo,
+                'name_to'   => $nameFrom,
+            ];
+        }
+
+        echo json_encode($result);
     }
 
     public function deleteRelation()
@@ -318,5 +405,28 @@ class CharacterController extends Controller
         );
 
         echo json_encode(['success' => true]);
+    }
+
+    // ─── Private helpers ──────────────────────────────────────────────────────
+
+    private function saveAvatarUpload(?array $file, int $charId): ?string
+    {
+        if (!$file || empty($file['name']) || ($file['error'] ?? UPLOAD_ERR_NO_FILE) !== UPLOAD_ERR_OK) {
+            return null;
+        }
+        $valid = $this->validateImageUpload($file, 2);
+        if (!$valid['success']) {
+            return null;
+        }
+        $ext      = $valid['extension'];
+        $filename = 'char_' . $charId . '_' . uniqid() . '.' . $ext;
+        $dir      = $this->f3->get('ROOT') . 'public/uploads/characters/';
+        if (!is_dir($dir)) {
+            mkdir($dir, 0775, true);
+        }
+        if (move_uploaded_file($file['tmp_name'], $dir . $filename)) {
+            return 'uploads/characters/' . $filename;
+        }
+        return null;
     }
 }

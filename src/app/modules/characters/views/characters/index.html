@@ -39,9 +39,15 @@
 
                 <div class="character-card">
 
+                    <check if="{{ @char.avatar }}">
+                        <div class="character-avatar-wrap">
+                            <img class="character-avatar" src="{{ @base }}/public/{{ @char.avatar | esc }}" alt="{{ @char.name | esc }}">
+                        </div>
+                    </check>
+
                     <div class="character-header">
 
-                        <h3 class="character-name">{{ @char.name }}
+                        <h3 class="character-name">{{ @char.name | esc }}<check if="{{ @char.group_name }}"><span class="character-group-badge">{{ @char.group_name | esc }}</span></check>
 
                             <div class="character-actions">
 

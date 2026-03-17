@@ -79,3 +79,125 @@
 .relation-dot--pink     { background: #ec4899; }
 .relation-dot--info     { background: var(--color-info); }
 .relation-dot--purple   { background: #8b5cf6; }
+
+/* ── Avatar on character card (index view) ── */
+.character-avatar-wrap {
+    text-align: center;
+    margin-bottom: 10px;
+}
+
+.character-avatar {
+    width: 72px;
+    height: 72px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 2px solid var(--border-color);
+}
+
+/* ── Group badge on character card ── */
+.character-group-badge {
+    display: inline-block;
+    font-size: .68rem;
+    font-weight: 600;
+    padding: 1px 7px;
+    border-radius: 20px;
+    background: var(--link-color, #3f51b5);
+    color: #fff;
+    vertical-align: middle;
+    margin-left: 6px;
+    letter-spacing: .02em;
+}
+
+/* ── Identity grid (avatar + group) in edit form ── */
+.char-identity-grid {
+    display: grid;
+    grid-template-columns: auto 1fr;
+    gap: 20px;
+    align-items: start;
+}
+
+.char-avatar-preview-container {
+    margin-bottom: 8px;
+}
+
+.char-avatar-preview {
+    display: block;
+    width: 96px;
+    height: 96px;
+    border-radius: 8px;
+    object-fit: cover;
+    border: 1px solid var(--border-color);
+}
+
+.char-avatar-placeholder {
+    width: 96px;
+    height: 96px;
+    border-radius: 8px;
+    border: 2px dashed var(--border-color);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--text-muted);
+    background: var(--body-bg);
+}
+
+.char-upload-btn {
+    display: inline-block;
+    cursor: pointer;
+    margin-top: 4px;
+}
+
+/* ── Collapsible structured fields ── */
+.char-fields-details {
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    overflow: hidden;
+}
+
+.char-fields-summary {
+    padding: 10px 14px;
+    cursor: pointer;
+    font-weight: 600;
+    font-size: .9rem;
+    color: var(--text-main);
+    list-style: none;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    background: var(--body-bg);
+    user-select: none;
+}
+
+.char-fields-summary::-webkit-details-marker { display: none; }
+
+.char-fields-summary i {
+    color: var(--link-color);
+}
+
+.char-fields-hint {
+    font-size: .78rem;
+    color: var(--text-muted);
+    font-weight: 400;
+}
+
+.char-fields-body {
+    padding: 14px 16px;
+    border-top: 1px solid var(--border-color);
+}
+
+.char-fields-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 0 20px;
+    margin-top: 12px;
+}
+
+.char-field-textarea {
+    resize: vertical;
+    min-height: 72px;
+}
+
+@media (max-width: 600px) {
+    .char-identity-grid { grid-template-columns: 1fr; }
+    .char-fields-grid   { grid-template-columns: 1fr; }
+}

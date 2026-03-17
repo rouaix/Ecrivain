@@ -34,7 +34,8 @@
     </check>
 
     <form method="post"
-        action="{{ @character.id ? (@base . '/character/' . @character.id . '/edit') : (@base . '/project/' . @project.id . '/character/create') }}">
+        action="{{ @character.id ? (@base . '/character/' . @character.id . '/edit') : (@base . '/project/' . @project.id . '/character/create') }}"
+        enctype="multipart/form-data">
 
         <input type="hidden" name="csrf_token" value="{{ @csrfToken }}">
 
@@ -53,6 +54,67 @@
 
                 </div>
 
+            </div>
+
+            <!-- Identity Section (avatar + group) -->
+            <div class="edit-card-section">
+                <div class="char-identity-grid">
+                    <div class="form-group">
+                        <label>Portrait / Avatar</label>
+                        <div class="char-avatar-preview-container">
+                            <check if="{{ @character.avatar }}">
+                                <img id="avatarPreview" class="char-avatar-preview" src="{{ @base }}/public/{{ @character.avatar | esc }}" alt="Portrait">
+                            </check>
+                            <check if="{{ !@character.avatar }}">
+                                <div id="avatarPreview" class="char-avatar-placeholder"><i class="fas fa-user fa-2x" aria-hidden="true"></i></div>
+                            </check>
+                        </div>
+                        <label for="avatarFile" class="button secondary char-upload-btn">
+                            <i class="fas fa-upload" aria-hidden="true"></i> Choisir une image
+                        </label>
+                        <input type="file" id="avatarFile" name="avatar" accept="image/*" class="hidden">
+                        <p class="field-hint">JPG, PNG, WebP — max 2 Mo</p>
+                    </div>
+                    <div class="form-group">
+                        <label for="group_name">Groupe / Faction</label>
+                        <input type="text" id="group_name" name="group_name" value="{{ @character.group_name | esc }}" class="input-control" maxlength="100" placeholder="ex : Maison Stark, Ordre des mages…">
+                        <p class="field-hint">Colore le nœud dans le graphe des relations.</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Structured Fields Section -->
+            <div class="edit-card-section">
+                <details class="char-fields-details">
+                    <summary class="char-fields-summary">
+                        <i class="fas fa-id-card" aria-hidden="true"></i> Fiche détaillée
+                        <span class="char-fields-hint">(âge, traits, motivations, arc, défauts)</span>
+                    </summary>
+                    <div class="char-fields-body">
+                        <div class="form-group">
+                            <label for="age">Âge</label>
+                            <input type="text" id="age" name="age" value="{{ @character.age | esc }}" class="input-control" maxlength="50" placeholder="ex : 34 ans, début trentaine…">
+                        </div>
+                        <div class="char-fields-grid">
+                            <div class="form-group">
+                                <label for="traits">Traits de caractère</label>
+                                <textarea id="traits" name="traits" class="input-control char-field-textarea" rows="3" placeholder="ex : courageux, impulsif, loyal…">{{ @character.traits | esc }}</textarea>
+                            </div>
+                            <div class="form-group">
+                                <label for="flaws">Défauts</label>
+                                <textarea id="flaws" name="flaws" class="input-control char-field-textarea" rows="3" placeholder="ex : orgueil, jalousie, naïveté…">{{ @character.flaws | esc }}</textarea>
+                            </div>
+                            <div class="form-group">
+                                <label for="motivations">Motivations</label>
+                                <textarea id="motivations" name="motivations" class="input-control char-field-textarea" rows="3" placeholder="ex : venger sa famille, protéger le royaume…">{{ @character.motivations | esc }}</textarea>
+                            </div>
+                            <div class="form-group">
+                                <label for="arc">Arc narratif</label>
+                                <textarea id="arc" name="arc" class="input-control char-field-textarea" rows="3" placeholder="ex : de mercenaire à héros…">{{ @character.arc | esc }}</textarea>
+                            </div>
+                        </div>
+                    </div>
+                </details>
             </div>
 
             <!-- Description Section -->
@@ -775,6 +837,30 @@
         if (e.key === 'Escape' && modal.style.display !== 'none') closeModal();
     });
 
+        }
+
+        // Avatar preview
+        var avatarInput = document.getElementById('avatarFile');
+        if (avatarInput) {
+            avatarInput.addEventListener('change', function () {
+                var file = this.files[0];
+                if (!file) return;
+                var reader = new FileReader();
+                reader.onload = function (e) {
+                    var preview = document.getElementById('avatarPreview');
+                    if (preview && preview.tagName === 'IMG') {
+                        preview.src = e.target.result;
+                    } else if (preview) {
+                        var img = document.createElement('img');
+                        img.id = 'avatarPreview';
+                        img.className = 'char-avatar-preview';
+                        img.alt = 'Portrait';
+                        img.src = e.target.result;
+                        preview.parentNode.replaceChild(img, preview);
+                    }
+                };
+                reader.readAsDataURL(file);
+            });
         }
 
     });
