@@ -9,8 +9,8 @@
     <link rel="stylesheet" href="{{ @base }}/public/style.css?v=5">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <set selectedTheme="{{ isset(@COOKIE.theme) ? @COOKIE.theme : 'default' }}" />
-    <link rel="stylesheet" href="{{ @base }}/public/theme-{{ @selectedTheme }}.css?v=2">
-    <link rel="stylesheet" href="{{ @base }}/public/reading.css?v=10">
+    <link rel="stylesheet" href="{{ @base }}/public/css/themes/theme-{{ @selectedTheme }}.css?v=2">
+    <link rel="stylesheet" href="{{ @base }}/public/css/features/reading.css?v=10">
     <script src="{{ @base }}/public/js/offline-reader.js?v=1" nonce="{{ @nonce }}"></script>
     <style>
         /* Critical overrides for reading mode */

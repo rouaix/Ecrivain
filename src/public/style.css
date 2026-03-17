@@ -47,17 +47,17 @@
 @import 'css/auth/tokens.css';
 /* Features - Special features */
 @import 'css/dictation.css';
-@import 'reading-mode.css';
-@import 'export.css';
-@import 'mindmap.css';
-@import 'template-editor.css';
+@import 'css/features/reading-mode.css';
+@import 'css/features/export.css';
+@import 'css/features/mindmap.css';
+@import 'css/features/template-editor.css';
 /* Utilities - Helper classes */
 @import 'css/utilities/spacing.css';
 @import 'css/utilities/text.css';
 @import 'css/utilities/visibility.css';
 @import 'css/utilities/helpers.css';
 /* Media Queries - Responsive design */
-@import 'media-queries.css';
+@import 'css/core/media-queries.css';
 
 .hidden,
 .cacher {
