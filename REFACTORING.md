@@ -408,16 +408,37 @@ Préfixer les routes en `/api/v1/...` dès maintenant pour conserver la liberté
 | 🟠 P2 | `AiPricingService` + `ai_pricing.json` | ✅ | `70447b7` |
 | 🟠 P2 | `ContentTransformer` partagé | ✅ | `70447b7` |
 | 🟡 P3 | Logger centralisé | ✅ | `70447b7` |
-| 🟡 P3 | `ProjectService` (découper dashboard) | ⬜ | — |
-| 🟡 P3 | DAO `collab` (CollaboratorInvite, CollaborationRequest) | ⬜ | — |
-| 🟡 P3 | Middleware permissions dans `beforeRoute` | ⬜ | — |
-| 🟢 P4 | Handler `ONERROR` unifié | ⬜ | — |
+| 🟡 P3 | `ProjectService` (découper dashboard) | ✅ | `f5cb33a` |
+| 🟡 P3 | DAO `collab` (CollaboratorInvite, CollaborationRequest) | ✅ | `f5cb33a` |
+| 🟡 P3 | Guards `requireOwner/requireProjectAccess/requireAuth` | ✅ | `f5cb33a` |
+| 🟢 P4 | Handler `ONERROR` unifié | ✅ | `f5cb33a` |
 | 🟢 P4 | `ApiClient.js` centralisé | ⬜ | — |
 | 🟢 P4 | Découpage `ProjectExportController` | ⬜ | — |
 | 🟢 P4 | Pagination API | ⬜ | — |
 | 🔵 P5 | Rate limiting atomique (fichier lock) | ⬜ | — |
 | 🔵 P5 | Versionnement API `/v1/` | ⬜ | — |
 | 🔵 P5 | Migrations dry-run CLI | ⬜ | — |
+
+### Détail du commit `f5cb33a` (2026-03-17)
+
+**9 fichiers touchés — net : −291 lignes**
+
+| Fichier créé | Rôle |
+|---|---|
+| `src/app/services/ProjectService.php` | Toutes les requêtes dashboard extraites de ProjectController |
+| `src/app/modules/collab/models/CollaboratorInvite.php` | DAO `project_collaborators` |
+| `src/app/modules/collab/models/CollaborationRequest.php` | DAO `collaboration_requests` |
+
+| Fichier modifié | Ce qui a changé |
+|---|---|
+| `ProjectController.php` | `dashboard()` : 110 lignes → 25, délègue à `ProjectService` ; logs theme_debug → `Logger` |
+| `CollabInviteController.php` | SQL inline → méthodes de `CollaboratorInvite` |
+| `CollabRequestController.php` | SQL inline → méthodes de `CollaborationRequest` |
+| `Controller.php` | Ajout `requireOwner()`, `requireProjectAccess()`, `requireAuth()` |
+| `index.php` | Handler `ONERROR` unifié (JSON pour API, HTML pour browser) |
+| `config.ini` | `app/modules/collab/models/` ajouté à `AUTOLOAD` |
+
+---
 
 ### Détail du commit `70447b7` (2026-03-17)
 
