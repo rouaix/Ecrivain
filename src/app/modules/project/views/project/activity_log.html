@@ -1,0 +1,52 @@
+<div class="edit-page-layout">
+    <div class="edit-header">
+        <h2><i class="fas fa-history" aria-hidden="true"></i> Journal d'activité</h2>
+        <a href="{{ @base }}/project/{{ @project.id }}" class="button" title="Retour au projet">
+            <i class="fas fa-arrow-left" aria-hidden="true"></i>
+        </a>
+    </div>
+
+    <check if="{{ empty(@logs) }}">
+        <true>
+            <p class="empty-state">Aucune activité enregistrée pour ce projet.</p>
+        </true>
+        <false>
+            <table class="data-table activity-log-table">
+                <thead>
+                    <tr>
+                        <th>Date</th>
+                        <th>Utilisateur</th>
+                        <th>Action</th>
+                        <th>Type</th>
+                        <th>Élément</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <repeat group="{{ @logs }}" value="{{ @log }}">
+                        <tr class="activity-log-row activity-log-row--{{ @log.action }}">
+                            <td class="activity-log-date">{{ date('d/m/Y H:i', strtotime(@log.created_at)) }}</td>
+                            <td class="activity-log-user">{{ @log.username | esc }}</td>
+                            <td class="activity-log-action">
+                                <span class="activity-badge activity-badge--{{ @log.action }}">
+                                    <check if="{{ @log.action == 'create' }}"><true>Création</true></check>
+                                    <check if="{{ @log.action == 'update' }}"><true>Modification</true></check>
+                                    <check if="{{ @log.action == 'delete' }}"><true>Suppression</true></check>
+                                </span>
+                            </td>
+                            <td class="activity-log-type">
+                                <check if="{{ @log.entity_type == 'chapter' }}"><true>Chapitre</true></check>
+                                <check if="{{ @log.entity_type == 'act' }}"><true>Acte</true></check>
+                                <check if="{{ @log.entity_type == 'note' }}"><true>Note</true></check>
+                                <check if="{{ @log.entity_type == 'character' }}"><true>Personnage</true></check>
+                                <check if="{{ @log.entity_type == 'element' }}"><true>Élément</true></check>
+                                <check if="{{ @log.entity_type == 'glossary' }}"><true>Lexique</true></check>
+                                <check if="{{ @log.entity_type == 'section' }}"><true>Section</true></check>
+                            </td>
+                            <td class="activity-log-label">{{ @log.entity_label | esc }}</td>
+                        </tr>
+                    </repeat>
+                </tbody>
+            </table>
+        </false>
+    </check>
+</div>

@@ -70,6 +70,7 @@ class ChapterController extends Controller
 
             $cid = $chapterModel->create($pid, $title, $actId, $parentId);
             if ($cid) {
+                $this->logActivity($pid, 'create', 'chapter', $cid, $title);
                 $this->f3->set('SESSION.success', 'Chapitre créé avec succès.');
                 $this->f3->reroute('/chapter/' . $cid);
             } else {
@@ -268,6 +269,7 @@ class ChapterController extends Controller
         $chapterModel->word_count = $wordCount;
 
         $chapterModel->save();
+        $this->logActivity($chapterModel->project_id, 'update', 'chapter', $cid, $title);
 
         // Comment already sanitized above and saved via ORM
         // This direct SQL update appears redundant but kept for compatibility
@@ -449,8 +451,10 @@ class ChapterController extends Controller
             return;
         }
 
-        $pid = $chapterModel->project_id;
+        $pid   = $chapterModel->project_id;
+        $label = $chapterModel->title;
         $chapterModel->erase();
+        $this->logActivity($pid, 'delete', 'chapter', $cid, $label);
         $this->f3->reroute('/project/' . $pid);
     }
 

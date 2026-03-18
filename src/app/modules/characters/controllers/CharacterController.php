@@ -106,6 +106,7 @@ class CharacterController extends Controller
             $charModel->save();
         }
 
+        $this->logActivity($pid, 'create', 'character', (int) $charModel->id, $name);
         $this->f3->reroute('/project/' . $pid . '/characters');
     }
 
@@ -243,6 +244,7 @@ class CharacterController extends Controller
         }
 
         $charModel->save();
+        $this->logActivity($charModel->project_id, 'update', 'character', $id, $name);
 
         $this->f3->reroute('/project/' . $charModel->project_id . '/characters');
     }
@@ -255,8 +257,10 @@ class CharacterController extends Controller
         if (!$charModel->dry()) {
             $projectModel = new Project();
             if ($projectModel->count(['id=? AND user_id=?', $charModel->project_id, $this->currentUser()['id']])) {
-                $pid = $charModel->project_id;
+                $pid   = $charModel->project_id;
+                $label = $charModel->name;
                 $charModel->erase();
+                $this->logActivity($pid, 'delete', 'character', $id, $label);
                 $this->f3->reroute('/project/' . $pid . '/characters');
                 return;
             }

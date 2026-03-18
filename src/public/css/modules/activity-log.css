@@ -1,0 +1,37 @@
+/* Activity Log */
+.activity-log-table {
+    width: 100%;
+    font-size: 0.9rem;
+}
+.activity-log-date {
+    white-space: nowrap;
+    color: var(--text-muted, #666);
+    width: 140px;
+}
+.activity-log-user {
+    font-weight: 500;
+    width: 140px;
+}
+.activity-badge {
+    display: inline-block;
+    font-size: 0.75rem;
+    padding: 2px 8px;
+    border-radius: 10px;
+    font-weight: 600;
+}
+.activity-badge--create {
+    background: #e8f5e9;
+    color: #2e7d32;
+}
+.activity-badge--update {
+    background: #e3f2fd;
+    color: #1565c0;
+}
+.activity-badge--delete {
+    background: #fce4ec;
+    color: #b71c1c;
+}
+.activity-log-row--delete .activity-log-label {
+    text-decoration: line-through;
+    color: var(--text-muted, #888);
+}

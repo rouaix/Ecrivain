@@ -82,9 +82,11 @@ class NoteController extends Controller
                     $noteModel->content = $content;
                     $noteModel->comment = $comment;
                     $noteModel->save();
+                    $this->logActivity($pid, 'update', 'note', $noteId, $title);
                 }
             } else {
-                $noteModel->create($pid, $title, $content, $comment);
+                $nid = $noteModel->create($pid, $title, $content, $comment);
+                $this->logActivity($pid, 'create', 'note', $nid ?: null, $title);
             }
 
             $this->f3->reroute('/project/' . $pid);
@@ -115,8 +117,10 @@ class NoteController extends Controller
             // Verify project ownership
             $projectModel = new Project();
             if ($projectModel->count(['id=? AND user_id=?', $noteModel->project_id, $this->currentUser()['id']])) {
-                $pid = $noteModel->project_id;
+                $pid   = $noteModel->project_id;
+                $label = $noteModel->title;
                 $noteModel->erase();
+                $this->logActivity($pid, 'delete', 'note', $nid, $label);
                 $this->f3->reroute('/project/' . $pid);
                 return;
             }

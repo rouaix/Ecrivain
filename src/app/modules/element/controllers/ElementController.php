@@ -91,6 +91,7 @@ class ElementController extends Controller
             $elementModel = new Element();
             $eid = $elementModel->create($pid, $templateElementId, $title, $parentId);
             if ($eid) {
+                $this->logActivity($pid, 'create', 'element', $eid, $title);
                 $this->f3->set('SESSION.success', 'Élément créé avec succès.');
                 $this->f3->reroute('/element/' . $eid);
             } else {
@@ -259,6 +260,7 @@ class ElementController extends Controller
 
         $elementModel->parent_id = $parentId;
         $elementModel->save();
+        $this->logActivity($elementModel->project_id, 'update', 'element', $eid, $title);
 
         if ($this->f3->get('AJAX')) {
             echo json_encode(['status' => 'ok']);
@@ -287,8 +289,10 @@ class ElementController extends Controller
             return;
         }
 
-        $pid = $elementModel->project_id;
+        $pid   = $elementModel->project_id;
+        $label = $elementModel->title;
         $elementModel->erase();
+        $this->logActivity($pid, 'delete', 'element', $eid, $label);
         $this->f3->reroute('/project/' . $pid);
     }
 }

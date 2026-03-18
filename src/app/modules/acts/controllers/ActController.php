@@ -74,6 +74,7 @@ class ActController extends Controller
             $actModel->resume = $resume;
             $actModel->comment = $comment;
             if ($actModel->save()) {
+                $this->logActivity($pid, 'create', 'act', (int) $actModel->id, $title);
                 $this->f3->reroute('/project/' . $pid);
                 return;
             } else {
@@ -168,6 +169,7 @@ class ActController extends Controller
             $actModel->resume = $resume;
             $actModel->comment = $comment;
             $actModel->save();
+            $this->logActivity($actModel->project_id, 'update', 'act', $aid, $title);
             $this->f3->reroute('/project/' . $actModel->project_id);
             return;
         }
@@ -197,8 +199,10 @@ class ActController extends Controller
         if (!$actModel->dry()) {
             $projectModel = new Project();
             if ($projectModel->count(['id=? AND user_id=?', $actModel->project_id, $this->currentUser()['id']])) {
-                $pid = $actModel->project_id;
+                $pid   = $actModel->project_id;
+                $label = $actModel->title;
                 $actModel->erase();
+                $this->logActivity($pid, 'delete', 'act', $aid, $label);
                 $this->f3->reroute('/project/' . $pid);
                 return;
             }

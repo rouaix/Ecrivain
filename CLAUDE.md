@@ -62,7 +62,7 @@ All routes and autoload paths are declared in `src/app/config.ini`. F3 scans the
 
 ### Database Migrations
 
-Migrations in `src/data/migrations/` run automatically on every app load (only unexecuted ones). Naming format: `NNN_description.sql` (alphabetical = execution order). Current highest: `023_`.
+Migrations in `src/data/migrations/` run automatically on every app load (only unexecuted ones). Naming format: `NNN_description.sql` (alphabetical = execution order). Current highest: `025_`.
 
 Migration rules:
 - Always use `CREATE TABLE IF NOT EXISTS`
@@ -178,7 +178,7 @@ Subdirectory layout under `src/public/css/`:
 
 After modifying any JS or CSS file, increment the `?v=` parameter in `src/app/modules/project/views/layouts/main.html`:
 ```html
-<link rel="stylesheet" href="{{ @base }}/public/style.css?v=36">
+<link rel="stylesheet" href="{{ @base }}/public/style.css?v=39">
 <script src="{{ @base }}/public/js/quill-adapter.js?v=26"></script>
 ```
 

@@ -603,6 +603,35 @@ abstract class Controller
     }
 
     /**
+     * Write one entry to project_activity_logs (non-blocking).
+     *
+     * @param int    $projectId
+     * @param string $action      'create' | 'update' | 'delete'
+     * @param string $entityType  'chapter' | 'act' | 'note' | 'character' | 'element' | 'glossary' | 'section'
+     * @param int|null $entityId
+     * @param string $entityLabel Human-readable name (title, …)
+     */
+    protected function logActivity(
+        int $projectId,
+        string $action,
+        string $entityType,
+        ?int $entityId = null,
+        string $entityLabel = ''
+    ): void {
+        $user = $this->currentUser();
+        if (!$user) return;
+        try {
+            $this->db->exec(
+                'INSERT INTO project_activity_logs (project_id, user_id, action, entity_type, entity_id, entity_label)
+                 VALUES (?, ?, ?, ?, ?, ?)',
+                [$projectId, $user['id'], $action, $entityType, $entityId, mb_substr($entityLabel, 0, 255)]
+            );
+        } catch (\Exception $e) {
+            // Table may not exist yet on first run — silently ignore
+        }
+    }
+
+    /**
      * Sliding-window rate limiter stored in the user session.
      *
      * @param string $key         Unique bucket name (e.g. 'ai_gen')

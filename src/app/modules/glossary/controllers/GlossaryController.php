@@ -88,6 +88,7 @@ class GlossaryController extends Controller
             $model->category   = $category;
             $model->definition = $definition;
             $model->save();
+            $this->logActivity($pid, 'create', 'glossary', (int) $model->id, $term);
             $this->f3->reroute('/project/' . $pid . '/glossary');
         }
 
@@ -151,6 +152,7 @@ class GlossaryController extends Controller
             $model->category   = $category;
             $model->definition = $definition;
             $model->save();
+            $this->logActivity($pid, 'update', 'glossary', $eid, $term);
             $this->f3->reroute('/project/' . $pid . '/glossary');
         }
 
@@ -173,7 +175,11 @@ class GlossaryController extends Controller
 
         $model = new GlossaryEntry();
         $model->load(['id=? AND project_id=?', $eid, $pid]);
-        if (!$model->dry()) $model->erase();
+        if (!$model->dry()) {
+            $label = $model->term;
+            $model->erase();
+            $this->logActivity($pid, 'delete', 'glossary', $eid, $label);
+        }
 
         $this->f3->reroute('/project/' . $pid . '/glossary');
     }
