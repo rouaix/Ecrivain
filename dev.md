@@ -45,5 +45,4 @@
 ## Technique / API
 
 - **Webhook sortant** — Notifier une URL externe à chaque modification d'un chapitre (Zapier, n8n…).
-- **Import depuis Markdown/Word** — Coller ou uploader un fichier `.md` ou `.docx` pour initialiser un chapitre.
 - **API publique complète** — Endpoints manquants : relations, stats, tags, collaborateurs.
