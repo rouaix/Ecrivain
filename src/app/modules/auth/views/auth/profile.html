@@ -94,11 +94,7 @@
 
                 <label for="bio">Biographie</label>
 
-                <div id="bio-editor" class="editor-surface editor-height-300">
-
-                    {{ @user.bio | raw }}
-
-                </div>
+                <div id="bio-editor" class="editor-surface editor-height-300"></div>
 
                 <input type="hidden" name="bio" value="{{ @user.bio | esc }}">
 
@@ -223,23 +219,39 @@
         <div class="mcp-explainer">
 
             <p>
-                Le <strong>Model Context Protocol (MCP)</strong> permet à une IA comme
-                <strong>Claude Desktop</strong> d'interagir directement avec vos projets :
-                lire vos chapitres, créer du contenu, rechercher dans votre texte&hellip;
-                depuis une conversation IA, sans passer par le navigateur.
+                Le <strong>Model Context Protocol (MCP)</strong> permet à une IA d'interagir
+                directement avec vos projets : lire vos chapitres, créer du contenu, rechercher
+                dans votre texte&hellip; depuis n'importe quel client IA compatible.
             </p>
+
+            <div class="mcp-clients-list">
+                <span class="mcp-client-tag"><i class="fas fa-robot" aria-hidden="true"></i> Claude Desktop (via
+                    npx)</span>
+                <span class="mcp-client-tag"><i class="fas fa-robot" aria-hidden="true"></i> ChatGPT</span>
+                <span class="mcp-client-tag"><i class="fas fa-code" aria-hidden="true"></i> Cursor</span>
+                <span class="mcp-client-tag"><i class="fas fa-code" aria-hidden="true"></i> VS Code</span>
+                <span class="mcp-client-tag"><i class="fas fa-wind" aria-hidden="true"></i> Windsurf</span>
+                <span class="mcp-client-tag"><i class="fas fa-code" aria-hidden="true"></i> Continue.dev</span>
+                <span class="mcp-client-tag"><i class="fas fa-code" aria-hidden="true"></i> Zed</span>
+                <span class="mcp-client-tag"><i class="fas fa-code" aria-hidden="true"></i> JetBrains</span>
+            </div>
 
             <div class="mcp-steps">
 
                 <div class="mcp-step">
                     <span class="mcp-step-num">1</span>
-                    <span>Cliquez sur <strong>Générer un token</strong> ci-dessous.</span>
+                    <span>Générez un token ci-dessous.</span>
                 </div>
 
                 <div class="mcp-step">
                     <span class="mcp-step-num">2</span>
-                    <span>Ajoutez un connecteur dans <strong>Claude
-                            Desktop</strong> avec cette url : <code>https://www.rouaix.com/mcp</code>.</span>
+                    <span>Cliquez <strong>Voir config</strong>, choisissez votre client et copiez la
+                        configuration.</span>
+                </div>
+
+                <div class="mcp-step">
+                    <span class="mcp-step-num">3</span>
+                    <span>Collez-la dans le fichier de configuration de votre IA et redémarrez-la.</span>
                 </div>
 
             </div>
@@ -256,21 +268,6 @@
 
         <div id="mcp-tokens-list">
             <p class="mcp-loading"><i class="fas fa-spinner fa-spin" aria-hidden="true"></i> Chargement…</p>
-        </div>
-
-        <div id="mcp-new-token" class="mcp-new-token" class="is-hidden" >
-
-            <label>Configuration Claude Desktop — copiez-la dans <code>claude_desktop_config.json</code> :</label>
-
-            <pre id="mcp-config-block" class="mcp-config-block"></pre>
-
-            <div class="mt-10">
-                <button type="button" class="button secondary small" id="mcp-copy-btn"
-                    title="Copier la configuration MCP" title="Copier la configuration MCP">
-                    <i class="fas fa-copy" aria-hidden="true"></i> Copier la configuration
-                </button>
-            </div>
-
         </div>
 
         <div class="mt-20">
@@ -445,15 +442,68 @@
                 });
         }
 
-        function buildConfig(jwt) {
-            return JSON.stringify({
-                mcpServers: {
-                    ecrivain: {
-                        command: 'cmd',
-                        args: ['/c', 'npx', '-y', 'mcp-remote', MCP_URL, '--header', 'Authorization: Bearer ' + jwt]
+        const CLIENT_CONFIGS = {
+            'claude-desktop': {
+                label: 'Claude Desktop (mcp-remote)',
+                lang: 'json',
+                build: jwt => JSON.stringify({
+                    mcpServers: { ecrivain: { command: 'npx', args: ['mcp-remote', MCP_URL, '--header', 'Authorization: Bearer ' + jwt] } }
+                }, null, 2)
+            },
+            'claude-http': {
+                label: 'Claude Code · Cursor · Cline (HTTP)',
+                lang: 'json',
+                build: jwt => JSON.stringify({
+                    mcpServers: { ecrivain: { type: 'http', url: MCP_URL, headers: { Authorization: 'Bearer ' + jwt } } }
+                }, null, 2)
+            },
+            'vscode': {
+                label: 'VS Code + GitHub Copilot (.vscode/mcp.json)',
+                lang: 'json',
+                build: jwt => JSON.stringify({
+                    servers: { ecrivain: { url: MCP_URL, headers: { Authorization: 'Bearer ' + jwt } } }
+                }, null, 2)
+            },
+            'windsurf': {
+                label: 'Windsurf (~/.codeium/windsurf/mcp_config.json)',
+                lang: 'json',
+                build: jwt => JSON.stringify({
+                    mcpServers: { ecrivain: { serverUrl: MCP_URL, headers: { Authorization: 'Bearer ' + jwt } } }
+                }, null, 2)
+            },
+            'continue': {
+                label: 'Continue.dev (.continue/mcpServers/ecrivain.yaml)',
+                lang: 'yaml',
+                build: jwt =>
+                    `name: ecrivain
+version: 1.0.0
+schema: v1
+mcpServers:
+  - name: ecrivain
+    transport:
+      type: streamableHttp
+      url: ${MCP_URL}
+      headers:
+        Authorization: "Bearer ${jwt}"`
+            },
+            'zed': {
+                label: 'Zed · JetBrains · Roo Code (stdio)',
+                lang: 'json',
+                build: jwt => JSON.stringify({
+                    mcpServers: {
+                        ecrivain: {
+                            command: 'php',
+                            args: ['CHEMIN_VERS/src/app/modules/mcp/server.php'],
+                            env: { API_URL: MCP_URL.replace('/mcp', ''), API_TOKEN: jwt }
+                        }
                     }
-                }
-            }, null, 2);
+                }, null, 2)
+            }
+        };
+
+        function buildConfig(jwt, clientKey) {
+            const c = CLIENT_CONFIGS[clientKey] || CLIENT_CONFIGS['claude-desktop'];
+            return c.build(jwt);
         }
 
         function renderTokens(tokens) {
@@ -462,6 +512,11 @@
                 el.innerHTML = '<p class="text-muted text-sm">Aucun token actif.</p>';
                 return;
             }
+
+            const clientOptions = Object.entries(CLIENT_CONFIGS)
+                .map(([k, c]) => `<option value="${k}">${c.label}</option>`)
+                .join('');
+
             el.innerHTML = tokens.map(t => `
             <div class="mcp-token-row">
                 <div class="mcp-token-meta">
@@ -470,7 +525,7 @@
                     <code class="mcp-token-id">${t.token_id.substring(0, 8)}…</code>
                 </div>
                 <div class="mcp-token-actions">
-                    ${t.token ? `<button class="button secondary small mcp-showconfig-btn cacher" data-token="${t.token}">
+                    ${t.token ? `<button class="button secondary small mcp-showconfig-btn" data-token="${t.token}">
                         <i class="fas fa-eye" aria-hidden="true"></i> Voir config
                     </button>` : ''}
                     <button class="button danger small mcp-revoke-btn"
@@ -479,7 +534,13 @@
                     </button>
                 </div>
             </div>
-            <div class="mcp-inline-config" id="config-${t.token_id}" class="is-hidden" >
+            <div class="mcp-inline-config is-hidden" id="config-${t.token_id}">
+                <div class="mcp-client-select">
+                    <label for="client-sel-${t.token_id}">Client&nbsp;:</label>
+                    <select id="client-sel-${t.token_id}" class="mcp-client-selector">
+                        ${clientOptions}
+                    </select>
+                </div>
                 <pre class="mcp-config-block"></pre>
                 <button type="button" class="button secondary small mcp-inline-copy-btn">
                     <i class="fas fa-copy" aria-hidden="true"></i> Copier
@@ -492,8 +553,14 @@
                     const row = this.closest('.mcp-token-row');
                     const configEl = row.nextElementSibling;
                     const pre = configEl.querySelector('pre');
-                    if (configEl.style.display === 'none') {
-                        pre.textContent = buildConfig(this.dataset.token);
+                    const selector = configEl.querySelector('.mcp-client-selector');
+                    const jwt = this.dataset.token;
+
+                    if (configEl.classList.contains('is-hidden')) {
+                        pre.textContent = buildConfig(jwt, selector.value);
+                        selector.addEventListener('change', function () {
+                            pre.textContent = buildConfig(jwt, this.value);
+                        });
                         configEl.classList.remove('is-hidden');
                         row.style.borderRadius = '8px 8px 0 0';
                         this.innerHTML = '<i class="fas fa-eye-slash" aria-hidden="true"></i> Masquer';
@@ -534,10 +601,7 @@
                 },
             })
                 .then(r => r.json())
-                .then(data => {
-                    document.getElementById('mcp-config-block').textContent =
-                        buildConfig(data.token);
-                    document.getElementById('mcp-new-token').style.display = 'block';
+                .then(() => {
                     this.innerHTML = '<i class="fas fa-key" aria-hidden="true"></i> Générer un token';
                     this.disabled = false;
                     loadTokens();
@@ -547,16 +611,6 @@
                     this.innerHTML = '<i class="fas fa-key" aria-hidden="true"></i> Générer un token';
                     this.disabled = false;
                 });
-        });
-
-        // ── Copier la configuration ──────────────────────────────────────────────
-
-        document.getElementById('mcp-copy-btn').addEventListener('click', function () {
-            const text = document.getElementById('mcp-config-block').textContent;
-            navigator.clipboard.writeText(text).then(() => {
-                this.innerHTML = '<i class="fas fa-check" aria-hidden="true"></i> Copié !';
-                setTimeout(() => { this.innerHTML = '<i class="fas fa-copy" aria-hidden="true"></i> Copier la configuration'; }, 2000);
-            });
         });
 
         // ── Révoquer un token ───────────────────────────────────────────────────
@@ -622,8 +676,6 @@
 
         }
 
-        // Initialize Quill via QuillTools
-
         QuillTools.init('#bio-editor', {
 
             inputSelector: 'input[name="bio"]',
@@ -637,6 +689,32 @@
             contextType: 'profile'
 
         });
+
+        // Charger le contenu bio après l'init Quill (même pattern que l'éditeur de chapitre).
+        // decodeHtmlDeep gère les entités potentiellement double-encodées.
+        (function () {
+            function decodeHtml(html) {
+                var txt = document.createElement('textarea');
+                txt.innerHTML = html;
+                return txt.value;
+            }
+            function decodeHtmlDeep(html, depth) {
+                var current = html;
+                for (var i = 0; i < depth; i++) {
+                    var decoded = decodeHtml(current);
+                    if (decoded === current) break;
+                    current = decoded;
+                }
+                return current;
+            }
+            var bioInput = document.querySelector('input[name="bio"]');
+            if (bioInput && bioInput.value && QuillTools.quill) {
+                var decoded = decodeHtmlDeep(bioInput.value, 2);
+                if (decoded) {
+                    QuillTools.quill.clipboard.dangerouslyPasteHTML(decoded);
+                }
+            }
+        }());
 
     });
 

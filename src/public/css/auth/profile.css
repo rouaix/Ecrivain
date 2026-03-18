@@ -330,3 +330,46 @@
     background: var(--surface);
     color: var(--text-primary);
 }
+
+/* Badges clients compatibles MCP */
+.mcp-clients-list {
+    display: flex;
+    flex-wrap: wrap;
+    gap: .4rem;
+    margin: .75rem 0 1rem;
+}
+
+.mcp-client-tag {
+    display: inline-flex;
+    align-items: center;
+    gap: .3rem;
+    font-size: .78rem;
+    font-weight: 600;
+    padding: .25rem .6rem;
+    border-radius: 20px;
+    background: var(--primary-light, rgba(99, 102, 241, 0.1));
+    color: var(--primary, #6366f1);
+    border: 1px solid var(--primary-border, rgba(99, 102, 241, 0.25));
+}
+
+/* Sélecteur de client dans le bloc de config inline */
+.mcp-client-select {
+    display: flex;
+    align-items: center;
+    gap: .6rem;
+    margin-bottom: .5rem;
+    font-size: .85rem;
+    font-weight: 600;
+    color: var(--text-secondary);
+}
+
+.mcp-client-selector {
+    flex: 1;
+    padding: .35rem .6rem;
+    border: 1px solid var(--input-border);
+    border-radius: 6px;
+    background: var(--card-bg);
+    color: var(--text-main);
+    font-size: .85rem;
+    cursor: pointer;
+}

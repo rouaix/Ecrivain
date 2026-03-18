@@ -198,25 +198,39 @@ class OAuthController extends Controller
         $store = $this->pruneOauthStore($store);
 
         $clientId = 'ecrivain_' . bin2hex(random_bytes(12));
-        $clientSecret = bin2hex(random_bytes(24));
+        // Default to 'none' (public client with PKCE) — most MCP clients (ChatGPT, Claude…)
+        // use PKCE and do not send a client_secret. Defaulting to 'client_secret_post' would
+        // break the token exchange for those clients.
+        $authMethod = (string) ($payload['token_endpoint_auth_method'] ?? 'none');
+        $clientSecret = null;
+        $clientSecretHash = null;
+        if ($authMethod !== 'none') {
+            $clientSecret = bin2hex(random_bytes(24));
+            $clientSecretHash = password_hash($clientSecret, PASSWORD_DEFAULT);
+        }
 
         $store['clients'][$clientId] = [
             'client_name' => (string) ($payload['client_name'] ?? 'MCP client'),
             'redirect_uris' => array_values($redirectUris),
-            'token_endpoint_auth_method' => (string) ($payload['token_endpoint_auth_method'] ?? 'client_secret_post'),
-            'client_secret' => password_hash($clientSecret, PASSWORD_DEFAULT),
+            'token_endpoint_auth_method' => $authMethod,
+            'client_secret' => $clientSecretHash,
             'created_at' => time(),
         ];
         $this->saveOauthStore($store);
 
-        $this->json([
+        $this->logOauth('info', "Client enregistré : $clientId method=$authMethod uris=" . implode(',', $redirectUris));
+
+        $response = [
             'client_id' => $clientId,
             'client_id_issued_at' => time(),
-            'client_secret' => $clientSecret,
             'client_secret_expires_at' => 0,
             'redirect_uris' => array_values($redirectUris),
-            'token_endpoint_auth_method' => (string) ($payload['token_endpoint_auth_method'] ?? 'client_secret_post'),
-        ], 201);
+            'token_endpoint_auth_method' => $authMethod,
+        ];
+        if ($clientSecret !== null) {
+            $response['client_secret'] = $clientSecret;
+        }
+        $this->json($response, 201);
     }
 
     private function exchangeAuthorizationCode(): void
@@ -261,11 +275,10 @@ class OAuthController extends Controller
             }
         }
 
-        // Vérification client_secret supplémentaire pour les clients enregistrés avec secret (même avec PKCE)
-        if ($usedPkce && !$this->isClientSecretValid($store, $clientId, $clientSecret)) {
-            $this->oauthError('invalid_client', 'Client non autorisé.', 401);
-            return;
-        }
+        // Note : si PKCE est vérifié, le client_secret supplémentaire n'est PAS requis.
+        // Le RFC 7636 garantit la possession du code via le code_verifier — exiger aussi
+        // le client_secret bloquerait les clients publics (ChatGPT, Claude…) qui utilisent PKCE
+        // sans secret. Le check sans PKCE (ci-dessus) est suffisant pour les clients confidentiels.
 
         $userId = (int) ($entry['user_id'] ?? 0);
         if ($userId <= 0) {
@@ -276,6 +289,7 @@ class OAuthController extends Controller
         unset($store['codes'][$code]);
 
         $scope = (string) ($entry['scope'] ?? 'mcp');
+        $this->logOauth('info', "Token émis pour user=$userId client=$clientId scope=$scope pkce=" . ($usedPkce ? 'yes' : 'no'));
         $accessToken = $this->issueLegacyCompatibleToken($userId, self::ACCESS_TOKEN_TTL_SECONDS);
         $refreshToken = bin2hex(random_bytes(32));
 
@@ -425,6 +439,7 @@ class OAuthController extends Controller
 
         $host = strtolower((string) ($parts['host'] ?? ''));
         if ($host === '') {
+            $this->logOauth('warn', "redirect_uri refusée (host vide) : $redirectUri");
             return false;
         }
 
@@ -436,6 +451,7 @@ class OAuthController extends Controller
             }
         }
 
+        $this->logOauth('warn', "redirect_uri refusée — host=$host non dans [" . implode(',', $allowedHosts) . "] uri=$redirectUri");
         return false;
     }
 

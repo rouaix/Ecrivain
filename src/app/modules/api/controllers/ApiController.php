@@ -201,6 +201,23 @@ class ApiController extends ApiBaseController
         if (!$ch) $this->jsonError('Chapitre introuvable.', 404, 'NOT_FOUND');
         $ch = $ch[0];
         if (!$this->hasProjectAccess((int)$ch['project_id'])) $this->jsonError('Accès refusé.', 403, 'FORBIDDEN');
+        $subChapters = $this->db->exec(
+            'SELECT id, title, content, resume, word_count, order_index, updated_at FROM chapters WHERE parent_id=? ORDER BY order_index ASC, id ASC',
+            [(int)$ch['id']]
+        );
+        $subs = array_map(function ($s) {
+            return [
+                'id'           => (int)$s['id'],
+                'title'        => $s['title'],
+                'content_html' => $s['content'] ?? '',
+                'content_text' => $this->htmlToText($s['content'] ?? ''),
+                'resume'       => $s['resume'] ?? '',
+                'word_count'   => (int)$s['word_count'],
+                'order_index'  => (int)$s['order_index'],
+                'updated_at'   => $s['updated_at'],
+            ];
+        }, $subChapters ?: []);
+
         $this->jsonOut([
             'id'           => (int)$ch['id'],
             'project_id'   => (int)$ch['project_id'],
@@ -215,6 +232,7 @@ class ApiController extends ApiBaseController
             'order_index'  => (int)$ch['order_index'],
             'created_at'   => $ch['created_at'],
             'updated_at'   => $ch['updated_at'],
+            'sub_chapters' => $subs,
         ]);
     }
 
@@ -1005,9 +1023,20 @@ class ApiController extends ApiBaseController
         if (!$rows) return null;
         $e = $rows[0];
         $cfg = json_decode($e['config_json'] ?? '{}', true);
-        $subElements = $this->db->exec(
-            'SELECT id, title, order_index FROM elements WHERE parent_id = ? ORDER BY order_index ASC', [$id]
+        $subRows = $this->db->exec(
+            'SELECT id, title, content, resume, order_index, updated_at FROM elements WHERE parent_id = ? ORDER BY order_index ASC', [$id]
         );
+        $subElements = array_map(function ($s) {
+            return [
+                'id'           => (int)$s['id'],
+                'title'        => $s['title'],
+                'content_html' => $s['content'] ?? '',
+                'content_text' => $this->htmlToText($s['content'] ?? ''),
+                'resume'       => $s['resume'] ?? '',
+                'order_index'  => (int)$s['order_index'],
+                'updated_at'   => $s['updated_at'],
+            ];
+        }, $subRows ?: []);
         return [
             'id'                  => (int)$e['id'],
             'project_id'          => (int)$e['project_id'],

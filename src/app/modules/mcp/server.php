@@ -256,6 +256,13 @@ function mdChapter(array $ch): string
     if (!empty($ch['resume']))
         $out .= "\n## Résumé\n{$ch['resume']}\n";
     $out .= "\n## Contenu\n" . ($ch['content_text'] ?: '_Contenu vide._') . "\n";
+    foreach ($ch['sub_chapters'] ?? [] as $sub) {
+        $out .= "\n## {$sub['title']} *(id: {$sub['id']})*\n";
+        $out .= "**Mots** : {$sub['word_count']} | **Mis à jour** : " . fmtDate($sub['updated_at']) . "\n";
+        if (!empty($sub['resume']))
+            $out .= "\n### Résumé\n{$sub['resume']}\n";
+        $out .= "\n### Contenu\n" . ($sub['content_text'] ?: '_Contenu vide._') . "\n";
+    }
     return $out;
 }
 
@@ -321,8 +328,10 @@ function mdCharacters(array $data): string
     $out = "# Personnages (" . count($characters) . ")\n\n";
     foreach ($characters as $c) {
         $out .= "## {$c['name']} *(id: {$c['id']})*\n";
-        if (!empty($c['description']))
-            $out .= substr($c['description'], 0, 100) . (strlen($c['description']) > 100 ? '…' : '') . "\n";
+        if (!empty($c['description'])) {
+            $text = strip_tags($c['description']);
+            $out .= substr($text, 0, 120) . (strlen($text) > 120 ? '…' : '') . "\n";
+        }
         $out .= "\n";
     }
     return $out;
@@ -331,10 +340,14 @@ function mdCharacters(array $data): string
 function mdCharacter(array $c): string
 {
     $out = "# {$c['name']} *(id: {$c['id']})*\n";
-    if (!empty($c['description']))
-        $out .= "\n## Description\n{$c['description']}\n";
-    if (!empty($c['comment']))
-        $out .= "\n## Notes\n{$c['comment']}\n";
+    if (!empty($c['description'])) {
+        $desc = strip_tags($c['description']);
+        $out .= "\n## Description\n{$desc}\n";
+    }
+    if (!empty($c['comment'])) {
+        $note = strip_tags($c['comment']);
+        $out .= "\n## Notes\n{$note}\n";
+    }
     return $out;
 }
 
@@ -369,10 +382,11 @@ function mdElement(array $e): string
     if (!empty($e['resume']))
         $out .= "\n**Résumé** : {$e['resume']}\n";
     $out .= "\n## Contenu\n" . ($e['content_text'] ?: '_Contenu vide._') . "\n";
-    if (!empty($e['sub_elements'])) {
-        $out .= "\n## Sous-éléments\n\n";
-        foreach ($e['sub_elements'] as $s)
-            $out .= "- **{$s['title']}** *(id: {$s['id']})*\n";
+    foreach ($e['sub_elements'] ?? [] as $s) {
+        $out .= "\n## {$s['title']} *(id: {$s['id']})*\n";
+        if (!empty($s['resume']))
+            $out .= "**Résumé** : {$s['resume']}\n";
+        $out .= "\n### Contenu\n" . ($s['content_text'] ?: '_Contenu vide._') . "\n";
     }
     return $out;
 }

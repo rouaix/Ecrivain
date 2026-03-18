@@ -90,7 +90,8 @@ class McpController extends Controller
         switch ($method) {
 
             case 'initialize':
-                echo json_encode($this->buildInitializeResult($id));
+                $requestedVersion = $params['protocolVersion'] ?? '2025-03-26';
+                echo json_encode($this->buildInitializeResult($id, $requestedVersion));
                 break;
 
             case 'notifications/initialized':
@@ -121,10 +122,14 @@ class McpController extends Controller
 
     // ── Helpers MCP ─────────────────────────────────────────────────────────
 
-    private function buildInitializeResult(mixed $id): array
+    private function buildInitializeResult(mixed $id, string $requestedVersion = '2025-03-26'): array
     {
+        // Versions supportées, de la plus récente à la plus ancienne
+        $supported = ['2025-03-26', '2024-11-05'];
+        $version   = in_array($requestedVersion, $supported, true) ? $requestedVersion : $supported[0];
+
         return ['jsonrpc' => '2.0', 'id' => $id, 'result' => [
-            'protocolVersion' => '2024-11-05',
+            'protocolVersion' => $version,
             'capabilities'    => [
                 'tools' => new \stdClass(),
             ],
@@ -241,9 +246,9 @@ class McpController extends Controller
             $this->tool('get_character',   'Fiche complète d\'un personnage.',
                 ['id' => $int], ['id']),
             $this->tool('create_character','Crée un personnage.',
-                ['project_id' => $int, 'name' => $str, 'description' => $str], ['project_id', 'name']),
+                ['project_id' => $int, 'name' => $str, 'description' => $str, 'comment' => $str], ['project_id', 'name']),
             $this->tool('update_character','Modifie un personnage.',
-                ['id' => $int, 'name' => $str, 'description' => $str], ['id']),
+                ['id' => $int, 'name' => $str, 'description' => $str, 'comment' => $str], ['id']),
             $this->tool('delete_character','Supprime un personnage.',
                 ['id' => $int], ['id']),
 
@@ -778,8 +783,8 @@ class McpController extends Controller
         $name = trim($a['name'] ?? '');
         if (!$name) return $this->fail('Nom requis.');
         $this->db->exec(
-            'INSERT INTO characters (project_id, name, description, created_at, updated_at) VALUES (?,?,?,NOW(),NOW())',
-            [$pid, $name, $a['description'] ?? '']
+            'INSERT INTO characters (project_id, name, description, comment, created_at, updated_at) VALUES (?,?,?,?,NOW(),NOW())',
+            [$pid, $name, $a['description'] ?? '', $a['comment'] ?? '']
         );
         $id = $this->db->exec('SELECT LAST_INSERT_ID() as id')[0]['id'];
         return $this->ok("Personnage **{$name}** créé (ID: $id).");
@@ -796,6 +801,7 @@ class McpController extends Controller
         $fields = []; $vals = [];
         if (isset($a['name']))        { $fields[] = 'name=?';        $vals[] = trim($a['name']); }
         if (isset($a['description'])) { $fields[] = 'description=?'; $vals[] = $a['description']; }
+        if (isset($a['comment']))     { $fields[] = 'comment=?';     $vals[] = $a['comment']; }
         if (!$fields) return $this->fail('Rien à modifier.');
         $fields[] = 'updated_at=NOW()'; $vals[] = $id;
         $this->db->exec('UPDATE characters SET ' . implode(',', $fields) . ' WHERE id=?', $vals);
@@ -989,7 +995,7 @@ class McpController extends Controller
     private function toolGetCharacter(int $uid, int $id): array
     {
         $rows = $this->db->exec(
-            'SELECT c.id, c.name, c.description, c.updated_at, p.title as pt
+            'SELECT c.id, c.name, c.description, c.comment, c.updated_at, p.title as pt
              FROM characters c JOIN projects p ON p.id=c.project_id
              WHERE c.id=? AND p.user_id=?',
             [$id, $uid]
@@ -997,8 +1003,10 @@ class McpController extends Controller
         if (!$rows) return $this->fail("Personnage $id introuvable.");
         $c    = $rows[0];
         $desc = $this->htmlToText($c['description'] ?? '');
+        $note = $this->htmlToText($c['comment'] ?? '');
         $md   = "# {$c['name']}\n_Projet : {$c['pt']} · Modifié : {$c['updated_at']}_\n\n";
-        if ($desc) $md .= $desc . "\n";
+        if ($desc) $md .= "## Description\n\n" . $desc . "\n\n";
+        if ($note) $md .= "## Notes\n\n" . $note . "\n";
         return $this->ok(trim($md));
     }
 

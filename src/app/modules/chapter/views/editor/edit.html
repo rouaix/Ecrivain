@@ -203,7 +203,7 @@
 </button>
 
 <!-- Focus mode exit button (fixed, only visible in focus mode) -->
-<button type="button" id="focusExitBtn" class="focus-exit-btn" title="Quitter le mode focus (Échap)"
+<button type="button" id="focusExitBtn" class="focus-exit-btn" style="display:none" title="Quitter le mode focus (Échap)"
     title="Quitter le mode focus">
     <i class="fas fa-compress" aria-hidden="true"></i> Quitter le focus
 </button>
@@ -513,7 +513,6 @@
     }
 
     .focus-exit-btn {
-        display: none;
         position: fixed;
         top: 18px;
         right: 20px;
@@ -533,10 +532,6 @@
 
     .focus-exit-btn:hover {
         background: rgba(60, 60, 60, .9);
-    }
-
-    body.focus-mode .focus-exit-btn {
-        display: flex;
     }
 
     /* Grammar panel */
@@ -1822,6 +1817,8 @@
             document.body.classList.add(FOCUS_CLASS);
             document.getElementById('btnFocusMode').innerHTML = '<i class="fas fa-compress" aria-hidden="true"></i>';
             document.getElementById('btnFocusMode').title = 'Quitter le mode focus (Échap)';
+            var exitBtn = document.getElementById('focusExitBtn');
+            if (exitBtn) exitBtn.style.display = 'flex';
             if (typeof QuillTools !== 'undefined' && QuillTools.quill) {
                 QuillTools.quill.focus();
             }
@@ -1831,6 +1828,8 @@
             document.body.classList.remove(FOCUS_CLASS);
             document.getElementById('btnFocusMode').innerHTML = '<i class="fas fa-expand" aria-hidden="true"></i>';
             document.getElementById('btnFocusMode').title = 'Mode focus (F11)';
+            var exitBtn = document.getElementById('focusExitBtn');
+            if (exitBtn) exitBtn.style.display = 'none';
         }
 
         function toggleFocus() {

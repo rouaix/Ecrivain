@@ -739,19 +739,15 @@ class AuthController extends Controller
 
                         $tokenValue = null;
 
-                        if ($jwtSecret) {
+                        try {
 
-                            try {
+                            $tokenValue = $this->encodeAutoLoginToken($tokenId, $userId, $iat);
 
-                                $tokenValue = $this->encodeAutoLoginToken($tokenId, $userId, $iat);
+                        } catch (Exception $e) {
 
-                            } catch (Exception $e) {
+                            // If encoding fails, keep token hidden but continue listing metadata
 
-                                // If encoding fails, keep token hidden but continue listing metadata
-
-                                $tokenValue = null;
-
-                            }
+                            $tokenValue = null;
 
                         }
 
