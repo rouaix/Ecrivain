@@ -404,6 +404,51 @@ function mdImages(array $data): string
     return $out;
 }
 
+function mdSynopsis(array $s): string
+{
+    $out = "# Synopsis du projet *(projet id: {$s['project_id']})*\n\n";
+
+    // Métadonnées
+    $meta = [];
+    if (!empty($s['genre']))            $meta[] = "**Genre** : {$s['genre']}";
+    if (!empty($s['subgenre']))         $meta[] = "**Sous-genre** : {$s['subgenre']}";
+    if (!empty($s['audience']))         $meta[] = "**Public** : {$s['audience']}";
+    if (!empty($s['tone']))             $meta[] = "**Ton** : {$s['tone']}";
+    if (!empty($s['themes']))           $meta[] = "**Thèmes** : {$s['themes']}";
+    if (!empty($s['comps']))            $meta[] = "**Comparables** : {$s['comps']}";
+    if (!empty($s['status']))           $meta[] = "**Statut** : {$s['status']}";
+    if (!empty($s['structure_method'])) $meta[] = "**Méthode** : {$s['structure_method']}";
+    if ($meta) $out .= implode(' | ', $meta) . "\n\n";
+
+    // Accroche
+    if (!empty($s['logline']))    $out .= "## Logline\n{$s['logline']}\n\n";
+    if (!empty($s['pitch_text'])) $out .= "## Pitch\n{$s['pitch_text']}\n\n";
+
+    // Beats narratifs
+    $beats = [
+        'situation'   => 'Situation initiale',
+        'trigger_evt' => 'Élément déclencheur',
+        'plot_point1' => 'Point tournant 1',
+        'development_text' => 'Développement',
+        'midpoint'    => 'Midpoint',
+        'crisis'      => 'Crise',
+        'climax_text' => 'Climax',
+        'resolution_text' => 'Résolution',
+    ];
+    $hasBeats = false;
+    foreach ($beats as $key => $label) {
+        if (!empty($s[$key])) { $hasBeats = true; break; }
+    }
+    if ($hasBeats) {
+        $out .= "## Structure narrative\n\n";
+        foreach ($beats as $key => $label) {
+            if (!empty($s[$key])) $out .= "**{$label}** : {$s[$key]}\n\n";
+        }
+    }
+
+    return $out;
+}
+
 function mdSearch(array $data): string
 {
     $q = $data['query'] ?? '';
@@ -706,6 +751,42 @@ function buildTools(): array
             'handler' => function ($a) {
                 apiDelete("/api/project/{$a['project_id']}/image/{$a['image_id']}");
                 return mdOk("Image {$a['image_id']} supprimée."); },
+        ],
+
+        // ── Synopsis ──────────────────────────────────────────────────────────
+        'get_synopsis' => [
+            'description' => "Lit le synopsis complet d'un projet (métadonnées + beats narratifs). Crée le synopsis automatiquement s'il n'existe pas encore.",
+            'inputSchema' => $req(['project_id' => $prop('integer', 'ID du projet')], ['project_id']),
+            'handler' => fn($a) => mdSynopsis(apiGet("/api/project/{$a['project_id']}/synopsis")),
+        ],
+        'update_synopsis' => [
+            'description' => "Met à jour le synopsis d'un projet. Tous les champs sont optionnels : genre, subgenre, audience, tone, themes, comps, status, structure_method, logline, pitch, situation, trigger_evt, plot_point1, development, midpoint, crisis, climax, resolution.",
+            'inputSchema' => $req([
+                'project_id'       => $prop('integer', 'ID du projet'),
+                'genre'            => $prop('string', 'Genre littéraire'),
+                'subgenre'         => $prop('string', 'Sous-genre'),
+                'audience'         => $prop('string', 'Public cible'),
+                'tone'             => $prop('string', 'Ton du récit'),
+                'themes'           => $prop('string', 'Thèmes principaux'),
+                'comps'            => $prop('string', 'Titres comparables (comp titles)'),
+                'status'           => $prop('string', 'Statut du projet'),
+                'structure_method' => $prop('string', 'Méthode narrative (ex: Save the Cat, Snowflake…)'),
+                'logline'          => $prop('string', 'Logline (1 phrase)'),
+                'pitch'            => $prop('string', 'Pitch (HTML ou texte)'),
+                'situation'        => $prop('string', 'Situation initiale'),
+                'trigger_evt'      => $prop('string', 'Élément déclencheur'),
+                'plot_point1'      => $prop('string', 'Premier point tournant'),
+                'development'      => $prop('string', 'Développement (HTML ou texte)'),
+                'midpoint'         => $prop('string', 'Midpoint'),
+                'crisis'           => $prop('string', 'Crise'),
+                'climax'           => $prop('string', 'Climax (HTML ou texte)'),
+                'resolution'       => $prop('string', 'Résolution (HTML ou texte)'),
+            ], ['project_id']),
+            'handler' => function ($a) {
+                $pid = $a['project_id'];
+                unset($a['project_id']);
+                return mdSynopsis(apiPut("/api/project/{$pid}/synopsis", $a));
+            },
         ],
 
         // ── Export ────────────────────────────────────────────────────────────

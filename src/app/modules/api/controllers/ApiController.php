@@ -1055,6 +1055,84 @@ class ApiController extends ApiBaseController
     }
 
     // ──────────────────────────────────────────────────────────────
+    // SYNOPSIS
+    // ──────────────────────────────────────────────────────────────
+
+    public function getSynopsis()
+    {
+        $pid = (int)$this->f3->get('PARAMS.pid');
+        if (!$this->hasProjectAccess($pid)) {
+            $this->jsonError('Accès refusé.', 403, 'FORBIDDEN');
+        }
+        $synopsis = $this->fetchOrCreateSynopsis($pid);
+        $this->jsonOut($synopsis);
+    }
+
+    public function updateSynopsis()
+    {
+        $pid = (int)$this->f3->get('PARAMS.pid');
+        if (!$this->isOwner($pid)) {
+            $this->jsonError('Accès refusé.', 403, 'FORBIDDEN');
+        }
+        $body = $this->getBody();
+        $allowed = [
+            'genre', 'subgenre', 'audience', 'tone', 'themes', 'comps',
+            'status', 'structure_method',
+            'logline', 'pitch', 'situation', 'trigger_evt', 'plot_point1',
+            'development', 'midpoint', 'crisis', 'climax', 'resolution',
+            'is_exported',
+        ];
+        $fields = array_intersect_key($body, array_flip($allowed));
+        if (empty($fields)) {
+            $this->jsonError('Aucun champ valide fourni.', 422, 'INVALID_INPUT');
+        }
+
+        // Auto-create if missing
+        $this->fetchOrCreateSynopsis($pid);
+
+        $synopsisModel = new Synopsis();
+        $synopsisModel->updateFields($pid, $fields);
+
+        $this->jsonOut($this->fetchOrCreateSynopsis($pid));
+    }
+
+    private function fetchOrCreateSynopsis(int $pid): array
+    {
+        $rows = $this->db->exec('SELECT * FROM synopsis WHERE project_id = ?', [$pid]);
+        if (!$rows) {
+            $this->db->exec('INSERT INTO synopsis (project_id) VALUES (?)', [$pid]);
+            $rows = $this->db->exec('SELECT * FROM synopsis WHERE project_id = ?', [$pid]);
+        }
+        $s = $rows[0];
+        $htmlFields = ['pitch', 'development', 'climax', 'resolution'];
+        $result = [
+            'id'               => (int)$s['id'],
+            'project_id'       => (int)$s['project_id'],
+            'genre'            => $s['genre'],
+            'subgenre'         => $s['subgenre'],
+            'audience'         => $s['audience'],
+            'tone'             => $s['tone'],
+            'themes'           => $s['themes'],
+            'comps'            => $s['comps'],
+            'status'           => $s['status'],
+            'structure_method' => $s['structure_method'],
+            'is_exported'      => (bool)$s['is_exported'],
+            'logline'          => $s['logline'],
+            'situation'        => $s['situation'],
+            'trigger_evt'      => $s['trigger_evt'],
+            'plot_point1'      => $s['plot_point1'],
+            'midpoint'         => $s['midpoint'],
+            'crisis'           => $s['crisis'],
+            'updated_at'       => $s['updated_at'],
+        ];
+        foreach ($htmlFields as $f) {
+            $result[$f . '_html'] = $s[$f] ?? '';
+            $result[$f . '_text'] = $this->htmlToText($s[$f] ?? '');
+        }
+        return $result;
+    }
+
+    // ──────────────────────────────────────────────────────────────
     // Utility helpers
     // ──────────────────────────────────────────────────────────────
 

@@ -263,6 +263,7 @@ class ProjectController extends ProjectBaseController
             'file'           => true,
             'has_acts'       => true,
             'scenario'       => true,
+            'synopsis'       => true,
         ];
 
         $db = $this->f3->get('DB');
@@ -291,6 +292,7 @@ class ProjectController extends ProjectBaseController
                     'file'           => false,
                     'has_acts'       => false,
                     'scenario'       => false,
+                    'synopsis'       => false,
                 ];
 
                 $customElementsByType = [];
@@ -396,6 +398,8 @@ class ProjectController extends ProjectBaseController
                         $key = 'file';
                     } elseif ($type === 'scenario') {
                         $key = 'scenario';
+                    } elseif ($type === 'synopsis') {
+                        $key = 'synopsis';
                     } else {
                         $key = $type;
                     }
@@ -412,7 +416,7 @@ class ProjectController extends ProjectBaseController
                   'section_before' => true, 'content'  => true,
                   'section_after'  => true, 'note'     => true,
                   'character'      => true, 'file'     => true,
-                  'scenario'       => true,
+                  'scenario'       => true, 'synopsis' => true,
               ];
           }
         }

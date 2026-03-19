@@ -33,7 +33,9 @@
                                 class="fas fa-paper-plane"></i> Mes demandes</a>
                     </check>
                     <check if="{{ @isOwner }}">
+                        <check if="{{ @panelConfig.synopsis }}">
                         <a class="button" href="{{ @base }}/project/{{ @project.id }}/synopsis">Synopsis</a>
+                        </check>
                         <a class="button" href="{{ @base }}/project/{{ @project.id }}/collaborateurs"
                             title="Gérer les collaborateurs" title="Gérer les collaborateurs"><i
                                 class="fas fa-users"></i> Collaborateurs</a>

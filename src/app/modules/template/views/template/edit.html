@@ -148,6 +148,7 @@
                                 <option value="file">Fichier</option>
                                 <option value="element">Element personnalise</option>
                                 <option value="scenario">Scénarios</option>
+                                <option value="synopsis">Synopsis</option>
                             </optgroup>
                         </select>
                     </div>
@@ -224,6 +225,7 @@
                                 <option value="file">Fichier</option>
                                 <option value="element">Element personnalise</option>
                                 <option value="scenario">Scénarios</option>
+                                <option value="synopsis">Synopsis</option>
                             </optgroup>
                         </select>
                     </div>
@@ -318,8 +320,9 @@
     function updateAddFormFields() {
         var val = addTypeSelect.value;
         var isSection = val === 'section';
+        var isSingleton = val === 'synopsis' || val === 'scenario';
         addSubtypeGroup.classList.toggle('tpl-hidden', !isSection);
-        addLabelPluralGroup.classList.toggle('tpl-hidden', isSection);
+        addLabelPluralGroup.classList.toggle('tpl-hidden', isSection || isSingleton);
         addPlacementGroup.style.display = isSection ? '' : 'none';
     }
 
@@ -340,9 +343,11 @@
     var editPluralGroup = document.getElementById('editPluralGroup');
 
     function updateEditModalFields() {
-        var isSection = editTypeSelect.value === 'section';
+        var val = editTypeSelect.value;
+        var isSection = val === 'section';
+        var isSingleton = val === 'synopsis' || val === 'scenario';
         editSubtypeGroup.classList.toggle('tpl-hidden', !isSection);
-        editPluralGroup.classList.toggle('tpl-hidden', isSection);
+        editPluralGroup.classList.toggle('tpl-hidden', isSection || isSingleton);
     }
 
     editTypeSelect.addEventListener('change', updateEditModalFields);

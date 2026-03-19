@@ -11,6 +11,21 @@ class SynopsisController extends Controller
     }
 
     /**
+     * Vérifie que le template actif du projet contient un élément synopsis activé.
+     */
+    private function templateHasSynopsis(int $pid): bool
+    {
+        $rows = $this->db->exec(
+            'SELECT COUNT(*) AS cnt
+               FROM template_elements te
+               JOIN projects p ON p.template_id = te.template_id
+              WHERE p.id = ? AND te.element_type = ? AND te.is_enabled = 1',
+            [$pid, 'synopsis']
+        );
+        return ($rows[0]['cnt'] ?? 0) > 0;
+    }
+
+    /**
      * GET /project/@pid/synopsis
      * Affiche le formulaire du synopsis (création auto si inexistant).
      */
@@ -19,6 +34,11 @@ class SynopsisController extends Controller
         $pid = (int) $this->f3->get('PARAMS.pid');
 
         if (!$this->hasProjectAccess($pid)) {
+            $this->f3->error(403);
+            return;
+        }
+
+        if (!$this->templateHasSynopsis($pid)) {
             $this->f3->error(403);
             return;
         }
@@ -56,6 +76,11 @@ class SynopsisController extends Controller
         $pid = (int) $this->f3->get('PARAMS.pid');
 
         if (!$this->isOwner($pid)) {
+            $this->f3->error(403);
+            return;
+        }
+
+        if (!$this->templateHasSynopsis($pid)) {
             $this->f3->error(403);
             return;
         }
@@ -112,13 +137,19 @@ class SynopsisController extends Controller
     {
         header('Content-Type: application/json');
 
-        if (!$this->isOwner((int) $this->f3->get('PARAMS.pid'))) {
+        $pid  = (int) $this->f3->get('PARAMS.pid');
+
+        if (!$this->isOwner($pid)) {
             http_response_code(403);
             echo json_encode(['error' => 'Accès refusé']);
             return;
         }
 
-        $pid  = (int) $this->f3->get('PARAMS.pid');
+        if (!$this->templateHasSynopsis($pid)) {
+            http_response_code(403);
+            echo json_encode(['error' => 'Accès refusé']);
+            return;
+        }
         $body = json_decode($this->f3->get('BODY'), true);
         $val  = isset($body['is_exported']) ? (int) $body['is_exported'] : null;
 
@@ -143,6 +174,11 @@ class SynopsisController extends Controller
         $pid = (int) $this->f3->get('PARAMS.pid');
 
         if (!$this->hasProjectAccess($pid)) {
+            $this->f3->error(403);
+            return;
+        }
+
+        if (!$this->templateHasSynopsis($pid)) {
             $this->f3->error(403);
             return;
         }
@@ -322,6 +358,10 @@ class SynopsisController extends Controller
     {
         $pid = (int) $this->f3->get('PARAMS.pid');
         if (!$this->hasProjectAccess($pid)) {
+            $this->f3->error(403);
+            return [null, null];
+        }
+        if (!$this->templateHasSynopsis($pid)) {
             $this->f3->error(403);
             return [null, null];
         }

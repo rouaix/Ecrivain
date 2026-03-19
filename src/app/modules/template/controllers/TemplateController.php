@@ -134,13 +134,15 @@ class TemplateController extends Controller
         // Load template elements and enrich with display data
         $elements = $templateModel->getElements($templateId);
         $typeLabels = [
-            'section' => 'Section',
-            'act' => 'Acte',
-            'chapter' => 'Chapitre',
-            'note' => 'Note',
-            'character' => 'Personnage',
-            'file' => 'Fichier',
-            'element' => 'Élément personnalisé'
+            'section'  => 'Section',
+            'act'      => 'Acte',
+            'chapter'  => 'Chapitre',
+            'note'     => 'Note',
+            'character'=> 'Personnage',
+            'file'     => 'Fichier',
+            'element'  => 'Élément personnalisé',
+            'scenario' => 'Scénario',
+            'synopsis' => 'Synopsis',
         ];
         foreach ($elements as &$elem) {
             $cfg = json_decode($elem['config_json'] ?? '{}', true);
@@ -296,8 +298,21 @@ class TemplateController extends Controller
             return;
         }
 
+        // Synopsis est un singleton par template
+        if ($elementType === 'synopsis') {
+            $existing = $this->db->exec(
+                'SELECT COUNT(*) AS cnt FROM template_elements WHERE template_id = ? AND element_type = ?',
+                [$templateId, 'synopsis']
+            );
+            if (($existing[0]['cnt'] ?? 0) > 0) {
+                $this->f3->set('SESSION.error', 'Ce template contient déjà un élément Synopsis.');
+                $this->f3->reroute('/template/' . $templateId . '/edit');
+                return;
+            }
+        }
+
         // Build config_json
-        if (in_array($elementType, ['section'])) {
+        if (in_array($elementType, ['section', 'synopsis', 'scenario'])) {
             $configJson = json_encode(['label' => $label], JSON_UNESCAPED_UNICODE);
         } else {
             $configJson = json_encode([
@@ -384,7 +399,7 @@ class TemplateController extends Controller
             return;
         }
 
-        if ($elementType === 'section') {
+        if (in_array($elementType, ['section', 'synopsis', 'scenario'])) {
             $configJson = json_encode(['label' => $label], JSON_UNESCAPED_UNICODE);
         } else {
             $configJson = json_encode([
