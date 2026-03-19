@@ -130,6 +130,30 @@ class ReviewController extends Controller
 
         $items = [];
 
+        // Synopsis (prepended if exported)
+        if ($db->exists('synopsis')) {
+            $synopsisModel = new Synopsis();
+            $synopsisData  = $synopsisModel->getByProject($pid);
+            if ($synopsisData && ($synopsisData['is_exported'] ?? 1)) {
+                $items[] = [
+                    'type'        => 'synopsis',
+                    'id'          => $synopsisData['id'],
+                    'title'       => 'Synopsis',
+                    'logline'     => $synopsisData['logline'] ?? '',
+                    'pitch'       => $prepare($synopsisData['pitch'] ?? ''),
+                    'situation'   => $synopsisData['situation'] ?? '',
+                    'trigger_evt' => $synopsisData['trigger_evt'] ?? '',
+                    'plot_point1' => $synopsisData['plot_point1'] ?? '',
+                    'development' => $prepare($synopsisData['development'] ?? ''),
+                    'midpoint'    => $synopsisData['midpoint'] ?? '',
+                    'crisis'      => $synopsisData['crisis'] ?? '',
+                    'climax'      => $prepare($synopsisData['climax'] ?? ''),
+                    'resolution'  => $prepare($synopsisData['resolution'] ?? ''),
+                    'content'     => '',
+                ];
+            }
+        }
+
         foreach ($templateElements as $elem) {
             if (!$elem['is_enabled']) continue;
 

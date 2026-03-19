@@ -30,12 +30,13 @@ class ChapterController extends Controller
         $actId = !empty($_GET['act_id']) ? (int) $_GET['act_id'] : null;
 
         $this->render('chapter/create.html', [
-            'title' => 'Nouveau chapitre',
-            'project' => $project,
-            'acts' => $acts,
-            'chapters' => $chapters,
-            'old' => ['parent_id' => $parentId, 'act_id' => $actId, 'title' => ''],
-            'errors' => []
+            'title'     => 'Nouveau chapitre',
+            'project'   => $project,
+            'acts'      => $acts,
+            'chapters'  => $chapters,
+            'old'       => ['parent_id' => $parentId, 'act_id' => $actId, 'title' => ''],
+            'errors'    => [],
+            'activeTab' => 'create',
         ]);
     }
 
@@ -86,12 +87,13 @@ class ChapterController extends Controller
         $chapters = $chapterModel->getTopLevelByProject($pid);
 
         $this->render('chapter/create.html', [
-            'title' => 'Nouveau chapitre',
-            'project' => $project,
-            'acts' => $acts,
-            'chapters' => $chapters,
-            'errors' => $errors,
-            'old' => ['parent_id' => $parentId, 'act_id' => $actId, 'title' => $title],
+            'title'     => 'Nouveau chapitre',
+            'project'   => $project,
+            'acts'      => $acts,
+            'chapters'  => $chapters,
+            'errors'    => $errors,
+            'old'       => ['parent_id' => $parentId, 'act_id' => $actId, 'title' => $title],
+            'activeTab' => 'create',
         ]);
     }
 
@@ -584,6 +586,269 @@ class ChapterController extends Controller
 
         $this->f3->set('SESSION.success', 'Version restaurée avec succès.');
         $this->f3->reroute('/chapter/' . $cid);
+    }
+
+    public function import()
+    {
+        $pid = (int) $this->f3->get('PARAMS.pid');
+        $projectModel = new Project();
+        if (!$projectModel->count(['id=? AND user_id=?', $pid, $this->currentUser()['id']])) {
+            $this->f3->error(404);
+            return;
+        }
+
+        $actId    = !empty($_POST['act_id'])    ? (int) $_POST['act_id']    : null;
+        $parentId = !empty($_POST['parent_id']) ? (int) $_POST['parent_id'] : null;
+        $manualTitle = trim($_POST['title'] ?? '');
+
+        $errors = [];
+        $html   = '';
+        $extractedTitle = '';
+
+        $hasFile    = isset($_FILES['import_file']) && $_FILES['import_file']['error'] === UPLOAD_ERR_OK;
+        $pastedText = trim($_POST['import_text'] ?? '');
+
+        if (!$hasFile && $pastedText === '') {
+            $errors[] = 'Veuillez fournir un fichier ou coller du texte.';
+        }
+
+        if (empty($errors)) {
+            if ($hasFile) {
+                $file = $_FILES['import_file'];
+                $ext  = strtolower(pathinfo($file['name'], PATHINFO_EXTENSION));
+                if (!in_array($ext, ['md', 'txt', 'docx', 'odt'])) {
+                    $errors[] = 'Format non supporté. Utilisez .md, .txt, .docx ou .odt.';
+                } elseif ($file['size'] > 10 * 1024 * 1024) {
+                    $errors[] = 'Fichier trop volumineux (max 10 Mo).';
+                } else {
+                    $raw = file_get_contents($file['tmp_name']);
+                    [$extractedTitle, $html] = $this->parseImportContent($raw, $ext);
+                }
+            } else {
+                $format = in_array($_POST['import_format'] ?? '', ['md', 'txt']) ? $_POST['import_format'] : 'md';
+                [$extractedTitle, $html] = $this->parseImportContent($pastedText, $format);
+            }
+        }
+
+        if (empty($errors) && trim(strip_tags($html)) === '') {
+            $errors[] = 'Le contenu importé est vide ou n\'a pas pu être lu.';
+        }
+
+        $title = $manualTitle !== '' ? $manualTitle : $extractedTitle;
+        if (empty($errors) && $title === '') {
+            $errors[] = 'Impossible de détecter un titre. Veuillez le saisir dans le champ "Titre".';
+        }
+
+        if (empty($errors)) {
+            $chapterModel = new Chapter();
+            if ($parentId && $actId === null) {
+                $parent = $chapterModel->findAndCast(['id=?', $parentId]);
+                if ($parent) {
+                    $actId = (int) $parent[0]['act_id'] ?: null;
+                }
+            }
+            $cid = $chapterModel->create($pid, $title, $actId, $parentId);
+            if ($cid) {
+                $cleanHtml = $this->cleanQuillHtml($html);
+                $wc = $this->countWords($cleanHtml);
+                $this->db->exec(
+                    'UPDATE chapters SET content=?, word_count=? WHERE id=?',
+                    [$cleanHtml, $wc, $cid]
+                );
+                $this->logActivity($pid, 'create', 'chapter', $cid, $title);
+                $this->f3->set('SESSION.success', 'Chapitre importé avec succès.');
+                $this->f3->reroute('/chapter/' . $cid);
+            } else {
+                $errors[] = 'Impossible de créer le chapitre.';
+            }
+        }
+
+        $project = $projectModel->findAndCast(['id=?', $pid])[0];
+        $actModel = new Act();
+        $acts = $actModel->getAllByProject($pid);
+        $chapterModel = new Chapter();
+        $chapters = $chapterModel->getTopLevelByProject($pid);
+
+        $this->render('chapter/create.html', [
+            'title'     => 'Nouveau chapitre',
+            'project'   => $project,
+            'acts'      => $acts,
+            'chapters'  => $chapters,
+            'errors'    => $errors,
+            'old'       => ['parent_id' => $parentId, 'act_id' => $actId, 'title' => $manualTitle],
+            'activeTab' => 'import',
+        ]);
+    }
+
+    private function parseImportContent(string $raw, string $format): array
+    {
+        $title = '';
+        $html  = '';
+
+        switch ($format) {
+            case 'md':
+                if (preg_match('/^#\s+(.+)/m', $raw, $m)) {
+                    $title = trim($m[1]);
+                    $raw   = preg_replace('/^#\s+.+\r?\n?/m', '', $raw, 1);
+                }
+                $pd = new Parsedown();
+                $pd->setSafeMode(true);
+                $html = $pd->text(trim($raw));
+                break;
+
+            case 'txt':
+                $lines = preg_split('/\r\n|\n|\r/', $raw);
+                foreach ($lines as $i => $line) {
+                    if (trim($line) !== '') {
+                        $title = trim($line);
+                        array_splice($lines, $i, 1);
+                        break;
+                    }
+                }
+                $paragraphs = preg_split('/\n{2,}/', trim(implode("\n", $lines)));
+                foreach ($paragraphs as $p) {
+                    $p = trim($p);
+                    if ($p !== '') {
+                        $html .= '<p>' . nl2br(htmlspecialchars($p, ENT_QUOTES, 'UTF-8')) . '</p>';
+                    }
+                }
+                break;
+
+            case 'docx':
+                $html = $this->parseDocx($raw, $title);
+                break;
+
+            case 'odt':
+                $html = $this->parseOdt($raw, $title);
+                break;
+        }
+
+        return [$title, $html];
+    }
+
+    private function parseDocx(string $raw, string &$title): string
+    {
+        $tmp = tempnam(sys_get_temp_dir(), 'docx_');
+        file_put_contents($tmp, $raw);
+        $zip = new ZipArchive();
+        if ($zip->open($tmp) !== true) {
+            unlink($tmp);
+            return '';
+        }
+        $xml = $zip->getFromName('word/document.xml');
+        $zip->close();
+        unlink($tmp);
+        return $xml !== false ? $this->docxXmlToHtml($xml, $title) : '';
+    }
+
+    private function docxXmlToHtml(string $xml, string &$title): string
+    {
+        $prev = libxml_use_internal_errors(true);
+        $dom  = new DOMDocument();
+        $dom->loadXML($xml);
+        libxml_use_internal_errors($prev);
+
+        $wNS   = 'http://schemas.openxmlformats.org/wordprocessingml/2006/main';
+        $html  = '';
+        $titleFound = false;
+
+        $body = $dom->getElementsByTagNameNS($wNS, 'body');
+        if (!$body->length) {
+            return '';
+        }
+
+        foreach ($body->item(0)->getElementsByTagNameNS($wNS, 'p') as $para) {
+            $styleEl = $para->getElementsByTagNameNS($wNS, 'pStyle');
+            $style   = $styleEl->length ? strtolower($styleEl->item(0)->getAttributeNS($wNS, 'val')) : '';
+
+            $text = '';
+            foreach ($para->getElementsByTagNameNS($wNS, 'r') as $run) {
+                foreach ($run->getElementsByTagNameNS($wNS, 't') as $t) {
+                    $text .= $t->nodeValue;
+                }
+            }
+            if (trim($text) === '') {
+                continue;
+            }
+
+            $escaped  = htmlspecialchars($text, ENT_QUOTES, 'UTF-8');
+            $isBold   = $para->getElementsByTagNameNS($wNS, 'b')->length > 0;
+            $isItalic = $para->getElementsByTagNameNS($wNS, 'i')->length > 0;
+            if ($isItalic) $escaped = "<em>$escaped</em>";
+            if ($isBold)   $escaped = "<strong>$escaped</strong>";
+
+            if (str_starts_with($style, 'heading') || $style === 'title') {
+                $level = max(1, min(6, (int) substr($style, -1) ?: 1));
+                if (!$titleFound && $level === 1) {
+                    $title = $text;
+                    $titleFound = true;
+                    continue;
+                }
+                $html .= "<h$level>$escaped</h$level>";
+            } else {
+                $html .= "<p>$escaped</p>";
+            }
+        }
+
+        return $html;
+    }
+
+    private function parseOdt(string $raw, string &$title): string
+    {
+        $tmp = tempnam(sys_get_temp_dir(), 'odt_');
+        file_put_contents($tmp, $raw);
+        $zip = new ZipArchive();
+        if ($zip->open($tmp) !== true) {
+            unlink($tmp);
+            return '';
+        }
+        $xml = $zip->getFromName('content.xml');
+        $zip->close();
+        unlink($tmp);
+        return $xml !== false ? $this->odtXmlToHtml($xml, $title) : '';
+    }
+
+    private function odtXmlToHtml(string $xml, string &$title): string
+    {
+        $prev = libxml_use_internal_errors(true);
+        $dom  = new DOMDocument();
+        $dom->loadXML($xml);
+        libxml_use_internal_errors($prev);
+
+        $textNS   = 'urn:oasis:names:tc:opendocument:xmlns:text:1.0';
+        $officeNS = 'urn:oasis:names:tc:opendocument:xmlns:office:1.0';
+        $html     = '';
+        $titleFound = false;
+
+        $bodyList = $dom->getElementsByTagNameNS($officeNS, 'text');
+        if (!$bodyList->length) {
+            return '';
+        }
+
+        foreach ($bodyList->item(0)->childNodes as $node) {
+            if (!($node instanceof DOMElement)) {
+                continue;
+            }
+            $text = $node->textContent;
+            if (trim($text) === '') {
+                continue;
+            }
+            $escaped = htmlspecialchars($text, ENT_QUOTES, 'UTF-8');
+
+            if ($node->localName === 'h') {
+                $level = max(1, min(6, (int) ($node->getAttributeNS($textNS, 'outline-level') ?: 1)));
+                if (!$titleFound && $level === 1) {
+                    $title = $text;
+                    $titleFound = true;
+                    continue;
+                }
+                $html .= "<h$level>$escaped</h$level>";
+            } else {
+                $html .= "<p>$escaped</p>";
+            }
+        }
+
+        return $html;
     }
 
     private function getChapterComment(int $cid): string

@@ -163,6 +163,30 @@ class LectureController extends Controller
             }
         }
 
+        // Synopsis (prepended before template content if exported)
+        if ($db->exists('synopsis')) {
+            $synopsisModel = new Synopsis();
+            $synopsisData  = $synopsisModel->getByProject($pid);
+            if ($synopsisData && ($synopsisData['is_exported'] ?? 1)) {
+                $readingContent[] = [
+                    'type'        => 'synopsis',
+                    'title'       => 'Synopsis',
+                    'logline'     => $synopsisData['logline'] ?? '',
+                    'pitch'       => $prepareContent($synopsisData['pitch'] ?? ''),
+                    'situation'   => $synopsisData['situation'] ?? '',
+                    'trigger_evt' => $synopsisData['trigger_evt'] ?? '',
+                    'plot_point1' => $synopsisData['plot_point1'] ?? '',
+                    'development' => $prepareContent($synopsisData['development'] ?? ''),
+                    'midpoint'    => $synopsisData['midpoint'] ?? '',
+                    'crisis'      => $synopsisData['crisis'] ?? '',
+                    'climax'      => $prepareContent($synopsisData['climax'] ?? ''),
+                    'resolution'  => $prepareContent($synopsisData['resolution'] ?? ''),
+                    'page_start'  => $currentPage,
+                    'page_end'    => $currentPage,
+                ];
+            }
+        }
+
         // LOOP THROUGH TEMPLATE ELEMENTS
         foreach ($templateElements as $elem) {
             if (!$elem['is_enabled']) continue;

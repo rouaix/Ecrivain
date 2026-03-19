@@ -237,9 +237,39 @@
                             <h3>{{ @section.title | esc }}</h3>
                         </check>
 
-                        <div class="typography">
-                            {{ @section.content | raw }}
-                        </div>
+                        <check if="{{ @section.type == 'synopsis' }}">
+                            <true>
+                                <div class="reading-synopsis">
+                                    <div class="synopsis-reading-title">Synopsis</div>
+                                    <check if="{{ @section.logline }}">
+                                        <p class="synopsis-logline-reading">{{ @section.logline | esc }}</p>
+                                    </check>
+                                    <check if="{{ @section.pitch }}">
+                                        <div class="synopsis-pitch-reading typography">{{ @section.pitch | raw }}</div>
+                                    </check>
+                                    <check if="{{ @section.situation || @section.trigger_evt || @section.plot_point1 || @section.development || @section.midpoint || @section.crisis || @section.climax || @section.resolution }}">
+                                        <details class="synopsis-beats-reading">
+                                            <summary>Structure narrative ▸</summary>
+                                            <dl>
+                                                <check if="{{ @section.situation }}"><true><dt>Situation</dt><dd>{{ @section.situation | esc }}</dd></true></check>
+                                                <check if="{{ @section.trigger_evt }}"><true><dt>Déclencheur</dt><dd>{{ @section.trigger_evt | esc }}</dd></true></check>
+                                                <check if="{{ @section.plot_point1 }}"><true><dt>1er tournant</dt><dd>{{ @section.plot_point1 | esc }}</dd></true></check>
+                                                <check if="{{ @section.development }}"><true><dt>Développement</dt><dd class="typography">{{ @section.development | raw }}</dd></true></check>
+                                                <check if="{{ @section.midpoint }}"><true><dt>Point médian</dt><dd>{{ @section.midpoint | esc }}</dd></true></check>
+                                                <check if="{{ @section.crisis }}"><true><dt>Crise</dt><dd>{{ @section.crisis | esc }}</dd></true></check>
+                                                <check if="{{ @section.climax }}"><true><dt>Climax</dt><dd class="typography">{{ @section.climax | raw }}</dd></true></check>
+                                                <check if="{{ @section.resolution }}"><true><dt>Résolution</dt><dd class="typography">{{ @section.resolution | raw }}</dd></true></check>
+                                            </dl>
+                                        </details>
+                                    </check>
+                                </div>
+                            </true>
+                            <false>
+                                <div class="typography">
+                                    {{ @section.content | raw }}
+                                </div>
+                            </false>
+                        </check>
                     </article>
                 </repeat>
 

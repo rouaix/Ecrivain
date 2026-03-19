@@ -4,8 +4,7 @@
 
         <h2>Créer un chapitre</h2>
 
-        <a href="{{ @base }}/project/{{ @project.id }}" class="button" title="Retour au projet"
-            title="Retour au projet">
+        <a href="{{ @base }}/project/{{ @project.id }}" class="button" title="Retour au projet">
 
             <i class="fas fa-arrow-left" aria-hidden="true"></i>
 
@@ -31,177 +30,487 @@
 
     </check>
 
-    <form method="post" action="{{ @base }}/project/{{ @project.id }}/chapter/create" id="chapterCreateForm">
+    <div class="chapter-create-tabs">
 
-        <input type="hidden" name="csrf_token" value="{{ @csrfToken }}">
+        <button class="chapter-create-tab" data-tab="create" type="button">
+            <i class="fas fa-plus" aria-hidden="true"></i> Nouveau chapitre
+        </button>
 
-        <div class="edit-card">
+        <button class="chapter-create-tab" data-tab="import" type="button">
+            <i class="fas fa-file-import" aria-hidden="true"></i> Importer un fichier
+        </button>
 
-            <div class="edit-card-section">
+    </div>
 
-                <h3>Informations générales</h3>
+    <!-- Tab: Nouveau chapitre -->
+    <div class="chapter-create-panel" id="panel-create" style="display:none">
 
-                <div class="form-group">
+        <form method="post" action="{{ @base }}/project/{{ @project.id }}/chapter/create" id="chapterCreateForm">
 
-                    <label for="title">Titre du chapitre *</label>
+            <input type="hidden" name="csrf_token" value="{{ @csrfToken }}">
 
-                    <input type="text" id="title" name="title" value="{{ @old.title }}" required class="input-control">
+            <div class="edit-card">
+
+                <div class="edit-card-section">
+
+                    <h3>Informations générales</h3>
+
+                    <div class="form-group">
+
+                        <label for="title">Titre du chapitre *</label>
+
+                        <input type="text" id="title" name="title" value="{{ @old.title }}" required class="input-control">
+
+                    </div>
+
+                    <div class="editor-grid-row">
+
+                        <div class="form-group">
+
+                            <label for="act_id">Appartient à l'acte</label>
+
+                            <select id="act_id" name="act_id" class="input-control">
+
+                                <option value="">-- Aucun (hors actes) --</option>
+
+                                <repeat group="{{ @acts }}" value="{{ @act }}">
+
+                                    <option value="{{ @act.id }}" {{ (isset(@old.act_id) && @old.act_id==@act.id)
+                                        ? 'selected' : '' }}>
+
+                                        {{ @act.title }}
+
+                                    </option>
+
+                                </repeat>
+
+                            </select>
+
+                        </div>
+
+                        <div class="form-group">
+
+                            <label for="parent_id">Est un sous-chapitre de</label>
+
+                            <select id="parent_id" name="parent_id" class="input-control">
+
+                                <option value="">-- Aucun (chapitre principal) --</option>
+
+                                <repeat group="{{ @chapters }}" value="{{ @ch }}">
+
+                                    <option value="{{ @ch.id }}" data-act-id="{{ @ch.act_id }}" {{ (isset(@old.parent_id) &&
+                                        @old.parent_id==@ch.id) ? 'selected' : '' }}>
+
+                                        {{ @ch.title }}
+
+                                    </option>
+
+                                </repeat>
+
+                            </select>
+
+                        </div>
+
+                    </div>
 
                 </div>
 
-                <div class="editor-grid-row">
+                <div class="edit-actions">
 
-                    <div class="form-group">
-
-                        <label for="act_id">Appartient à l'acte</label>
-
-                        <select id="act_id" name="act_id" class="input-control">
-
-                            <option value="">-- Aucun (hors actes) --</option>
-
-                            <repeat group="{{ @acts }}" value="{{ @act }}">
-
-                                <option value="{{ @act.id }}" {{ (isset(@old.act_id) && @old.act_id==@act.id)
-                                    ? 'selected' : '' }}>
-
-                                    {{ @act.title }}
-
-                                </option>
-
-                            </repeat>
-
-                        </select>
-
-                    </div>
-
-                    <div class="form-group">
-
-                        <label for="parent_id">Est un sous-chapitre de</label>
-
-                        <select id="parent_id" name="parent_id" class="input-control">
-
-                            <option value="">-- Aucun (chapitre principal) --</option>
-
-                            <repeat group="{{ @chapters }}" value="{{ @ch }}">
-
-                                <option value="{{ @ch.id }}" data-act-id="{{ @ch.act_id }}" {{ (isset(@old.parent_id) &&
-                                    @old.parent_id==@ch.id) ? 'selected' : '' }}>
-
-                                    {{ @ch.title }}
-
-                                </option>
-
-                            </repeat>
-
-                        </select>
-
-                    </div>
+                    <input type="submit" value="Créer le chapitre" class="button primary large" title="Créer ce chapitre">
 
                 </div>
 
             </div>
 
-            <div class="edit-actions">
+        </form>
 
-                <input type="submit" value="Créer le chapitre" class="button primary large" title="Créer ce chapitre"
-                    title="Créer ce chapitre">
+    </div>
+
+    <!-- Tab: Importer -->
+    <div class="chapter-create-panel" id="panel-import" style="display:none">
+
+        <form method="post" action="{{ @base }}/project/{{ @project.id }}/chapter/import"
+              id="chapterImportForm" enctype="multipart/form-data">
+
+            <input type="hidden" name="csrf_token" value="{{ @csrfToken }}">
+
+            <div class="edit-card">
+
+                <div class="edit-card-section">
+
+                    <h3>Informations générales</h3>
+
+                    <div class="form-group">
+
+                        <label for="import_title">Titre du chapitre <span class="form-hint">(optionnel — extrait automatiquement du fichier)</span></label>
+
+                        <input type="text" id="import_title" name="title" value="{{ @old.title }}" class="input-control"
+                               placeholder="Laissez vide pour détecter automatiquement">
+
+                    </div>
+
+                    <div class="editor-grid-row">
+
+                        <div class="form-group">
+
+                            <label for="import_act_id">Appartient à l'acte</label>
+
+                            <select id="import_act_id" name="act_id" class="input-control">
+
+                                <option value="">-- Aucun (hors actes) --</option>
+
+                                <repeat group="{{ @acts }}" value="{{ @act }}">
+
+                                    <option value="{{ @act.id }}" {{ (isset(@old.act_id) && @old.act_id==@act.id)
+                                        ? 'selected' : '' }}>
+
+                                        {{ @act.title }}
+
+                                    </option>
+
+                                </repeat>
+
+                            </select>
+
+                        </div>
+
+                        <div class="form-group">
+
+                            <label for="import_parent_id">Est un sous-chapitre de</label>
+
+                            <select id="import_parent_id" name="parent_id" class="input-control">
+
+                                <option value="">-- Aucun (chapitre principal) --</option>
+
+                                <repeat group="{{ @chapters }}" value="{{ @ch }}">
+
+                                    <option value="{{ @ch.id }}" data-act-id="{{ @ch.act_id }}" {{ (isset(@old.parent_id) &&
+                                        @old.parent_id==@ch.id) ? 'selected' : '' }}>
+
+                                        {{ @ch.title }}
+
+                                    </option>
+
+                                </repeat>
+
+                            </select>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+                <div class="edit-card-section">
+
+                    <h3>Source du contenu</h3>
+
+                    <div class="import-source-tabs">
+
+                        <button type="button" class="import-source-btn is-active" data-source="file">
+                            <i class="fas fa-upload" aria-hidden="true"></i> Fichier
+                        </button>
+
+                        <button type="button" class="import-source-btn" data-source="paste">
+                            <i class="fas fa-paste" aria-hidden="true"></i> Coller du texte
+                        </button>
+
+                    </div>
+
+                    <!-- Source: fichier -->
+                    <div class="import-source-panel" id="source-file">
+
+                        <div class="form-group">
+
+                            <label for="import_file">Fichier à importer</label>
+
+                            <div class="import-file-zone" id="importDropZone">
+
+                                <i class="fas fa-cloud-upload-alt import-file-icon" aria-hidden="true"></i>
+
+                                <p class="import-file-label">Glissez un fichier ici ou <label for="import_file" class="import-file-browse">parcourez</label></p>
+
+                                <p class="import-file-formats">Formats acceptés : .md, .txt, .docx, .odt — max 10 Mo</p>
+
+                                <input type="file" id="import_file" name="import_file"
+                                       accept=".md,.txt,.docx,.odt"
+                                       class="import-file-input">
+
+                                <p class="import-file-selected" id="importFileName"></p>
+
+                            </div>
+
+                        </div>
+
+                    </div>
+
+                    <!-- Source: coller texte -->
+                    <div class="import-source-panel" id="source-paste" style="display:none">
+
+                        <div class="form-group">
+
+                            <label for="import_format">Format du texte collé</label>
+
+                            <div class="import-format-choice">
+
+                                <label class="radio-label">
+                                    <input type="radio" name="import_format" value="md" checked> Markdown
+                                </label>
+
+                                <label class="radio-label">
+                                    <input type="radio" name="import_format" value="txt"> Texte brut
+                                </label>
+
+                            </div>
+
+                        </div>
+
+                        <div class="form-group">
+
+                            <label for="import_text">Contenu</label>
+
+                            <textarea id="import_text" name="import_text" class="input-control import-textarea"
+                                      placeholder="Collez votre texte Markdown ou brut ici…" rows="14"></textarea>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+                <div class="edit-actions">
+
+                    <button type="submit" class="button primary large" title="Importer et créer le chapitre">
+                        <i class="fas fa-file-import" aria-hidden="true"></i> Importer
+                    </button>
+
+                </div>
 
             </div>
 
-        </div>
+        </form>
 
-    </form>
+    </div>
 
 </div>
 
+<style nonce="{{ @nonce }}">
+.chapter-create-tabs {
+    display: flex;
+    gap: .5rem;
+    margin-bottom: 1.5rem;
+}
+.chapter-create-tab {
+    padding: .55rem 1.2rem;
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius);
+    background: var(--bg-card);
+    color: var(--text-secondary);
+    cursor: pointer;
+    font-size: .9rem;
+    transition: background .15s, color .15s, border-color .15s;
+}
+.chapter-create-tab.is-active {
+    background: var(--primary);
+    color: #fff;
+    border-color: var(--primary);
+}
+.chapter-create-tab:hover:not(.is-active) {
+    background: var(--bg-hover);
+    color: var(--text-primary);
+}
+.form-hint {
+    font-size: .78rem;
+    color: var(--text-secondary);
+    font-weight: 400;
+}
+.import-source-tabs {
+    display: flex;
+    gap: .4rem;
+    margin-bottom: 1rem;
+}
+.import-source-btn {
+    padding: .4rem 1rem;
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius);
+    background: var(--bg-card);
+    color: var(--text-secondary);
+    cursor: pointer;
+    font-size: .85rem;
+    transition: background .15s, color .15s;
+}
+.import-source-btn.is-active {
+    background: var(--bg-hover);
+    color: var(--text-primary);
+    border-color: var(--primary);
+}
+.import-file-zone {
+    border: 2px dashed var(--border-color);
+    border-radius: var(--radius);
+    padding: 2rem;
+    text-align: center;
+    transition: border-color .15s, background .15s;
+    cursor: pointer;
+}
+.import-file-zone.drag-over {
+    border-color: var(--primary);
+    background: color-mix(in srgb, var(--primary) 6%, transparent);
+}
+.import-file-icon {
+    font-size: 2rem;
+    color: var(--text-secondary);
+    margin-bottom: .5rem;
+}
+.import-file-label {
+    margin: .4rem 0 .2rem;
+    color: var(--text-secondary);
+    font-size: .9rem;
+}
+.import-file-browse {
+    color: var(--primary);
+    cursor: pointer;
+    text-decoration: underline;
+}
+.import-file-formats {
+    font-size: .78rem;
+    color: var(--text-secondary);
+    margin: 0;
+}
+.import-file-input {
+    display: none;
+}
+.import-file-selected {
+    margin-top: .6rem;
+    font-size: .85rem;
+    color: var(--primary);
+    font-weight: 500;
+    min-height: 1.2em;
+}
+.import-textarea {
+    font-family: monospace;
+    font-size: .85rem;
+    min-height: 220px;
+    resize: vertical;
+}
+.import-format-choice {
+    display: flex;
+    gap: 1.5rem;
+    margin-bottom: .5rem;
+}
+.radio-label {
+    display: flex;
+    align-items: center;
+    gap: .4rem;
+    cursor: pointer;
+    font-size: .9rem;
+}
+</style>
+
 <script nonce="{{ @nonce }}">
+document.addEventListener('DOMContentLoaded', function () {
 
-    document.addEventListener('DOMContentLoaded', function () {
+    // --- Tab switching (Nouveau / Importer) ---
+    const activeTab = '{{ @activeTab ?: "create" }}';
+    const tabs   = document.querySelectorAll('.chapter-create-tab');
+    const panels = document.querySelectorAll('.chapter-create-panel');
 
-        const actSelect = document.getElementById('act_id');
+    function showTab(name) {
+        tabs.forEach(t => t.classList.toggle('is-active', t.dataset.tab === name));
+        panels.forEach(p => p.style.display = p.id === 'panel-' + name ? 'block' : 'none');
+    }
 
-        const parentSelect = document.getElementById('parent_id');
+    tabs.forEach(t => t.addEventListener('click', () => showTab(t.dataset.tab)));
+    showTab(activeTab);
 
-        if (!actSelect || !parentSelect) {
+    // --- Import source switching (Fichier / Coller) ---
+    const srcBtns = document.querySelectorAll('.import-source-btn');
+    const srcPanels = document.querySelectorAll('.import-source-panel');
 
-            return;
+    function showSource(name) {
+        srcBtns.forEach(b => b.classList.toggle('is-active', b.dataset.source === name));
+        srcPanels.forEach(p => p.style.display = p.id === 'source-' + name ? '' : 'none');
+    }
 
-        }
+    srcBtns.forEach(b => b.addEventListener('click', () => showSource(b.dataset.source)));
+
+    // --- File drop zone ---
+    const dropZone = document.getElementById('importDropZone');
+    const fileInput = document.getElementById('import_file');
+    const fileNameEl = document.getElementById('importFileName');
+
+    if (dropZone && fileInput) {
+        dropZone.addEventListener('click', e => {
+            if (e.target !== document.querySelector('label[for="import_file"]')) {
+                fileInput.click();
+            }
+        });
+
+        fileInput.addEventListener('change', () => {
+            if (fileInput.files.length) {
+                fileNameEl.textContent = fileInput.files[0].name;
+            }
+        });
+
+        dropZone.addEventListener('dragover', e => {
+            e.preventDefault();
+            dropZone.classList.add('drag-over');
+        });
+
+        dropZone.addEventListener('dragleave', () => dropZone.classList.remove('drag-over'));
+
+        dropZone.addEventListener('drop', e => {
+            e.preventDefault();
+            dropZone.classList.remove('drag-over');
+            const dt = e.dataTransfer;
+            if (dt.files.length) {
+                fileInput.files = dt.files;
+                fileNameEl.textContent = dt.files[0].name;
+            }
+        });
+    }
+
+    // --- Act/parent filter (create tab) ---
+    function setupActFilter(actSelId, parentSelId) {
+        const actSelect    = document.getElementById(actSelId);
+        const parentSelect = document.getElementById(parentSelId);
+        if (!actSelect || !parentSelect) return;
 
         const originalOptions = Array.from(parentSelect.options).map(opt => ({
-
             value: opt.value,
-
-            text: opt.text,
-
+            text:  opt.text,
             actId: opt.getAttribute('data-act-id')
-
         }));
 
         function filterChapters() {
-
-            const selectedActId = actSelect.value;
-
+            const selectedActId   = actSelect.value;
             const currentParentValue = parentSelect.value;
-
             parentSelect.innerHTML = '';
 
             originalOptions.forEach(data => {
-
-                if (data.value === '') {
-
-                    addOption(data);
-
-                    return;
-
-                }
-
+                if (data.value === '') { addOpt(data); return; }
                 const matchesAct = selectedActId === '' ? !data.actId : data.actId == selectedActId;
-
-                if (matchesAct) {
-
-                    addOption(data);
-
-                }
-
+                if (matchesAct) addOpt(data);
             });
 
-            if (currentParentValue) {
-
-                parentSelect.value = currentParentValue;
-
-                if (parentSelect.value !== currentParentValue) {
-
-                    parentSelect.value = '';
-
-                }
-
-            }
-
+            parentSelect.value = currentParentValue;
+            if (parentSelect.value !== currentParentValue) parentSelect.value = '';
         }
 
-        function addOption(data) {
-
+        function addOpt(data) {
             const option = document.createElement('option');
-
             option.value = data.value;
-
-            option.text = data.text;
-
-            if (data.actId) {
-
-                option.setAttribute('data-act-id', data.actId);
-
-            }
-
+            option.text  = data.text;
+            if (data.actId) option.setAttribute('data-act-id', data.actId);
             parentSelect.appendChild(option);
-
         }
 
         actSelect.addEventListener('change', filterChapters);
-
         filterChapters();
+    }
 
-    });
+    setupActFilter('act_id', 'parent_id');
+    setupActFilter('import_act_id', 'import_parent_id');
 
+});
 </script>

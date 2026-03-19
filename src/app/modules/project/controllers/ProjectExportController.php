@@ -332,6 +332,74 @@ class ProjectExportController extends ProjectBaseController
             }
         }
 
+        // Synopsis block (if exists and exported)
+        if ($db->exists('synopsis')) {
+            $synopsisModel = new Synopsis();
+            $synopsisData  = $synopsisModel->getByProject($pid);
+            if ($synopsisData && ($synopsisData['is_exported'] ?? 1)) {
+                $logline = trim(strip_tags($synopsisData['logline'] ?? ''));
+                $pitch   = $synopsisData['pitch'] ?? '';
+
+                $beatLabels = [
+                    'situation'   => 'Situation initiale',
+                    'trigger_evt' => 'Élément déclencheur',
+                    'plot_point1' => 'Premier tournant',
+                    'development' => 'Développement',
+                    'midpoint'    => 'Point médian',
+                    'crisis'      => 'Crise',
+                    'climax'      => 'Climax',
+                    'resolution'  => 'Résolution',
+                ];
+
+                if ($format === 'html') {
+                    $content .= "<div class='page-break'></div><h2>Synopsis</h2>";
+                    if ($logline) $content .= "<p><em>" . htmlspecialchars($logline, ENT_QUOTES) . "</em></p>";
+                    if ($pitch)   $content .= "<div class='section-content'>" . $pitch . "</div>";
+                    foreach ($beatLabels as $field => $label) {
+                        $val = trim(strip_tags(html_entity_decode($synopsisData[$field] ?? '')));
+                        if ($val) {
+                            $content .= "<h3>" . htmlspecialchars($label) . "</h3><p>" . nl2br(htmlspecialchars($val)) . "</p>";
+                        }
+                    }
+                } elseif ($format === 'markdown') {
+                    $content .= "\n\n## Synopsis\n\n";
+                    if ($logline) $content .= "*" . $logline . "*\n\n";
+                    if ($pitch)   $content .= $this->htmlToMarkdown($pitch) . "\n\n";
+                    foreach ($beatLabels as $field => $label) {
+                        $val = trim(strip_tags(html_entity_decode($synopsisData[$field] ?? '')));
+                        if ($val) $content .= "### " . $label . "\n\n" . $val . "\n\n";
+                    }
+                } elseif ($format === 'vector') {
+                    $beatText = '';
+                    foreach ($beatLabels as $field => $label) {
+                        $val = trim(strip_tags(html_entity_decode($synopsisData[$field] ?? '')));
+                        if ($val) $beatText .= $label . ': ' . $val . ' ';
+                    }
+                    $jsonOutput[] = [
+                        'type'    => 'synopsis',
+                        'logline' => mb_strtolower($logline, 'UTF-8'),
+                        'content' => mb_strtolower(trim($logline . ' ' . strip_tags(html_entity_decode($pitch)) . ' ' . $beatText), 'UTF-8'),
+                    ];
+                } elseif ($format === 'summaries') {
+                    if ($logline) $content .= "Synopsis\n" . $logline . "\n";
+                } elseif ($format === 'clean') {
+                    $content .= "synopsis\n\n";
+                    if ($logline) $content .= mb_strtolower($logline, 'UTF-8') . "\n\n";
+                } else {
+                    $content .= "\n\nSYNOPSIS\n\n";
+                    if ($logline) $content .= $logline . "\n\n";
+                    if ($pitch) {
+                        $plain = strip_tags(html_entity_decode($pitch));
+                        $content .= trim($plain) . "\n\n";
+                    }
+                    foreach ($beatLabels as $field => $label) {
+                        $val = trim(strip_tags(html_entity_decode($synopsisData[$field] ?? '')));
+                        if ($val) $content .= strtoupper($label) . "\n" . $val . "\n\n";
+                    }
+                }
+            }
+        }
+
         foreach ($templateElements as $elem) {
             if (!$elem['is_enabled']) continue;
 

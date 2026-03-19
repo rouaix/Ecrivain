@@ -1,0 +1,130 @@
+<div class="edit-page-layout">
+    <div class="edit-header">
+        <h1>Synopsis - {{ @project.title | esc }}</h1>
+        <div style="display:flex;gap:.5rem;flex-wrap:wrap;align-items:center;">
+            <button type="button" class="button secondary" onclick="window.print()">
+                <i class="fas fa-print" aria-hidden="true"></i> Imprimer
+            </button>
+            <a href="{{ @base }}/project/{{ @project.id }}/synopsis/export/txt" class="button secondary">
+                <i class="fas fa-download" aria-hidden="true"></i> TXT
+            </a>
+            <a href="{{ @base }}/project/{{ @project.id }}/synopsis/export/markdown" class="button secondary">
+                <i class="fas fa-download" aria-hidden="true"></i> Markdown
+            </a>
+            <a href="{{ @base }}/project/{{ @project.id }}/synopsis/export/html" class="button secondary">
+                <i class="fas fa-download" aria-hidden="true"></i> HTML
+            </a>
+            <a href="{{ @base }}/project/{{ @project.id }}/synopsis" class="button">
+                <i class="fas fa-arrow-left" aria-hidden="true"></i>
+            </a>
+        </div>
+    </div>
+
+    <div class="edit-card">
+        <div class="edit-card-section">
+
+            <!-- Fiche éditoriale -->
+            <check
+                if="{{ @synopsis.genre || @synopsis.subgenre || @synopsis.tone || @synopsis.themes || @synopsis.comps || @synopsis.audience }}">
+                <div
+                    style="display:grid;grid-template-columns:1fr 1fr;gap:.5rem 1.5rem;margin-bottom:1.5rem;padding-bottom:1.5rem;border-bottom:1px solid var(--border,#e0e0e0);">
+                    <check if="{{ @synopsis.genre }}">
+                        <div><span class="field-hint">Genre</span><br><strong>{{ @synopsis.genre | esc }}</strong>
+                            <check if="{{ @synopsis.subgenre }}"> — {{ @synopsis.subgenre | esc }}</check>
+                        </div>
+                    </check>
+                    <check if="{{ @synopsis.audience }}">
+                        <div><span class="field-hint">Public cible</span><br><strong>{{ @synopsis.audience | esc
+                                }}</strong></div>
+                    </check>
+                    <check if="{{ @synopsis.tone }}">
+                        <div><span class="field-hint">Ton</span><br><strong>{{ @synopsis.tone | esc }}</strong></div>
+                    </check>
+                    <check if="{{ @synopsis.themes }}">
+                        <div><span class="field-hint">Thèmes</span><br><strong>{{ @synopsis.themes | esc }}</strong>
+                        </div>
+                    </check>
+                    <check if="{{ @synopsis.comps }}">
+                        <div style="grid-column:1/-1"><span class="field-hint">Comparables</span><br><strong>{{
+                                @synopsis.comps | esc }}</strong></div>
+                    </check>
+                </div>
+            </check>
+
+            <!-- Logline -->
+            <check if="{{ @synopsis.logline }}">
+                <div
+                    style="border-left:3px solid var(--link-color,#3f51b5);padding-left:1rem;margin-bottom:1.5rem;font-style:italic;font-size:1.05rem;">
+                    {{ @synopsis.logline | esc }}
+                </div>
+            </check>
+
+            <!-- Pitch -->
+            <check if="{{ @synopsis.pitch }}">
+                <div style="margin-bottom:1.5rem;">
+                    <p class="field-hint" style="margin-bottom:.4rem;">Accroche</p>
+                    {{ @synopsis.pitch | raw }}
+                </div>
+            </check>
+
+            <!-- Beats -->
+            <check
+                if="{{ @synopsis.situation || @synopsis.trigger_evt || @synopsis.plot_point1 || @synopsis.development || @synopsis.midpoint || @synopsis.crisis || @synopsis.climax || @synopsis.resolution }}">
+                <div style="margin-top:1rem;padding-top:1.5rem;border-top:1px solid var(--border,#e0e0e0);">
+                    <h3 style="margin-bottom:1rem;">Structure narrative</h3>
+
+                    <check if="{{ @synopsis.situation }}">
+                        <div style="margin-bottom:1rem;">
+                            <p class="field-hint" style="margin-bottom:.25rem;">Situation initiale</p>
+                            <p>{{ @synopsis.situation | esc }}</p>
+                        </div>
+                    </check>
+                    <check if="{{ @synopsis.trigger_evt }}">
+                        <div style="margin-bottom:1rem;">
+                            <p class="field-hint" style="margin-bottom:.25rem;">Élément déclencheur</p>
+                            <p>{{ @synopsis.trigger_evt | esc }}</p>
+                        </div>
+                    </check>
+                    <check if="{{ @synopsis.plot_point1 }}">
+                        <div style="margin-bottom:1rem;">
+                            <p class="field-hint" style="margin-bottom:.25rem;">Premier tournant</p>
+                            <p>{{ @synopsis.plot_point1 | esc }}</p>
+                        </div>
+                    </check>
+                    <check if="{{ @synopsis.development }}">
+                        <div style="margin-bottom:1rem;">
+                            <p class="field-hint" style="margin-bottom:.25rem;">Développement</p>
+                            {{ @synopsis.development | raw }}
+                        </div>
+                    </check>
+                    <check if="{{ @synopsis.midpoint }}">
+                        <div style="margin-bottom:1rem;">
+                            <p class="field-hint" style="margin-bottom:.25rem;">Point médian</p>
+                            <p>{{ @synopsis.midpoint | esc }}</p>
+                        </div>
+                    </check>
+                    <check if="{{ @synopsis.crisis }}">
+                        <div style="margin-bottom:1rem;">
+                            <p class="field-hint" style="margin-bottom:.25rem;">Crise</p>
+                            <p>{{ @synopsis.crisis | esc }}</p>
+                        </div>
+                    </check>
+                    <check if="{{ @synopsis.climax }}">
+                        <div style="margin-bottom:1rem;">
+                            <p class="field-hint" style="margin-bottom:.25rem;">Climax</p>
+                            {{ @synopsis.climax | raw }}
+                        </div>
+                    </check>
+                    <check if="{{ @synopsis.resolution }}">
+                        <div style="margin-bottom:1rem;">
+                            <p class="field-hint" style="margin-bottom:.25rem;">Résolution</p>
+                            {{ @synopsis.resolution | raw }}
+                        </div>
+                    </check>
+                </div>
+            </check>
+
+        </div>
+    </div>
+
+</div>
