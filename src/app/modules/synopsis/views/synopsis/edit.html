@@ -64,6 +64,7 @@
                                 <option value="enfant" {{ @synopsis.audience=='enfant' ? 'selected' : '' }}>Enfant
                                 </option>
                             </select>
+                            <div class="synopsis-method-guide" id="audienceGuide"></div>
                         </div>
                         <div class="form-group">
                             <label for="tone">Ton</label>
@@ -484,24 +485,83 @@
 
     // ── Méthode guide ─────────────────────────────────────────────────────
     var METHODS = {
-        freytag: 'Exposition → Action montante → Climax → Action descendante → Dénouement',
-        voyage_heros: '12 étapes : Monde ordinaire → Appel → Refus → Mentor → Seuil → Épreuves → Caverne → Ordalie → Récompense → Chemin du retour → Résurrection → Retour',
-        save_the_cat: '15 beats : Ouverture → Thème annoncé → Mise en place → Catalyseur → Débat → Passage à l\'acte 2 → B-Story → Jeu → Point médian → Les méchants se rapprochent → Tout est perdu → Nuit de l\'âme → Passage à l\'acte 3 → Finale → Image finale',
-        sept_points: '7 points : Hook → Plot turn 1 → Pinch 1 → Midpoint → Pinch 2 → Plot turn 2 → Résolution',
-        snowflake: 'Expansion progressive : 1 phrase → 1 para → 1 page → Fiche perso → Synopsis complet',
-        actanciel: 'Sujet / Objet / Destinateur / Destinataire / Adjuvant / Opposant',
-        libre: ''
+        freytag: {
+            titre: 'Pyramide de Freytag',
+            resume: 'Structure classique en 5 actes issue du théâtre du XIXe siècle. Idéale pour les récits linéaires avec une montée en tension progressive.',
+            etapes: 'Exposition → Action montante → Climax → Action descendante → Dénouement'
+        },
+        voyage_heros: {
+            titre: 'Voyage du héros (Campbell)',
+            resume: '12 étapes archétypales présentes dans les mythes du monde entier. Très utilisée en fantasy, SF et aventure — Star Wars en est l\'exemple canonique.',
+            etapes: 'Monde ordinaire → Appel → Refus → Mentor → Franchissement du seuil → Épreuves → Caverne → Ordalie → Récompense → Chemin du retour → Résurrection → Retour avec l\'élixir'
+        },
+        save_the_cat: {
+            titre: 'Save the Cat (Blake Snyder)',
+            resume: '15 beats calés à des positions fixes dans le manuscrit (catalyseur au 10 %, "tout est perdu" au 75 %…). Conçue pour le cinéma, très efficace en roman de genre : thriller, romance, comédie.',
+            etapes: 'Image d\'ouverture → Thème annoncé → Mise en place → Catalyseur → Débat → Passage acte II → B-Story → Jeu → Point médian → Les méchants se rapprochent → Tout est perdu → Nuit de l\'âme → Passage acte III → Finale → Image finale'
+        },
+        sept_points: {
+            titre: 'Méthode des 7 points',
+            resume: 'Structure épurée en 7 points clés. Simple à appliquer, efficace pour planifier un arc narratif solide sans trop de contraintes.',
+            etapes: 'Hook → Plot turn 1 → Pinch 1 → Midpoint → Pinch 2 → Plot turn 2 → Résolution'
+        },
+        snowflake: {
+            titre: 'Snowflake Method (Randy Ingermanson)',
+            resume: 'Méthode de conception progressive : on part d\'une phrase et on expand couche par couche. Utile en amont de l\'écriture pour structurer sans se perdre.',
+            etapes: '1 phrase → 1 paragraphe → 1 page → Fiches personnages → Synopsis détaillé'
+        },
+        actanciel: {
+            titre: 'Schéma actanciel (Greimas)',
+            resume: 'Modèle analytique qui décompose tout récit en 6 rôles fonctionnels. Très éclairant pour la littérature générale et les récits à forte dimension symbolique.',
+            etapes: 'Sujet / Objet — Destinateur / Destinataire — Adjuvant / Opposant'
+        },
+        libre: null
     };
     var methodSelect = document.getElementById('structure_method');
     var methodGuide = document.getElementById('methodGuide');
     if (methodSelect && methodGuide) {
         function updateGuide() {
-            var m = METHODS[methodSelect.value] || '';
-            methodGuide.textContent = m;
-            methodGuide.classList.toggle('is-visible', !!m);
+            var m = METHODS[methodSelect.value];
+            if (!m) { methodGuide.innerHTML = ''; methodGuide.classList.remove('is-visible'); return; }
+            methodGuide.innerHTML =
+                '<strong>' + m.titre + '</strong> — ' + m.resume +
+                '<br><span style="font-size:.8rem;opacity:.8;margin-top:.35rem;display:block;">' + m.etapes + '</span>';
+            methodGuide.classList.add('is-visible');
         }
         methodSelect.addEventListener('change', updateGuide);
         updateGuide();
+    }
+
+    // ── Public cible guide ────────────────────────────────────────────────
+    var AUDIENCES = {
+        adulte: {
+            titre: 'Adulte',
+            resume: 'Lecteurs de 18 ans et plus. Aucune restriction de contenu — violence, sexualité, complexité morale et thèmes sombres sont acceptés. Longueur typique : 80 000 à 120 000 mots selon le genre.'
+        },
+        ya: {
+            titre: 'Young Adult (YA)',
+            resume: 'Lecteurs de 14 à 25 ans. Les thèmes peuvent être intenses (mort, identité, trauma) mais le protagoniste est généralement un adolescent. Contenu sexuel implicite seulement. Longueur typique : 60 000 à 90 000 mots.'
+        },
+        mg: {
+            titre: 'Middle Grade (MG)',
+            resume: 'Lecteurs de 8 à 12 ans. Ton optimiste malgré les conflits, pas de romance ni de violence graphique. Le héros est un enfant ou préadolescent qui résout ses problèmes par lui-même. Longueur typique : 25 000 à 50 000 mots.'
+        },
+        enfant: {
+            titre: 'Enfant (moins de 8 ans)',
+            resume: 'Lecteurs de 4 à 8 ans (albums, premières lectures). Langage simple, phrases courtes, thèmes rassurants et concrets. Illustrations souvent essentielles. Longueur très variable selon le format.'
+        }
+    };
+    var audienceSelect = document.getElementById('audience');
+    var audienceGuide  = document.getElementById('audienceGuide');
+    if (audienceSelect && audienceGuide) {
+        function updateAudienceGuide() {
+            var a = AUDIENCES[audienceSelect.value];
+            if (!a) { audienceGuide.innerHTML = ''; audienceGuide.classList.remove('is-visible'); return; }
+            audienceGuide.innerHTML = '<strong>' + a.titre + '</strong> — ' + a.resume;
+            audienceGuide.classList.add('is-visible');
+        }
+        audienceSelect.addEventListener('change', updateAudienceGuide);
+        updateAudienceGuide();
     }
 
     // ── Export toggle ─────────────────────────────────────────────────────
