@@ -23,18 +23,48 @@
         <div class="review-content" id="reviewContent">
             <repeat group="{{ @items }}" value="{{ @item }}">
                 <div class="review-item review-item-{{ @item.type }}">
-                    <check if="{{ @item.title }}">
-                        <check if="{{ @item.type == 'act' }}">
-                            <h2 class="review-act-title">{{ @item.title | esc }}</h2>
-                        </check>
-                        <check if="{{ @item.type != 'act' }}">
-                            <h3 class="review-chapter-title">{{ @item.title | esc }}</h3>
-                        </check>
+                    <check if="{{ @item.type == 'synopsis' }}">
+                        <true>
+                            <div class="reading-synopsis">
+                                <div class="synopsis-reading-title">Synopsis</div>
+                                <check if="{{ @item.logline }}">
+                                    <p class="synopsis-logline-reading">{{ @item.logline | esc }}</p>
+                                </check>
+                                <check if="{{ @item.pitch }}">
+                                    <div class="synopsis-pitch-reading">{{ @item.pitch | raw }}</div>
+                                </check>
+                                <check if="{{ @item.situation || @item.development || @item.resolution }}">
+                                    <details class="synopsis-beats-reading">
+                                        <summary>Structure narrative ▸</summary>
+                                        <dl>
+                                            <check if="{{ @item.situation }}"><true><dt>Situation</dt><dd>{{ @item.situation | esc }}</dd></true></check>
+                                            <check if="{{ @item.trigger_evt }}"><true><dt>Déclencheur</dt><dd>{{ @item.trigger_evt | esc }}</dd></true></check>
+                                            <check if="{{ @item.plot_point1 }}"><true><dt>1er tournant</dt><dd>{{ @item.plot_point1 | esc }}</dd></true></check>
+                                            <check if="{{ @item.development }}"><true><dt>Développement</dt><dd>{{ @item.development | raw }}</dd></true></check>
+                                            <check if="{{ @item.midpoint }}"><true><dt>Point médian</dt><dd>{{ @item.midpoint | esc }}</dd></true></check>
+                                            <check if="{{ @item.crisis }}"><true><dt>Crise</dt><dd>{{ @item.crisis | esc }}</dd></true></check>
+                                            <check if="{{ @item.climax }}"><true><dt>Climax</dt><dd>{{ @item.climax | raw }}</dd></true></check>
+                                            <check if="{{ @item.resolution }}"><true><dt>Résolution</dt><dd>{{ @item.resolution | raw }}</dd></true></check>
+                                        </dl>
+                                    </details>
+                                </check>
+                            </div>
+                        </true>
+                        <false>
+                            <check if="{{ @item.title }}">
+                                <check if="{{ @item.type == 'act' }}">
+                                    <h2 class="review-act-title">{{ @item.title | esc }}</h2>
+                                </check>
+                                <check if="{{ @item.type != 'act' }}">
+                                    <h3 class="review-chapter-title">{{ @item.title | esc }}</h3>
+                                </check>
+                            </check>
+                            <div class="review-text ql-editor" data-content-id="{{ @item.id }}"
+                                data-content-type="{{ @item.type }}" id="content-{{ @item.type }}-{{ @item.id }}">
+                                {{ @item.content | raw }}
+                            </div>
+                        </false>
                     </check>
-                    <div class="review-text ql-editor" data-content-id="{{ @item.id }}"
-                        data-content-type="{{ @item.type }}" id="content-{{ @item.type }}-{{ @item.id }}">
-                        {{ @item.content | raw }}
-                    </div>
                 </div>
             </repeat>
         </div>

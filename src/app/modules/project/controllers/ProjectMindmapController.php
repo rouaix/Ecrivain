@@ -50,6 +50,9 @@ class ProjectMindmapController extends ProjectBaseController
         $chapterModel = new Chapter();
         $chapters = $chapterModel->getAllByProject($pid);
 
+        $synopsisModel = new Synopsis();
+        $synopsis = $synopsisModel->getByProject($pid);
+
         // --- Build Graph Data ---
         $nodes = [];
         $links = [];
@@ -113,6 +116,38 @@ class ProjectMindmapController extends ProjectBaseController
             if (empty($ch['act_id']) && empty($ch['parent_id'])) {
                 $hasOrphans = true;
                 break;
+            }
+        }
+
+        // Synopsis node (if exists and exported) with child nodes for each element
+        if ($synopsis && ($synopsis['is_exported'] ?? 1)) {
+            $nodes[] = ['id' => 'synopsis', 'name' => 'Synopsis', 'type' => 'synopsis'];
+            $links[] = ['source' => 'project', 'target' => 'synopsis'];
+
+            $synopsisChildren = [
+                'logline'     => 'Logline',
+                'pitch'       => 'Accroche',
+                'situation'   => 'Situation initiale',
+                'trigger_evt' => 'Élément déclencheur',
+                'plot_point1' => 'Premier tournant',
+                'development' => 'Développement',
+                'midpoint'    => 'Point médian',
+                'crisis'      => 'Crise',
+                'climax'      => 'Climax',
+                'resolution'  => 'Résolution',
+            ];
+            foreach ($synopsisChildren as $field => $label) {
+                if (!empty($synopsis[$field])) {
+                    $full    = strip_tags($synopsis[$field]);
+                    $excerpt = mb_substr($full, 0, 60) . (mb_strlen($full) > 60 ? '…' : '');
+                    $nodes[] = [
+                        'id'      => 'synopsis_' . $field,
+                        'name'    => $label,
+                        'type'    => 'synopsis_beat',
+                        'content' => $full,
+                    ];
+                    $links[] = ['source' => 'synopsis', 'target' => 'synopsis_' . $field];
+                }
             }
         }
 

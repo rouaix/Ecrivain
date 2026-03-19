@@ -1,0 +1,767 @@
+<div class="edit-page-layout">
+    <div class="edit-header">
+        <h1>Synopsis</h1>
+        <div style="display:flex;gap:.5rem;flex-wrap:wrap;align-items:center;">
+            <a href="{{ @base }}/project/{{ @project.id }}/synopsis/export" class="button secondary" target="_blank">
+                <i class="fas fa-file-export" aria-hidden="true"></i> Exporter
+            </a>
+            <a href="{{ @base }}/project/{{ @project.id }}" class="button">
+                <i class="fas fa-arrow-left" aria-hidden="true"></i>
+            </a>
+        </div>
+    </div>
+    <check if="{{ @isOwner }}">
+        <label class="synopsis-export-toggle" title="Inclure dans l'export, la lecture et la mindmap">
+            <input type="checkbox" id="synopsisExportToggle" {{ @synopsis.is_exported ? 'checked' : '' }}>
+            Inclure dans l'export
+        </label>
+    </check>
+    <check if="{{ isset(@isOwner) && @isOwner }}">
+        <div class="synopsis-ai-bar">
+            <button type="button" class="button small ai" id="btnAiFromIdea">Générer depuis une idée</button>
+            <button type="button" class="button small ai" id="btnAiFromProject">Générer depuis le projet</button>
+            <button type="button" class="button small ai" id="btnAiEvaluate">Évaluer le synopsis</button>
+        </div>
+    </check>
+
+    <form method="post" action="{{ @base }}/project/{{ @project.id }}/synopsis/save" id="synopsisForm">
+        <input type="hidden" name="csrf_token" value="{{ @csrfToken }}">
+
+        <div class="edit-card">
+
+            <!-- Onglets -->
+            <div class="synopsis-tabs" role="tablist">
+                <button type="button" class="synopsis-tab-btn active" data-tab="meta" role="tab">Fiche
+                    éditoriale</button>
+                <button type="button" class="synopsis-tab-btn" data-tab="accroche" role="tab">Accroche</button>
+                <button type="button" class="synopsis-tab-btn" data-tab="beats" role="tab">Structure narrative</button>
+            </div>
+
+            <!-- ── Onglet 1 : Méta ── -->
+            <div class="synopsis-tab-panel active" id="tab-meta">
+                <div class="edit-card-section">
+                    <div class="synopsis-meta-grid">
+                        <div class="form-group">
+                            <label for="genre">Genre</label>
+                            <input type="text" id="genre" name="genre" class="input-control"
+                                value="{{ @synopsis.genre | esc }}" placeholder="Ex : Thriller, Fantasy, Romance…">
+                        </div>
+                        <div class="form-group">
+                            <label for="subgenre">Sous-genre</label>
+                            <input type="text" id="subgenre" name="subgenre" class="input-control"
+                                value="{{ @synopsis.subgenre | esc }}" placeholder="Ex : Dark romance, Cozy mystery…">
+                        </div>
+                        <div class="form-group">
+                            <label for="audience">Public cible</label>
+                            <select id="audience" name="audience" class="input-control">
+                                <option value="">— Choisir —</option>
+                                <option value="adulte" {{ @synopsis.audience=='adulte' ? 'selected' : '' }}>Adulte
+                                </option>
+                                <option value="ya" {{ @synopsis.audience=='ya' ? 'selected' : '' }}>Young Adult (YA)
+                                </option>
+                                <option value="mg" {{ @synopsis.audience=='mg' ? 'selected' : '' }}>Middle Grade (MG)
+                                </option>
+                                <option value="enfant" {{ @synopsis.audience=='enfant' ? 'selected' : '' }}>Enfant
+                                </option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="tone">Ton</label>
+                            <input type="text" id="tone" name="tone" class="input-control"
+                                value="{{ @synopsis.tone | esc }}" placeholder="Ex : Sombre, Humoristique, Épique…">
+                        </div>
+                        <div class="form-group" style="grid-column:1/-1">
+                            <label for="themes">Thèmes principaux</label>
+                            <input type="text" id="themes" name="themes" class="input-control"
+                                value="{{ @synopsis.themes | esc }}"
+                                placeholder="Ex : Rédemption, Identité, Vengeance…">
+                        </div>
+                        <div class="form-group" style="grid-column:1/-1">
+                            <label for="comps">Comparables <span class="field-hint">(comps)</span></label>
+                            <input type="text" id="comps" name="comps" class="input-control"
+                                value="{{ @synopsis.comps | esc }}"
+                                placeholder="Ex : Dans l'esprit de Gone Girl de Gillian Flynn">
+                        </div>
+                        <div class="form-group">
+                            <label for="status">Statut du manuscrit</label>
+                            <select id="status" name="status" class="input-control">
+                                <option value="en_cours" {{ @synopsis.status=='en_cours' ? 'selected' : '' }}>En cours
+                                </option>
+                                <option value="premier_jet" {{ @synopsis.status=='premier_jet' ? 'selected' : '' }}>
+                                    Premier jet</option>
+                                <option value="revise" {{ @synopsis.status=='revise' ? 'selected' : '' }}>Révisé
+                                </option>
+                                <option value="pret_soumission" {{ @synopsis.status=='pret_soumission' ? 'selected' : ''
+                                    }}>Prêt à soumettre</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="structure_method">Méthode structurelle</label>
+                            <select id="structure_method" name="structure_method" class="input-control">
+                                <option value="libre" {{ @synopsis.structure_method=='libre' ? 'selected' : '' }}>Libre
+                                </option>
+                                <option value="freytag" {{ @synopsis.structure_method=='freytag' ? 'selected' : '' }}>
+                                    Freytag (pyramide)</option>
+                                <option value="voyage_heros" {{ @synopsis.structure_method=='voyage_heros' ? 'selected'
+                                    : '' }}>Voyage du héros (Campbell)</option>
+                                <option value="save_the_cat" {{ @synopsis.structure_method=='save_the_cat' ? 'selected'
+                                    : '' }}>Save the Cat (Snyder)</option>
+                                <option value="sept_points" {{ @synopsis.structure_method=='sept_points' ? 'selected'
+                                    : '' }}>Méthode des 7 points</option>
+                                <option value="snowflake" {{ @synopsis.structure_method=='snowflake' ? 'selected' : ''
+                                    }}>Snowflake Method</option>
+                                <option value="actanciel" {{ @synopsis.structure_method=='actanciel' ? 'selected' : ''
+                                    }}>Schéma actanciel (Greimas)</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="synopsis-method-guide" id="methodGuide"></div>
+                </div>
+            </div>
+
+            <!-- ── Onglet 2 : Accroche ── -->
+            <div class="synopsis-tab-panel" id="tab-accroche">
+                <div class="edit-card-section">
+                    <div class="form-group">
+                        <label for="logline">
+                            Logline
+                            <span class="field-hint"> — 1 phrase : personnage + objectif + obstacle + enjeu</span>
+                        </label>
+                        <div class="synopsis-logline-wrap">
+                            <textarea id="logline" name="logline" class="input-control" rows="2" maxlength="500"
+                                placeholder="Ex : Un détective solitaire doit retrouver…">{{ @synopsis.logline | esc }}</textarea>
+                            <span class="synopsis-logline-counter" id="loglineCounter">0 / 500</span>
+                        </div>
+                        <check if="{{ @isOwner }}">
+                            <button type="button" class="button small ai" id="btnSuggestLogline"
+                                style="margin-top:.5rem;">
+                                <i class="fas fa-lightbulb" aria-hidden="true"></i> Proposer 3 loglines
+                            </button>
+                        </check>
+                    </div>
+                    <div class="form-group">
+                        <label>
+                            Accroche / Pitch
+                            <span class="field-hint"> — 1 à 2 paragraphes (quatrième de couverture)</span>
+                        </label>
+                        <check if="{{ @isOwner }}">
+                            <div class="edit-ai-actions">
+                                <button type="button" class="button small ai" data-beat="pitch" data-action="generate">✨
+                                    Générer</button>
+                                <button type="button" class="button small ai" data-beat="pitch"
+                                    data-action="enrich">Enrichir</button>
+                            </div>
+                        </check>
+                        <div id="quill-pitch" class="quill-editor" style="min-height:120px;"></div>
+                        <input type="hidden" name="pitch" id="input-pitch" value="{{ @synopsis.pitch | raw }}">
+                    </div>
+                </div>
+            </div>
+
+            <!-- ── Onglet 3 : Beats ── -->
+            <div class="synopsis-tab-panel" id="tab-beats">
+
+                <div class="synopsis-beat" id="beat-situation">
+                    <div class="synopsis-beat__header">
+                        <span class="synopsis-beat__number">1</span>
+                        <span class="synopsis-beat__label">Situation initiale</span>
+                        <span class="synopsis-beat__hint">Le monde du héros avant le bouleversement</span>
+                        <check if="{{ @isOwner }}">
+                            <div class="synopsis-beat__actions">
+                                <button type="button" class="button small ai" data-beat="situation"
+                                    data-action="generate" title="Générer">✨</button>
+                                <button type="button" class="button small ai" data-beat="situation" data-action="enrich"
+                                    title="Enrichir">+</button>
+                            </div>
+                        </check>
+                    </div>
+                    <div class="synopsis-beat__body">
+                        <textarea class="input-control beat-textarea" name="situation" rows="3"
+                            placeholder="Décrivez le monde et le personnage principal au début du roman…">{{ @synopsis.situation | esc }}</textarea>
+                    </div>
+                </div>
+
+                <div class="synopsis-beat" id="beat-trigger_evt">
+                    <div class="synopsis-beat__header">
+                        <span class="synopsis-beat__number">2</span>
+                        <span class="synopsis-beat__label">Élément déclencheur</span>
+                        <span class="synopsis-beat__hint">L'événement qui rompt l'équilibre</span>
+                        <check if="{{ @isOwner }}">
+                            <div class="synopsis-beat__actions">
+                                <button type="button" class="button small ai" data-beat="trigger_evt"
+                                    data-action="generate" title="Générer">✨</button>
+                                <button type="button" class="button small ai" data-beat="trigger_evt"
+                                    data-action="enrich" title="Enrichir">+</button>
+                            </div>
+                        </check>
+                    </div>
+                    <div class="synopsis-beat__body">
+                        <textarea class="input-control beat-textarea" name="trigger_evt" rows="2"
+                            placeholder="Quel événement force le protagoniste à agir ?">{{ @synopsis.trigger_evt | esc }}</textarea>
+                    </div>
+                </div>
+
+                <div class="synopsis-beat" id="beat-plot_point1">
+                    <div class="synopsis-beat__header">
+                        <span class="synopsis-beat__number">3</span>
+                        <span class="synopsis-beat__label">Premier tournant</span>
+                        <span class="synopsis-beat__hint">Le héros s'engage — point de non-retour</span>
+                        <check if="{{ @isOwner }}">
+                            <div class="synopsis-beat__actions">
+                                <button type="button" class="button small ai" data-beat="plot_point1"
+                                    data-action="generate" title="Générer">✨</button>
+                                <button type="button" class="button small ai" data-beat="plot_point1"
+                                    data-action="enrich" title="Enrichir">+</button>
+                            </div>
+                        </check>
+                    </div>
+                    <div class="synopsis-beat__body">
+                        <textarea class="input-control beat-textarea" name="plot_point1" rows="2"
+                            placeholder="Comment le héros bascule dans l'aventure ?">{{ @synopsis.plot_point1 | esc }}</textarea>
+                    </div>
+                </div>
+
+                <div class="synopsis-beat" id="beat-development">
+                    <div class="synopsis-beat__header">
+                        <span class="synopsis-beat__number">4</span>
+                        <span class="synopsis-beat__label">Développement (acte II)</span>
+                        <span class="synopsis-beat__hint">Obstacles, évolution intérieure, sous-intrigues</span>
+                        <check if="{{ @isOwner }}">
+                            <div class="synopsis-beat__actions">
+                                <button type="button" class="button small ai" data-beat="development"
+                                    data-action="generate" title="Générer">✨</button>
+                                <button type="button" class="button small ai" data-beat="development"
+                                    data-action="enrich" title="Enrichir">+</button>
+                            </div>
+                        </check>
+                    </div>
+                    <div class="synopsis-beat__body">
+                        <div id="quill-development" class="quill-editor" style="min-height:150px;"></div>
+                        <input type="hidden" name="development" id="input-development"
+                            value="{{ @synopsis.development | raw }}">
+                    </div>
+                </div>
+
+                <div class="synopsis-beat" id="beat-midpoint">
+                    <div class="synopsis-beat__header">
+                        <span class="synopsis-beat__number">5</span>
+                        <span class="synopsis-beat__label">Point médian</span>
+                        <span class="synopsis-beat__hint">Révélation ou renversement à mi-parcours</span>
+                        <check if="{{ @isOwner }}">
+                            <div class="synopsis-beat__actions">
+                                <button type="button" class="button small ai" data-beat="midpoint"
+                                    data-action="generate" title="Générer">✨</button>
+                                <button type="button" class="button small ai" data-beat="midpoint" data-action="enrich"
+                                    title="Enrichir">+</button>
+                            </div>
+                        </check>
+                    </div>
+                    <div class="synopsis-beat__body">
+                        <textarea class="input-control beat-textarea" name="midpoint" rows="2"
+                            placeholder="Quelle révélation ou quel retournement survient à mi-parcours ?">{{ @synopsis.midpoint | esc }}</textarea>
+                    </div>
+                </div>
+
+                <div class="synopsis-beat" id="beat-crisis">
+                    <div class="synopsis-beat__header">
+                        <span class="synopsis-beat__number">6</span>
+                        <span class="synopsis-beat__label">Crise</span>
+                        <span class="synopsis-beat__hint">Le moment le plus sombre — le héros semble perdre</span>
+                        <check if="{{ @isOwner }}">
+                            <div class="synopsis-beat__actions">
+                                <button type="button" class="button small ai" data-beat="crisis" data-action="generate"
+                                    title="Générer">✨</button>
+                                <button type="button" class="button small ai" data-beat="crisis" data-action="enrich"
+                                    title="Enrichir">+</button>
+                            </div>
+                        </check>
+                    </div>
+                    <div class="synopsis-beat__body">
+                        <textarea class="input-control beat-textarea" name="crisis" rows="2"
+                            placeholder="Le point le plus bas de l'arc du héros…">{{ @synopsis.crisis | esc }}</textarea>
+                    </div>
+                </div>
+
+                <div class="synopsis-beat" id="beat-climax">
+                    <div class="synopsis-beat__header">
+                        <span class="synopsis-beat__number">7</span>
+                        <span class="synopsis-beat__label">Climax</span>
+                        <span class="synopsis-beat__hint">Affrontement final</span>
+                        <check if="{{ @isOwner }}">
+                            <div class="synopsis-beat__actions">
+                                <button type="button" class="button small ai" data-beat="climax" data-action="generate"
+                                    title="Générer">✨</button>
+                                <button type="button" class="button small ai" data-beat="climax" data-action="enrich"
+                                    title="Enrichir">+</button>
+                            </div>
+                        </check>
+                    </div>
+                    <div class="synopsis-beat__body">
+                        <div id="quill-climax" class="quill-editor" style="min-height:100px;"></div>
+                        <input type="hidden" name="climax" id="input-climax" value="{{ @synopsis.climax | raw }}">
+                    </div>
+                </div>
+
+                <div class="synopsis-beat" id="beat-resolution">
+                    <div class="synopsis-beat__header">
+                        <span class="synopsis-beat__number">8</span>
+                        <span class="synopsis-beat__label">Résolution</span>
+                        <span class="synopsis-beat__hint">Dénouement et nouveau monde stable</span>
+                        <check if="{{ @isOwner }}">
+                            <div class="synopsis-beat__actions">
+                                <button type="button" class="button small ai" data-beat="resolution"
+                                    data-action="generate" title="Générer">✨</button>
+                                <button type="button" class="button small ai" data-beat="resolution"
+                                    data-action="enrich" title="Enrichir">+</button>
+                            </div>
+                        </check>
+                    </div>
+                    <div class="synopsis-beat__body">
+                        <div id="quill-resolution" class="quill-editor" style="min-height:100px;"></div>
+                        <input type="hidden" name="resolution" id="input-resolution"
+                            value="{{ @synopsis.resolution | raw }}">
+                    </div>
+                </div>
+
+            </div><!-- /tab-beats -->
+
+            <check if="{{ @isOwner }}">
+                <div class="edit-actions">
+                    <button type="submit" class="button primary large">
+                        <i class="fas fa-save" aria-hidden="true"></i> Enregistrer
+                    </button>
+                </div>
+            </check>
+
+        </div><!-- /edit-card -->
+
+    </form>
+
+</div><!-- /edit-page-layout -->
+
+<!-- ── Modales IA ── -->
+
+<!-- Modal : Générer depuis une idée -->
+<div class="modal-overlay" id="modalFromIdea">
+    <div class="modal-content modal-md">
+        <div class="modal-header">
+            <h3>Générer le synopsis depuis une idée</h3>
+            <button type="button" class="modal-close button" id="btnCloseFromIdea" title="Fermer">✕</button>
+        </div>
+        <div class="modal-body">
+            <div class="form-group">
+                <label>Votre idée <span class="field-hint">(quelques lignes suffisent)</span></label>
+                <textarea id="aiIdeaText" class="input-control" rows="5"
+                    placeholder="Ex : Une détective rurale découvre que son frère est un tueur en série…"></textarea>
+            </div>
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:.75rem;">
+                <div class="form-group">
+                    <label>Genre</label>
+                    <input type="text" id="aiIdeaGenre" class="input-control" placeholder="Thriller, Fantasy…">
+                </div>
+                <div class="form-group">
+                    <label>Public cible</label>
+                    <select id="aiIdeaAudience" class="input-control">
+                        <option value="">— Optionnel —</option>
+                        <option value="adulte">Adulte</option>
+                        <option value="ya">Young Adult</option>
+                    </select>
+                </div>
+            </div>
+            <div class="form-group">
+                <label>Structure narrative</label>
+                <select id="aiIdeaMethod" class="input-control">
+                    <option value="libre">Libre</option>
+                    <option value="save_the_cat">Save the Cat</option>
+                    <option value="voyage_heros">Voyage du héros</option>
+                    <option value="freytag">Freytag</option>
+                    <option value="sept_points">7 points</option>
+                </select>
+            </div>
+            <p id="aiIdeaStatus" class="field-hint"></p>
+            <div class="modal-footer">
+                <button type="button" class="button secondary" id="btnCancelFromIdea">Annuler</button>
+                <button type="button" class="button primary" id="btnRunFromIdea">Générer</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal : Aperçu des beats générés -->
+<div class="modal-overlay" id="modalBeatsPreview">
+    <div class="modal-content modal-md">
+        <div class="modal-header">
+            <h3>Résultats générés</h3>
+            <button type="button" class="modal-close button" id="btnCloseBeatsPreview" title="Fermer">✕</button>
+        </div>
+        <div class="modal-body">
+            <p class="field-hint">Les champs ci-dessous seront <strong>appliqués</strong> au formulaire. Décochez ceux
+                que vous souhaitez ignorer.</p>
+            <div id="beatsPreviewList"></div>
+            <div class="modal-footer">
+                <button type="button" class="button secondary" id="btnCancelBeatsPreview">Annuler</button>
+                <button type="button" class="button primary" id="btnApplyBeats">Appliquer les champs cochés</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal : Loglines -->
+<div class="modal-overlay" id="modalLoglines">
+    <div class="modal-content modal-md">
+        <div class="modal-header">
+            <h3>Choisissez une logline</h3>
+            <button type="button" class="modal-close button" id="btnCloseLoglines" title="Fermer">✕</button>
+        </div>
+        <div class="modal-body">
+            <div class="synopsis-logline-proposals" id="loglinesContainer"></div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal : Évaluation -->
+<div class="modal-overlay" id="modalEvaluation">
+    <div class="modal-content modal-md">
+        <div class="modal-header">
+            <h3>Évaluation du synopsis</h3>
+            <button type="button" class="modal-close button" id="btnCloseEval" title="Fermer">✕</button>
+        </div>
+        <div class="modal-body">
+            <div id="evalContent"></div>
+        </div>
+    </div>
+</div>
+
+<script nonce="{{ @nonce }}">
+    (function () {
+        var BASE = '{{ @base }}';
+        var PROJECT_ID = '{{ @project.id }}';
+        var IS_OWNER = {{ @isOwner ?'true' : 'false'
+    }};
+    var CSRF_TOKEN = '{{ @csrfToken }}';
+
+    // ── Quill instances ───────────────────────────────────────────────────
+    var quillPitch = new Quill('#quill-pitch', { theme: 'snow', modules: { toolbar: QuillTools.getToolbarOptions() } });
+    var quillDev = new Quill('#quill-development', { theme: 'snow', modules: { toolbar: QuillTools.getToolbarOptions() } });
+    var quillClimax = new Quill('#quill-climax', { theme: 'snow', modules: { toolbar: QuillTools.getToolbarOptions() } });
+    var quillResolution = new Quill('#quill-resolution', { theme: 'snow', modules: { toolbar: QuillTools.getToolbarOptions() } });
+
+    quillPitch.root.innerHTML = document.getElementById('input-pitch').value;
+    quillDev.root.innerHTML = document.getElementById('input-development').value;
+    quillClimax.root.innerHTML = document.getElementById('input-climax').value;
+    quillResolution.root.innerHTML = document.getElementById('input-resolution').value;
+
+    // Sync Quill → hidden inputs before submit
+    document.getElementById('synopsisForm').addEventListener('submit', function () {
+        document.getElementById('input-pitch').value = quillPitch.root.innerHTML;
+        document.getElementById('input-development').value = quillDev.root.innerHTML;
+        document.getElementById('input-climax').value = quillClimax.root.innerHTML;
+        document.getElementById('input-resolution').value = quillResolution.root.innerHTML;
+    });
+
+    // ── Logline counter ───────────────────────────────────────────────────
+    var loglineTA = document.getElementById('logline');
+    var loglineCounter = document.getElementById('loglineCounter');
+    if (loglineTA && loglineCounter) {
+        function updateCounter() {
+            var len = loglineTA.value.length;
+            loglineCounter.textContent = len + ' / 500';
+            loglineCounter.classList.toggle('over-limit', len > 480);
+        }
+        loglineTA.addEventListener('input', updateCounter);
+        updateCounter();
+    }
+
+    // ── Onglets ───────────────────────────────────────────────────────────
+    document.querySelectorAll('.synopsis-tab-btn').forEach(function (btn) {
+        btn.addEventListener('click', function () {
+            document.querySelectorAll('.synopsis-tab-btn').forEach(function (b) { b.classList.remove('active'); });
+            document.querySelectorAll('.synopsis-tab-panel').forEach(function (p) { p.classList.remove('active'); });
+            btn.classList.add('active');
+            document.getElementById('tab-' + btn.dataset.tab).classList.add('active');
+        });
+    });
+
+    // ── Méthode guide ─────────────────────────────────────────────────────
+    var METHODS = {
+        freytag: 'Exposition → Action montante → Climax → Action descendante → Dénouement',
+        voyage_heros: '12 étapes : Monde ordinaire → Appel → Refus → Mentor → Seuil → Épreuves → Caverne → Ordalie → Récompense → Chemin du retour → Résurrection → Retour',
+        save_the_cat: '15 beats : Ouverture → Thème annoncé → Mise en place → Catalyseur → Débat → Passage à l\'acte 2 → B-Story → Jeu → Point médian → Les méchants se rapprochent → Tout est perdu → Nuit de l\'âme → Passage à l\'acte 3 → Finale → Image finale',
+        sept_points: '7 points : Hook → Plot turn 1 → Pinch 1 → Midpoint → Pinch 2 → Plot turn 2 → Résolution',
+        snowflake: 'Expansion progressive : 1 phrase → 1 para → 1 page → Fiche perso → Synopsis complet',
+        actanciel: 'Sujet / Objet / Destinateur / Destinataire / Adjuvant / Opposant',
+        libre: ''
+    };
+    var methodSelect = document.getElementById('structure_method');
+    var methodGuide = document.getElementById('methodGuide');
+    if (methodSelect && methodGuide) {
+        function updateGuide() {
+            var m = METHODS[methodSelect.value] || '';
+            methodGuide.textContent = m;
+            methodGuide.classList.toggle('is-visible', !!m);
+        }
+        methodSelect.addEventListener('change', updateGuide);
+        updateGuide();
+    }
+
+    // ── Export toggle ─────────────────────────────────────────────────────
+    var exportToggle = document.getElementById('synopsisExportToggle');
+    if (exportToggle) {
+        exportToggle.addEventListener('change', function () {
+            fetch(BASE + '/project/' + PROJECT_ID + '/synopsis/toggle-export', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json', 'X-CSRF-Token': CSRF_TOKEN },
+                body: JSON.stringify({ is_exported: this.checked ? 1 : 0 })
+            }).then(function (r) {
+                if (!r.ok) { exportToggle.checked = !exportToggle.checked; }
+            });
+        });
+    }
+
+    if (!IS_OWNER) return; // Le reste est réservé au propriétaire
+
+    // ── Helpers ───────────────────────────────────────────────────────────
+    function collectBeatsContext() {
+        return {
+            logline: document.getElementById('logline').value,
+            pitch: quillPitch.root.innerHTML,
+            situation: document.querySelector('[name="situation"]').value,
+            trigger_evt: document.querySelector('[name="trigger_evt"]').value,
+            plot_point1: document.querySelector('[name="plot_point1"]').value,
+            development: quillDev.root.innerHTML,
+            midpoint: document.querySelector('[name="midpoint"]').value,
+            crisis: document.querySelector('[name="crisis"]').value,
+            climax: quillClimax.root.innerHTML,
+            resolution: quillResolution.root.innerHTML,
+        };
+    }
+
+    var quillEditors = { pitch: quillPitch, development: quillDev, climax: quillClimax, resolution: quillResolution };
+
+    function applyBeatValue(beat, value) {
+        if (quillEditors[beat]) {
+            quillEditors[beat].root.innerHTML = value;
+            document.getElementById('input-' + beat).value = value;
+        } else {
+            var el = document.querySelector('[name="' + beat + '"]');
+            if (el) el.value = value;
+        }
+    }
+
+    function postAI(url, payload, btnEl, loadingText) {
+        var orig = btnEl ? btnEl.textContent : '';
+        if (btnEl) { btnEl.disabled = true; btnEl.textContent = loadingText || 'Génération…'; }
+        return fetch(BASE + url, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json', 'X-CSRF-Token': CSRF_TOKEN },
+            body: JSON.stringify(payload)
+        }).then(function (r) {
+            if (!r.ok) return r.text().then(function (t) { throw new Error('HTTP ' + r.status + (t ? ' — ' + t.substring(0, 200) : '')); });
+            return r.json();
+        }).finally(function () { if (btnEl) { btnEl.disabled = false; btnEl.textContent = orig; } });
+    }
+
+    function aiError(err) {
+        console.error('[Synopsis AI]', err);
+        alert('Erreur IA : ' + (err && err.message ? err.message : err));
+    }
+
+    // ── Modales helpers ───────────────────────────────────────────────────
+    function openModal(id) { document.getElementById(id).classList.add('is-visible'); }
+    function closeModal(id) { document.getElementById(id).classList.remove('is-visible'); }
+
+    document.getElementById('btnCloseFromIdea').addEventListener('click', function () { closeModal('modalFromIdea'); });
+    document.getElementById('btnCancelFromIdea').addEventListener('click', function () { closeModal('modalFromIdea'); });
+    document.getElementById('btnCloseBeatsPreview').addEventListener('click', function () { closeModal('modalBeatsPreview'); });
+    document.getElementById('btnCancelBeatsPreview').addEventListener('click', function () { closeModal('modalBeatsPreview'); });
+    document.getElementById('btnCloseLoglines').addEventListener('click', function () { closeModal('modalLoglines'); });
+    document.getElementById('btnCloseEval').addEventListener('click', function () { closeModal('modalEvaluation'); });
+
+    // Fermer au clic sur l'overlay
+    ['modalFromIdea', 'modalBeatsPreview', 'modalLoglines', 'modalEvaluation'].forEach(function (id) {
+        document.getElementById(id).addEventListener('click', function (e) {
+            if (e.target === this) closeModal(id);
+        });
+    });
+
+    // ── Générer depuis une idée ───────────────────────────────────────────
+    document.getElementById('btnAiFromIdea').addEventListener('click', function () {
+        openModal('modalFromIdea');
+    });
+
+    document.getElementById('btnRunFromIdea').addEventListener('click', function () {
+        var idea = document.getElementById('aiIdeaText').value.trim();
+        if (!idea) { alert('Veuillez saisir votre idée.'); return; }
+        var status = document.getElementById('aiIdeaStatus');
+        status.textContent = 'Génération en cours…';
+        postAI('/ai/synopsis/generate-from-idea', {
+            idea: idea,
+            project_id: PROJECT_ID,
+            genre: document.getElementById('aiIdeaGenre').value,
+            audience: document.getElementById('aiIdeaAudience').value,
+            structure_method: document.getElementById('aiIdeaMethod').value
+        }, this, 'Génération…').then(function (data) {
+            status.textContent = '';
+            if (!data.success) { alert('Erreur : ' + (data.error || 'Erreur IA')); return; }
+            closeModal('modalFromIdea');
+            showBeatsPreview(data.beats);
+        }).catch(function (err) { status.textContent = ''; aiError(err); });
+    });
+
+    // ── Générer depuis le projet ──────────────────────────────────────────
+    document.getElementById('btnAiFromProject').addEventListener('click', function () {
+        if (!confirm('L\'IA va lire les chapitres et personnages du projet pour générer un synopsis. Continuer ?')) return;
+        var btn = this;
+        btn.disabled = true; btn.textContent = 'Analyse du projet…';
+        postAI('/ai/synopsis/generate-from-project', {
+            project_id: PROJECT_ID,
+            structure_method: document.getElementById('structure_method').value
+        }, null, '').then(function (data) {
+            btn.disabled = false; btn.textContent = 'Générer depuis le projet';
+            if (!data.success) { alert('Erreur : ' + (data.error || 'Erreur IA')); return; }
+            showBeatsPreview(data.beats);
+        }).catch(function (err) { btn.disabled = false; btn.textContent = 'Générer depuis le projet'; aiError(err); });
+    });
+
+    // ── Aperçu beats ─────────────────────────────────────────────────────
+    var pendingBeats = {};
+    var BEAT_LABELS = {
+        genre: 'Genre', subgenre: 'Sous-genre', tone: 'Ton',
+        themes: 'Thèmes', comps: 'Comparables', audience: 'Public cible',
+        logline: 'Logline', pitch: 'Accroche', situation: 'Situation initiale',
+        trigger_evt: 'Élément déclencheur', plot_point1: 'Premier tournant',
+        development: 'Développement', midpoint: 'Point médian',
+        crisis: 'Crise', climax: 'Climax', resolution: 'Résolution'
+    };
+
+    function showBeatsPreview(beats) {
+        console.log('[Synopsis AI] beats reçus :', beats);
+        pendingBeats = beats || {};
+        var list = document.getElementById('beatsPreviewList');
+        list.innerHTML = '';
+        var count = 0;
+        Object.keys(BEAT_LABELS).forEach(function (key) {
+            if (!beats || !beats[key]) return;
+            count++;
+            var val = String(beats[key]);
+            var div = document.createElement('div');
+            div.style.cssText = 'margin-bottom:.75rem;border:1px solid var(--border,#e0e0e0);border-radius:6px;padding:.6rem .8rem;';
+            div.innerHTML = '<label style="display:flex;gap:.5rem;align-items:flex-start;">'
+                + '<input type="checkbox" name="apply_' + key + '" checked style="margin-top:.2rem;flex-shrink:0;">'
+                + '<span><strong style="font-size:.85rem;">' + BEAT_LABELS[key] + '</strong><br>'
+                + '<span style="font-size:.82rem;color:var(--text-muted,#555);">' + val.substring(0, 200) + (val.length > 200 ? '…' : '') + '</span>'
+                + '</span></label>';
+            list.appendChild(div);
+        });
+        if (!count) {
+            var raw = beats ? JSON.stringify(beats, null, 2) : '(null)';
+            list.innerHTML = '<p class="field-hint" style="color:#c62828;">Aucun champ reconnu dans la réponse IA.</p>'
+                + '<pre style="font-size:.75rem;background:var(--input-bg,#f5f5f5);padding:.75rem;border-radius:6px;overflow:auto;max-height:200px;">'
+                + raw.replace(/</g, '&lt;') + '</pre>';
+        }
+        openModal('modalBeatsPreview');
+    }
+
+    document.getElementById('btnApplyBeats').addEventListener('click', function () {
+        Object.keys(pendingBeats).forEach(function (key) {
+            var cb = document.querySelector('[name="apply_' + key + '"]');
+            if (cb && cb.checked) {
+                applyBeatValue(key, pendingBeats[key]);
+            }
+        });
+        closeModal('modalBeatsPreview');
+    });
+
+    // ── Boutons génération/enrichissement par beat ────────────────────────
+    document.querySelectorAll('[data-beat][data-action]').forEach(function (btn) {
+        btn.addEventListener('click', function () {
+            var beat = this.dataset.beat;
+            var action = this.dataset.action;
+            var ctx = collectBeatsContext();
+
+            if (action === 'generate') {
+                postAI('/ai/synopsis/generate-beat', {
+                    project_id: PROJECT_ID, beat: beat, synopsis_context: ctx
+                }, this, '…').then(function (data) {
+                    if (!data.success) { alert('Erreur : ' + (data.error || 'Erreur IA')); return; }
+                    applyBeatValue(beat, data.content);
+                }).catch(aiError);
+            } else if (action === 'enrich') {
+                var current = quillEditors[beat] ? quillEditors[beat].root.innerHTML
+                    : (document.querySelector('[name="' + beat + '"]') || {}).value || '';
+                if (!current.trim()) { alert('Saisissez du contenu à enrichir.'); return; }
+                var loglineVal = document.getElementById('logline').value;
+                var situationVal = document.querySelector('[name="situation"]').value;
+                postAI('/ai/synopsis/enrich-beat', {
+                    project_id: PROJECT_ID, beat: beat,
+                    current_content: current,
+                    synopsis_context: loglineVal + ' ' + situationVal
+                }, this, '…').then(function (data) {
+                    if (!data.success) { alert('Erreur : ' + (data.error || 'Erreur IA')); return; }
+                    applyBeatValue(beat, data.content);
+                }).catch(aiError);
+            }
+        });
+    });
+
+    // ── Proposer loglines ─────────────────────────────────────────────────
+    var suggestBtn = document.getElementById('btnSuggestLogline');
+    if (suggestBtn) {
+        suggestBtn.addEventListener('click', function () {
+            var ctx = (document.getElementById('logline').value + ' '
+                + quillPitch.root.innerText + ' '
+                + quillDev.root.innerText).trim();
+            if (!ctx) { alert('Remplissez au moins l\'accroche ou le développement.'); return; }
+            postAI('/ai/synopsis/suggest-logline', {
+                project_id: PROJECT_ID, synopsis_context: ctx
+            }, this, '…').then(function (data) {
+                if (!data.success) { alert('Erreur : ' + (data.error || 'Erreur IA')); return; }
+                var container = document.getElementById('loglinesContainer');
+                container.innerHTML = '';
+                (data.loglines || []).forEach(function (ll) {
+                    var div = document.createElement('div');
+                    div.className = 'synopsis-logline-proposal';
+                    div.textContent = ll;
+                    div.addEventListener('click', function () {
+                        document.getElementById('logline').value = ll;
+                        updateCounter();
+                        closeModal('modalLoglines');
+                    });
+                    container.appendChild(div);
+                });
+                openModal('modalLoglines');
+            }).catch(aiError);
+        });
+    }
+
+    // ── Évaluer ───────────────────────────────────────────────────────────
+    document.getElementById('btnAiEvaluate').addEventListener('click', function () {
+        var ctx = collectBeatsContext();
+        ctx.logline = document.getElementById('logline').value;
+        postAI('/ai/synopsis/evaluate', {
+            project_id: PROJECT_ID, synopsis: ctx
+        }, this, 'Analyse…').then(function (data) {
+            if (!data.success) { alert('Erreur : ' + (data.error || 'Erreur IA')); return; }
+            var e = data.evaluation;
+            function esc(s) { var d = document.createElement('div'); d.textContent = s; return d.innerHTML; }
+            function renderList(title, items) {
+                if (!items || !items.length) return '';
+                return '<p><strong>' + title + '</strong></p><ul>'
+                    + items.map(function (i) { return '<li>' + esc(i) + '</li>'; }).join('') + '</ul>';
+            }
+            var html = '<div class="synopsis-eval-score">' + (e.score_global || '—') + ' / 10</div>'
+                + '<p class="synopsis-eval-verdict">' + esc(e.verdict || '') + '</p>';
+            html += renderList('Points forts', e.points_forts);
+            html += renderList('Points faibles', e.points_faibles);
+            html += renderList('Incohérences', e.incoherences);
+            html += renderList('Suggestions', e.suggestions);
+            if (e.logline_evaluation) {
+                html += '<p><strong>Logline :</strong> ' + esc(e.logline_evaluation) + '</p>';
+            }
+            document.getElementById('evalContent').innerHTML = html;
+            openModal('modalEvaluation');
+        }).catch(aiError);
+    });
+
+}) ();
+</script>

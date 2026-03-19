@@ -32,6 +32,7 @@
 @import 'css/modules/sections.css';
 @import 'css/modules/glossary.css';
 @import 'css/modules/activity-log.css';
+@import 'css/modules/synopsis.css';
 /* Editor - Quill editor customization */
 @import 'css/editor/quill-base.css';
 @import 'css/editor/quill-toolbar.css';
