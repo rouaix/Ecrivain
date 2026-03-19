@@ -1,0 +1,129 @@
+/* ============================================================
+   PRO LAYOUT — App shell: topbar + sidebar + content
+   Tout scoped sous body.ui-pro pour isolation totale
+   ============================================================ */
+
+/* Neutralise le chrome classique */
+body.ui-pro > header,
+body.ui-pro > footer {
+    display: none !important;
+}
+
+body.ui-pro > main {
+    padding: 0;
+    margin: 0;
+}
+
+body.ui-pro > main > .container {
+    max-width: none;
+    padding: 0;
+    margin: 0;
+    width: 100%;
+}
+
+/* ── Shell ── */
+body.ui-pro {
+    min-height: 100vh;
+    background: var(--body-bg);
+}
+
+/* ── Topbar ── */
+body.ui-pro .pro-topbar {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 48px;
+    background: var(--header-bg);
+    color: var(--header-text);
+    display: flex;
+    align-items: center;
+    padding: 0 16px;
+    gap: 8px;
+    z-index: 200;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.12);
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.12);
+}
+
+/* ── Sidebar ── */
+body.ui-pro .pro-sidebar {
+    position: fixed;
+    top: 48px;
+    left: 0;
+    bottom: 0;
+    width: 240px;
+    background: var(--card-bg);
+    border-right: 1px solid var(--input-border);
+    overflow-y: auto;
+    overflow-x: hidden;
+    z-index: 100;
+    display: flex;
+    flex-direction: column;
+    scrollbar-width: thin;
+    scrollbar-color: var(--input-border) transparent;
+}
+
+body.ui-pro .pro-sidebar::-webkit-scrollbar {
+    width: 4px;
+}
+body.ui-pro .pro-sidebar::-webkit-scrollbar-track {
+    background: transparent;
+}
+body.ui-pro .pro-sidebar::-webkit-scrollbar-thumb {
+    background: var(--input-border);
+    border-radius: 2px;
+}
+
+/* ── Content ── */
+body.ui-pro .pro-content {
+    margin-left: 240px;
+    padding-top: 48px;
+    min-height: 100vh;
+    background: var(--body-bg);
+}
+
+body.ui-pro .pro-content-inner {
+    padding: 28px 32px;
+    max-width: 1440px;
+}
+
+/* ── Responsive ── */
+@media (max-width: 900px) {
+    body.ui-pro .pro-sidebar {
+        width: 200px;
+    }
+    body.ui-pro .pro-content {
+        margin-left: 200px;
+    }
+}
+
+@media (max-width: 640px) {
+    body.ui-pro .pro-sidebar {
+        transform: translateX(-100%);
+        transition: transform 0.25s ease;
+        width: 260px;
+        z-index: 300;
+        box-shadow: 4px 0 24px rgba(0, 0, 0, 0.15);
+    }
+    body.ui-pro .pro-sidebar.is-open {
+        transform: translateX(0);
+    }
+    body.ui-pro .pro-content {
+        margin-left: 0;
+    }
+    body.ui-pro #proSidebarToggle {
+        display: flex !important;
+    }
+}
+
+/* ── Backdrop (mobile) ── */
+body.ui-pro .pro-backdrop {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.4);
+    z-index: 250;
+}
+body.ui-pro .pro-backdrop.is-visible {
+    display: block;
+}

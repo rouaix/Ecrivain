@@ -114,6 +114,13 @@
                         <i class="fas fa-search" aria-hidden="true"></i>
                     </button>
 
+                    <form action="{{ @base }}/ui-mode" method="POST" style="display:inline;margin-right:10px">
+                        <input type="hidden" name="csrf_token" value="{{ @csrfToken }}">
+                        <input type="hidden" name="mode" value="pro">
+                        <button type="submit" class="nav-search-btn" title="Passer à l'interface Pro" style="font-size:.85rem;padding:4px 10px;border-radius:4px;opacity:.85">
+                            <i class="fas fa-th-large" aria-hidden="true"></i> Pro
+                        </button>
+                    </form>
                     <a href="{{ @base }}/logout">Déconnexion</a>
 
                 </true>

@@ -1,0 +1,581 @@
+<!DOCTYPE html>
+<html lang="fr">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ @title | esc }}</title>
+
+    <link rel="manifest" href="{{ @base }}/public/manifest.json">
+    <meta name="theme-color" content="#3f51b5">
+    <meta name="csrf-token" content="{{ @csrfToken }}">
+
+    <check if="{{ isset(@metaDescription) }}">
+        <meta name="description" content="{{ @metaDescription | esc }}">
+    <false>
+        <meta name="description" content="Écrivain — logiciel d'écriture créative avec IA.">
+    </false>
+    </check>
+
+    <link rel="icon" type="image/png" href="{{ @base }}/public/icons/icon-192.png">
+
+    <!-- Quill -->
+    <link href="https://cdn.quilljs.com/1.3.6/quill.snow.css" rel="stylesheet">
+    <script nonce="{{ @nonce }}" src="https://cdn.quilljs.com/1.3.6/quill.js"></script>
+
+    <!-- Scripts app -->
+    <script nonce="{{ @nonce }}" src="{{ @base }}/public/js/quill-adapter.js?v=26"></script>
+    <script nonce="{{ @nonce }}" src="{{ @base }}/public/js/api-client.js?v=1"></script>
+    <script nonce="{{ @nonce }}" src="{{ @base }}/public/js/notifications.js?v=1"></script>
+    <script nonce="{{ @nonce }}" src="{{ @base }}/public/js/pro-ui.js?v=1"></script>
+
+    <!-- CSS : base + Pro -->
+    <link rel="stylesheet" href="{{ @base }}/public/style.css?v=42">
+    <link rel="stylesheet" href="{{ @base }}/public/css/pro/pro.css?v=1">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <!-- Thème -->
+    <set selectedTheme="{{ (isset(@COOKIE.theme) && @COOKIE.theme != '') ? @COOKIE.theme : 'default' }}" />
+    <link rel="stylesheet" href="{{ @base }}/public/css/themes/theme-{{ @selectedTheme }}.css">
+</head>
+
+<body class="theme-{{ @selectedTheme }} ui-pro">
+
+    <!-- ════════════════════════════════════════════
+         TOPBAR
+         ════════════════════════════════════════════ -->
+    <header class="pro-topbar" role="banner">
+
+        <!-- Toggle sidebar (mobile uniquement) -->
+        <button id="proSidebarToggle" class="pro-topbar-btn" style="display:none" aria-label="Ouvrir le menu" title="Menu">
+            <i class="fas fa-bars" aria-hidden="true"></i>
+        </button>
+
+        <!-- Logo -->
+        <a href="{{ @base }}/dashboard" class="pro-topbar-logo" title="Tableau de bord">
+            <i class="fas fa-feather-alt" aria-hidden="true"></i>
+            Écrivain
+        </a>
+
+        <div class="pro-topbar-sep"></div>
+
+        <!-- Fil d'ariane -->
+        <nav class="pro-breadcrumb" aria-label="Fil d'ariane">
+            <check if="{{ isset(@project) }}">
+                <a href="{{ @base }}/dashboard">Projets</a>
+                <span class="pro-breadcrumb-sep" aria-hidden="true">›</span>
+                <check if="{{ isset(@chapter) }}">
+                    <a href="{{ @base }}/project/{{ @project.id }}">{{ @project.title | esc }}</a>
+                    <span class="pro-breadcrumb-sep" aria-hidden="true">›</span>
+                    <span class="pro-breadcrumb-current">{{ @chapter.title | esc }}</span>
+                <false>
+                    <check if="{{ isset(@act) }}">
+                        <a href="{{ @base }}/project/{{ @project.id }}">{{ @project.title | esc }}</a>
+                        <span class="pro-breadcrumb-sep" aria-hidden="true">›</span>
+                        <span class="pro-breadcrumb-current">{{ @act.title | esc }}</span>
+                    <false>
+                        <span class="pro-breadcrumb-current">{{ @project.title | esc }}</span>
+                    </false>
+                    </check>
+                </false>
+                </check>
+            <false>
+                <span class="pro-breadcrumb-current">{{ @title | esc }}</span>
+            </false>
+            </check>
+        </nav>
+
+        <div class="pro-topbar-spacer"></div>
+
+        <!-- Actions topbar (utilisateur connecté) -->
+        <check if="isset(@SESSION.user_id)">
+            <div class="pro-topbar-actions">
+
+                <!-- Recherche -->
+                <button type="button" id="searchToggleBtn" class="pro-topbar-btn" title="Rechercher (Ctrl+K)" aria-label="Ouvrir la recherche">
+                    <i class="fas fa-search" aria-hidden="true"></i>
+                </button>
+
+                <!-- Demande IA -->
+                <a href="#" id="aiRequestBtn" class="pro-topbar-btn" title="Demande IA">
+                    <i class="fas fa-magic" aria-hidden="true"></i>
+                </a>
+
+                <!-- Collaborations -->
+                <a href="{{ @base }}/collab/invitations" class="pro-topbar-btn" title="Invitations et collaborations">
+                    <i class="fas fa-users" aria-hidden="true"></i>
+                    <check if="{{ @pendingCollabCount > 0 }}">
+                        <span class="pro-topbar-badge" aria-label="{{ @pendingCollabCount }} en attente">{{ @pendingCollabCount }}</span>
+                    </check>
+                </a>
+
+                <!-- Menu utilisateur -->
+                <div class="pro-user-menu" id="proUserMenu">
+                    <button id="proUserBtn" class="pro-user-btn" aria-haspopup="true" aria-expanded="false" title="Menu utilisateur">
+                        <div class="pro-user-avatar" aria-hidden="true">{{ substr(@currentUser.username ?? 'U', 0, 1) }}</div>
+                        <i class="fas fa-chevron-down pro-user-chevron" aria-hidden="true"></i>
+                    </button>
+
+                    <div id="proUserDropdown" class="pro-user-dropdown" role="menu">
+
+                        <!-- Identité -->
+                        <div class="pro-user-dropdown-header">
+                            <div class="pro-user-dropdown-name">{{ @currentUser.username | esc }}</div>
+                            <div class="pro-user-dropdown-email">{{ @currentUser.email | esc }}</div>
+                        </div>
+
+                        <a href="{{ @base }}/profile" class="pro-user-dropdown-item" role="menuitem">
+                            <i class="fas fa-user" aria-hidden="true"></i> Mon profil
+                        </a>
+                        <a href="{{ @base }}/ai/config" class="pro-user-dropdown-item" role="menuitem">
+                            <i class="fas fa-magic" aria-hidden="true"></i> Configuration IA
+                        </a>
+                        <a href="{{ @base }}/auth/tokens" class="pro-user-dropdown-item" role="menuitem">
+                            <i class="fas fa-key" aria-hidden="true"></i> Tokens API
+                        </a>
+
+                        <div class="pro-user-dropdown-sep"></div>
+
+                        <!-- Sélecteur de thème -->
+                        <div class="pro-theme-picker">
+                            <div class="pro-theme-picker-label">Thème</div>
+                            <div class="pro-theme-swatches">
+                                <button type="button" class="pro-theme-swatch pro-theme-swatch--default {{ @selectedTheme == 'default' ? 'is-active' : '' }}" data-theme="default" title="Défaut"></button>
+                                <button type="button" class="pro-theme-swatch pro-theme-swatch--blue {{ @selectedTheme == 'blue' ? 'is-active' : '' }}" data-theme="blue" title="Bleu"></button>
+                                <button type="button" class="pro-theme-swatch pro-theme-swatch--dark {{ @selectedTheme == 'dark' ? 'is-active' : '' }}" data-theme="dark" title="Sombre"></button>
+                                <button type="button" class="pro-theme-swatch pro-theme-swatch--forest {{ @selectedTheme == 'forest' ? 'is-active' : '' }}" data-theme="forest" title="Forêt"></button>
+                                <button type="button" class="pro-theme-swatch pro-theme-swatch--moderne {{ @selectedTheme == 'moderne' ? 'is-active' : '' }}" data-theme="moderne" title="Moderne"></button>
+                            </div>
+                            <!-- Formulaire caché pour poster le thème -->
+                            <form id="proThemeForm" action="{{ @base }}/theme" method="POST" style="display:none">
+                                <input type="hidden" name="csrf_token" value="{{ @csrfToken }}">
+                                <input type="hidden" id="proThemeInput" name="theme" value="">
+                            </form>
+                        </div>
+
+                        <div class="pro-user-dropdown-sep"></div>
+
+                        <!-- Switch vers interface classique -->
+                        <form action="{{ @base }}/ui-mode" method="POST" style="display:contents">
+                            <input type="hidden" name="csrf_token" value="{{ @csrfToken }}">
+                            <input type="hidden" name="mode" value="classic">
+                            <button type="submit" class="pro-user-dropdown-item" role="menuitem" title="Revenir à l'interface classique">
+                                <i class="fas fa-desktop" aria-hidden="true"></i> Interface classique
+                            </button>
+                        </form>
+
+                        <div class="pro-user-dropdown-sep"></div>
+
+                        <a href="{{ @base }}/logout" class="pro-user-dropdown-item is-danger" role="menuitem">
+                            <i class="fas fa-sign-out-alt" aria-hidden="true"></i> Déconnexion
+                        </a>
+
+                    </div>
+                </div>
+
+            </div>
+        </check>
+
+    </header>
+
+    <!-- ════════════════════════════════════════════
+         SIDEBAR
+         ════════════════════════════════════════════ -->
+    <check if="isset(@SESSION.user_id)">
+        <aside class="pro-sidebar" role="navigation" aria-label="Navigation principale">
+
+            <!-- Navigation globale -->
+            <div class="pro-nav-section">Navigation</div>
+
+            <a href="{{ @base }}/dashboard"
+               class="pro-nav-item {{ @PATH == '/dashboard' ? 'is-active' : '' }}">
+                <i class="fas fa-home" aria-hidden="true"></i> Tableau de bord
+            </a>
+
+            <a href="{{ @base }}/stats"
+               class="pro-nav-item {{ substr(@PATH, 0, 6) == '/stats' ? 'is-active' : '' }}">
+                <i class="fas fa-chart-bar" aria-hidden="true"></i> Statistiques
+            </a>
+
+            <a href="{{ @base }}/share"
+               class="pro-nav-item {{ @PATH == '/share' ? 'is-active' : '' }}">
+                <i class="fas fa-share-alt" aria-hidden="true"></i> Partages
+            </a>
+
+            <a href="{{ @base }}/templates"
+               class="pro-nav-item {{ substr(@PATH, 0, 10) == '/templates' || substr(@PATH, 0, 9) == '/template' ? 'is-active' : '' }}">
+                <i class="fas fa-layer-group" aria-hidden="true"></i> Templates
+            </a>
+
+            <a href="{{ @base }}/collab/invitations"
+               class="pro-nav-item {{ substr(@PATH, 0, 7) == '/collab' ? 'is-active' : '' }}">
+                <i class="fas fa-user-friends" aria-hidden="true"></i>
+                Collaborations
+                <check if="{{ @pendingCollabCount > 0 }}">
+                    <span class="pro-nav-badge">{{ @pendingCollabCount }}</span>
+                </check>
+            </a>
+
+            <!-- Navigation projet (si contexte projet) -->
+            <check if="{{ isset(@project) }}">
+
+                <div class="pro-nav-divider"></div>
+
+                <div class="pro-nav-project-header">
+                    <i class="fas fa-book" aria-hidden="true"></i>
+                    <span class="pro-nav-project-title" title="{{ @project.title | esc }}">{{ @project.title | esc }}</span>
+                </div>
+
+                <a href="{{ @base }}/project/{{ @project.id }}"
+                   class="pro-nav-item {{ @PATH == '/project/'~@project.id ? 'is-active' : '' }}">
+                    <i class="fas fa-th-large" aria-hidden="true"></i> Vue d'ensemble
+                </a>
+
+                <check if="{{ !isset(@panelConfig) || @panelConfig.synopsis }}">
+                    <a href="{{ @base }}/project/{{ @project.id }}/synopsis"
+                       class="pro-nav-item {{ substr(@PATH, 0, strlen('/project/'~@project.id~'/synopsis')) == '/project/'~@project.id~'/synopsis' ? 'is-active' : '' }}">
+                        <i class="fas fa-file-alt" aria-hidden="true"></i> Synopsis
+                    </a>
+                </check>
+
+                <a href="{{ @base }}/project/{{ @project.id }}#chapters"
+                   class="pro-nav-item {{ (substr(@PATH, strlen('/project/'~@project.id~'/')) == 'chapter' || substr(@PATH, strlen('/project/'~@project.id~'/')) == 'act') ? 'is-active' : '' }}">
+                    <i class="fas fa-list-ol" aria-hidden="true"></i> Structure
+                </a>
+
+                <a href="{{ @base }}/project/{{ @project.id }}/characters"
+                   class="pro-nav-item {{ substr(@PATH, 0, strlen('/project/'~@project.id~'/character')) == '/project/'~@project.id~'/character' ? 'is-active' : '' }}">
+                    <i class="fas fa-users" aria-hidden="true"></i> Personnages
+                </a>
+
+                <a href="{{ @base }}/project/{{ @project.id }}/notes"
+                   class="pro-nav-item {{ substr(@PATH, 0, strlen('/project/'~@project.id~'/note')) == '/project/'~@project.id~'/note' ? 'is-active' : '' }}">
+                    <i class="fas fa-sticky-note" aria-hidden="true"></i> Notes
+                </a>
+
+                <a href="{{ @base }}/project/{{ @project.id }}/glossary"
+                   class="pro-nav-item {{ substr(@PATH, 0, strlen('/project/'~@project.id~'/glossary')) == '/project/'~@project.id~'/glossary' ? 'is-active' : '' }}">
+                    <i class="fas fa-book-open" aria-hidden="true"></i> Glossaire
+                </a>
+
+                <check if="{{ !isset(@panelConfig) || @panelConfig.scenario }}">
+                    <a href="{{ @base }}/project/{{ @project.id }}/scenarios"
+                       class="pro-nav-item {{ substr(@PATH, 0, strlen('/project/'~@project.id~'/scenario')) == '/project/'~@project.id~'/scenario' ? 'is-active' : '' }}">
+                        <i class="fas fa-film" aria-hidden="true"></i> Scénario
+                    </a>
+                </check>
+
+                <div class="pro-nav-divider"></div>
+
+                <a href="{{ @base }}/project/{{ @project.id }}/mindmap"
+                   class="pro-nav-item {{ @PATH == '/project/'~@project.id~'/mindmap' ? 'is-active' : '' }}">
+                    <i class="fas fa-sitemap" aria-hidden="true"></i> Carte mentale
+                </a>
+
+                <a href="{{ @base }}/project/{{ @project.id }}/lecture"
+                   class="pro-nav-item">
+                    <i class="fas fa-glasses" aria-hidden="true"></i> Mode lecture
+                </a>
+
+                <check if="{{ isset(@isOwner) && @isOwner }}">
+                    <a href="{{ @base }}/project/{{ @project.id }}/collaborateurs"
+                       class="pro-nav-item {{ @PATH == '/project/'~@project.id~'/collaborateurs' ? 'is-active' : '' }}">
+                        <i class="fas fa-user-plus" aria-hidden="true"></i> Collaborateurs
+                    </a>
+
+                    <a href="{{ @base }}/project/{{ @project.id }}/activity"
+                       class="pro-nav-item {{ @PATH == '/project/'~@project.id~'/activity' ? 'is-active' : '' }}">
+                        <i class="fas fa-history" aria-hidden="true"></i> Activité
+                    </a>
+                </check>
+
+            </check>
+
+            <!-- Footer sidebar -->
+            <div class="pro-sidebar-footer">
+                <a href="{{ @base }}/profile" class="pro-nav-item {{ @PATH == '/profile' ? 'is-active' : '' }}">
+                    <i class="fas fa-user-cog" aria-hidden="true"></i> Profil &amp; compte
+                </a>
+            </div>
+
+        </aside>
+    </check>
+
+    <!-- ════════════════════════════════════════════
+         CONTENU PRINCIPAL
+         ════════════════════════════════════════════ -->
+    <main class="pro-content" id="main-content">
+        <div class="pro-content-inner">
+
+            <!-- Messages flash -->
+            <check if="{{ isset(@SESSION.success) }}">
+                <div class="pro-alert pro-alert--success">
+                    <i class="fas fa-check-circle" aria-hidden="true"></i>
+                    {{ @SESSION.success | esc }}
+                </div>
+                <set SESSION.success="" />
+            </check>
+            <check if="{{ isset(@SESSION.error) }}">
+                <div class="pro-alert pro-alert--error">
+                    <i class="fas fa-exclamation-circle" aria-hidden="true"></i>
+                    {{ @SESSION.error | esc }}
+                </div>
+                <set SESSION.error="" />
+            </check>
+
+            {{ @content | raw }}
+
+        </div>
+    </main>
+
+    <!-- Backdrop (mobile sidebar + slide panels) -->
+    <div id="proBackdrop" class="pro-backdrop" aria-hidden="true"></div>
+
+    <!-- ════════════════════════════════════════════
+         SEARCH OVERLAY (identique au classique)
+         ════════════════════════════════════════════ -->
+    <check if="isset(@SESSION.user_id)">
+        <div id="searchOverlay" role="dialog" aria-modal="true" aria-label="Recherche globale">
+            <div id="searchOverlayBox">
+                <form method="get" action="{{ @base }}/search" id="searchOverlayForm">
+                    <div class="search-overlay-input-wrap">
+                        <i class="fas fa-search search-overlay-icon" aria-hidden="true"></i>
+                        <input type="text" name="q" id="searchOverlayInput"
+                               placeholder="Rechercher dans vos textes…"
+                               autocomplete="off" spellcheck="false">
+                        <kbd class="search-overlay-esc">Esc</kbd>
+                    </div>
+                </form>
+                <p class="search-overlay-hint">
+                    Appuyez sur <kbd>Entrée</kbd> pour rechercher · <kbd>Esc</kbd> pour fermer
+                </p>
+            </div>
+        </div>
+    </check>
+
+    <!-- ════════════════════════════════════════════
+         MODALE IA (identique au classique)
+         ════════════════════════════════════════════ -->
+    <check if="isset(@SESSION.user_id)">
+        <div id="aiRequestModal" class="modal-overlay modal-overlay--front">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h3>Demande IA</h3>
+                    <button class="modal-close" id="closeAiModal">&times;</button>
+                </div>
+                <div class="modal-body">
+                    <div class="form-group">
+                        <label for="aiSystemPrompt">Prompt Système</label>
+                        <textarea id="aiSystemPrompt" class="input-block" rows="3"
+                            placeholder="Définissez le rôle de l'IA...">{{ @aiSystemPrompt | esc }}</textarea>
+                    </div>
+                    <div class="form-group">
+                        <label for="aiUserPrompt">Prompt</label>
+                        <select id="aiUserPromptPreset" class="input-block">
+                            <option value="">Choisir un prompt enregistré...</option>
+                            <repeat group="{{ @aiUserPrompts }}" value="{{ @promptItem }}">
+                                <option value="{{ @promptItem.prompt | esc }}">{{ @promptItem.label | esc }}</option>
+                            </repeat>
+                        </select>
+                        <textarea id="aiUserPrompt" class="input-block" rows="5"
+                            placeholder="Votre demande..."></textarea>
+                    </div>
+                    <div class="form-group">
+                        <label for="aiContextFile">Joindre un fichier (Max 1Mo)</label>
+                        <input type="file" id="aiContextFile" class="input-block">
+                    </div>
+                    <div class="form-actions-right">
+                        <button class="button primary" id="sendAiRequest">Envoyer</button>
+                    </div>
+                    <div id="aiResponseContainer" class="ai-response">
+                        <h4>Réponse IA</h4>
+                        <div id="aiResponseContent" class="ai-response-content"></div>
+                    </div>
+                    <details id="aiModalDebug" class="ai-debug-details">
+                        <summary>Debug — prompts envoyés</summary>
+                        <pre id="aiModalDebugBody" class="ai-debug-pre"></pre>
+                    </details>
+                </div>
+            </div>
+        </div>
+    </check>
+
+    <!-- ════════════════════════════════════════════
+         STYLES INLINE (search overlay + nav badge)
+         ════════════════════════════════════════════ -->
+    <style>
+        /* Search overlay */
+        #searchOverlay {
+            display: none;
+            position: fixed;
+            inset: 0;
+            background: rgba(0,0,0,.55);
+            z-index: 9000;
+            align-items: flex-start;
+            justify-content: center;
+            padding-top: 15vh;
+        }
+        #searchOverlay.is-open { display: flex; }
+        #searchOverlayBox {
+            background: var(--card-bg, #fff);
+            border-radius: 12px;
+            box-shadow: 0 20px 60px rgba(0,0,0,.35);
+            width: min(640px, 92vw);
+            overflow: hidden;
+        }
+        .search-overlay-input-wrap {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 16px 20px;
+            border-bottom: 1px solid var(--border-color, #e0e0e0);
+        }
+        .search-overlay-icon { font-size: 1.1rem; color: var(--text-muted, #888); flex-shrink: 0; }
+        #searchOverlayInput {
+            flex: 1; border: none; outline: none;
+            background: transparent; font-size: 1.15rem;
+            color: var(--text-main, #333); font-family: inherit;
+        }
+        #searchOverlayInput::placeholder { color: var(--text-muted, #aaa); }
+        .search-overlay-esc {
+            font-size: .7rem; padding: 2px 6px; border-radius: 4px;
+            border: 1px solid var(--border-color, #ccc);
+            color: var(--text-muted, #888);
+            background: var(--table-header-bg, #f5f5f5);
+            font-family: inherit; flex-shrink: 0;
+        }
+        .search-overlay-hint {
+            font-size: .78rem; color: var(--text-muted, #999);
+            padding: 10px 20px; margin: 0;
+        }
+        .search-overlay-hint kbd {
+            font-size: .75rem; padding: 1px 5px; border-radius: 3px;
+            border: 1px solid var(--border-color, #ccc);
+            background: var(--table-header-bg, #f5f5f5); font-family: inherit;
+        }
+    </style>
+
+    <!-- ════════════════════════════════════════════
+         SCRIPTS
+         ════════════════════════════════════════════ -->
+    <script nonce="{{ @nonce }}">
+        window.CSRF_TOKEN = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') || '';
+
+        // Auto-inject CSRF dans les formulaires POST qui n'en ont pas
+        document.querySelectorAll('form[method="post"]').forEach(function (form) {
+            if (form.querySelector('input[name="csrf_token"]')) return;
+            var h = document.createElement('input');
+            h.type = 'hidden'; h.name = 'csrf_token'; h.value = window.CSRF_TOKEN;
+            form.appendChild(h);
+        });
+
+        // Search overlay
+        var searchOverlay = document.getElementById('searchOverlay');
+        var searchInput   = document.getElementById('searchOverlayInput');
+        var searchToggle  = document.getElementById('searchToggleBtn');
+
+        function openSearch() {
+            if (!searchOverlay) return;
+            searchOverlay.classList.add('is-open');
+            if (searchInput) { searchInput.value = ''; searchInput.focus(); }
+        }
+        function closeSearch() {
+            if (searchOverlay) searchOverlay.classList.remove('is-open');
+        }
+
+        if (searchToggle) searchToggle.addEventListener('click', openSearch);
+        if (searchOverlay) {
+            searchOverlay.addEventListener('click', function (e) {
+                if (e.target === searchOverlay) closeSearch();
+            });
+        }
+        document.addEventListener('keydown', function (e) {
+            if ((e.ctrlKey || e.metaKey) && e.key === 'k') { e.preventDefault(); openSearch(); }
+            if (e.key === 'Escape') closeSearch();
+        });
+
+        // PWA
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', function () {
+                navigator.serviceWorker.register('{{ @base }}/public/service-worker.js')
+                    .catch(function (err) { console.error('SW registration failed:', err); });
+            });
+        }
+    </script>
+
+    <script nonce="{{ @nonce }}">
+        document.addEventListener('DOMContentLoaded', function () {
+            // ── IA Modal ──
+            var aiModal    = document.getElementById('aiRequestModal');
+            var aiBtn      = document.getElementById('aiRequestBtn');
+            var aiClose    = document.getElementById('closeAiModal');
+            var sendBtn    = document.getElementById('sendAiRequest');
+            var fileInput  = document.getElementById('aiContextFile');
+            var resContainer = document.getElementById('aiResponseContainer');
+            var resContent   = document.getElementById('aiResponseContent');
+            var sysPrompt    = document.getElementById('aiSystemPrompt');
+            var userPrompt   = document.getElementById('aiUserPrompt');
+            var userPreset   = document.getElementById('aiUserPromptPreset');
+
+            if (aiBtn) aiBtn.addEventListener('click', function (e) {
+                e.preventDefault();
+                aiModal.classList.add('is-visible');
+            });
+            if (aiClose) aiClose.addEventListener('click', function () {
+                aiModal.classList.remove('is-visible');
+            });
+            window.addEventListener('click', function (e) {
+                if (e.target === aiModal) aiModal.classList.remove('is-visible');
+            });
+
+            if (sendBtn) sendBtn.addEventListener('click', function () {
+                var sp = sysPrompt.value;
+                var up = userPrompt.value;
+                var file = fileInput ? fileInput.files[0] : null;
+                if (!up) { alert('Veuillez entrer un prompt.'); return; }
+
+                resContainer.classList.add('is-visible');
+                resContent.innerHTML = '<em>Génération en cours...</em>';
+                sendBtn.disabled = true;
+
+                var send = function (ctx) {
+                    fetch('{{ @base }}/ai/generate', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json', 'X-CSRF-Token': window.CSRF_TOKEN },
+                        body: JSON.stringify({ system_prompt: sp, prompt: up, context: ctx, task: 'custom' })
+                    })
+                    .then(function (r) { return r.json(); })
+                    .then(function (data) {
+                        sendBtn.disabled = false;
+                        if (data.text) { resContent.innerHTML = data.text.replace(/\n/g, '<br>'); }
+                        else if (data.error) { resContent.innerHTML = '<span class="text-error">Erreur: ' + data.error + '</span>'; }
+                        if (data.debug) {
+                            var ds = document.getElementById('aiModalDebug');
+                            var db = document.getElementById('aiModalDebugBody');
+                            if (ds && db) {
+                                db.textContent = 'Modèle: ' + data.debug.model + '\n\n--- SYSTEM ---\n' + data.debug.system + '\n\n--- USER ---\n' + data.debug.user;
+                                ds.classList.add('is-visible');
+                            }
+                        }
+                    })
+                    .catch(function () { sendBtn.disabled = false; resContent.innerHTML = '<span class="text-error">Erreur de communication.</span>'; });
+                };
+
+                if (file) {
+                    var reader = new FileReader();
+                    reader.onload = function (e) { send(e.target.result); };
+                    reader.onerror = function () { alert('Erreur lecture fichier.'); sendBtn.disabled = false; };
+                    reader.readAsText(file);
+                } else { send(null); }
+            });
+
+            if (userPreset && userPrompt) {
+                userPreset.addEventListener('change', function () {
+                    if (userPreset.value) { userPrompt.value = userPreset.value; userPrompt.focus(); }
+                });
+            }
+        });
+    </script>
+
+</body>
+</html>

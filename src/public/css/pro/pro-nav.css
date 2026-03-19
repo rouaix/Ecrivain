@@ -1,0 +1,433 @@
+/* ============================================================
+   PRO NAVIGATION — Sidebar items, topbar elements
+   ============================================================ */
+
+/* ── Sidebar section header ── */
+body.ui-pro .pro-nav-section {
+    padding: 18px 14px 4px;
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--text-muted);
+    user-select: none;
+}
+
+/* ── Nav item (link or button) ── */
+body.ui-pro .pro-nav-item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 8px 14px 8px 16px;
+    font-size: 13.5px;
+    color: var(--text-main);
+    text-decoration: none;
+    border-left: 3px solid transparent;
+    border-top: none;
+    border-right: none;
+    border-bottom: none;
+    background: none;
+    width: 100%;
+    text-align: left;
+    font-family: inherit;
+    cursor: pointer;
+    transition: background 0.12s, color 0.12s;
+    line-height: 1.4;
+}
+
+body.ui-pro .pro-nav-item:hover {
+    background: var(--table-row-hover-bg);
+    color: var(--text-main);
+    text-decoration: none;
+}
+
+body.ui-pro .pro-nav-item.is-active {
+    background: var(--table-row-hover-bg);
+    border-left-color: var(--button-primary-bg);
+    font-weight: 600;
+    color: var(--button-primary-bg);
+}
+
+body.ui-pro .pro-nav-item i {
+    width: 15px;
+    text-align: center;
+    font-size: 12px;
+    opacity: 0.6;
+    flex-shrink: 0;
+    transition: opacity 0.12s;
+}
+
+body.ui-pro .pro-nav-item:hover i,
+body.ui-pro .pro-nav-item.is-active i {
+    opacity: 1;
+}
+
+/* ── Badge dans nav ── */
+body.ui-pro .pro-nav-badge {
+    margin-left: auto;
+    background: var(--color-danger);
+    color: #fff;
+    border-radius: 10px;
+    padding: 1px 6px;
+    font-size: 10px;
+    font-weight: 700;
+    line-height: 1.5;
+    min-width: 18px;
+    text-align: center;
+    flex-shrink: 0;
+}
+
+/* ── Séparateur ── */
+body.ui-pro .pro-nav-divider {
+    height: 1px;
+    background: var(--input-border);
+    margin: 6px 0;
+}
+
+/* ── Titre de section projet ── */
+body.ui-pro .pro-nav-project-header {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 12px 14px 4px;
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+    color: var(--text-muted);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+body.ui-pro .pro-nav-project-title {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    min-width: 0;
+    color: var(--text-main);
+    font-size: 12px;
+    font-weight: 600;
+}
+
+/* ── Sidebar footer ── */
+body.ui-pro .pro-sidebar-footer {
+    margin-top: auto;
+    border-top: 1px solid var(--input-border);
+    padding: 6px 0;
+}
+
+/* ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+   TOPBAR
+   ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
+
+/* ── Logo ── */
+body.ui-pro .pro-topbar-logo {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    color: var(--header-text);
+    text-decoration: none;
+    font-size: 15px;
+    font-weight: 700;
+    letter-spacing: -0.3px;
+    flex-shrink: 0;
+    white-space: nowrap;
+    opacity: 1;
+    transition: opacity 0.15s;
+}
+body.ui-pro .pro-topbar-logo:hover {
+    opacity: 0.85;
+    text-decoration: none;
+    color: var(--header-text);
+}
+body.ui-pro .pro-topbar-logo i {
+    font-size: 14px;
+}
+
+/* ── Séparateur topbar ── */
+body.ui-pro .pro-topbar-sep {
+    width: 1px;
+    height: 20px;
+    background: rgba(255, 255, 255, 0.2);
+    flex-shrink: 0;
+}
+
+/* ── Fil d'ariane ── */
+body.ui-pro .pro-breadcrumb {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    font-size: 13px;
+    color: rgba(255, 255, 255, 0.65);
+    overflow: hidden;
+    min-width: 0;
+    flex: 1;
+}
+
+body.ui-pro .pro-breadcrumb a {
+    color: rgba(255, 255, 255, 0.75);
+    text-decoration: none;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    flex-shrink: 0;
+    transition: color 0.12s;
+}
+body.ui-pro .pro-breadcrumb a:hover {
+    color: #fff;
+    text-decoration: none;
+}
+
+body.ui-pro .pro-breadcrumb-sep {
+    opacity: 0.45;
+    flex-shrink: 0;
+    font-size: 12px;
+}
+
+body.ui-pro .pro-breadcrumb-current {
+    color: rgba(255, 255, 255, 0.9);
+    font-weight: 500;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+/* ── Spacer ── */
+body.ui-pro .pro-topbar-spacer {
+    flex: 1;
+    min-width: 8px;
+}
+
+/* ── Boutons topbar ── */
+body.ui-pro .pro-topbar-actions {
+    display: flex;
+    align-items: center;
+    gap: 2px;
+    flex-shrink: 0;
+}
+
+body.ui-pro .pro-topbar-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 34px;
+    height: 34px;
+    border-radius: 6px;
+    background: none;
+    border: none;
+    color: rgba(255, 255, 255, 0.8);
+    cursor: pointer;
+    transition: background 0.12s, color 0.12s;
+    font-size: 14px;
+    text-decoration: none;
+    position: relative;
+    flex-shrink: 0;
+}
+body.ui-pro .pro-topbar-btn:hover {
+    background: rgba(255, 255, 255, 0.15);
+    color: #fff;
+    text-decoration: none;
+}
+
+body.ui-pro .pro-topbar-badge {
+    position: absolute;
+    top: 4px;
+    right: 3px;
+    background: var(--color-danger);
+    color: #fff;
+    border-radius: 8px;
+    padding: 0 4px;
+    font-size: 9px;
+    font-weight: 700;
+    line-height: 1.6;
+    min-width: 14px;
+    text-align: center;
+    pointer-events: none;
+}
+
+/* ── Menu utilisateur ── */
+body.ui-pro .pro-user-menu {
+    position: relative;
+}
+
+body.ui-pro .pro-user-btn {
+    display: flex;
+    align-items: center;
+    gap: 7px;
+    padding: 0 10px;
+    height: 34px;
+    border-radius: 6px;
+    background: rgba(255, 255, 255, 0.1);
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    color: var(--header-text);
+    cursor: pointer;
+    font-size: 13px;
+    font-family: inherit;
+    transition: background 0.12s;
+}
+body.ui-pro .pro-user-btn:hover {
+    background: rgba(255, 255, 255, 0.2);
+}
+
+body.ui-pro .pro-user-avatar {
+    width: 22px;
+    height: 22px;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.25);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 11px;
+    font-weight: 700;
+    flex-shrink: 0;
+    text-transform: uppercase;
+}
+
+body.ui-pro .pro-user-chevron {
+    font-size: 9px;
+    opacity: 0.7;
+    transition: transform 0.15s;
+}
+body.ui-pro .pro-user-menu.is-open .pro-user-chevron {
+    transform: rotate(180deg);
+}
+
+/* ── Dropdown utilisateur ── */
+body.ui-pro .pro-user-dropdown {
+    display: none;
+    position: absolute;
+    top: calc(100% + 6px);
+    right: 0;
+    background: var(--card-bg);
+    border: 1px solid var(--input-border);
+    border-radius: var(--radius-md);
+    box-shadow: var(--shadow-md), 0 8px 24px rgba(0, 0, 0, 0.08);
+    min-width: 220px;
+    z-index: 500;
+    overflow: hidden;
+}
+body.ui-pro .pro-user-dropdown.is-open {
+    display: block;
+    animation: proDropdownIn 0.12s ease;
+}
+@keyframes proDropdownIn {
+    from { opacity: 0; transform: translateY(-4px); }
+    to   { opacity: 1; transform: translateY(0); }
+}
+
+body.ui-pro .pro-user-dropdown-header {
+    padding: 12px 14px 10px;
+    border-bottom: 1px solid var(--input-border);
+}
+body.ui-pro .pro-user-dropdown-name {
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--text-main);
+    margin-bottom: 1px;
+}
+body.ui-pro .pro-user-dropdown-email {
+    font-size: 12px;
+    color: var(--text-muted);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+body.ui-pro .pro-user-dropdown-item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 9px 14px;
+    font-size: 13px;
+    color: var(--text-main);
+    text-decoration: none;
+    cursor: pointer;
+    transition: background 0.1s;
+    background: none;
+    border: none;
+    width: 100%;
+    text-align: left;
+    font-family: inherit;
+}
+body.ui-pro .pro-user-dropdown-item:hover {
+    background: var(--table-row-hover-bg);
+    color: var(--text-main);
+    text-decoration: none;
+}
+body.ui-pro .pro-user-dropdown-item.is-danger {
+    color: var(--color-danger);
+}
+body.ui-pro .pro-user-dropdown-item.is-danger:hover {
+    background: var(--error-bg);
+}
+body.ui-pro .pro-user-dropdown-item i {
+    width: 14px;
+    text-align: center;
+    font-size: 12px;
+    color: var(--text-muted);
+    flex-shrink: 0;
+}
+body.ui-pro .pro-user-dropdown-item.is-danger i {
+    color: var(--color-danger);
+}
+
+body.ui-pro .pro-user-dropdown-sep {
+    height: 1px;
+    background: var(--input-border);
+    margin: 3px 0;
+}
+
+/* ── Sélecteur de thème (dans dropdown) ── */
+body.ui-pro .pro-theme-picker {
+    padding: 8px 14px 10px;
+}
+body.ui-pro .pro-theme-picker-label {
+    font-size: 11px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.07em;
+    color: var(--text-muted);
+    margin-bottom: 7px;
+}
+body.ui-pro .pro-theme-swatches {
+    display: flex;
+    gap: 7px;
+}
+body.ui-pro .pro-theme-swatch {
+    width: 22px;
+    height: 22px;
+    border-radius: 50%;
+    cursor: pointer;
+    border: 2px solid transparent;
+    transition: transform 0.12s, border-color 0.12s;
+    flex-shrink: 0;
+    padding: 0;
+}
+body.ui-pro .pro-theme-swatch:hover {
+    transform: scale(1.15);
+}
+body.ui-pro .pro-theme-swatch.is-active {
+    border-color: var(--button-primary-bg);
+    box-shadow: 0 0 0 2px var(--card-bg), 0 0 0 4px var(--button-primary-bg);
+}
+body.ui-pro .pro-theme-swatch--default {
+    background: linear-gradient(135deg, #fff 50%, #d65151 50%);
+    border: 1px solid #d65151;
+}
+body.ui-pro .pro-theme-swatch--blue {
+    background: linear-gradient(135deg, #e8f0fe 50%, #2563eb 50%);
+    border: 1px solid #2563eb;
+}
+body.ui-pro .pro-theme-swatch--dark {
+    background: linear-gradient(135deg, #1e2433 50%, #60a5fa 50%);
+    border: 1px solid #444;
+}
+body.ui-pro .pro-theme-swatch--forest {
+    background: linear-gradient(135deg, #f0f7f0 50%, #4a7a59 50%);
+    border: 1px solid #4a7a59;
+}
+body.ui-pro .pro-theme-swatch--moderne {
+    background: linear-gradient(135deg, #f5f5f5 50%, #3f51b5 50%);
+    border: 1px solid #3f51b5;
+}

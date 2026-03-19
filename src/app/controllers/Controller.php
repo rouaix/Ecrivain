@@ -247,7 +247,8 @@ abstract class Controller
         $this->f3->set('pendingCollabCount', $this->pendingCollabCount());
 
         $this->f3->set('content', \Template::instance()->render($view));
-        echo \Template::instance()->render('layouts/main.html');
+        $layout = (($_COOKIE['ui_mode'] ?? 'classic') === 'pro') ? 'layouts/main-pro.html' : 'layouts/main.html';
+        echo \Template::instance()->render($layout);
     }
     /**
      * Get or create CSRF token.
