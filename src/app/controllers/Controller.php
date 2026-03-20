@@ -246,8 +246,24 @@ abstract class Controller
         // Notification counts for the header badge
         $this->f3->set('pendingCollabCount', $this->pendingCollabCount());
 
+        // Sidebar modules — injected when a project is in context (Pro layout)
+        $project = $this->f3->get('project');
+        if ($project && isset($project['id'])) {
+            $this->f3->set('sidebarModules', $this->loadSidebarModules($project));
+        }
+
+        // Flash messages (read + clear)
+        if (!empty($_SESSION['success'])) {
+            $this->f3->set('flash_success', $_SESSION['success']);
+            unset($_SESSION['success']);
+        }
+        if (!empty($_SESSION['error'])) {
+            $this->f3->set('flash_error', $_SESSION['error']);
+            unset($_SESSION['error']);
+        }
+
         $this->f3->set('content', \Template::instance()->render($view));
-        $layout = (($_COOKIE['ui_mode'] ?? 'classic') === 'pro') ? 'layouts/main-pro.html' : 'layouts/main.html';
+        $layout = (($_COOKIE['ui_mode'] ?? 'pro') === 'pro') ? 'layouts/main-pro.html' : 'layouts/main.html';
         echo \Template::instance()->render($layout);
     }
     /**
@@ -630,6 +646,230 @@ abstract class Controller
         } catch (\Exception $e) {
             // Table may not exist yet on first run — silently ignore
         }
+    }
+
+    /**
+     * Build the ordered list of content modules for the Pro sidebar.
+     * Driven by the project's template; falls back to a full default set.
+     * Each entry: [label, path, icon, count]
+     */
+    private function loadSidebarModules(array $project): array
+    {
+        $pid = (int) $project['id'];
+        $hasNoteModule = false;
+
+        // ── Counts (one query per table to isolate failures) ────────────────
+        $cnt = [];
+        $countQueries = [
+            'chapter'   => 'SELECT COUNT(*) AS n FROM chapters WHERE project_id = ? AND parent_id IS NULL',
+            'act'       => 'SELECT COUNT(*) AS n FROM acts             WHERE project_id = ?',
+            'character' => 'SELECT COUNT(*) AS n FROM characters       WHERE project_id = ?',
+            'note'      => 'SELECT COUNT(*) AS n FROM notes            WHERE project_id = ?',
+            'glossary'  => 'SELECT COUNT(*) AS n FROM glossary_entries WHERE project_id = ?',
+            'file'      => 'SELECT COUNT(*) AS n FROM project_files    WHERE project_id = ?',
+            'scenario'  => 'SELECT COUNT(*) AS n FROM scenarios        WHERE project_id = ?',
+        ];
+        foreach ($countQueries as $key => $sql) {
+            try {
+                $r = $this->db->exec($sql, [$pid]);
+                $cnt[$key] = (int)($r[0]['n'] ?? 0);
+            } catch (\Exception $e) {
+                $cnt[$key] = 0;
+            }
+        }
+
+        // Section counts by subtype (for section template elements)
+        try {
+            $sRows       = $this->db->exec(
+                'SELECT type, COUNT(*) AS cnt FROM sections WHERE project_id = ? GROUP BY type',
+                [$pid]
+            );
+            $sectionCounts = [];
+            foreach ($sRows as $sr) {
+                $sectionCounts[$sr['type']] = (int) $sr['cnt'];
+            }
+        } catch (\Exception $e) {
+            $sectionCounts = [];
+        }
+
+        $defaultModules = [
+            ['label' => 'Structure',   'path' => '/project/'.$pid.'#chapters',    'icon' => 'list-ol',    'nb' => (int)($cnt['chapter']   ?? 0)],
+            ['label' => 'Personnages', 'path' => '/project/'.$pid.'/characters',  'icon' => 'users',      'nb' => (int)($cnt['character'] ?? 0)],
+            ['label' => 'Notes',       'path' => '/project/'.$pid.'/notes',       'icon' => 'sticky-note','nb' => (int)($cnt['note']      ?? 0)],
+            ['label' => 'Glossaire',   'path' => '/project/'.$pid.'/glossary',    'icon' => 'book-open',  'nb' => (int)($cnt['glossary']  ?? 0)],
+            ['label' => 'Fichiers',    'path' => '/project/'.$pid.'/files',       'icon' => 'paperclip',  'nb' => (int)($cnt['file']      ?? 0)],
+        ];
+
+        // ── Resolve template ────────────────────────────────────────────────
+        $templateId = isset($project['template_id']) && $project['template_id']
+            ? (int) $project['template_id']
+            : null;
+
+        if (!$templateId) {
+            try {
+                // Same fallback order as ProjectController: is_default first, then first available
+                $tRows = $this->db->exec('SELECT id FROM templates WHERE is_default = 1 LIMIT 1');
+                if (!$tRows) {
+                    $tRows = $this->db->exec('SELECT id FROM templates ORDER BY id ASC LIMIT 1');
+                }
+                $templateId = $tRows ? (int) $tRows[0]['id'] : null;
+            } catch (\Exception $e) {
+                $templateId = null;
+            }
+        }
+
+        if (!$templateId) {
+            return $defaultModules;
+        }
+
+        // ── Template elements ───────────────────────────────────────────────
+        try {
+            $teRows = $this->db->exec(
+                'SELECT id, element_type, element_subtype, section_placement, config_json
+                 FROM template_elements
+                 WHERE template_id = ? AND is_enabled = 1
+                 ORDER BY display_order ASC',
+                [$templateId]
+            );
+        } catch (\Exception $e) {
+            return $defaultModules;
+        }
+
+        if (empty($teRows)) {
+            return $defaultModules;
+        }
+
+        $iconMap = [
+            'chapter'   => 'list-ol',
+            'act'       => 'layer-group',
+            'section'   => 'bookmark',
+            'character' => 'users',
+            'note'      => 'sticky-note',
+            'file'      => 'paperclip',
+            'scenario'  => 'film',
+            'synopsis'  => 'file-alt',
+            'element'   => 'puzzle-piece',
+            'glossary'  => 'book-open',
+        ];
+
+        $modules = [];
+
+        foreach ($teRows as $te) {
+            $type = $te['element_type'];
+            $cfg  = json_decode($te['config_json'] ?? '{}', true);
+
+            if ($type === 'chapter') {
+                $modules[] = [
+                    'label' => $cfg['label_plural'] ?? 'Chapitres',
+                    'path'  => '/project/'.$pid.'/chapters',
+                    'icon'  => 'list-ol',
+                    'nb'    => (int)($cnt['chapter'] ?? 0),
+                ];
+                continue;
+            }
+
+            if ($type === 'act') {
+                $modules[] = [
+                    'label' => $cfg['label_plural'] ?? 'Actes',
+                    'path'  => '/project/'.$pid.'/acts',
+                    'icon'  => 'layer-group',
+                    'nb'    => (int)($cnt['act'] ?? 0),
+                ];
+                continue;
+            }
+
+            if ($type === 'section') {
+                $subtype = $te['element_subtype'] ?? '';
+                $label   = $cfg['label'] ?? $cfg['label_plural'] ?? 'Sections';
+                $nb      = $subtype ? ($sectionCounts[$subtype] ?? 0) : array_sum($sectionCounts);
+                $path    = $subtype
+                    ? '/project/'.$pid.'/section/'.$subtype
+                    : '/project/'.$pid;
+                $modules[] = [
+                    'label' => $label,
+                    'path'  => $path,
+                    'icon'  => 'bookmark',
+                    'nb'    => $nb,
+                ];
+                continue;
+            }
+
+            if ($type === 'element') {
+                try {
+                    $eRows  = $this->db->exec(
+                        'SELECT COUNT(*) AS cnt FROM elements WHERE project_id = ? AND template_element_id = ? AND parent_id IS NULL',
+                        [$pid, (int) $te['id']]
+                    );
+                    $eCount = (int)($eRows[0]['cnt'] ?? 0);
+                } catch (\Exception $e) {
+                    $eCount = 0;
+                }
+                $modules[] = [
+                    'label' => $cfg['label_plural'] ?? 'Éléments',
+                    'path'  => '/project/'.$pid.'/elements/'.(int)$te['id'],
+                    'icon'  => 'puzzle-piece',
+                    'nb'    => $eCount,
+                ];
+                continue;
+            }
+
+            $pathMap = [
+                'character' => '/project/'.$pid.'/characters',
+                'note'      => '/project/'.$pid.'/notes',
+                'file'      => '/project/'.$pid.'/files',
+                'scenario'  => '/project/'.$pid.'/scenarios',
+                'synopsis'  => '/project/'.$pid.'/synopsis',
+                'glossary'  => '/project/'.$pid.'/glossary',
+            ];
+
+            $defaultLabels = [
+                'character' => 'Personnages',
+                'note'      => 'Notes',
+                'file'      => 'Fichiers',
+                'scenario'  => 'Scénario',
+                'synopsis'  => 'Synopsis',
+                'glossary'  => 'Glossaire',
+            ];
+
+            $countMap = [
+                'character' => (int)($cnt['character'] ?? 0),
+                'note'      => (int)($cnt['note']      ?? 0),
+                'file'      => (int)($cnt['file']      ?? 0),
+                'scenario'  => (int)($cnt['scenario']  ?? 0),
+                'glossary'  => (int)($cnt['glossary']  ?? 0),
+                'synopsis'  => 0,
+            ];
+
+            if (!isset($pathMap[$type])) continue;
+
+            if ($type === 'note') {
+                $hasNoteModule = true;
+            }
+
+            $modules[] = [
+                'label' => $cfg['label_plural'] ?? ($defaultLabels[$type] ?? ucfirst($type)),
+                'path'  => $pathMap[$type],
+                'icon'  => $iconMap[$type] ?? 'circle',
+                'nb'    => $countMap[$type] ?? 0,
+            ];
+        }
+
+        // Fallback: if notes exist but template has no built-in 'note' module, always show them
+        if (!$hasNoteModule && (int)($cnt['note'] ?? 0) > 0) {
+            $modules[] = [
+                'label' => 'Notes',
+                'path'  => '/project/'.$pid.'/notes',
+                'icon'  => 'sticky-note',
+                'nb'    => (int)($cnt['note'] ?? 0),
+            ];
+        }
+
+        $result = $modules ?: $defaultModules;
+        foreach ($result as &$m) {
+            $m['active_path'] = strtok($m['path'], '#');
+        }
+        unset($m);
+        return $result;
     }
 
     /**

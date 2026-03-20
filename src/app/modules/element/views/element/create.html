@@ -35,7 +35,7 @@
                         <repeat group="{{ @topElements }}" value="{{ @elem }}">
                             <option value="{{ @elem.id }}" {{ (isset(@old.parent_id) && @old.parent_id==@elem.id)
                                 ? 'selected' : '' }}>
-                                {{ @elem.title }}
+                                {{ strip_tags(@elem.title) | esc }}
                             </option>
                         </repeat>
                     </select>

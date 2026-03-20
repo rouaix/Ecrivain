@@ -10,6 +10,48 @@ class ProjectFileController extends ProjectBaseController
         }
     }
 
+    public function list()
+    {
+        $pid  = (int) $this->f3->get('PARAMS.pid');
+        $user = $this->currentUser();
+
+        if (!$this->hasProjectAccess($pid)) {
+            $this->f3->error(403);
+            return;
+        }
+
+        $projectModel = new Project();
+        $projectRows  = $projectModel->findAndCast(['id=?', $pid]);
+        if (!$projectRows) {
+            $this->f3->error(404);
+            return;
+        }
+        $project = $projectRows[0];
+
+        $fileModel = new ProjectFile();
+        $filesRaw  = $fileModel->find(['project_id=?', $pid], ['order' => 'uploaded_at DESC']);
+        $files     = [];
+        foreach ($filesRaw ?: [] as $f) {
+            $files[] = [
+                'id'             => $f->id,
+                'filename'       => $f->filename,
+                'filepath'       => $f->filepath,
+                'filetype'       => $f->filetype,
+                'filesize'       => $f->filesize,
+                'size_formatted' => $f->getSizeFormatted(),
+                'comment'        => $f->comment,
+                'uploaded_at'    => $f->uploaded_at,
+            ];
+        }
+
+        $this->render('project/files.html', [
+            'title'   => 'Fichiers — ' . $project['title'],
+            'project' => $project,
+            'files'   => $files,
+            'isOwner' => $this->isOwner($pid),
+        ]);
+    }
+
     public function uploadFile()
     {
         $pid  = (int) $this->f3->get('PARAMS.pid');
@@ -129,6 +171,11 @@ class ProjectFileController extends ProjectBaseController
         }
 
         $fileModel->erase();
-        $this->f3->reroute('/project/' . $pid);
+        $referer = $this->f3->get('SERVER.HTTP_REFERER') ?? '';
+        if (strpos($referer, '/files') !== false) {
+            $this->f3->reroute('/project/' . $pid . '/files');
+        } else {
+            $this->f3->reroute('/project/' . $pid);
+        }
     }
 }

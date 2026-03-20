@@ -11,6 +11,60 @@ class NoteController extends Controller
     }
 
     /**
+     * List all notes for a project
+     * GET /project/@pid/notes
+     */
+    public function list()
+    {
+        $pid = (int) $this->f3->get('PARAMS.pid');
+
+        if (!$this->hasProjectAccess($pid)) {
+            $this->f3->error(403);
+            return;
+        }
+
+        $projectModel = new Project();
+        $projects = $projectModel->findAndCast(['id=?', $pid]);
+        if (!$projects) {
+            $this->f3->error(404);
+            return;
+        }
+        $project = $projects[0];
+
+        $noteModel = new Note();
+        $notes = $noteModel->getAllByProject($pid);
+
+        // Assign cycling color index + compute word count from content
+        $notes = array_map(function ($n, $idx) {
+            $n['title']      = html_entity_decode(strip_tags($n['title'] ?? ''), ENT_QUOTES | ENT_HTML5, 'UTF-8');
+            $n['colorIndex'] = ($idx % 6) + 1;
+            if (!isset($n['wc'])) {
+                $text = strip_tags($n['content'] ?? '');
+                $n['wc'] = $text ? str_word_count($text) : 0;
+            }
+            return $n;
+        }, $notes, array_keys($notes));
+
+        $notesJson = json_encode(array_map(function ($n) {
+            return [
+                'id'      => (int) $n['id'],
+                'title'   => $n['title'] ?: 'Note sans titre',
+                'content' => $n['content'] ?? '',
+                'comment' => $n['comment'] ?? '',
+                'wc'      => (int) ($n['wc'] ?? 0),
+            ];
+        }, $notes), JSON_HEX_TAG | JSON_HEX_AMP);
+
+        $this->render('note/list.html', [
+            'title'     => 'Notes — ' . $project['title'],
+            'project'   => $project,
+            'notes'     => $notes,
+            'notesJson' => $notesJson,
+            'isOwner'   => $this->isOwner($pid),
+        ]);
+    }
+
+    /**
      * Edit or create a note
      * GET /project/@pid/note/edit
      */
@@ -66,7 +120,7 @@ class NoteController extends Controller
         }
         $project = $project[0];
 
-        $title = trim($_POST['title'] ?? '');
+        $title = html_entity_decode(strip_tags(trim($_POST['title'] ?? '')), ENT_QUOTES | ENT_HTML5, 'UTF-8');
         $content = $_POST['content'] ?? '';
         $content = $this->cleanQuillHtml($content);
         $comment = $_POST['comment'] ?? '';

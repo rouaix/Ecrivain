@@ -29,7 +29,7 @@ class AuthController extends Controller
         }
 
         $this->render('auth/home.html', [
-            'title'           => 'Écrivain — Logiciel d\'écriture créative gratuit avec IA',
+            'title' => 'Logiciel d\'écriture créative gratuit avec IA',
             'metaDescription' => 'Écrivain est un logiciel d\'écriture créative gratuit et open-source. Structurez vos romans en actes et chapitres, gérez vos personnages, collaborez, utilisez l\'IA (OpenAI, Gemini, Anthropic, Mistral) et exportez en PDF, DOCX ou HTML.',
         ]);
     }
@@ -688,14 +688,14 @@ class AuthController extends Controller
 
         }
 
-        $svc    = $this->tokenService();
-        $data   = $svc->readTokenFile($jsonFile);
+        $svc = $this->tokenService();
+        $data = $svc->readTokenFile($jsonFile);
         $tokens = $data['tokens'] ?? [];
 
         $tokens[$tokenId] = [
-            'user_id'    => $currentUser['id'],
+            'user_id' => $currentUser['id'],
             'created_at' => date('Y-m-d H:i:s'),
-            'iat'        => $iat,
+            'iat' => $iat,
         ];
 
         $svc->writeTokenFile($jsonFile, ['tokens' => $tokens]);
@@ -729,43 +729,43 @@ class AuthController extends Controller
 
         if ($data && isset($data['tokens'])) {
 
-                foreach ($data['tokens'] as $tokenId => $info) {
+            foreach ($data['tokens'] as $tokenId => $info) {
 
-                    if (isset($info['user_id']) && $info['user_id'] == $userId) {
+                if (isset($info['user_id']) && $info['user_id'] == $userId) {
 
-                        $createdAt = $info['created_at'] ?? null;
+                    $createdAt = $info['created_at'] ?? null;
 
-                        $iat = $info['iat'] ?? ($createdAt ? strtotime($createdAt) : time());
+                    $iat = $info['iat'] ?? ($createdAt ? strtotime($createdAt) : time());
+
+                    $tokenValue = null;
+
+                    try {
+
+                        $tokenValue = $this->encodeAutoLoginToken($tokenId, $userId, $iat);
+
+                    } catch (Exception $e) {
+
+                        // If encoding fails, keep token hidden but continue listing metadata
 
                         $tokenValue = null;
 
-                        try {
-
-                            $tokenValue = $this->encodeAutoLoginToken($tokenId, $userId, $iat);
-
-                        } catch (Exception $e) {
-
-                            // If encoding fails, keep token hidden but continue listing metadata
-
-                            $tokenValue = null;
-
-                        }
-
-                        $userTokens[] = [
-
-                            'token_id' => $tokenId,
-
-                            'created_at' => $createdAt,
-
-                            'token' => $tokenValue
-
-                        ];
-
                     }
+
+                    $userTokens[] = [
+
+                        'token_id' => $tokenId,
+
+                        'created_at' => $createdAt,
+
+                        'token' => $tokenValue
+
+                    ];
 
                 }
 
             }
+
+        }
 
 
         // Sort by date desc
@@ -819,7 +819,7 @@ class AuthController extends Controller
 
         }
 
-        $svc  = $this->tokenService();
+        $svc = $this->tokenService();
         $data = $svc->readTokenFile($jsonFile);
 
         if (!$data || !isset($data['tokens'])) {

@@ -15,6 +15,59 @@ class ElementController extends Controller
         }
     }
 
+    public function listByType()
+    {
+        $pid  = (int) $this->f3->get('PARAMS.pid');
+        $teid = (int) $this->f3->get('PARAMS.teid');
+
+        $projectModel = new Project();
+        $project = $projectModel->findAndCast(['id=? AND user_id=?', $pid, $this->currentUser()['id']]);
+        if (!$project) { $this->f3->error(403); return; }
+        $project = $project[0];
+
+        $templateElementModel = new TemplateElement();
+        $templateElementModel->load(['id=?', $teid]);
+        if ($templateElementModel->dry()) { $this->f3->error(404); return; }
+        $templateElement = $templateElementModel->cast();
+        $config = json_decode($templateElement['config_json'] ?? '{}', true);
+
+        $elementModel = new Element();
+        $elements = $elementModel->getByTemplateElement($pid, $teid);
+
+        // Build hierarchy: top-level with their sub-elements
+        $topLevel = [];
+        $subMap   = [];
+        foreach ($elements as $el) {
+            if ($el['parent_id']) {
+                $subMap[$el['parent_id']][] = $el;
+            } else {
+                $topLevel[] = $el;
+            }
+        }
+
+        // Inject sub_count and subs into each top-level element
+        foreach ($topLevel as &$el) {
+            $el['title'] = html_entity_decode(strip_tags($el['title'] ?? ''), ENT_QUOTES | ENT_HTML5, 'UTF-8');
+            $subs = array_values($subMap[$el['id']] ?? []);
+            foreach ($subs as &$sub) {
+                $sub['title'] = html_entity_decode(strip_tags($sub['title'] ?? ''), ENT_QUOTES | ENT_HTML5, 'UTF-8');
+            }
+            unset($sub);
+            $el['subs']      = $subs;
+            $el['sub_count'] = count($subs);
+        }
+        unset($el);
+
+        $this->render('element/list.html', [
+            'title'           => ($config['label_plural'] ?? 'Éléments') . ' — ' . $project['title'],
+            'project'         => $project,
+            'templateElement' => $templateElement,
+            'config'          => $config,
+            'topLevel'        => $topLevel,
+            'elementsJson'    => json_encode(array_values($topLevel), JSON_HEX_TAG | JSON_HEX_QUOT),
+        ]);
+    }
+
     public function create()
     {
         $pid = (int) $this->f3->get('PARAMS.pid');
@@ -79,7 +132,7 @@ class ElementController extends Controller
             return;
         }
 
-        $title = trim($_POST['title'] ?? '');
+        $title = html_entity_decode(strip_tags(trim($_POST['title'] ?? '')), ENT_QUOTES | ENT_HTML5, 'UTF-8');
         $parentId = !empty($_POST['parent_id']) ? (int) $_POST['parent_id'] : null;
 
         $errors = [];
@@ -218,7 +271,7 @@ class ElementController extends Controller
             return;
         }
 
-        $title = trim($_POST['title'] ?? '');
+        $title = html_entity_decode(strip_tags(trim($_POST['title'] ?? '')), ENT_QUOTES | ENT_HTML5, 'UTF-8');
         $content = $_POST['content'] ?? '';
         $content = $this->cleanQuillHtml($content);
         $resume = $_POST['resume'] ?? '';

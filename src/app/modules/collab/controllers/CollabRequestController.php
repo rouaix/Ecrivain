@@ -102,10 +102,18 @@ class CollabRequestController extends Controller
         $project  = $this->loadProject($pid);
         $requests = (new CollaborationRequest())->findByProject($pid);
 
+        $pendingCount = 0;
+        foreach ($requests as $r) {
+            if (($r['status'] ?? '') === 'pending') {
+                $pendingCount++;
+            }
+        }
+
         $this->render('collab/requests_owner.html', [
-            'title'    => 'Demandes des collaborateurs — ' . ($project['title'] ?? ''),
-            'project'  => $project,
-            'requests' => $requests,
+            'title'        => 'Demandes des collaborateurs — ' . ($project['title'] ?? ''),
+            'project'      => $project,
+            'requests'     => $requests,
+            'pendingCount' => $pendingCount,
         ]);
     }
 

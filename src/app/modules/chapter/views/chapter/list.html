@@ -1,0 +1,348 @@
+<div class="edit-page-layout">
+
+    <div class="edit-header">
+        <h2><i class="fas fa-list-ol" aria-hidden="true"></i> Chapitres — {{ @project.title | esc }}</h2>
+        <div class="header-actions">
+            <a href="{{ @base }}/project/{{ @project.id }}" class="button secondary" title="Retour au projet">
+                <i class="fas fa-arrow-left" aria-hidden="true"></i>
+            </a>
+            <check if="{{ @isOwner }}">
+                <a href="{{ @base }}/project/{{ @project.id }}/chapter/create" class="button" title="Nouveau chapitre">
+                    <i class="fas fa-plus" aria-hidden="true"></i>
+                </a>
+            </check>
+        </div>
+    </div>
+
+    <check if="{{ count(@topLevel) == 0 }}">
+        <div class="edit-card mt-20">
+            <p class="text-muted-para empty-state-block">
+                <i class="fas fa-list-ol" aria-hidden="true"
+                    style="font-size:2rem;opacity:.3;display:block;margin-bottom:.5rem"></i>
+                Aucun chapitre créé pour ce projet.
+                <check if="{{ @isOwner }}">
+                    <a href="{{ @base }}/project/{{ @project.id }}/chapter/create" class="button mt-10">
+                        <i class="fas fa-plus" aria-hidden="true"></i> Créer le premier chapitre
+                    </a>
+                </check>
+            </p>
+        </div>
+    </check>
+
+    <check if="{{ count(@topLevel) > 0 }}">
+        <div class="chapters-layout mt-20">
+
+            <div class="chapters-list-col" id="chaptersList">
+                <repeat group="{{ @topLevel }}" value="{{ @ch }}">
+
+                    <!-- Chapitre parent -->
+                    <div class="chapter-list-item" data-id="{{ @ch.id }}" tabindex="0"
+                         title="{{ @ch.title | esc }}">
+                        <div class="chapter-list-body">
+                            <div class="chapter-list-title">{{ @ch.title | esc }}</div>
+                            <check if="{{ @ch.act_title }}">
+                                <div class="chapter-list-meta">
+                                    <span><i class="fas fa-layer-group" aria-hidden="true"></i> {{ @ch.act_title | esc }}</span>
+                                </div>
+                            </check>
+                        </div>
+                        <div class="chapter-list-actions">
+                            <a href="{{ @base }}/chapter/{{ @ch.id }}" class="button small" title="Éditer"
+                               onclick="event.stopPropagation()">
+                                <i class="fas fa-edit" aria-hidden="true"></i>
+                            </a>
+                            <check if="{{ @isOwner && count(@ch.sub_chapters) == 0 }}">
+                                <a href="{{ @base }}/chapter/{{ @ch.id }}/delete"
+                                   class="button small delete js-confirm"
+                                   data-confirm="Supprimer ce chapitre ?" title="Supprimer"
+                                   onclick="event.stopPropagation()">
+                                    <i class="fas fa-trash" aria-hidden="true"></i>
+                                </a>
+                            </check>
+                        </div>
+                    </div>
+
+                    <!-- Sous-chapitres -->
+                    <repeat group="{{ @ch.sub_chapters }}" value="{{ @sub }}">
+                        <div class="chapter-list-item chapter-list-sub" data-id="{{ @sub.id }}" tabindex="0"
+                             title="{{ @sub.title | esc }}">
+                            <div class="chapter-list-sub-indent">
+                                <i class="fas fa-level-up-alt fa-rotate-90" aria-hidden="true"></i>
+                            </div>
+                            <div class="chapter-list-body">
+                                <div class="chapter-list-title">{{ @sub.title | esc }}</div>
+                            </div>
+                            <div class="chapter-list-actions">
+                                <a href="{{ @base }}/chapter/{{ @sub.id }}" class="button small" title="Éditer"
+                                   onclick="event.stopPropagation()">
+                                    <i class="fas fa-edit" aria-hidden="true"></i>
+                                </a>
+                                <check if="{{ @isOwner }}">
+                                    <a href="{{ @base }}/chapter/{{ @sub.id }}/delete"
+                                       class="button small delete js-confirm"
+                                       data-confirm="Supprimer ce sous-chapitre ?" title="Supprimer"
+                                       onclick="event.stopPropagation()">
+                                        <i class="fas fa-trash" aria-hidden="true"></i>
+                                    </a>
+                                </check>
+                            </div>
+                        </div>
+                    </repeat>
+
+                </repeat>
+            </div>
+
+            <!-- Panneau d'aperçu (Pro uniquement) -->
+            <div class="chapters-preview-col" id="chaptersPreview" aria-live="polite">
+                <div class="chapters-preview-empty" id="chaptersPreviewEmpty">
+                    <i class="fas fa-hand-pointer" aria-hidden="true"></i>
+                    <p>Sélectionnez un chapitre pour l'apercevoir</p>
+                </div>
+                <div class="chapters-preview-content" id="chaptersPreviewContent" style="display:none">
+                    <div class="chapters-preview-header">
+                        <h3 id="chaptersPreviewTitle"></h3>
+                        <a id="chaptersPreviewEdit" href="#" class="button small" title="Éditer">
+                            <i class="fas fa-edit" aria-hidden="true"></i>
+                        </a>
+                    </div>
+                    <div class="chapters-preview-act" id="chaptersPreviewAct"></div>
+                    <div class="chapters-preview-body ql-editor" id="chaptersPreviewBody"></div>
+                    <div class="chapters-preview-resume" id="chaptersPreviewResume" style="display:none">
+                        <div class="chapters-preview-resume-label">
+                            <i class="fas fa-align-left" aria-hidden="true"></i> Résumé
+                        </div>
+                        <div class="ql-editor" id="chaptersPreviewResumeBody"></div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </check>
+
+</div>
+
+<script type="application/json" id="chaptersJson">{{ @chaptersJson | raw }}</script>
+
+<style nonce="{{ @nonce }}">
+    .chapters-layout {
+        display: block;
+    }
+
+    body.ui-pro .chapters-layout {
+        display: grid;
+        grid-template-columns: 35% 1fr;
+        gap: 20px;
+        align-items: start;
+    }
+
+    .chapters-preview-col {
+        display: none;
+    }
+
+    body.ui-pro .chapters-preview-col {
+        display: block;
+        position: sticky;
+        top: 64px;
+        background: var(--card-bg);
+        border: 1px solid var(--input-border);
+        border-radius: var(--radius-md, 8px);
+        min-height: 300px;
+        overflow: hidden;
+    }
+
+    .chapter-list-item {
+        display: flex;
+        align-items: center;
+        background: var(--card-bg);
+        border: 1px solid var(--input-border);
+        border-radius: var(--radius-md, 8px);
+        margin-bottom: .35rem;
+        cursor: pointer;
+        transition: box-shadow 0.15s, border-color 0.15s;
+        overflow: hidden;
+    }
+
+    .chapter-list-sub {
+        margin-left: 1.5rem;
+        border-style: dashed;
+        opacity: .9;
+    }
+
+    .chapter-list-sub-indent {
+        padding: 0 .5rem 0 .75rem;
+        color: var(--text-muted, #aaa);
+        font-size: .75rem;
+        flex-shrink: 0;
+    }
+
+    .chapter-list-item:hover,
+    .chapter-list-item:focus {
+        border-color: var(--button-primary-bg, #3f51b5);
+        box-shadow: 0 2px 8px rgba(0,0,0,.08);
+        outline: none;
+    }
+
+    .chapter-list-item.is-active {
+        border-color: var(--button-primary-bg, #3f51b5);
+        box-shadow: 0 0 0 2px rgba(63,81,181,.18);
+    }
+
+    .chapter-list-body {
+        flex: 1;
+        padding: .55rem .75rem;
+        min-width: 0;
+    }
+
+    .chapter-list-title {
+        font-weight: 600;
+        font-size: .88rem;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+
+    .chapter-list-meta {
+        font-size: .74rem;
+        color: var(--text-muted, #888);
+        margin-top: 2px;
+        display: flex;
+        gap: .75rem;
+    }
+
+    .chapter-list-actions {
+        display: flex;
+        gap: .25rem;
+        padding: 0 .5rem;
+        flex-shrink: 0;
+    }
+
+    .chapters-preview-empty {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        min-height: 300px;
+        color: var(--text-muted, #aaa);
+        gap: .75rem;
+        font-size: .9rem;
+    }
+
+    .chapters-preview-empty i { font-size: 2rem; opacity: .3; }
+
+    .chapters-preview-header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 1rem;
+        padding: 1rem 1.25rem .75rem;
+        border-bottom: 1px solid var(--input-border);
+    }
+
+    .chapters-preview-header h3 {
+        margin: 0;
+        font-size: 1rem;
+        font-weight: 700;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+
+    .chapters-preview-act {
+        font-size: .75rem;
+        color: var(--text-muted, #888);
+        padding: .4rem 1.25rem 0;
+    }
+
+    .chapters-preview-body {
+        padding: 1rem 1.25rem;
+        font-size: .88rem;
+        overflow-y: auto;
+        max-height: 400px;
+    }
+
+    .chapters-preview-body img { max-width: 100%; height: auto; }
+
+    .chapters-preview-resume {
+        border-top: 1px solid var(--input-border);
+        padding: .75rem 1.25rem;
+        background: var(--input-bg, #f9f9f9);
+    }
+
+    .chapters-preview-resume-label {
+        font-size: .74rem;
+        font-weight: 700;
+        text-transform: uppercase;
+        color: var(--text-muted, #999);
+        margin-bottom: .4rem;
+    }
+
+    .chapters-preview-resume .ql-editor {
+        font-size: .84rem;
+        padding: 0;
+        max-height: 140px;
+        overflow-y: auto;
+    }
+
+    @media (max-width: 700px) {
+        body.ui-pro .chapters-layout { grid-template-columns: 1fr; }
+        body.ui-pro .chapters-preview-col { display: none; }
+    }
+</style>
+
+<script nonce="{{ @nonce }}">
+(function () {
+    var BASE = '{{ @base }}';
+    var IS_PRO = document.body.classList.contains('ui-pro');
+
+    var data = {};
+    try {
+        JSON.parse(document.getElementById('chaptersJson').textContent)
+            .forEach(function (c) { data[c.id] = c; });
+    } catch (e) {}
+
+    var previewEmpty      = document.getElementById('chaptersPreviewEmpty');
+    var previewContent    = document.getElementById('chaptersPreviewContent');
+    var previewTitle      = document.getElementById('chaptersPreviewTitle');
+    var previewAct        = document.getElementById('chaptersPreviewAct');
+    var previewBody       = document.getElementById('chaptersPreviewBody');
+    var previewEdit       = document.getElementById('chaptersPreviewEdit');
+    var previewResume     = document.getElementById('chaptersPreviewResume');
+    var previewResumeBody = document.getElementById('chaptersPreviewResumeBody');
+
+    function showPreview(id) {
+        var ch = data[id];
+        if (!ch) return;
+        previewTitle.textContent = ch.title;
+        previewAct.textContent = ch.act_title ? '⬡ ' + ch.act_title : '';
+        previewAct.style.display = ch.act_title ? '' : 'none';
+        previewBody.innerHTML = ch.content || '<p class="text-muted-para">Aucun contenu.</p>';
+        previewEdit.href = BASE + '/chapter/' + id;
+        if (ch.resume && ch.resume.replace(/<[^>]*>/g, '').trim()) {
+            previewResumeBody.innerHTML = ch.resume;
+            previewResume.style.display = '';
+        } else {
+            previewResume.style.display = 'none';
+        }
+        previewEmpty.style.display = 'none';
+        previewContent.style.display = '';
+    }
+
+    document.querySelectorAll('.chapter-list-item').forEach(function (item) {
+        item.addEventListener('click', function () {
+            var id = parseInt(this.dataset.id, 10);
+            if (!IS_PRO) {
+                window.location.href = BASE + '/chapter/' + id;
+                return;
+            }
+            document.querySelectorAll('.chapter-list-item').forEach(function (el) {
+                el.classList.remove('is-active');
+            });
+            this.classList.add('is-active');
+            showPreview(id);
+        });
+        item.addEventListener('keydown', function (e) {
+            if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); this.click(); }
+        });
+    });
+})();
+</script>

@@ -10,6 +10,56 @@ class ChapterController extends Controller
         }
     }
 
+    public function listAll()
+    {
+        $pid = (int) $this->f3->get('PARAMS.pid');
+        $projectModel = new Project();
+        $project = $projectModel->findAndCast(['id=? AND user_id=?', $pid, $this->currentUser()['id']]);
+        if (!$project) { $this->f3->error(403); return; }
+        $project = $project[0];
+
+        $chapterModel = new Chapter();
+        $chapters = $chapterModel->getAllByProject($pid);
+
+        $actModel = new Act();
+        $acts = $actModel->getAllByProject($pid);
+
+        // Build sub-chapter map keyed by parent_id
+        $subMap   = [];
+        $topLevel = [];
+        foreach ($chapters as $ch) {
+            if ($ch['parent_id']) {
+                $subMap[$ch['parent_id']][] = $ch;
+            } else {
+                $topLevel[] = $ch;
+            }
+        }
+
+        // Embed sub_chapters array directly in each top-level chapter
+        foreach ($topLevel as &$ch) {
+            $ch['sub_chapters'] = $subMap[$ch['id']] ?? [];
+        }
+        unset($ch);
+
+        $chaptersJson = json_encode(array_map(fn($c) => [
+            'id'        => (int)$c['id'],
+            'title'     => $c['title'],
+            'content'   => $c['content'] ?? '',
+            'resume'    => $c['resume'] ?? '',
+            'act_title' => $c['act_title'] ?? '',
+            'parent_id' => $c['parent_id'],
+        ], $chapters));
+
+        $this->render('chapter/list.html', [
+            'title'        => 'Chapitres — ' . $project['title'],
+            'project'      => $project,
+            'topLevel'     => $topLevel,
+            'acts'         => $acts,
+            'chaptersJson' => $chaptersJson,
+            'isOwner'      => $this->isOwner($pid),
+        ]);
+    }
+
     public function create()
     {
         $pid = (int) $this->f3->get('PARAMS.pid');
@@ -186,6 +236,7 @@ class ChapterController extends Controller
             'success' => $success,
             'ignoredWords' => json_encode($ignoredWords),
             'subChapterCount' => $subChapterCount,
+            'bodyClass' => 'editor-mode',
         ]);
     }
 

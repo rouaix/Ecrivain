@@ -9,19 +9,19 @@
             </button>
             <button type="button" id="btnContinuity" class="button secondary" title="Suggestions d'ouverture IA"
                 title="Suggestions d'ouverture IA">
-                <i class="fas fa-forward" aria-hidden="true"></i>&nbsp;Continuité
+                <i class="fas fa-forward" aria-hidden="true"></i>
             </button>
             <button type="button" id="btnGlossary" class="button secondary" title="Lexique du projet"
                 title="Lexique du projet">
-                <i class="fas fa-book" aria-hidden="true"></i>&nbsp;Lexique
+                <i class="fas fa-book" aria-hidden="true"></i>
             </button>
             <button type="button" id="commentButton" class="button secondary" title="Annoter une sélection"
                 title="Annoter une sélection de texte">
-                <i class="fas fa-comment-alt" aria-hidden="true"></i>&nbsp;Annoter
+                <i class="fas fa-comment-alt" aria-hidden="true"></i>
             </button>
             <button type="button" id="btnInconsistency" class="button secondary" title="Détecter les incohérences"
                 title="Détecter les incohérences avec les fiches personnages">
-                <i class="fas fa-search" aria-hidden="true"></i>&nbsp;Incohérences
+                <i class="fas fa-scale-unbalanced" aria-hidden="true"></i>
             </button>
             <a href="{{ @base }}/chapter/{{ @chapter.id }}/versions" class="button secondary"
                 title="Historique des versions" title="Historique des versions">
@@ -40,9 +40,9 @@
     <div class="editor-top-bar">
         <span id="autosave-indicator" class="autosave-indicator"></span>
         <div id="sessionGoalWidget" class="session-goal-widget" title="Cliquer pour définir un objectif de session"
-            class="is-hidden" >
+            class="is-hidden">
             <span id="sessionGoalText" class="session-goal-text"></span>
-            <div id="sessionGoalTrack" class="session-goal-track" class="is-hidden" >
+            <div id="sessionGoalTrack" class="session-goal-track" class="is-hidden">
                 <div id="sessionGoalFill" class="session-goal-fill"></div>
             </div>
         </div>
@@ -121,7 +121,7 @@
             </div>
 
             <!-- Glossaire - Termes détectés dans ce chapitre -->
-            <div id="glossaryFoundSection" class="edit-card-section" class="is-hidden" >
+            <div id="glossaryFoundSection" class="edit-card-section" class="is-hidden">
                 <div class="grammar-header">
                     <label><i class="fas fa-book" aria-hidden="true"></i> Termes du lexique présents</label>
                 </div>
@@ -129,7 +129,7 @@
             </div>
 
             <!-- Annotations Section -->
-            <div class="edit-card-section" id="annotationsSection" class="is-hidden" >
+            <div class="edit-card-section" id="annotationsSection" class="is-hidden">
                 <div class="grammar-header">
                     <label>Annotations</label>
                 </div>
@@ -144,7 +144,7 @@
                         <span id="grammarStatus" class="grammar-status"></span>
                         <button type="button" id="btnGrammarCheck" class="button secondary"
                             title="Vérifier la grammaire" title="Vérifier la grammaire">
-                            <i class="fas fa-spell-check icon-mr" aria-hidden="true"></i>Vérifier
+                            <i class="fas fa-spell-check icon-mr" aria-hidden="true"></i>
                         </button>
                     </div>
                 </div>
@@ -166,7 +166,7 @@
                             {{ @chapter.resume | raw }}
                         </div>
                         <input type="hidden" name="resume" value="{{ @chapter.resume | esc }}">
-                        <p id="summarize-status" class="summarize-status" class="is-hidden" ></p>
+                        <p id="summarize-status" class="summarize-status" class="is-hidden"></p>
                     </div>
                 </div>
             </check>
@@ -189,7 +189,7 @@
                 <check if="{{ @subChapterCount == 0 }}">
                     <a class="button delete js-confirm" href="{{ @base }}/chapter/{{ @chapter.id }}/delete"
                         data-confirm="Supprimer ce chapitre ?" title="Supprimer">
-                        <i class="fas fa-trash" aria-hidden="true"></i> Supprimer
+                        <i class="fas fa-trash" aria-hidden="true"></i>
                     </a>
                 </check>
             </div>
@@ -203,8 +203,8 @@
 </button>
 
 <!-- Focus mode exit button (fixed, only visible in focus mode) -->
-<button type="button" id="focusExitBtn" class="focus-exit-btn" style="display:none" title="Quitter le mode focus (Échap)"
-    title="Quitter le mode focus">
+<button type="button" id="focusExitBtn" class="focus-exit-btn" style="display:none"
+    title="Quitter le mode focus (Échap)" title="Quitter le mode focus">
     <i class="fas fa-compress" aria-hidden="true"></i> Quitter le focus
 </button>
 
@@ -221,7 +221,7 @@
             <div id="continuityLoading" class="is-hidden empty-state-block">
                 <i class="fas fa-spinner fa-spin" aria-hidden="true"></i> Génération en cours…
             </div>
-            <div id="continuityError" class="continuity-error" class="is-hidden" ></div>
+            <div id="continuityError" class="continuity-error" class="is-hidden"></div>
             <ul id="continuityList" class="continuity-list"></ul>
         </div>
     </div>
@@ -240,7 +240,7 @@
                 <i class="fas fa-spinner fa-spin fa-2x" aria-hidden="true"></i>
                 <p style="margin-top:12px; color:var(--text-muted,#777);">Analyse en cours…</p>
             </div>
-            <div id="inconsistencyResult" class="is-hidden" ></div>
+            <div id="inconsistencyResult" class="is-hidden"></div>
         </div>
         <div class="modal-footer" style="padding:12px 20px; border-top:1px solid var(--border); text-align:right;">
             <button type="button" id="closeInconsistencyModalBtn" class="button secondary" title="Fermer la fenêtre"

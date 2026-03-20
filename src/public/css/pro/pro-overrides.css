@@ -1,0 +1,159 @@
+/* ============================================================
+   PRO OVERRIDES — Neutralise les résidus de l'interface classique
+   Tout scoped sous body.ui-pro
+   ============================================================ */
+
+/* ── 1. Chrome classique — masqué en Pro ── */
+body.ui-pro > header:not(.pro-topbar),
+body.ui-pro > footer,
+body.ui-pro .main-nav {
+    display: none !important;
+}
+
+/* ── 2. main classique — sans padding (Pro gère son propre padding) ── */
+/* Note : .pro-content est notre <main>, pas ciblé ici */
+body.ui-pro main:not(.pro-content) {
+    padding: 0;
+}
+
+/* ── 3. Toolbars classiques — masquées en Pro ── */
+body.ui-pro .navigation-toolbar,
+body.ui-pro .dashboard-toolbar {
+    display: none !important;
+}
+
+/* ── 4. .container classique — pleine largeur en Pro ── */
+body.ui-pro .container {
+    max-width: 100%;
+    margin: 0;
+    padding: 0;
+}
+
+/* ── 5. Cards classiques — stylisées dans le contexte Pro ── */
+body.ui-pro .card {
+    border: 1px solid var(--input-border);
+    border-radius: var(--radius-sm);
+    box-shadow: none;
+}
+
+/* ── 6. Alerts classiques — padding réduit en Pro ── */
+body.ui-pro .alert,
+body.ui-pro .alert-success,
+body.ui-pro .error {
+    font-size: 13px;
+    padding: 8px 12px;
+    border-radius: var(--radius-sm);
+}
+
+/* ── 7. Breadcrumb classique — masqué (Pro a le sien dans la topbar) ── */
+body.ui-pro .breadcrumb {
+    display: none !important;
+}
+
+/* ── 8. Pagination — compacte en Pro ── */
+body.ui-pro .pagination {
+    font-size: 13px;
+    gap: 4px;
+}
+body.ui-pro .pagination a,
+body.ui-pro .pagination span {
+    padding: 4px 8px;
+}
+
+/* ── 9. Sélecteur de thème classique — masqué (Pro a le sien) ── */
+body.ui-pro .theme-selector-widget {
+    display: none !important;
+}
+
+/* ── 10. Résidu de margin en haut de page ── */
+body.ui-pro .pro-content-inner > *:first-child {
+    margin-top: 0;
+}
+
+/* ── 11. Mode éditeur — header collant sous la topbar ── */
+body.ui-pro.editor-mode .edit-header {
+    position: sticky;
+    top: 48px;
+    z-index: 50;
+    background: var(--card-bg);
+    border-bottom: 1px solid var(--input-border);
+    margin: 0 -20px 20px;
+    padding: 8px 20px;
+}
+
+/* ── 14. Transitions fluides sidebar/content ── */
+body.ui-pro .pro-sidebar,
+body.ui-pro .pro-content {
+    transition: width 0.2s ease, margin-left 0.2s ease;
+}
+
+/* ── 15. Neutralise le h2 global dans edit-header ── */
+body.ui-pro .edit-header h2 {
+    font-size: 15px;
+    margin: 0;
+}
+
+/* ── 17. Éditeur Pro — focus sur le contenu, sections secondaires masquées ── */
+
+/* Masquer les sélecteurs acte/parent (méta-infos) — accessible via sidebar */
+body.ui-pro.editor-mode .editor-grid-row {
+    display: none;
+}
+
+/* Quill editor — hauteur maximisée en mode focus */
+body.ui-pro.editor-mode .editor-height-300 {
+    min-height: 60vh;
+}
+
+/* Sections secondaires (grammaire, annotations, glossaire) → collapsées */
+body.ui-pro.editor-mode #glossaryFoundSection,
+body.ui-pro.editor-mode #annotationsSection {
+    display: none;
+}
+
+/* Section grammaire — masquée par défaut, accessible via bouton du header */
+body.ui-pro.editor-mode .grammar-header + .grammar-results:empty ~ * {
+    display: none;
+}
+
+/* Résumé et commentaire → compacts */
+body.ui-pro.editor-mode .editor-height-150 {
+    min-height: 80px;
+}
+
+/* Compteur de mots inline — masqué, déplacé dans la status bar */
+body.ui-pro.editor-mode .word-count.inline {
+    display: none;
+}
+
+/* Actions éditeur — compact, collé en bas */
+body.ui-pro.editor-mode .edit-actions {
+    padding: 10px 20px;
+    margin: 0;
+    background: var(--card-bg);
+    border-top: 1px solid var(--input-border);
+}
+
+/* ── 16. Export options list — cohérence Pro ── */
+body.ui-pro .export-options-list {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+body.ui-pro .export-options-list li {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+body.ui-pro .export-options-list .export-format-desc {
+    font-size: 12px;
+    color: var(--text-muted);
+}
+
+/* ── 17. Bouton dictée — au-dessus de la status bar éditeur ── */
+body.ui-pro.editor-mode #dictation-btn {
+    bottom: 60px; /* 36px status bar + 24px espacement */
+}

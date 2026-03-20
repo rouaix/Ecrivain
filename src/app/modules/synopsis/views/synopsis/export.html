@@ -2,7 +2,7 @@
     <div class="edit-header">
         <h1>Synopsis - {{ @project.title | esc }}</h1>
         <div style="display:flex;gap:.5rem;flex-wrap:wrap;align-items:center;">
-            <button type="button" class="button secondary" onclick="window.print()">
+            <button type="button" class="button secondary" onclick="window.print()" style="display:none;">
                 <i class="fas fa-print" aria-hidden="true"></i> Imprimer
             </button>
             <a href="{{ @base }}/project/{{ @project.id }}/synopsis/export/txt" class="button secondary">

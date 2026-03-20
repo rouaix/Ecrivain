@@ -3,6 +3,13 @@
         <h2><i class="fas fa-envelope-open-text" aria-hidden="true"></i> Mes invitations &amp; collaborations</h2>
     </div>
 
+    <!-- Navigation onglets Pro (masquée en classique) -->
+    <nav class="pro-collab-tabs" aria-label="Ma collaboration">
+        <a href="{{ @base }}/collab/invitations" class="pro-collab-tab is-active">
+            <i class="fas fa-envelope-open-text" aria-hidden="true"></i> Mes invitations
+        </a>
+    </nav>
+
     <div class="edit-card" class="mt-20">
         <div class="edit-card-section">
             <check if="{{ count(@invitations) == 0 }}">

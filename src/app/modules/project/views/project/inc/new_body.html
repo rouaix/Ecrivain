@@ -99,6 +99,26 @@
   </div>
 </check>
 
+<check if="{{ @stats.total_words > 0 }}">
+<div class="pro-project-progression">
+    <check if="{{ @stats.target_words > 0 }}">
+        <div class="pro-progression-stat">
+            <span class="pro-context-value">{{ @stats.pages_current }}</span>
+            <span class="pro-context-label">p. / {{ @stats.pages_target }}</span>
+        </div>
+        <div class="pro-progression-bar-wrap">
+            <div class="pro-context-bar">
+                <div class="pro-context-bar-fill" style="width: {{ min(@stats.progress_percent, 100) }}%"></div>
+            </div>
+        </div>
+        <span class="pro-progression-pct">{{ @stats.progress_percent }}%</span>
+    </check>
+    <span class="pro-progression-words">{{ number_format(@stats.total_words, 0, ',', ' ') }} <small>mots</small></span>
+</div>
+</check>
+
+<div class="pro-project-layout">
+
 <div class="panels-container {{ @isCollaborator ? 'collab-mode' : '' }}">
 
   <!-- Search Bar -->
@@ -1363,6 +1383,9 @@
   </check>
 
 </div><!-- /.panels-container -->
+
+
+</div><!-- /.pro-project-layout -->
 
 <!-- File Upload Modal -->
 <div class="modal-overlay" id="fileUploadModal">

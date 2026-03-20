@@ -9,6 +9,16 @@
         </div>
     </div>
 
+    <!-- Navigation onglets Pro (masquée en classique) -->
+    <nav class="pro-collab-tabs" aria-label="Gestion collaboration">
+        <a href="{{ @base }}/project/{{ @project.id }}/collaborateurs" class="pro-collab-tab is-active">
+            <i class="fas fa-users" aria-hidden="true"></i> Collaborateurs
+        </a>
+        <a href="{{ @base }}/project/{{ @project.id }}/collab/demandes" class="pro-collab-tab">
+            <i class="fas fa-inbox" aria-hidden="true"></i> Demandes
+        </a>
+    </nav>
+
     <check if="{{ count(@errors) > 0 }}">
         <div class="alert alert-error">
             <repeat group="{{ @errors }}" value="{{ @err }}">

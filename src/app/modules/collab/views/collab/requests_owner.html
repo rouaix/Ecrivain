@@ -2,16 +2,25 @@
     <div class="edit-header">
         <h2><i class="fas fa-inbox" aria-hidden="true"></i> Demandes des collaborateurs — {{ @project.title | esc }}</h2>
         <div class="header-actions">
-            <a href="{{ @base }}/project/{{ @project.id }}/collaborateurs" class="button secondary"
-                title="Gérer les collaborateurs" title="Gérer les collaborateurs">
-                <i class="fas fa-users" aria-hidden="true"></i> Collaborateurs
-            </a>
             <a href="{{ @base }}/project/{{ @project.id }}" class="button secondary" title="Retour au projet"
                 title="Retour au projet">
                 <i class="fas fa-arrow-left" aria-hidden="true"></i> Retour
             </a>
         </div>
     </div>
+
+    <!-- Navigation onglets Pro (masquée en classique) -->
+    <nav class="pro-collab-tabs" aria-label="Gestion collaboration">
+        <a href="{{ @base }}/project/{{ @project.id }}/collaborateurs" class="pro-collab-tab">
+            <i class="fas fa-users" aria-hidden="true"></i> Collaborateurs
+        </a>
+        <a href="{{ @base }}/project/{{ @project.id }}/collab/demandes" class="pro-collab-tab is-active">
+            <i class="fas fa-inbox" aria-hidden="true"></i> Demandes
+            <check if="{{ @pendingCount > 0 }}">
+                <span class="pro-nav-badge">{{ @pendingCount }}</span>
+            </check>
+        </a>
+    </nav>
 
     <check if="{{ count(@requests) == 0 }}">
         <div class="edit-card" class="mt-20">

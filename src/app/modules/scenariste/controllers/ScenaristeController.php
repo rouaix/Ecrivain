@@ -11,6 +11,41 @@ class ScenaristeController extends Controller
     }
 
     /**
+     * GET /project/@pid/scenarios
+     */
+    public function list()
+    {
+        $pid  = (int) $this->f3->get('PARAMS.pid');
+        $user = $this->currentUser();
+
+        $projectModel = new Project();
+        $projects = $projectModel->findAndCast(['id=? AND user_id=?', $pid, $user['id']]);
+        if (!$projects) {
+            $this->f3->error(404);
+            return;
+        }
+        $project = $projects[0];
+
+        $scenarioModel = new Scenario();
+        $scenarios = $scenarioModel->getAllByProject($pid);
+
+        // Decode meta JSON for each scenario
+        foreach ($scenarios as &$sc) {
+            $meta = !empty($sc['meta']) ? json_decode($sc['meta'], true) : [];
+            $sc['meta_saison']  = $meta['saison']  ?? '';
+            $sc['meta_episode'] = $meta['episode'] ?? '';
+            $sc['meta_genre']   = $meta['genre']   ?? '';
+        }
+        unset($sc);
+
+        $this->render('scenariste/list.html', [
+            'title'     => 'Scénarios — ' . $project['title'],
+            'project'   => $project,
+            'scenarios' => $scenarios,
+        ]);
+    }
+
+    /**
      * GET /project/@pid/scenariste/new
      */
     public function newEpisode()

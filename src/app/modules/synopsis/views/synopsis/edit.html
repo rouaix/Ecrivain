@@ -2,8 +2,9 @@
     <div class="edit-header">
         <h1>Synopsis</h1>
         <div style="display:flex;gap:.5rem;flex-wrap:wrap;align-items:center;">
-            <a href="{{ @base }}/project/{{ @project.id }}/synopsis/export" class="button secondary" target="_blank">
-                <i class="fas fa-file-export" aria-hidden="true"></i> Exporter
+            <a href="{{ @base }}/project/{{ @project.id }}/synopsis/export" class="button secondary" target="_blank"
+                title="Exporter">
+                <i class="fas fa-file-export" aria-hidden="true"></i>
             </a>
             <a href="{{ @base }}/project/{{ @project.id }}" class="button">
                 <i class="fas fa-arrow-left" aria-hidden="true"></i>
@@ -552,7 +553,7 @@
         }
     };
     var audienceSelect = document.getElementById('audience');
-    var audienceGuide  = document.getElementById('audienceGuide');
+    var audienceGuide = document.getElementById('audienceGuide');
     if (audienceSelect && audienceGuide) {
         function updateAudienceGuide() {
             var a = AUDIENCES[audienceSelect.value];

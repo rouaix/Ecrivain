@@ -8,6 +8,24 @@
     </div>
 </div>
 
+<!-- En-tête Pro (visible uniquement en mode ui-pro via CSS) -->
+<div class="pro-dash-header" id="proDashHeader">
+    <h1 class="pro-dash-title">Projets</h1>
+    <div class="pro-dash-actions">
+        <a href="{{ @base }}/project/create" class="button secondary" title="Nouveau projet">
+            <i class="fas fa-plus" aria-hidden="true"></i>
+        </a>
+        <div class="view-toggle">
+            <button type="button" id="btnViewList" class="button secondary view-toggle-btn active" title="Vue liste">
+                <i class="fas fa-list" aria-hidden="true"></i>
+            </button>
+            <button type="button" id="btnViewKanban" class="button secondary view-toggle-btn" title="Vue Kanban">
+                <i class="fas fa-columns" aria-hidden="true"></i>
+            </button>
+        </div>
+    </div>
+</div>
+
 <div class="navigation-toolbar dashboard-toolbar">
     <a href="{{ @base }}/project/create" class="button secondary">
         <i class="fas fa-plus" aria-hidden="true"></i> Nouveau projet
@@ -24,16 +42,6 @@
     <a href="{{ @base }}/templates" class="button secondary">
         <i class="fas fa-layer-group" aria-hidden="true"></i> Templates
     </a>
-    <div class="view-toggle" class="ml-auto is-hidden" style="display:none;">
-        <button type="button" id="btnViewList" class="button secondary view-toggle-btn active" title="Vue liste"
-            title="Vue liste">
-            <i class="fas fa-th-large" aria-hidden="true"></i>
-        </button>
-        <button type="button" id="btnViewKanban" class="button secondary view-toggle-btn" title="Vue Kanban"
-            title="Vue Kanban">
-            <i class="fas fa-columns" aria-hidden="true"></i>
-        </button>
-    </div>
 </div>
 
 <!-- Theme Switcher -->

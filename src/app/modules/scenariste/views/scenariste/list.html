@@ -1,0 +1,135 @@
+<div class="edit-page-layout">
+
+    <div class="edit-header">
+        <h2><i class="fas fa-film" aria-hidden="true"></i> Scénarios — {{ @project.title | esc }}</h2>
+        <div class="header-actions">
+            <a href="{{ @base }}/project/{{ @project.id }}" class="button secondary" title="Retour au projet">
+                <i class="fas fa-arrow-left" aria-hidden="true"></i>
+            </a>
+            <a href="{{ @base }}/project/{{ @project.id }}/scenariste/new" class="button" title="Nouveau scénario">
+                <i class="fas fa-plus" aria-hidden="true"></i>
+            </a>
+        </div>
+    </div>
+
+    <check if="{{ count(@scenarios) == 0 }}">
+        <div class="edit-card mt-20">
+            <p class="text-muted-para empty-state-block">
+                <i class="fas fa-film" aria-hidden="true"
+                    style="font-size:2rem;opacity:.3;display:block;margin-bottom:.5rem"></i>
+                Aucun scénario généré pour ce projet.
+                <br><br>
+                <a href="{{ @base }}/project/{{ @project.id }}/scenariste/new" class="button">
+                    <i class="fas fa-magic" aria-hidden="true"></i> Générer un scénario IA
+                </a>
+            </p>
+        </div>
+    </check>
+
+    <check if="{{ count(@scenarios) > 0 }}">
+        <div class="edit-card mt-20">
+            <table class="data-table scenarios-table">
+                <thead>
+                    <tr>
+                        <th class="scenarios-col-ref">Réf.</th>
+                        <th>Titre</th>
+                        <th class="scenarios-col-genre">Genre</th>
+                        <th class="scenarios-col-actions"></th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <repeat group="{{ @scenarios }}" value="{{ @sc }}">
+                        <tr>
+                            <td class="scenarios-col-ref">
+                                <check if="{{ @sc.meta_saison }}">
+                                    <span class="scenario-ref-badge">S{{ @sc.meta_saison | esc }}E{{ @sc.meta_episode |
+                                        esc }}</span>
+                                    <false>
+                                        <span class="text-muted-para">—</span>
+                                    </false>
+                                </check>
+                            </td>
+                            <td>
+                                <a href="{{ @base }}/scenariste/{{ @sc.id }}/edit" class="scenario-title-link">
+                                    {{ @sc.title | esc }}
+                                </a>
+                            </td>
+                            <td class="scenarios-col-genre">
+                                <check if="{{ @sc.meta_genre }}">
+                                    <span class="text-muted-para" style="font-size:.82rem">{{ @sc.meta_genre | esc
+                                        }}</span>
+                                </check>
+                            </td>
+                            <td class="scenarios-col-actions actions">
+                                <a href="{{ @base }}/scenariste/{{ @sc.id }}/edit" class="button small" title="Éditer">
+                                    <i class="fas fa-edit" aria-hidden="true"></i>
+                                </a>
+                                <a href="{{ @base }}/scenariste/{{ @sc.id }}/download" class="button small secondary"
+                                    title="Télécharger .md">
+                                    <i class="fas fa-download" aria-hidden="true"></i>
+                                </a>
+                                <a href="{{ @base }}/scenariste/{{ @sc.id }}/delete"
+                                    class="button small delete js-confirm"
+                                    data-confirm="Supprimer ce scénario définitivement ?" title="Supprimer">
+                                    <i class="fas fa-trash" aria-hidden="true"></i>
+                                </a>
+                            </td>
+                        </tr>
+                    </repeat>
+                </tbody>
+            </table>
+        </div>
+    </check>
+
+</div>
+
+<style nonce="{{ @nonce }}">
+    .scenarios-table {
+        margin: 0;
+    }
+
+    .scenarios-col-ref {
+        width: 70px;
+        white-space: nowrap;
+    }
+
+    .scenarios-col-genre {
+        width: 160px;
+    }
+
+    .scenarios-col-actions {
+        width: 110px;
+        white-space: nowrap;
+    }
+
+    .scenario-ref-badge {
+        display: inline-block;
+        background: var(--input-bg, #f0f0f0);
+        border: 1px solid var(--input-border, #ddd);
+        border-radius: 4px;
+        font-size: .75rem;
+        font-weight: 700;
+        padding: 1px 6px;
+        font-family: monospace;
+        letter-spacing: .02em;
+    }
+
+    .scenario-title-link {
+        font-weight: 600;
+        text-decoration: none;
+        color: var(--text-main);
+    }
+
+    .scenario-title-link:hover {
+        color: var(--link-color);
+        text-decoration: underline;
+    }
+</style>
+
+<script nonce="{{ @nonce }}">
+    document.querySelectorAll('.js-confirm').forEach(function (el) {
+        el.addEventListener('click', function (e) {
+            if (!confirm(this.dataset.confirm || 'Confirmer ?')) e.preventDefault();
+        });
+    });
+</script>

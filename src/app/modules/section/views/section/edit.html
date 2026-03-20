@@ -86,14 +86,11 @@
                                 <img src="{{ @base }}{{ @section.image_path }}" alt="Image actuelle"
                                     class="image-preview__img">
 
-                                <form method="post"
-                                    action="{{ @base }}/project/{{ @project.id }}/section/{{ @sectionType }}/image/delete"
-                                    class="mt-5">
-                                    <input type="hidden" name="csrf_token" value="{{ @csrfToken }}">
-                                    <div><button type="submit" class="button delete small" title="Supprimer l'image"
-                                            title="Supprimer l'image">Supprimer l'image</button>
-                                    </div>
-                                </form>
+                                <a href="{{ @base }}/project/{{ @project.id }}/section/{{ @sectionType }}/image/delete"
+                                   class="button delete small js-confirm"
+                                   data-confirm="Supprimer l'image de couverture ?">
+                                    Supprimer l'image
+                                </a>
 
                             </div>
 
@@ -175,7 +172,7 @@
                 <check if="{{ @section.id }}">
                     <a class="button delete js-confirm" href="{{ @base }}/section/{{ @section.id }}/delete"
                         data-confirm="Supprimer cette section ?" title="Supprimer">
-                        <i class="fas fa-trash" aria-hidden="true"></i> Supprimer
+                        <i class="fas fa-trash" aria-hidden="true"></i>
                     </a>
                 </check>
 

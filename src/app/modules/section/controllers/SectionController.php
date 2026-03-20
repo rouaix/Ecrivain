@@ -30,13 +30,21 @@ class SectionController extends Controller
         }
         $project = $project[0];
 
-        // Load section if editing
+        // Load section: by id if provided, otherwise by project+type
         $section = null;
+        $sectionModel = new Section();
         if ($sectionId) {
-            $sectionModel = new Section();
-            $sections = $sectionModel->findAndCast(['id=? AND project_id=?', $sectionId, $pid]);
-            if ($sections) {
-                $section = $sections[0];
+            $rows = $sectionModel->findAndCast(['id=? AND project_id=?', $sectionId, $pid]);
+            if ($rows) $section = $rows[0];
+        } else {
+            $rows = $sectionModel->findAndCast(['project_id=? AND type=?', $pid, $type]);
+            if ($rows) $section = $rows[0];
+        }
+
+        // Clear stale image_path that doesn't match the expected route format
+        if ($section && !empty($section['image_path'])) {
+            if (strpos($section['image_path'], '/project/') !== 0) {
+                $section['image_path'] = null;
             }
         }
 
@@ -80,8 +88,22 @@ class SectionController extends Controller
         // Handle image upload for cover/back_cover
         $imagePath = null;
         $user = $this->currentUser();
-        if (($type === 'cover' || $type === 'back_cover') && isset($_FILES['image'])) {
-            // SECURITY: Multi-level validation (fixes vulnerability #14)
+
+        // Preserve existing image_path first
+        if ($sectionId) {
+            $existingRows = (new Section())->findAndCast(['id=? AND project_id=?', $sectionId, $pid]);
+            if ($existingRows) {
+                $imagePath = $existingRows[0]['image_path'] ?? null;
+            }
+        }
+
+        // Only process upload if a file was actually selected
+        $fileUploaded = ($type === 'cover' || $type === 'back_cover')
+            && isset($_FILES['image'])
+            && $_FILES['image']['error'] === UPLOAD_ERR_OK
+            && !empty($_FILES['image']['tmp_name']);
+
+        if ($fileUploaded) {
             $validation = $this->validateImageUpload($_FILES['image']);
 
             if (!$validation['success']) {
@@ -92,13 +114,12 @@ class SectionController extends Controller
                     mkdir($uploadDir, 0755, true);
                 }
 
-                // Use validated extension (not from filename)
                 $extension = $validation['extension'];
                 $filename = $type . '.' . $extension;
                 $targetPath = $uploadDir . $filename;
 
                 // Delete any existing image for this type (may have different extension)
-                foreach (glob($uploadDir . $type . '.*') as $old) {
+                foreach (glob($uploadDir . $type . '.*') ?: [] as $old) {
                     if ($old !== $targetPath) {
                         unlink($old);
                     }
@@ -114,14 +135,6 @@ class SectionController extends Controller
 
         if (empty($errors)) {
             $sectionModel = new Section();
-
-            // If editing existing section, preserve image if no new upload
-            if ($sectionId) {
-                $existing = $sectionModel->findAndCast(['id=? AND project_id=?', $sectionId, $pid]);
-                if ($existing && !$imagePath) {
-                    $imagePath = $existing[0]['image_path'];
-                }
-            }
 
             $result = $sectionModel->createOrUpdate($pid, $type, $title, $content, $comment, $imagePath, $sectionId);
 

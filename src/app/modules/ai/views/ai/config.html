@@ -22,9 +22,17 @@
 
         <form action="{{ @base }}/ai/config" method="post">
 
+            <!-- Pro: onglets fournisseur (masqués en classique) -->
+            <div class="ai-provider-tabs" id="aiProviderTabs">
+                <button type="button" class="ai-provider-tab" data-provider="openai">OpenAI</button>
+                <button type="button" class="ai-provider-tab" data-provider="gemini">Gemini</button>
+                <button type="button" class="ai-provider-tab" data-provider="anthropic">Anthropic</button>
+                <button type="button" class="ai-provider-tab" data-provider="mistral">Mistral</button>
+            </div>
+
             <div class="section-divider">Fournisseur et Modèle</div>
 
-            <div class="form-group">
+            <div class="form-group" id="providerFormGroup">
 
                 <label for="provider">Fournisseur IA</label>
 
@@ -385,5 +393,28 @@
         }
 
     });
+
+    // ── Pro: onglets fournisseur ──────────────────────────────────────────
+    if (document.body.classList.contains('ui-pro')) {
+        var tabs = document.querySelectorAll('.ai-provider-tab');
+        var provSel = document.getElementById('provider');
+
+        function syncTabs() {
+            tabs.forEach(function (t) {
+                t.classList.toggle('is-active', t.dataset.provider === provSel.value);
+            });
+        }
+
+        tabs.forEach(function (tab) {
+            tab.addEventListener('click', function () {
+                provSel.value = this.dataset.provider;
+                updateModels();
+                syncTabs();
+            });
+        });
+
+        provSel.addEventListener('change', syncTabs);
+        syncTabs();
+    }
 
 </script>

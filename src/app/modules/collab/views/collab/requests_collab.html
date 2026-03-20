@@ -9,6 +9,16 @@
         </div>
     </div>
 
+    <!-- Navigation onglets Pro (masquée en classique) -->
+    <nav class="pro-collab-tabs" aria-label="Ma collaboration">
+        <a href="{{ @base }}/collab/invitations" class="pro-collab-tab">
+            <i class="fas fa-envelope-open-text" aria-hidden="true"></i> Mes invitations
+        </a>
+        <a href="{{ @base }}/project/{{ @project.id }}/collab/mes-demandes" class="pro-collab-tab is-active">
+            <i class="fas fa-paper-plane" aria-hidden="true"></i> Mes demandes
+        </a>
+    </nav>
+
     <check if="{{ count(@requests) == 0 }}">
         <div class="edit-card" class="mt-20">
             <p class="text-muted-para" class="empty-state-block">

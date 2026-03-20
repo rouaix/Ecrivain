@@ -113,10 +113,38 @@
         });
     }
 
-    /* ── Activer les tooltips title sur les boutons ── */
-    function initTooltips() {
-        // Utilise les title HTML natifs — pas de lib nécessaire
-        // Amélioration future : custom tooltips
+    /* ── Barre de statut éditeur — miroir du compteur de mots ── */
+    function initEditorStatusBar() {
+        if (!document.body.classList.contains('editor-mode')) return;
+        var wordCountEl = document.getElementById('wordCount');
+        var bar = document.querySelector('.editor-top-bar');
+        if (!wordCountEl || !bar) return;
+
+        var statusWord = document.createElement('span');
+        statusWord.className = 'pro-status-words';
+        statusWord.setAttribute('aria-live', 'polite');
+        bar.prepend(statusWord);
+
+        function sync() {
+            var n = parseInt(wordCountEl.textContent, 10) || 0;
+            statusWord.textContent = n.toLocaleString('fr-FR') + ' mot' + (n !== 1 ? 's' : '');
+        }
+        sync();
+        new MutationObserver(sync).observe(wordCountEl, { childList: true, characterData: true, subtree: true });
+    }
+
+    /* ── Ombre topbar au scroll ── */
+    function initScrolledTopbar() {
+        var lastScroll = 0;
+        window.addEventListener('scroll', function () {
+            var scrollY = window.scrollY || window.pageYOffset;
+            if (scrollY > 4 && lastScroll <= 4) {
+                document.body.classList.add('is-scrolled');
+            } else if (scrollY <= 4 && lastScroll > 4) {
+                document.body.classList.remove('is-scrolled');
+            }
+            lastScroll = scrollY;
+        }, { passive: true });
     }
 
     /* ── Init ── */
@@ -125,7 +153,8 @@
         initSidebarToggle();
         initSlidePanels();
         initThemeSwatches();
-        initTooltips();
+        initScrolledTopbar();
+        initEditorStatusBar();
     });
 
 }());

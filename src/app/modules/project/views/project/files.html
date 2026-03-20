@@ -1,0 +1,283 @@
+<div class="edit-page-layout">
+
+    <div class="edit-header">
+        <h2><i class="fas fa-paperclip" aria-hidden="true"></i> Fichiers — {{ @project.title | esc }}</h2>
+        <div class="header-actions">
+            <a href="{{ @base }}/project/{{ @project.id }}" class="button secondary" title="Retour au projet">
+                <i class="fas fa-arrow-left" aria-hidden="true"></i>
+            </a>
+            <check if="{{ @isOwner }}">
+                <button type="button" id="addFileBtn" class="button" title="Ajouter un fichier">
+                    <i class="fas fa-plus" aria-hidden="true"></i>
+                </button>
+            </check>
+        </div>
+    </div>
+
+    <check if="{{ count(@files) == 0 }}">
+        <div class="edit-card mt-20">
+            <p class="text-muted-para empty-state-block">
+                <i class="fas fa-paperclip" aria-hidden="true"
+                    style="font-size:2rem;opacity:.3;display:block;margin-bottom:.5rem"></i>
+                Aucun fichier dans ce projet.
+                <check if="{{ @isOwner }}">
+                    <br><br>
+                    <button type="button" id="addFileBtnEmpty" class="button">
+                        <i class="fas fa-plus" aria-hidden="true"></i>
+                    </button>
+                </check>
+            </p>
+        </div>
+    </check>
+
+    <check if="{{ count(@files) > 0 }}">
+        <div class="edit-card mt-20">
+            <div class="files-toolbar">
+                <span class="files-count">{{ count(@files) }} fichier{{ count(@files) > 1 ? 's' : '' }}</span>
+                <button type="button" id="sortFilesBtn" class="button small secondary" title="Trier alphabétiquement">
+                    <i class="fas fa-sort-alpha-down" aria-hidden="true"></i> Trier A–Z
+                </button>
+            </div>
+            <table class="data-table files-table">
+                <thead>
+                    <tr>
+                        <th>Fichier</th>
+                        <th class="files-col-size">Taille</th>
+                        <th class="files-col-date">Ajouté le</th>
+                        <th class="files-col-actions"></th>
+                    </tr>
+                </thead>
+                <tbody id="filesTableBody">
+                    <repeat group="{{ @files }}" value="{{ @file }}">
+                        <tr data-id="{{ @file.id }}">
+                            <td>
+                                <div class="file-name-cell">
+                                    <i class="fas {{ strpos(@file.filetype, 'image/') === 0 ? 'fa-file-image' : (strpos(@file.filetype, 'application/pdf') === 0 ? 'fa-file-pdf' : (strpos(@file.filetype, 'text/') === 0 ? 'fa-file-alt' : 'fa-file')) }} file-icon"
+                                        aria-hidden="true"></i>
+                                    <span class="file-name">{{ @file.filename | esc }}</span>
+                                </div>
+                                <check if="{{ @file.comment }}">
+                                    <div class="file-comment-text">{{ @file.comment | esc }}</div>
+                                </check>
+                            </td>
+                            <td class="files-col-size text-muted-para">{{ @file.size_formatted }}</td>
+                            <td class="files-col-date text-muted-para">{{ date('d/m/Y', strtotime(@file.uploaded_at)) }}
+                            </td>
+                            <td class="files-col-actions actions">
+                                <button class="button small preview-file-btn" data-id="{{ @file.id }}"
+                                    data-filename="{{ @file.filename | esc }}" data-type="{{ @file.filetype | esc }}"
+                                    title="Aperçu">
+                                    <i class="fas fa-eye" aria-hidden="true"></i>
+                                </button>
+                                <a class="button small secondary"
+                                    href="{{ @base }}/project/{{ @project.id }}/file/{{ @file.id }}/download"
+                                    title="Télécharger" download>
+                                    <i class="fas fa-download" aria-hidden="true"></i>
+                                </a>
+                                <check if="{{ @isOwner }}">
+                                    <a class="button small delete js-confirm"
+                                        href="{{ @base }}/project/{{ @project.id }}/file/{{ @file.id }}/delete"
+                                        data-confirm="Supprimer ce fichier définitivement ?" title="Supprimer">
+                                        <i class="fas fa-trash" aria-hidden="true"></i>
+                                    </a>
+                                </check>
+                            </td>
+                        </tr>
+                    </repeat>
+                </tbody>
+            </table>
+        </div>
+    </check>
+
+</div>
+
+<!-- Modal upload -->
+<div class="modal-overlay" id="fileUploadModal" role="dialog" aria-modal="true" aria-label="Ajouter un fichier">
+    <div class="modal-content modal-sm">
+        <div class="modal-header">
+            <h3><i class="fas fa-upload"></i> Ajouter un fichier</h3>
+            <button type="button" class="modal-close button" id="closeFileModal" title="Fermer">✕</button>
+        </div>
+        <div class="modal-body">
+            <form id="fileUploadForm" enctype="multipart/form-data">
+                <input type="hidden" name="csrf_token" value="{{ @csrfToken }}">
+                <div class="form-group">
+                    <label for="fileInput">Fichier <small>(max 10 Mo)</small></label>
+                    <input type="file" id="fileInput" name="file" required class="input-control">
+                </div>
+                <div class="form-group">
+                    <label for="fileComment">Commentaire <small>(optionnel)</small></label>
+                    <textarea id="fileComment" name="comment" class="input-control" rows="2"></textarea>
+                </div>
+                <div class="form-actions-right">
+                    <button type="submit" class="button primary" id="uploadSubmitBtn">
+                        <i class="fas fa-upload" aria-hidden="true"></i> Envoyer
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- Modal aperçu -->
+<div class="modal-overlay" id="previewModal" role="dialog" aria-modal="true">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h3 id="previewModalTitle">Aperçu</h3>
+            <button type="button" class="modal-close button" id="closePreviewModal" title="Fermer">✕</button>
+        </div>
+        <div class="modal-body" id="previewModalBody"></div>
+    </div>
+</div>
+
+<style nonce="{{ @nonce }}">
+    .files-toolbar {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 10px 16px;
+        border-bottom: 1px solid var(--input-border);
+    }
+
+    .files-count {
+        font-size: 13px;
+        color: var(--text-muted);
+    }
+
+    .files-col-size {
+        width: 80px;
+        white-space: nowrap;
+    }
+
+    .files-col-date {
+        width: 110px;
+        white-space: nowrap;
+    }
+
+    .files-col-actions {
+        width: 120px;
+        white-space: nowrap;
+    }
+
+    .file-name-cell {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+    }
+
+    .file-icon {
+        color: var(--text-muted);
+        font-size: 14px;
+        flex-shrink: 0;
+    }
+
+    .file-name {
+        font-weight: 500;
+    }
+
+    .file-comment-text {
+        font-size: 12px;
+        color: var(--text-muted);
+        margin-top: 2px;
+        padding-left: 22px;
+    }
+
+    .empty-state-block {
+        text-align: center;
+        padding: 40px 20px;
+        color: var(--text-muted);
+    }
+</style>
+
+<script nonce="{{ @nonce }}">
+    (function () {
+        var projectId = '{{ @project.id }}';
+        var base = '{{ @base }}';
+
+        /* ── Upload modal ── */
+        var uploadModal = document.getElementById('fileUploadModal');
+        function openUpload() { if (uploadModal) uploadModal.classList.add('is-visible'); }
+        function closeUpload() { if (uploadModal) uploadModal.classList.remove('is-visible'); }
+
+        var addBtn = document.getElementById('addFileBtn');
+        var addBtnEmpty = document.getElementById('addFileBtnEmpty');
+        var closeBtn = document.getElementById('closeFileModal');
+        if (addBtn) addBtn.addEventListener('click', openUpload);
+        if (addBtnEmpty) addBtnEmpty.addEventListener('click', openUpload);
+        if (closeBtn) closeBtn.addEventListener('click', closeUpload);
+        if (uploadModal) uploadModal.addEventListener('click', function (e) { if (e.target === uploadModal) closeUpload(); });
+
+        /* ── Upload form ── */
+        var form = document.getElementById('fileUploadForm');
+        var submitBtn = document.getElementById('uploadSubmitBtn');
+        if (form) {
+            form.addEventListener('submit', function (e) {
+                e.preventDefault();
+                var formData = new FormData(this);
+                if (submitBtn) { submitBtn.disabled = true; submitBtn.textContent = 'Envoi…'; }
+                fetch(base + '/project/' + projectId + '/file/upload', { method: 'POST', body: formData })
+                    .then(function (r) { return r.json(); })
+                    .then(function (data) {
+                        if (data.success) { window.location.reload(); }
+                        else { alert('Erreur : ' + (data.error || 'inconnue')); if (submitBtn) { submitBtn.disabled = false; submitBtn.innerHTML = '<i class="fas fa-upload"></i> Envoyer'; } }
+                    })
+                    .catch(function () { alert('Erreur réseau.'); if (submitBtn) { submitBtn.disabled = false; submitBtn.innerHTML = '<i class="fas fa-upload"></i> Envoyer'; } });
+            });
+        }
+
+        /* ── Aperçu ── */
+        var previewModal = document.getElementById('previewModal');
+        var previewTitle = document.getElementById('previewModalTitle');
+        var previewBody = document.getElementById('previewModalBody');
+        var closePreview = document.getElementById('closePreviewModal');
+        function closePreviewFn() { if (previewModal) { previewModal.classList.remove('is-visible'); previewBody.innerHTML = ''; } }
+        if (closePreview) closePreview.addEventListener('click', closePreviewFn);
+        if (previewModal) previewModal.addEventListener('click', function (e) { if (e.target === previewModal) closePreviewFn(); });
+
+        document.querySelectorAll('.preview-file-btn').forEach(function (btn) {
+            btn.addEventListener('click', function () {
+                var fid = this.dataset.id;
+                var fname = this.dataset.filename;
+                var ftype = this.dataset.type;
+                previewTitle.textContent = fname;
+                var url = base + '/project/' + projectId + '/file/' + fid + '/download';
+                if (ftype && ftype.startsWith('image/')) {
+                    previewBody.innerHTML = '<img src="' + url + '" style="max-width:100%;height:auto;display:block;margin:auto">';
+                } else if (ftype === 'application/pdf') {
+                    previewBody.innerHTML = '<iframe src="' + url + '" style="width:100%;height:600px;border:none"></iframe>';
+                } else {
+                    previewBody.innerHTML = '<p style="color:var(--text-muted);margin-bottom:12px">Aperçu non disponible pour ce type de fichier.</p><a href="' + url + '" class="button" download><i class="fas fa-download"></i> Télécharger</a>';
+                }
+                previewModal.classList.add('is-visible');
+            });
+        });
+
+        /* ── Tri A–Z ── */
+        var sortBtn = document.getElementById('sortFilesBtn');
+        if (sortBtn) {
+            sortBtn.addEventListener('click', function () {
+                var tbody = document.getElementById('filesTableBody');
+                if (!tbody) return;
+                var rows = Array.from(tbody.querySelectorAll('tr'));
+                rows.sort(function (a, b) {
+                    var na = (a.querySelector('.file-name') || {}).textContent || '';
+                    var nb = (b.querySelector('.file-name') || {}).textContent || '';
+                    return na.trim().toLowerCase().localeCompare(nb.trim().toLowerCase());
+                });
+                rows.forEach(function (r) { tbody.appendChild(r); });
+            });
+        }
+
+        /* ── Confirmation suppression ── */
+        document.querySelectorAll('.js-confirm').forEach(function (el) {
+            el.addEventListener('click', function (e) {
+                if (!confirm(this.dataset.confirm || 'Confirmer ?')) e.preventDefault();
+            });
+        });
+
+        /* ── Fermeture Echap ── */
+        document.addEventListener('keydown', function (e) {
+            if (e.key === 'Escape') { closeUpload(); closePreviewFn(); }
+        });
+    }());
+</script>

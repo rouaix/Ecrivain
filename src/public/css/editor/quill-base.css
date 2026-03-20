@@ -106,7 +106,10 @@ p.word-count {
 
 .image-preview {
     margin-bottom: 15px;
-    text-align: center;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 10px;
 }
 
 .image-preview__img {

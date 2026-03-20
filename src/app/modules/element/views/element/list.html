@@ -1,0 +1,565 @@
+<div class="edit-page-layout">
+
+    <div class="edit-header">
+        <h2><i class="fas fa-puzzle-piece" aria-hidden="true"></i> {{ @config.label_plural ?? 'Éléments' | esc }} — {{ @project.title | esc }}</h2>
+        <div class="header-actions">
+            <a href="{{ @base }}/project/{{ @project.id }}" class="button secondary" title="Retour au projet">
+                <i class="fas fa-arrow-left" aria-hidden="true"></i>
+            </a>
+            <a href="{{ @base }}/project/{{ @project.id }}/element/create?type={{ @templateElement.id }}" class="button"
+                title="Nouvel élément">
+                <i class="fas fa-plus" aria-hidden="true"></i>
+            </a>
+        </div>
+    </div>
+
+    <check if="{{ count(@topLevel) == 0 }}">
+        <div class="pro-empty-state mt-20">
+            <i class="fas fa-puzzle-piece" aria-hidden="true"></i>
+            <p>Aucun élément pour l'instant.</p>
+            <a href="{{ @base }}/project/{{ @project.id }}/element/create?type={{ @templateElement.id }}"
+                class="button">Créer le premier</a>
+        </div>
+    </check>
+
+    <check if="{{ count(@topLevel) > 0 }}">
+        <div class="elements-layout mt-20">
+
+            <!-- Liste des éléments -->
+            <div class="elements-list-col" id="elementsList">
+                <repeat group="{{ @topLevel }}" value="{{ @el }}">
+
+                    <div class="element-list-item" data-id="{{ @el.id }}" tabindex="0">
+                        <div class="element-list-body">
+                            <div class="element-list-title">{{ @el.title | esc }}</div>
+                            <check if="{{ @el.sub_count > 0 }}">
+                                <div class="element-list-meta">{{ @el.sub_count }} sous-élément(s)</div>
+                            </check>
+                        </div>
+                        <div class="element-list-actions">
+                            <check if="{{ @el.sub_count > 0 }}">
+                                <button type="button" class="button small js-expand-subs"
+                                    data-target="subs-{{ @el.id }}" title="Voir les sous-éléments"
+                                    onclick="event.stopPropagation()">
+                                    <i class="fas fa-chevron-down" aria-hidden="true"></i>
+                                </button>
+                            </check>
+                            <a href="{{ @base }}/element/{{ @el.id }}" class="button small" title="Modifier"
+                                onclick="event.stopPropagation()">
+                                <i class="fas fa-edit" aria-hidden="true"></i>
+                            </a>
+                            <check if="{{ @el.sub_count == 0 }}">
+                                <a href="{{ @base }}/element/{{ @el.id }}/delete" class="button small delete js-confirm"
+                                    data-confirm="Supprimer cet élément ?" title="Supprimer"
+                                    onclick="event.stopPropagation()">
+                                    <i class="fas fa-trash" aria-hidden="true"></i>
+                                </a>
+                            </check>
+                        </div>
+                    </div>
+
+                    <check if="{{ @el.sub_count > 0 }}">
+                        <div class="element-sub-list" id="subs-{{ @el.id }}" style="display:none">
+                            <repeat group="{{ @el.subs }}" value="{{ @sub }}">
+                                <div class="element-sub-item" data-id="{{ @sub.id }}" tabindex="0">
+                                    <span class="element-sub-title">{{ @sub.title | esc }}</span>
+                                    <div class="element-sub-actions">
+                                        <a href="{{ @base }}/element/{{ @sub.id }}" class="button small"
+                                            title="Modifier" onclick="event.stopPropagation()">
+                                            <i class="fas fa-edit" aria-hidden="true"></i>
+                                        </a>
+                                        <a href="{{ @base }}/element/{{ @sub.id }}/delete"
+                                            class="button small delete js-confirm"
+                                            data-confirm="Supprimer ce sous-élément ?" title="Supprimer"
+                                            onclick="event.stopPropagation()">
+                                            <i class="fas fa-trash" aria-hidden="true"></i>
+                                        </a>
+                                    </div>
+                                </div>
+                            </repeat>
+                            <div class="element-sub-add">
+                                <a href="{{ @base }}/project/{{ @project.id }}/element/create?type={{ @templateElement.id }}&parent_id={{ @el.id }}"
+                                    class="button small secondary" title="Ajouter un sous-élément">
+                                    <i class="fas fa-plus" aria-hidden="true"></i>
+                                </a>
+                            </div>
+                        </div>
+                    </check>
+
+                </repeat>
+            </div>
+
+            <!-- Panneau d'aperçu (Pro uniquement) -->
+            <div class="elements-preview-col" id="elementsPreview" aria-live="polite">
+                <div class="elements-preview-empty" id="elementsPreviewEmpty">
+                    <i class="fas fa-hand-pointer" aria-hidden="true"></i>
+                    <p>Sélectionnez un élément pour l'apercevoir</p>
+                </div>
+                <div class="elements-preview-content" id="elementsPreviewContent" style="display:none">
+                    <div class="elements-preview-header">
+                        <div class="elements-preview-header-text">
+                            <div class="elements-preview-breadcrumb" id="elementsPreviewBreadcrumb"
+                                style="display:none"></div>
+                            <h3 id="elementsPreviewTitle"></h3>
+                        </div>
+                        <a id="elementsPreviewEdit" href="#" class="button small" title="Modifier">
+                            <i class="fas fa-edit" aria-hidden="true"></i>
+                        </a>
+                    </div>
+                    <div class="elements-preview-body ql-editor" id="elementsPreviewBody"></div>
+                    <div class="elements-preview-section" id="elementsPreviewResumeWrap" style="display:none">
+                        <div class="elements-preview-section-label">
+                            <i class="fas fa-align-left" aria-hidden="true"></i> Résumé
+                        </div>
+                        <div class="ql-editor elements-preview-resume-body" id="elementsPreviewResumeBody"></div>
+                    </div>
+                    <div class="elements-preview-section" id="elementsPreviewSubsWrap" style="display:none">
+                        <div class="elements-preview-section-label">
+                            <i class="fas fa-sitemap" aria-hidden="true"></i> Sous-éléments
+                        </div>
+                        <div id="elementsPreviewSubsList"></div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </check>
+
+</div>
+
+<script type="application/json" id="elementsJson">{{ @elementsJson | raw }}</script>
+
+<style nonce="{{ @nonce }}">
+    /* ── Layout ── */
+    .elements-layout {
+        display: block;
+    }
+
+    body.ui-pro .elements-layout {
+        display: grid;
+        grid-template-columns: 30% 1fr;
+        gap: 20px;
+        align-items: start;
+    }
+
+    /* ── Preview col (hidden in classic) ── */
+    .elements-preview-col {
+        display: none;
+    }
+
+    body.ui-pro .elements-preview-col {
+        display: block;
+        position: sticky;
+        top: 64px;
+        background: var(--card-bg);
+        border: 1px solid var(--input-border);
+        border-radius: var(--radius-md, 8px);
+        min-height: 300px;
+        overflow: hidden;
+    }
+
+    /* ── List items ── */
+    .element-list-item {
+        display: flex;
+        align-items: center;
+        background: var(--card-bg);
+        border: 1px solid var(--input-border);
+        border-radius: var(--radius-md, 8px);
+        margin-bottom: .4rem;
+        cursor: pointer;
+        transition: box-shadow 0.15s, border-color 0.15s;
+        overflow: hidden;
+    }
+
+    .element-list-item:hover,
+    .element-list-item:focus {
+        border-color: var(--button-primary-bg, #3f51b5);
+        box-shadow: 0 2px 8px rgba(0, 0, 0, .08);
+        outline: none;
+    }
+
+    .element-list-item.is-active {
+        border-color: var(--button-primary-bg, #3f51b5);
+        box-shadow: 0 0 0 2px rgba(63, 81, 181, .18);
+    }
+
+    .element-list-body {
+        flex: 1;
+        padding: .65rem .8rem;
+        min-width: 0;
+    }
+
+    .element-list-title {
+        font-weight: 600;
+        font-size: .9rem;
+        line-height: 1.35;
+        display: -webkit-box;
+        -webkit-line-clamp: 2;
+        -webkit-box-orient: vertical;
+        overflow: hidden;
+    }
+
+    .element-list-meta {
+        font-size: .74rem;
+        color: var(--text-muted, #888);
+        margin-top: 3px;
+    }
+
+    /* Actions: hidden until hover/focus/active */
+    .element-list-actions {
+        display: flex;
+        gap: .2rem;
+        padding: 0 .5rem;
+        flex-shrink: 0;
+        opacity: 0;
+        transition: opacity 0.15s;
+    }
+
+    .element-list-item:hover .element-list-actions,
+    .element-list-item:focus .element-list-actions,
+    .element-list-item:focus-within .element-list-actions,
+    .element-list-item.is-active .element-list-actions {
+        opacity: 1;
+    }
+
+    /* ── Sub-element list ── */
+    .element-sub-list {
+        background: var(--input-bg, #f9f9f9);
+        border: 1px solid var(--input-border);
+        border-top: none;
+        border-radius: 0 0 var(--radius-md, 8px) var(--radius-md, 8px);
+        margin-bottom: .4rem;
+        margin-top: -.4rem;
+        padding: .3rem .5rem .5rem 1.5rem;
+    }
+
+    .element-sub-item {
+        display: flex;
+        align-items: center;
+        gap: .5rem;
+        padding: .4rem .5rem;
+        border-radius: var(--radius-sm, 4px);
+        margin-top: .25rem;
+        background: var(--card-bg);
+        border: 1px solid var(--input-border);
+        cursor: pointer;
+        transition: border-color 0.12s, box-shadow 0.12s;
+    }
+
+    .element-sub-item:hover,
+    .element-sub-item:focus {
+        border-color: var(--button-primary-bg, #3f51b5);
+        outline: none;
+    }
+
+    .element-sub-item.is-active {
+        border-color: var(--button-primary-bg, #3f51b5);
+        box-shadow: 0 0 0 2px rgba(63, 81, 181, .18);
+    }
+
+    .element-sub-title {
+        font-size: .86rem;
+        flex: 1;
+        line-height: 1.3;
+        display: -webkit-box;
+        -webkit-line-clamp: 2;
+        -webkit-box-orient: vertical;
+        overflow: hidden;
+    }
+
+    .element-sub-actions {
+        display: flex;
+        gap: .2rem;
+        flex-shrink: 0;
+        opacity: 0;
+        transition: opacity 0.15s;
+    }
+
+    .element-sub-item:hover .element-sub-actions,
+    .element-sub-item:focus .element-sub-actions,
+    .element-sub-item:focus-within .element-sub-actions,
+    .element-sub-item.is-active .element-sub-actions {
+        opacity: 1;
+    }
+
+    .element-sub-add {
+        margin-top: .5rem;
+        padding: .1rem .25rem;
+    }
+
+    /* ── Preview panel ── */
+    .elements-preview-empty {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        min-height: 300px;
+        color: var(--text-muted, #aaa);
+        gap: .75rem;
+        font-size: .9rem;
+    }
+
+    .elements-preview-empty i {
+        font-size: 2rem;
+        opacity: .3;
+    }
+
+    .elements-preview-header {
+        display: flex;
+        align-items: flex-start;
+        justify-content: space-between;
+        gap: 1rem;
+        padding: 1rem 1.25rem .75rem;
+        border-bottom: 1px solid var(--input-border);
+    }
+
+    .elements-preview-header-text {
+        flex: 1;
+        min-width: 0;
+    }
+
+    .elements-preview-breadcrumb {
+        font-size: .72rem;
+        color: var(--text-muted, #999);
+        margin-bottom: .2rem;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+
+    .elements-preview-header h3 {
+        margin: 0;
+        font-size: 1rem;
+        font-weight: 700;
+        line-height: 1.35;
+    }
+
+    .elements-preview-body {
+        padding: 1rem 1.25rem;
+        font-size: .88rem;
+        overflow-y: auto;
+    }
+
+    .elements-preview-body img,
+    .elements-preview-resume-body img {
+        max-width: 100%;
+        height: auto;
+    }
+
+    .elements-preview-section {
+        border-top: 1px solid var(--input-border);
+        padding: .75rem 1.25rem;
+        background: var(--input-bg, #f9f9f9);
+    }
+
+    .elements-preview-section-label {
+        font-size: .72rem;
+        font-weight: 700;
+        text-transform: uppercase;
+        color: var(--text-muted, #999);
+        margin-bottom: .5rem;
+        display: flex;
+        align-items: center;
+        gap: .4rem;
+    }
+
+    .elements-preview-resume-body {
+        font-size: .84rem;
+        padding: 0;
+        max-height: 140px;
+        overflow-y: auto;
+    }
+
+    .elements-preview-sub-row {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: .5rem;
+        padding: .3rem .4rem;
+        border-radius: var(--radius-sm, 4px);
+        margin-bottom: .25rem;
+        background: var(--card-bg);
+        border: 1px solid var(--input-border);
+        font-size: .84rem;
+        cursor: pointer;
+        transition: border-color 0.12s;
+    }
+
+    .elements-preview-sub-row:hover {
+        border-color: var(--button-primary-bg, #3f51b5);
+    }
+
+    .elements-preview-sub-row span {
+        flex: 1;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+    }
+
+    /* ── Responsive ── */
+    @media (max-width: 700px) {
+        body.ui-pro .elements-layout {
+            grid-template-columns: 1fr;
+        }
+
+        body.ui-pro .elements-preview-col {
+            display: none;
+        }
+    }
+</style>
+
+<script nonce="{{ @nonce }}">
+    (function () {
+        var BASE = '{{ @base }}';
+        var IS_PRO = document.body.classList.contains('ui-pro');
+
+        // Build flat map: id → element (both parents and subs)
+        var elementsData = {};
+        try {
+            var raw = JSON.parse(document.getElementById('elementsJson').textContent);
+            raw.forEach(function (el) {
+                elementsData[el.id] = el;
+                (el.subs || []).forEach(function (sub) {
+                    elementsData[sub.id] = sub;
+                });
+            });
+        } catch (e) { }
+
+        // Preview DOM refs
+        var previewEmpty = document.getElementById('elementsPreviewEmpty');
+        var previewContent = document.getElementById('elementsPreviewContent');
+        var previewBreadcrumb = document.getElementById('elementsPreviewBreadcrumb');
+        var previewTitle = document.getElementById('elementsPreviewTitle');
+        var previewBody = document.getElementById('elementsPreviewBody');
+        var previewEdit = document.getElementById('elementsPreviewEdit');
+        var previewResumeWrap = document.getElementById('elementsPreviewResumeWrap');
+        var previewResumeBody = document.getElementById('elementsPreviewResumeBody');
+        var previewSubsWrap = document.getElementById('elementsPreviewSubsWrap');
+        var previewSubsList = document.getElementById('elementsPreviewSubsList');
+
+        function stripTags(html) {
+            var d = document.createElement('div');
+            d.innerHTML = html || '';
+            return d.textContent || d.innerText || '';
+        }
+
+        function hasContent(html) {
+            return stripTags(html).trim().length > 0;
+        }
+
+        function showPreview(id) {
+            var el = elementsData[id];
+            if (!el) return;
+
+            // Breadcrumb: show parent name for sub-elements
+            if (el.parent_id && elementsData[el.parent_id]) {
+                previewBreadcrumb.textContent = '↳ ' + stripTags(elementsData[el.parent_id].title || '');
+                previewBreadcrumb.style.display = '';
+            } else {
+                previewBreadcrumb.style.display = 'none';
+            }
+
+            previewTitle.textContent = stripTags(el.title || '');
+            previewBody.innerHTML = el.content || '<p class="text-muted-para">Aucun contenu.</p>';
+            previewEdit.href = BASE + '/element/' + id;
+
+            // Resume
+            if (el.resume && hasContent(el.resume)) {
+                previewResumeBody.innerHTML = el.resume;
+                previewResumeWrap.style.display = '';
+            } else {
+                previewResumeWrap.style.display = 'none';
+            }
+
+            // Sub-elements (only for parents)
+            var subs = el.subs || [];
+            if (!el.parent_id && subs.length > 0) {
+                previewSubsList.innerHTML = '';
+                subs.forEach(function (sub) {
+                    var row = document.createElement('div');
+                    row.className = 'elements-preview-sub-row';
+                    row.dataset.id = sub.id;
+                    var span = document.createElement('span');
+                    span.textContent = stripTags(sub.title || '');
+                    row.appendChild(span);
+                    var a = document.createElement('a');
+                    a.href = BASE + '/element/' + sub.id;
+                    a.className = 'button small';
+                    a.title = 'Modifier';
+                    a.innerHTML = '<i class="fas fa-edit" aria-hidden="true"></i>';
+                    a.addEventListener('click', function (e) { e.stopPropagation(); });
+                    row.appendChild(a);
+                    row.addEventListener('click', function () {
+                        setActive(null, parseInt(this.dataset.id, 10));
+                        showPreview(parseInt(this.dataset.id, 10));
+                    });
+                    previewSubsList.appendChild(row);
+                });
+                previewSubsWrap.style.display = '';
+            } else {
+                previewSubsWrap.style.display = 'none';
+            }
+
+            previewEmpty.style.display = 'none';
+            previewContent.style.display = '';
+        }
+
+        // Manage active state across all selectable rows
+        function setActive(parentId, subId) {
+            document.querySelectorAll('.element-list-item').forEach(function (el) {
+                el.classList.toggle('is-active', parseInt(el.dataset.id, 10) === parentId);
+            });
+            document.querySelectorAll('.element-sub-item').forEach(function (el) {
+                el.classList.toggle('is-active', parseInt(el.dataset.id, 10) === subId);
+            });
+            document.querySelectorAll('.elements-preview-sub-row').forEach(function (el) {
+                el.classList && el.classList.toggle('is-active', parseInt(el.dataset.id, 10) === subId);
+            });
+        }
+
+        // Expand/collapse sub-element lists
+        document.querySelectorAll('.js-expand-subs').forEach(function (btn) {
+            btn.addEventListener('click', function (e) {
+                e.stopPropagation();
+                var subList = document.getElementById(this.dataset.target);
+                if (!subList) return;
+                var isOpen = subList.style.display !== 'none';
+                subList.style.display = isOpen ? 'none' : '';
+                var icon = this.querySelector('i');
+                if (icon) icon.className = isOpen ? 'fas fa-chevron-down' : 'fas fa-chevron-up';
+            });
+        });
+
+        // Parent item click
+        document.querySelectorAll('.element-list-item').forEach(function (item) {
+            item.addEventListener('click', function () {
+                var id = parseInt(this.dataset.id, 10);
+                if (!IS_PRO) {
+                    window.location.href = BASE + '/element/' + id;
+                    return;
+                }
+                setActive(id, null);
+                showPreview(id);
+            });
+            item.addEventListener('keydown', function (e) {
+                if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); this.click(); }
+            });
+        });
+
+        // Sub-item click
+        document.querySelectorAll('.element-sub-item').forEach(function (item) {
+            item.addEventListener('click', function () {
+                var id = parseInt(this.dataset.id, 10);
+                if (!IS_PRO) {
+                    window.location.href = BASE + '/element/' + id;
+                    return;
+                }
+                setActive(null, id);
+                showPreview(id);
+            });
+            item.addEventListener('keydown', function (e) {
+                if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); this.click(); }
+            });
+        });
+    })();
+</script>

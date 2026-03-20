@@ -1,0 +1,354 @@
+<div class="edit-page-layout">
+
+    <div class="edit-header">
+        <h2><i class="fas fa-sticky-note" aria-hidden="true"></i> Notes — {{ @project.title | esc }}</h2>
+        <div class="header-actions">
+            <a href="{{ @base }}/project/{{ @project.id }}" class="button secondary" title="Retour au projet">
+                <i class="fas fa-arrow-left" aria-hidden="true"></i>
+            </a>
+            <check if="{{ @isOwner }}">
+                <a href="{{ @base }}/project/{{ @project.id }}/note/edit" class="button" title="Nouvelle note">
+                    <i class="fas fa-plus" aria-hidden="true"></i>
+                </a>
+            </check>
+        </div>
+    </div>
+
+    <check if="{{ count(@notes) == 0 }}">
+        <div class="edit-card mt-20">
+            <p class="text-muted-para empty-state-block">
+                <i class="fas fa-sticky-note" aria-hidden="true"
+                    style="font-size:2rem;opacity:.3;display:block;margin-bottom:.5rem"></i>
+                Aucune note créée pour ce projet.
+            </p>
+        </div>
+    </check>
+
+    <check if="{{ count(@notes) > 0 }}">
+        <div class="notes-layout mt-20">
+
+            <!-- Liste des notes -->
+            <div class="notes-list-col" id="notesList">
+                <repeat group="{{ @notes }}" value="{{ @note }}">
+                    <div class="note-list-item" data-id="{{ @note.id }}" tabindex="0"
+                        title="{{ strip_tags(@note.title) ?: 'Note sans titre' | esc }}">
+                        <div class="note-list-color note-color-{{ @note.colorIndex }}"></div>
+                        <div class="note-list-body">
+                            <div class="note-list-title">{{ strip_tags(@note.title) ?: 'Note sans titre' | esc }}</div>
+                            <div class="note-list-meta">{{ @note.wc }} mot{{ @note.wc != 1 ? 's' : '' }}</div>
+                        </div>
+                        <div class="note-list-actions">
+                            <check if="{{ @isOwner }}">
+                                <a href="{{ @base }}/project/{{ @project.id }}/note/edit?id={{ @note.id }}"
+                                    class="button small" title="Modifier" onclick="event.stopPropagation()">
+                                    <i class="fas fa-edit" aria-hidden="true"></i>
+                                </a>
+                                <a href="{{ @base }}/note/{{ @note.id }}/delete" class="button small delete js-confirm"
+                                    data-confirm="Supprimer cette note ?" title="Supprimer"
+                                    onclick="event.stopPropagation()">
+                                    <i class="fas fa-trash" aria-hidden="true"></i>
+                                </a>
+                            </check>
+                        </div>
+                    </div>
+                </repeat>
+            </div>
+
+            <!-- Panneau d'aperçu (Pro uniquement) -->
+            <div class="notes-preview-col" id="notesPreview" aria-live="polite">
+                <div class="notes-preview-empty" id="notesPreviewEmpty">
+                    <i class="fas fa-hand-pointer" aria-hidden="true"></i>
+                    <p>Sélectionnez une note pour l'apercevoir</p>
+                </div>
+                <div class="notes-preview-content" id="notesPreviewContent" style="display:none">
+                    <div class="notes-preview-header">
+                        <h3 id="notesPreviewTitle"></h3>
+                        <a id="notesPreviewEdit" href="#" class="button small" title="Modifier">
+                            <i class="fas fa-edit" aria-hidden="true"></i>
+                        </a>
+                    </div>
+                    <div class="notes-preview-body ql-editor" id="notesPreviewBody"></div>
+                    <div class="notes-preview-comment" id="notesPreviewComment" style="display:none">
+                        <div class="notes-preview-comment-label">
+                            <i class="fas fa-comment" aria-hidden="true"></i> Remarques
+                        </div>
+                        <div class="ql-editor" id="notesPreviewCommentBody"></div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </check>
+
+</div>
+
+<script type="application/json" id="notesJson">{{ @notesJson | raw }}</script>
+
+<style nonce="{{ @nonce }}">
+    /* ── Layout ── */
+    .notes-layout {
+        display: block;
+    }
+
+    body.ui-pro .notes-layout {
+        display: grid;
+        grid-template-columns: 30% 1fr;
+        gap: 20px;
+        align-items: start;
+    }
+
+    /* ── Preview col (hidden in classic) ── */
+    .notes-preview-col {
+        display: none;
+    }
+
+    body.ui-pro .notes-preview-col {
+        display: block;
+        position: sticky;
+        top: 64px;
+        background: var(--card-bg);
+        border: 1px solid var(--input-border);
+        border-radius: var(--radius-md, 8px);
+        min-height: 300px;
+        overflow: hidden;
+    }
+
+    /* ── List items ── */
+    .note-list-item {
+        display: flex;
+        align-items: center;
+        gap: 0;
+        background: var(--card-bg);
+        border: 1px solid var(--input-border);
+        border-radius: var(--radius-md, 8px);
+        margin-bottom: .5rem;
+        cursor: pointer;
+        transition: box-shadow 0.15s, border-color 0.15s;
+        overflow: hidden;
+    }
+
+    .note-list-item:hover,
+    .note-list-item:focus {
+        border-color: var(--button-primary-bg, #3f51b5);
+        box-shadow: 0 2px 8px rgba(0, 0, 0, .08);
+        outline: none;
+    }
+
+    .note-list-item.is-active {
+        border-color: var(--button-primary-bg, #3f51b5);
+        box-shadow: 0 0 0 2px rgba(63, 81, 181, .18);
+    }
+
+    .note-list-color {
+        width: 5px;
+        align-self: stretch;
+        flex-shrink: 0;
+    }
+
+    .note-color-1 {
+        background: #6366f1;
+    }
+
+    .note-color-2 {
+        background: #22c55e;
+    }
+
+    .note-color-3 {
+        background: #f59e0b;
+    }
+
+    .note-color-4 {
+        background: #ec4899;
+    }
+
+    .note-color-5 {
+        background: #06b6d4;
+    }
+
+    .note-color-6 {
+        background: #ef4444;
+    }
+
+    .note-list-body {
+        flex: 1;
+        padding: .6rem .75rem;
+        min-width: 0;
+    }
+
+    .note-list-title {
+        font-weight: 600;
+        font-size: .88rem;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+
+    .note-list-meta {
+        font-size: .74rem;
+        color: var(--text-muted, #888);
+        margin-top: 2px;
+    }
+
+    .note-list-actions {
+        display: flex;
+        gap: .25rem;
+        padding: 0 .5rem;
+        flex-shrink: 0;
+    }
+
+    /* ── Preview panel ── */
+    .notes-preview-empty {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        min-height: 300px;
+        color: var(--text-muted, #aaa);
+        gap: .75rem;
+        font-size: .9rem;
+    }
+
+    .notes-preview-empty i {
+        font-size: 2rem;
+        opacity: .3;
+    }
+
+    .notes-preview-header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 1rem;
+        padding: 1rem 1.25rem .75rem;
+        border-bottom: 1px solid var(--input-border);
+    }
+
+    .notes-preview-header h3 {
+        margin: 0;
+        font-size: 1rem;
+        font-weight: 700;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+
+    .notes-preview-body {
+        padding: 1rem 1.25rem;
+        font-size: .88rem;
+        /*max-height: 420px;*/
+        overflow-y: auto;
+    }
+
+    .notes-preview-body img {
+        max-width: 100%;
+        height: auto;
+    }
+
+    .notes-preview-comment {
+        border-top: 1px solid var(--input-border);
+        padding: .75rem 1.25rem;
+        background: var(--input-bg, #f9f9f9);
+    }
+
+    .notes-preview-comment-label {
+        font-size: .74rem;
+        font-weight: 700;
+        text-transform: uppercase;
+        color: var(--text-muted, #999);
+        margin-bottom: .4rem;
+    }
+
+    .notes-preview-comment .ql-editor {
+        font-size: .84rem;
+        padding: 0;
+        max-height: 140px;
+        overflow-y: auto;
+    }
+
+    /* ── Responsive ── */
+    @media (max-width: 700px) {
+        body.ui-pro .notes-layout {
+            grid-template-columns: 1fr;
+        }
+
+        body.ui-pro .notes-preview-col {
+            display: none;
+        }
+    }
+</style>
+
+<script nonce="{{ @nonce }}">
+    (function () {
+        var BASE = '{{ @base }}';
+        var PID = '{{ @project.id }}';
+        var IS_OWNER = {{ @isOwner ?'true' : 'false'
+    }};
+    var IS_PRO = document.body.classList.contains('ui-pro');
+
+    // Parse embedded JSON
+    var notesData = {};
+    try {
+        var raw = JSON.parse(document.getElementById('notesJson').textContent);
+        raw.forEach(function (n) { notesData[n.id] = n; });
+    } catch (e) { }
+
+    // Preview elements
+    var previewEmpty = document.getElementById('notesPreviewEmpty');
+    var previewContent = document.getElementById('notesPreviewContent');
+    var previewTitle = document.getElementById('notesPreviewTitle');
+    var previewBody = document.getElementById('notesPreviewBody');
+    var previewEdit = document.getElementById('notesPreviewEdit');
+    var previewComment = document.getElementById('notesPreviewComment');
+    var previewCommentBody = document.getElementById('notesPreviewCommentBody');
+
+    function showPreview(id) {
+        var note = notesData[id];
+        if (!note) return;
+
+        previewTitle.textContent = note.title;
+        previewBody.innerHTML = note.content || '<p class="text-muted-para">Aucun contenu.</p>';
+        if (IS_OWNER) {
+            previewEdit.href = BASE + '/project/' + PID + '/note/edit?id=' + id;
+            previewEdit.style.display = '';
+        } else {
+            previewEdit.style.display = 'none';
+        }
+
+        if (note.comment && note.comment.replace(/<[^>]*>/g, '').trim()) {
+            previewCommentBody.innerHTML = note.comment;
+            previewComment.style.display = '';
+        } else {
+            previewComment.style.display = 'none';
+        }
+
+        previewEmpty.style.display = 'none';
+        previewContent.style.display = '';
+    }
+
+    // Bind list items
+    document.querySelectorAll('.note-list-item').forEach(function (item) {
+        item.addEventListener('click', function () {
+            var id = parseInt(this.dataset.id, 10);
+
+            // In classic mode: navigate to edit
+            if (!IS_PRO) {
+                window.location.href = BASE + '/project/' + PID + '/note/edit?id=' + id;
+                return;
+            }
+
+            // In Pro mode: show preview
+            document.querySelectorAll('.note-list-item').forEach(function (el) {
+                el.classList.remove('is-active');
+            });
+            this.classList.add('is-active');
+            showPreview(id);
+        });
+
+        item.addEventListener('keydown', function (e) {
+            if (e.key === 'Enter' || e.key === ' ') {
+                e.preventDefault();
+                this.click();
+            }
+        });
+    });
+    }) ();
+</script>

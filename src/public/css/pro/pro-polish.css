@@ -1,0 +1,332 @@
+/* ============================================================
+   PRO POLISH — Phase 4 : transitions, mobile, accessibilité
+   Tout scoped sous body.ui-pro
+   ============================================================ */
+
+/* ── 1. Fade-in page ── */
+body.ui-pro .pro-content-inner {
+    animation: proFadeIn 0.18s ease both;
+}
+
+body.ui-pro .mindmap-canvas {
+    width: 100%;
+    height: 80vh;
+}
+
+
+@keyframes proFadeIn {
+    from {
+        opacity: 0;
+    }
+
+    to {
+        opacity: 1;
+    }
+}
+
+/* Désactiver l'animation si l'utilisateur préfère moins de mouvement */
+@media (prefers-reduced-motion: reduce) {
+    body.ui-pro .pro-content-inner {
+        animation: none;
+    }
+}
+
+/* ── 2. Focus visible (accessibilité clavier) ── */
+body.ui-pro :focus-visible {
+    outline: 2px solid var(--button-primary-bg);
+    outline-offset: 2px;
+    border-radius: 2px;
+}
+
+/* Supprimer l'outline natif sur les éléments qu'on gère */
+body.ui-pro :focus:not(:focus-visible) {
+    outline: none;
+}
+
+/* ── 3. Lien d'évitement (skip link) ── */
+body.ui-pro .pro-skip-link {
+    position: fixed;
+    top: -100px;
+    left: 16px;
+    z-index: 9999;
+    background: var(--button-primary-bg);
+    color: var(--button-text, #fff);
+    padding: 8px 16px;
+    border-radius: var(--radius-sm);
+    font-size: 13px;
+    font-weight: 600;
+    text-decoration: none;
+    transition: top 0.15s;
+}
+
+body.ui-pro .pro-skip-link:focus {
+    top: 8px;
+}
+
+/* ── 4. Transitions cohérentes sur les interactifs ── */
+body.ui-pro .button,
+body.ui-pro .pro-nav-item,
+body.ui-pro .pro-tab {
+    transition: background 0.12s, color 0.12s, border-color 0.12s, box-shadow 0.12s;
+}
+
+body.ui-pro input,
+body.ui-pro select,
+body.ui-pro textarea {
+    transition: border-color 0.12s, box-shadow 0.12s;
+}
+
+body.ui-pro input:focus,
+body.ui-pro select:focus,
+body.ui-pro textarea:focus {
+    outline: none;
+    border-color: var(--button-primary-bg);
+    box-shadow: 0 0 0 3px rgba(63, 81, 181, 0.12);
+}
+
+/* ── 5. Sidebar — animation mobile ── */
+@media (max-width: 640px) {
+    body.ui-pro .pro-sidebar {
+        transition: transform 0.22s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    /* Bouton hamburger visible */
+    body.ui-pro #proSidebarToggle {
+        display: flex !important;
+        align-items: center;
+        justify-content: center;
+    }
+
+    /* Contenu avec padding réduit sur mobile */
+    body.ui-pro .pro-content-inner {
+        padding: 16px;
+    }
+
+    /* Edit-header empile les actions en colonne si trop étroit */
+    body.ui-pro .edit-header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 8px;
+    }
+
+    /* Tables → format carte empilé */
+    body.ui-pro .data-table thead {
+        display: none;
+    }
+
+    body.ui-pro .data-table tbody tr {
+        display: block;
+        border: 1px solid var(--input-border);
+        border-radius: var(--radius-sm);
+        margin-bottom: 10px;
+        padding: 10px 12px;
+    }
+
+    body.ui-pro .data-table tbody td {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        border: none;
+        padding: 4px 0;
+        font-size: 13px;
+    }
+
+    body.ui-pro .data-table tbody td[data-label]::before {
+        content: attr(data-label);
+        font-weight: 600;
+        font-size: 11px;
+        color: var(--text-muted);
+        min-width: 80px;
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+    }
+
+    /* Slide panels → bottom sheet */
+    body.ui-pro .pro-slide-panel {
+        top: auto;
+        bottom: 0;
+        right: 0;
+        left: 0;
+        width: 100%;
+        height: 80vh;
+        transform: translateY(100%);
+        border-left: none;
+        border-top: 1px solid var(--input-border);
+        border-radius: var(--radius-sm) var(--radius-sm) 0 0;
+    }
+
+    body.ui-pro .pro-slide-panel.is-open {
+        transform: translateY(0);
+    }
+}
+
+/* ── 6. Scrollbar fine dans le contenu ── */
+body.ui-pro .pro-content {
+    scrollbar-width: thin;
+    scrollbar-color: var(--input-border) transparent;
+}
+
+body.ui-pro .pro-content::-webkit-scrollbar {
+    width: 6px;
+}
+
+body.ui-pro .pro-content::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+body.ui-pro .pro-content::-webkit-scrollbar-thumb {
+    background: var(--input-border);
+    border-radius: 3px;
+}
+
+/* ── 7. États vides harmonisés ── */
+body.ui-pro .pro-empty-state {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 56px 24px;
+    text-align: center;
+    color: var(--text-muted);
+    border: 1px dashed var(--input-border);
+    border-radius: var(--radius-sm);
+    gap: 10px;
+}
+
+body.ui-pro .pro-empty-state i {
+    font-size: 32px;
+    opacity: 0.25;
+}
+
+body.ui-pro .pro-empty-state p {
+    font-size: 13px;
+    margin: 0;
+}
+
+/* ── 8. Impression — masquer le chrome Pro ── */
+@media print {
+
+    body.ui-pro .pro-topbar,
+    body.ui-pro .pro-sidebar,
+    body.ui-pro .pro-backdrop,
+    body.ui-pro #searchOverlay {
+        display: none !important;
+    }
+
+    body.ui-pro .pro-content {
+        margin-left: 0 !important;
+        padding-top: 0 !important;
+    }
+
+    body.ui-pro .pro-content-inner {
+        padding: 0 !important;
+        animation: none !important;
+    }
+}
+
+/* ── 9. Topbar — ombre plus marquée au scroll ── */
+body.ui-pro .pro-topbar {
+    transition: box-shadow 0.2s;
+}
+
+body.ui-pro.is-scrolled .pro-topbar {
+    box-shadow: 0 2px 12px rgba(0, 0, 0, 0.15);
+}
+
+/* ── 10. Tooltips natifs améliorés ── */
+body.ui-pro [title] {
+    cursor: default;
+}
+
+body.ui-pro a[title],
+body.ui-pro button[title] {
+    cursor: pointer;
+}
+
+/* ── 11. Panel details/summary — transition hauteur ── */
+body.ui-pro .panel>summary {
+    transition: background 0.12s;
+}
+
+body.ui-pro .panel>summary:hover {
+    background: var(--table-row-hover-bg);
+}
+
+/* ── 12. Tableau — lignes alternées option ── */
+body.ui-pro .pro-table.striped tbody tr:nth-child(even) td {
+    background: var(--table-row-bg, rgba(0, 0, 0, .02));
+}
+
+/* ── 13. Boutons primaires — micro élévation au hover ── */
+body.ui-pro .button:not(.secondary):not(.delete):hover {
+    /* box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+    transform: translateY(-1px);*/
+}
+
+body.ui-pro .button:not(.secondary):not(.delete):active {
+    transform: translateY(0);
+    box-shadow: none;
+}
+
+@media (prefers-reduced-motion: reduce) {
+    body.ui-pro .button {
+        transform: none !important;
+    }
+}
+
+/* ── Compteur de mots dans la barre de statut éditeur ── */
+body.ui-pro.editor-mode .pro-status-words {
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--text-main);
+    padding: 0 12px 0 0;
+    border-right: 1px solid var(--input-border);
+    margin-right: 4px;
+}
+
+/* ── Labels compacts en Pro ── */
+body.ui-pro .form-group>label {
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    color: var(--text-muted);
+    margin-bottom: 4px;
+    display: block;
+}
+
+/* ── 14. Notification badge topbar ── */
+body.ui-pro .pro-topbar-badge {
+    position: absolute;
+    top: 6px;
+    right: 6px;
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: var(--color-danger);
+    border: 2px solid var(--header-bg);
+}
+
+/* ── 15. Loading spinner générique ── */
+body.ui-pro .pro-spinner {
+    display: inline-block;
+    width: 16px;
+    height: 16px;
+    border: 2px solid var(--input-border);
+    border-top-color: var(--button-primary-bg);
+    border-radius: 50%;
+    animation: proSpin 0.6s linear infinite;
+    flex-shrink: 0;
+}
+
+@keyframes proSpin {
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    body.ui-pro .pro-spinner {
+        animation-duration: 2s;
+    }
+}

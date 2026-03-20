@@ -2,6 +2,11 @@
    PRO COMPONENTS — Éléments d'interface internes
    ============================================================ */
 
+/* ── Éléments Pro masqués en mode classique ── */
+.pro-dash-header {
+    display: none;
+}
+
 /* ── En-tête de page ── */
 body.ui-pro .pro-page-header {
     display: flex;
@@ -38,7 +43,86 @@ body.ui-pro .pro-page-actions {
     flex-wrap: wrap;
 }
 
+body.ui-pro .act-actions {
+    float: right;
+    display: flex;
+    gap: 0;
+}
+
+.ui-pro .compact-actions,
+.ui-pro .compact-actions--wide,
+.ui-pro .actions {
+    width: auto;
+    min-width: 100px;
+    max-width: auto;
+}
+
+
+
 /* ── Boutons — plus compacts en mode Pro ── */
+
+body.theme-default.ui-pro input[type="submit"],
+body.theme-default.ui-pro button:not(.ql-toolbar button),
+body.theme-default.ui-pro .button:not(.ql-toolbar button),
+body.theme-default.ui-pro a,
+body.theme-default.ui-pro button,
+body.theme-default.ui-pro .button,
+body.theme-default.ui-pro .button.small,
+body.theme-default.ui-pro .button.small.primary,
+body.theme-default.ui-pro .button.small.secondary,
+body.theme-default.ui-pro .button.primary,
+body.theme-default.ui-pro .button.secondary {
+    cursor: pointer;
+    border: none;
+    padding: 2px;
+    color: var(--button-bg);
+    background-color: transparent;
+    margin: 0;
+}
+
+body.theme-default.ui-pro .delete,
+body.theme-default.ui-pro a.button.delete,
+body.theme-default.ui-pro a.button.delete.small,
+body.theme-default.ui-pro .button.delete,
+body.theme-default.ui-pro .button.delete.small {
+    color: var(--color-danger);
+    background-color: transparent;
+}
+
+body.theme-default.ui-pro .delete:hover,
+body.theme-default.ui-pro a.button.delete:hover,
+body.theme-default.ui-pro a.button.delete.small:hover,
+body.theme-default.ui-pro .button.delete:hover,
+body.theme-default.ui-pro .button.delete.small:hover {
+    color: var(--button-delete-hover-bg) !important;
+    background-color: transparent !important;
+}
+
+body.theme-default.ui-pro input[type="submit"]:hover,
+body.theme-default.ui-pro button:not(.ql-toolbar button):hover,
+body.theme-default.ui-pro .button:not(.ql-toolbar button):hover,
+body.theme-default.ui-pro a:hover,
+body.theme-default.ui-pro button:hover,
+body.theme-default.ui-pro .button:hover,
+body.theme-default.ui-pro .button.small:hover,
+body.theme-default.ui-pro .button.small.primary:hover,
+body.theme-default.ui-pro .button.small.secondary:hover,
+body.theme-default.ui-pro .button.primary:hover,
+body.theme-default.ui-pro .button.secondary:hover {
+    color: var(--button-hover-bg);
+    background-color: transparent;
+}
+
+body.theme-default.ui-pro #dictation-btn {
+    color: var(--button-bg);
+    background-color: transparent;
+}
+
+body.theme-default.ui-pro #dictation-btn:hover {
+    color: var(--button-hover-bg);
+    background-color: transparent;
+}
+
 body.ui-pro .button {
     padding: 7px 14px;
     font-size: 13px;
@@ -66,7 +150,7 @@ body.ui-pro .pro-card {
     overflow: hidden;
 }
 
-body.ui-pro .pro-card + .pro-card {
+body.ui-pro .pro-card+.pro-card {
     margin-top: 16px;
 }
 
@@ -220,31 +304,46 @@ body.ui-pro .pro-badge--success {
     background: rgba(34, 197, 94, 0.12);
     color: var(--color-success);
 }
-body.ui-pro .pro-badge--success::before { background: var(--color-success); }
+
+body.ui-pro .pro-badge--success::before {
+    background: var(--color-success);
+}
 
 body.ui-pro .pro-badge--warning {
     background: rgba(245, 158, 11, 0.12);
     color: var(--color-warning);
 }
-body.ui-pro .pro-badge--warning::before { background: var(--color-warning); }
+
+body.ui-pro .pro-badge--warning::before {
+    background: var(--color-warning);
+}
 
 body.ui-pro .pro-badge--info {
     background: rgba(59, 130, 246, 0.12);
     color: var(--color-info);
 }
-body.ui-pro .pro-badge--info::before { background: var(--color-info); }
+
+body.ui-pro .pro-badge--info::before {
+    background: var(--color-info);
+}
 
 body.ui-pro .pro-badge--neutral {
     background: var(--table-row-bg);
     color: var(--text-muted);
 }
-body.ui-pro .pro-badge--neutral::before { background: var(--text-muted); }
+
+body.ui-pro .pro-badge--neutral::before {
+    background: var(--text-muted);
+}
 
 body.ui-pro .pro-badge--danger {
     background: rgba(239, 68, 68, 0.12);
     color: var(--color-danger);
 }
-body.ui-pro .pro-badge--danger::before { background: var(--color-danger); }
+
+body.ui-pro .pro-badge--danger::before {
+    background: var(--color-danger);
+}
 
 /* ── Panneau slide-in ── */
 body.ui-pro .pro-slide-panel {
@@ -306,6 +405,7 @@ body.ui-pro .pro-slide-panel-close {
     border-radius: var(--radius-sm);
     transition: background 0.1s, color 0.1s;
 }
+
 body.ui-pro .pro-slide-panel-close:hover {
     background: var(--table-row-hover-bg);
     color: var(--text-main);
@@ -376,10 +476,12 @@ body.ui-pro .pro-tab {
     border-right: none;
     font-family: inherit;
 }
+
 body.ui-pro .pro-tab:hover {
     color: var(--text-main);
     text-decoration: none;
 }
+
 body.ui-pro .pro-tab.is-active {
     color: var(--button-primary-bg);
     border-bottom-color: var(--button-primary-bg);
@@ -393,6 +495,7 @@ body.ui-pro .pro-progress-bar {
     border-radius: 2px;
     overflow: hidden;
 }
+
 body.ui-pro .pro-progress-fill {
     height: 100%;
     background: var(--button-primary-bg);
@@ -410,7 +513,2343 @@ body.ui-pro .pro-alert {
     font-size: 13px;
     margin-bottom: 16px;
 }
-body.ui-pro .pro-alert--success { background: var(--success-bg); color: var(--success-text); }
-body.ui-pro .pro-alert--error   { background: var(--error-bg);   color: var(--error-text); }
-body.ui-pro .pro-alert--info    { background: var(--info-bg);    color: var(--info-text); }
-body.ui-pro .pro-alert--warning { background: var(--warning-bg); color: var(--warning-text); }
+
+body.ui-pro .pro-alert--success {
+    background: var(--success-bg);
+    color: var(--success-text);
+}
+
+body.ui-pro .pro-alert--error {
+    background: var(--error-bg);
+    color: var(--error-text);
+}
+
+body.ui-pro .pro-alert--info {
+    background: var(--info-bg);
+    color: var(--info-text);
+}
+
+body.ui-pro .pro-alert--warning {
+    background: var(--warning-bg);
+    color: var(--warning-text);
+}
+
+/* ============================================================
+   PHASE 2 — DASHBOARD PRO
+   ============================================================ */
+
+/* Masquer les éléments redondants avec la sidebar Pro */
+body.ui-pro .navigation-toolbar.dashboard-toolbar {
+    display: none;
+}
+
+body.ui-pro .theme-selector {
+    display: none;
+}
+
+body.ui-pro .dashboard-header {
+    display: none;
+}
+
+body.ui-pro .row:has(.dashboard-header) {
+    display: none;
+}
+
+/* En-tête Pro du dashboard */
+body.ui-pro .pro-dash-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 20px;
+    gap: 12px;
+    flex-wrap: wrap;
+}
+
+body.ui-pro .pro-dash-title {
+    font-size: 18px;
+    font-weight: 700;
+    color: var(--text-main);
+    margin: 0;
+}
+
+body.ui-pro .pro-dash-actions {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+}
+
+/* Widget objectif du jour — compact */
+body.ui-pro .dash-goal-widget {
+    padding: 10px 14px;
+    border-radius: var(--radius-sm);
+    margin-bottom: 16px;
+    border: 1px solid var(--input-border);
+}
+
+body.ui-pro .dash-goal-info {
+    gap: 6px;
+    margin-bottom: 6px;
+}
+
+body.ui-pro .dash-goal-label {
+    font-size: 12px;
+}
+
+body.ui-pro .dash-goal-numbers {
+    font-size: 11px;
+}
+
+body.ui-pro .dash-goal-link {
+    font-size: 11px;
+}
+
+body.ui-pro .dash-goal-track {
+    height: 6px;
+}
+
+/* Filtre par tag — compact */
+body.ui-pro .tag-filter-bar {
+    gap: 4px;
+    margin-bottom: 12px;
+}
+
+body.ui-pro .tag-filter-btn {
+    padding: 2px 10px;
+    font-size: 11px;
+    border-radius: 10px;
+}
+
+/* ── Table de projets Pro (vue liste) ── */
+
+/* ── Grille de projets Pro ── */
+body.ui-pro .projects-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+    gap: 18px;
+    margin-bottom: 28px;
+    background: none;
+    border: none;
+}
+
+body.ui-pro .project-card {
+    display: flex;
+    flex-direction: column;
+    background: var(--card-bg);
+    border: 1px solid var(--input-border);
+    border-radius: var(--radius-sm);
+    overflow: hidden;
+    transition: box-shadow 0.18s, transform 0.18s;
+    position: relative;
+    padding: 0;
+    gap: 0;
+}
+
+body.ui-pro .project-card:hover {
+    box-shadow: 0 4px 20px rgba(0, 0, 0, .1);
+    transform: translateY(-2px);
+    background: var(--card-bg);
+}
+
+
+/* Lien = toute la carte sauf les actions */
+body.ui-pro .project-card-link {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    text-decoration: none;
+    min-width: 0;
+}
+
+body.ui-pro .project-card-link:hover {
+    text-decoration: none;
+}
+
+/* Cover — héro de la carte (ratio livre 1:1.42) */
+body.ui-pro .project-card__cover {
+    display: block !important;
+    width: 100%;
+    aspect-ratio: 1 / 1.4;
+    background-color: var(--body-bg);
+    background-size: cover;
+    background-position: center top;
+    position: relative;
+    flex-shrink: 0;
+    border-bottom: 1px solid var(--input-border);
+}
+
+/* Placeholder sans cover : gradient + initiale */
+body.ui-pro .project-card__cover:not([style*="background-image"]) {
+    background: linear-gradient(135deg, var(--input-border) 0%, var(--body-bg) 100%);
+}
+
+body.ui-pro .project-card__title-overlay {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 13px;
+    font-weight: 700;
+    color: var(--text-muted);
+    text-align: center;
+    padding: 12px;
+    line-height: 1.3;
+    opacity: 0.6;
+}
+
+/* Infos sous la cover */
+body.ui-pro .project-card__info {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    padding: 12px 14px 10px;
+    flex: 1;
+    min-width: 0;
+}
+
+body.ui-pro .project-card__title {
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--text-main);
+    margin: 0;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+body.ui-pro .project-card__description {
+    font-size: 11.5px;
+    color: var(--text-muted);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    line-height: 1.4;
+}
+
+body.ui-pro .project-card__meta {
+    font-size: 11px;
+    color: var(--text-muted);
+    margin-top: 2px;
+}
+
+body.ui-pro .project-card__tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 3px;
+    margin-top: 4px;
+}
+
+body.ui-pro .project-tag {
+    padding: 1px 6px;
+    font-size: 10px;
+    white-space: nowrap;
+    background: var(--body-bg);
+    border: 1px solid var(--input-border);
+    border-radius: 10px;
+    color: var(--text-muted);
+}
+
+body.ui-pro .project-card__stats {
+    display: none;
+}
+
+/* Actions — barre basse, visible au hover */
+body.ui-pro .project-card__actions {
+    display: flex;
+    gap: 4px;
+    padding: 6px 10px;
+    border-top: 1px solid var(--input-border);
+    background: var(--card-bg);
+    opacity: 0;
+    transition: opacity 0.15s;
+}
+
+body.ui-pro .project-card:hover .project-card__actions {
+    opacity: 1;
+}
+
+/* Projets partagés section */
+body.ui-pro h3:has(+ .projects-grid) {
+    font-size: 12px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.07em;
+    color: var(--text-muted);
+    margin-bottom: 8px;
+}
+
+/* Empty state */
+body.ui-pro .empty-state {
+    text-align: center;
+    padding: 48px 24px;
+    color: var(--text-muted);
+    font-size: 14px;
+    border: 1px dashed var(--input-border);
+    border-radius: var(--radius-sm);
+}
+
+/* Kanban — plus propre en Pro */
+body.ui-pro .kanban-board {
+    gap: 12px;
+}
+
+body.ui-pro .kanban-col {
+    border-radius: var(--radius-sm);
+}
+
+body.ui-pro .kanban-col-header {
+    padding: 8px 12px;
+}
+
+body.ui-pro .kanban-col-title {
+    font-size: 12px;
+}
+
+body.ui-pro .kanban-card {
+    border-radius: var(--radius-sm);
+    padding: 9px 11px;
+}
+
+body.ui-pro .kanban-card-title {
+    font-size: 12px;
+}
+
+/* Toggle vue liste/kanban — style Pro */
+body.ui-pro .view-toggle {
+    display: flex !important;
+}
+
+body.ui-pro .view-toggle-btn.active {
+    background: var(--button-primary-bg);
+    color: var(--button-text);
+    border-color: var(--button-primary-bg);
+}
+
+/* Invitation banner */
+body.ui-pro .alert.alert-info {
+    font-size: 13px;
+    padding: 9px 13px;
+    border-radius: var(--radius-sm);
+}
+
+/* ============================================================
+   PHASE 2 — PAGE PROJET PRO
+   ============================================================ */
+
+/* Masquer le gros hero cover (remplacé par en-tête compact) */
+body.ui-pro .project-hero {
+    display: none;
+}
+
+/* Miniature couverture (narrow strip) */
+body.ui-pro .project-hero__cover {
+    width: 80px !important;
+    flex-shrink: 0;
+    min-height: 100px;
+    background-size: cover;
+    background-position: center;
+    border-radius: 0;
+}
+
+body.ui-pro .project-hero__cover img {
+    width: 80px;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+}
+
+body.ui-pro .project-hero__cover-placeholder {
+    width: 80px;
+    height: 100%;
+    min-height: 100px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: var(--table-header-bg);
+    font-size: 10px;
+    color: var(--text-muted);
+    text-align: center;
+    padding: 4px;
+}
+
+body.ui-pro .project-hero__cover-placeholder span {
+    display: none;
+}
+
+/* Hero body — horizontal, compact */
+body.ui-pro .project-hero__body {
+    flex: 1;
+    padding: 14px 18px;
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+body.ui-pro .project-hero__heading h1 {
+    font-size: 16px;
+    font-weight: 700;
+    margin: 0;
+    color: var(--text-main);
+    line-height: 1.25;
+}
+
+body.ui-pro .project-hero__description {
+    font-size: 12px;
+    color: var(--text-muted);
+    margin: 0;
+    line-height: 1.5;
+    max-height: 3em;
+    overflow: hidden;
+}
+
+body.ui-pro .project-hero__author {
+    font-size: 12px;
+    color: var(--text-muted);
+    font-style: italic;
+}
+
+/* Actions — row compact */
+body.ui-pro .project-hero__actions {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 6px;
+}
+
+body.ui-pro .project-hero__actions-group {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    align-items: center;
+}
+
+/* Métriques — grille compacte */
+body.ui-pro .project-hero__metrics {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin: 0;
+}
+
+body.ui-pro .metric-card {
+    background: var(--table-header-bg);
+    border: 1px solid var(--input-border);
+    border-radius: var(--radius-sm);
+    padding: 8px 12px;
+    flex: 1;
+    min-width: 120px;
+}
+
+body.ui-pro .metric-card .metric-label {
+    font-size: 10px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    color: var(--text-muted);
+    display: block;
+    margin-bottom: 2px;
+}
+
+body.ui-pro .metric-card strong {
+    font-size: 14px;
+    font-weight: 700;
+    display: block;
+    color: var(--text-main);
+}
+
+body.ui-pro .metric-card .metric-sub {
+    font-size: 11px;
+    color: var(--text-muted);
+}
+
+/* Progress bar — slim */
+body.ui-pro .project-hero__progress {
+    margin: 0;
+}
+
+body.ui-pro .project-hero__progress .progress-track {
+    height: 4px;
+    border-radius: 2px;
+}
+
+body.ui-pro .project-hero__progress-note {
+    font-size: 10px;
+    color: var(--text-muted);
+    margin: 3px 0 0;
+}
+
+/* ── Panneau de contenu (panels) ── */
+body.ui-pro .panels-container {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+/* Barre de recherche — plus compacte */
+body.ui-pro .search-container {
+    padding: 8px 12px;
+    margin-bottom: 0;
+    border-radius: var(--radius-sm);
+    border: 1px solid var(--input-border);
+    box-shadow: none;
+    position: sticky;
+    top: 56px;
+    z-index: 20;
+}
+
+body.ui-pro .search-input {
+    padding: 5px 10px;
+    font-size: 12px;
+    border-width: 1px;
+}
+
+/* Sections pliables (details) — style Pro */
+body.ui-pro .panel {
+    border: 1px solid var(--input-border);
+    border-radius: var(--radius-sm);
+    overflow: hidden;
+    background: var(--card-bg);
+    margin-bottom: 0;
+}
+
+body.ui-pro .panel>summary {
+    /*padding: 9px 14px;*/
+    font-size: 12px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    color: var(--text-muted);
+    /*background: var(--table-header-bg);*/
+    cursor: pointer;
+    list-style: none;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    user-select: none;
+    border-bottom: 1px solid transparent;
+}
+
+body.ui-pro .panel[open]>summary {
+    border-bottom-color: var(--input-border);
+}
+
+body.ui-pro .panel>summary::-webkit-details-marker {
+    display: none;
+}
+
+body.ui-pro .panel>summary::before {
+    content: '›';
+    font-size: 14px;
+    font-weight: 400;
+    color: var(--text-muted);
+    transform: rotate(0deg);
+    transition: transform 0.15s;
+    line-height: 1;
+}
+
+body.ui-pro .panel[open]>summary::before {
+    transform: rotate(90deg);
+}
+
+body.ui-pro .panel-count {
+    margin-left: auto;
+    font-size: 11px;
+    font-weight: 600;
+    background: var(--input-border);
+    color: var(--text-muted);
+    border-radius: 10px;
+    padding: 1px 7px;
+    min-width: 24px;
+    text-align: center;
+}
+
+body.ui-pro .panel-actions {
+    margin-left: 4px;
+    display: flex;
+    gap: 4px;
+}
+
+/* Tables dans les panels */
+body.ui-pro .compact-table {
+    font-size: 12px;
+    width: 100%;
+}
+
+body.ui-pro .compact-table th {
+    font-size: 10px;
+    padding: 6px 12px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+}
+
+body.ui-pro .compact-table td {
+    padding: 7px 12px;
+    font-size: 12px;
+}
+
+body.ui-pro .compact-table tbody tr:hover td {
+    background: var(--table-row-hover-bg, rgba(0, 0, 0, .025));
+}
+
+/* Bandeau collaborateur — compact */
+body.ui-pro .collab-banner {
+    font-size: 12px;
+    padding: .5rem .875rem;
+    margin-bottom: 12px;
+    border-radius: var(--radius-sm);
+    border: 1px solid var(--input-border);
+    background: var(--table-header-bg);
+}
+
+/* ============================================================
+   PHASE 2 — TYPOGRAPHIE PRO GÉNÉRALE
+   ============================================================ */
+
+body.ui-pro .pro-content-inner h1 {
+    font-size: 18px;
+    margin-bottom: 16px;
+}
+
+body.ui-pro .pro-content-inner h2 {
+    font-size: 16px;
+    margin-bottom: 12px;
+}
+
+body.ui-pro .pro-content-inner h3 {
+    font-size: 14px;
+    margin-bottom: 10px;
+}
+
+/* Formulaires : inputs plus compacts */
+body.ui-pro .form-group {
+    margin-bottom: 14px;
+}
+
+body.ui-pro input[type="text"],
+body.ui-pro input[type="email"],
+body.ui-pro input[type="password"],
+body.ui-pro input[type="number"],
+body.ui-pro textarea,
+body.ui-pro select {
+    padding: 6px 10px;
+    font-size: 13px;
+}
+
+body.ui-pro label {
+    font-size: 12px;
+    font-weight: 600;
+    margin-bottom: 4px;
+}
+
+/* Tables globales en Pro */
+body.ui-pro table.data-table th {
+    font-size: 11px;
+    padding: 7px 12px;
+}
+
+body.ui-pro table.data-table td {
+    font-size: 12px;
+    padding: 7px 12px;
+}
+
+/* ── Responsive Phase 2 ── */
+@media (max-width: 640px) {
+    body.ui-pro .projects-grid {
+        grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+        gap: 12px;
+    }
+
+    body.ui-pro .project-card__cover {
+        aspect-ratio: 1 / 1.42;
+    }
+
+    body.ui-pro .project-card__description {
+        display: none;
+    }
+
+    body.ui-pro .project-card__tags {
+        display: none;
+    }
+
+    body.ui-pro .project-card__meta {
+        display: none;
+    }
+
+    body.ui-pro .project-hero__cover {
+        width: 56px !important;
+    }
+
+    body.ui-pro .project-hero__metrics {
+        gap: 6px;
+    }
+
+    body.ui-pro .metric-card {
+        min-width: 90px;
+        padding: 6px 9px;
+    }
+}
+
+/* ============================================================
+   PHASE 3 — VUES D'ÉDITION GÉNÉRIQUES (edit-page-layout)
+   ============================================================ */
+
+/* Conteneur principal de toutes les pages d'édition */
+body.ui-pro .edit-page-layout {
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+}
+
+/* En-tête d'édition — compact, collé au topbar */
+body.ui-pro .edit-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    padding: 15px 0;
+    /*border-bottom: 1px solid var(--input-border);*/
+    border: none;
+    margin-bottom: 0;
+    flex-wrap: wrap;
+}
+
+body.ui-pro .edit-header h1,
+body.ui-pro .edit-header h2 {
+    font-size: 16px;
+    font-weight: 700;
+    margin: 0;
+    color: var(--text-main);
+}
+
+body.ui-pro .edit-header>div,
+body.ui-pro .edit-header>span {
+    display: flex;
+    gap: 6px;
+    align-items: center;
+    flex-wrap: wrap;
+}
+
+/* Carte d'édition */
+body.ui-pro .edit-card {
+    background: var(--card-bg);
+    border: 1px solid var(--input-border);
+    border-radius: var(--radius-sm);
+    overflow: hidden;
+}
+
+body.ui-pro .edit-card+.edit-card {
+    margin-top: 16px;
+}
+
+body.ui-pro .edit-card-section {
+    padding: 16px;
+    /*border-bottom: 1px solid var(--input-border);*/
+}
+
+body.ui-pro .edit-card-section:last-child {
+    border-bottom: none;
+}
+
+/* Actions en bas de formulaire */
+body.ui-pro .edit-actions {
+    padding: 16px;
+    /* background: var(--table-header-bg);
+    border-top: 1px solid var(--input-border);*/
+    display: flex;
+    gap: 8px;
+    align-items: center;
+    justify-content: flex-end;
+}
+
+/* Toolbar autosave / session goal */
+body.ui-pro .editor-top-bar {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 6px 0 10px;
+    font-size: 12px;
+}
+
+body.ui-pro .autosave-indicator {
+    font-size: 11px;
+    color: var(--text-muted);
+}
+
+body.ui-pro .session-goal-widget {
+    font-size: 11px;
+}
+
+body.ui-pro .session-goal-track {
+    height: 4px;
+    background: var(--input-border);
+    border-radius: 2px;
+    overflow: hidden;
+    width: 80px;
+    display: inline-block;
+    vertical-align: middle;
+    margin-left: 6px;
+}
+
+body.ui-pro .session-goal-fill {
+    height: 100%;
+    background: var(--button-primary-bg);
+    border-radius: 2px;
+}
+
+/* ── Éditeur de chapitre Pro — focus visuel ── */
+body.ui-pro .title-input {
+    font-size: 15px;
+    font-weight: 600;
+    padding: 7px 10px;
+}
+
+/* Grille des métadonnées chapitre */
+body.ui-pro .editor-grid-row {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+    gap: 12px;
+}
+
+/* Éditeur Quill en Pro — hauteur fixe, focus net */
+body.ui-pro .ql-container {
+    font-size: 14px;
+    line-height: 1.7;
+}
+
+body.ui-pro .ql-toolbar.ql-snow {
+    border-color: var(--input-border) !important;
+    background: var(--table-header-bg);
+    padding: 5px 8px;
+}
+
+body.ui-pro .ql-container.ql-snow {
+    border-color: var(--input-border) !important;
+}
+
+/* ============================================================
+   PHASE 3 — SYNOPSIS PRO (deux colonnes sur écran large)
+   ============================================================ */
+
+/* Barre IA compacte */
+body.ui-pro .synopsis-ai-bar {
+    display: flex;
+    gap: 6px;
+    flex-wrap: wrap;
+    padding: 8px 0 12px;
+    border-bottom: 1px solid var(--input-border);
+    margin-bottom: 16px;
+}
+
+/* Toggle export compact */
+body.ui-pro .synopsis-export-toggle {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 12px;
+    color: var(--text-muted);
+    padding: 4px 0 8px;
+    cursor: pointer;
+}
+
+/* Onglets Synopsis — style Pro */
+body.ui-pro .synopsis-tabs {
+    display: flex;
+    border-bottom: 1px solid var(--input-border);
+    background: var(--table-header-bg);
+    padding: 0 12px;
+    gap: 0;
+}
+
+body.ui-pro .synopsis-tab-btn {
+    padding: 9px 14px;
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--text-muted);
+    background: none;
+    border: none;
+    border-bottom: 2px solid transparent;
+    margin-bottom: -1px;
+    cursor: pointer;
+    transition: color 0.12s, border-color 0.12s;
+    font-family: inherit;
+}
+
+body.ui-pro .synopsis-tab-btn:hover {
+    color: var(--text-main);
+}
+
+body.ui-pro .synopsis-tab-btn.active {
+    color: var(--button-primary-bg);
+    border-bottom-color: var(--button-primary-bg);
+}
+
+/* Panneaux onglets */
+body.ui-pro .synopsis-tab-panel {
+    padding: 16px;
+}
+
+/* Grille méta synopsis — 3 colonnes */
+body.ui-pro .synopsis-meta-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 12px;
+}
+
+@media (max-width: 860px) {
+    body.ui-pro .synopsis-meta-grid {
+        grid-template-columns: 1fr 1fr;
+    }
+}
+
+@media (max-width: 560px) {
+    body.ui-pro .synopsis-meta-grid {
+        grid-template-columns: 1fr;
+    }
+}
+
+/* Guide de méthode */
+body.ui-pro .synopsis-method-guide {
+    font-size: 12px;
+    color: var(--text-muted);
+    line-height: 1.5;
+    padding: 8px 10px;
+    background: var(--table-header-bg);
+    border-radius: var(--radius-sm);
+    border-left: 3px solid var(--button-primary-bg);
+    margin-top: 8px;
+}
+
+body.ui-pro .synopsis-method-guide:empty,
+body.ui-pro .synopsis-method-guide:not(.is-visible) {
+    display: none;
+}
+
+/* Beats — compacts */
+body.ui-pro .synopsis-beat {
+    border-bottom: 1px solid var(--input-border);
+    padding: 0;
+}
+
+body.ui-pro .synopsis-beat:last-child {
+    border-bottom: none;
+}
+
+body.ui-pro .synopsis-beat__header {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 9px 14px;
+    background: var(--table-header-bg);
+    cursor: default;
+}
+
+body.ui-pro .synopsis-beat__number {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    background: var(--button-primary-bg);
+    color: var(--button-text, #fff);
+    font-size: 10px;
+    font-weight: 700;
+    flex-shrink: 0;
+}
+
+body.ui-pro .synopsis-beat__label {
+    font-size: 12px;
+    font-weight: 700;
+    color: var(--text-main);
+}
+
+body.ui-pro .synopsis-beat__hint {
+    font-size: 11px;
+    color: var(--text-muted);
+    margin-left: 4px;
+}
+
+body.ui-pro .synopsis-beat__actions {
+    margin-left: auto;
+    display: flex;
+    gap: 4px;
+}
+
+body.ui-pro .synopsis-beat__body {
+    padding: 10px 14px;
+}
+
+body.ui-pro .synopsis-beat__body .beat-textarea {
+    font-size: 13px;
+    padding: 7px 10px;
+    resize: vertical;
+    min-height: 60px;
+}
+
+/* Logline wrap */
+body.ui-pro .synopsis-logline-wrap {
+    position: relative;
+}
+
+body.ui-pro .synopsis-logline-counter {
+    font-size: 10px;
+    color: var(--text-muted);
+    position: absolute;
+    bottom: 6px;
+    right: 8px;
+}
+
+/* ============================================================
+   PHASE 3 — PERSONNAGES PRO (masquer grille classique)
+   ============================================================ */
+
+/* Masquer la grille classique en Pro */
+body.ui-pro .char-classic-grid {
+    display: none;
+}
+
+/* ============================================================
+   PHASE 3 — STATISTIQUES PRO
+   ============================================================ */
+
+/* KPI cards — aligner avec le style Pro metric */
+body.ui-pro .stats-kpi-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+    gap: 12px;
+    margin-bottom: 20px;
+}
+
+body.ui-pro .stats-kpi-card {
+    background: var(--card-bg);
+    border: 1px solid var(--input-border);
+    border-radius: var(--radius-sm);
+    padding: 14px 16px;
+    text-align: center;
+}
+
+body.ui-pro .stats-kpi-card--streak {
+    border-color: #f59e0b;
+    background: rgba(245, 158, 11, 0.05);
+}
+
+body.ui-pro .stats-kpi-icon {
+    font-size: 18px;
+    color: var(--button-primary-bg);
+    margin-bottom: 6px;
+    opacity: 0.8;
+}
+
+body.ui-pro .stats-kpi-value {
+    font-size: 22px;
+    font-weight: 700;
+    color: var(--text-main);
+    line-height: 1.1;
+}
+
+body.ui-pro .stats-kpi-label {
+    font-size: 11px;
+    color: var(--text-muted);
+    margin-top: 3px;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    font-weight: 600;
+}
+
+/* Sélecteur de projet dans stats */
+body.ui-pro .stats-scope-form {
+    margin-bottom: 16px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+body.ui-pro .stats-scope-form select {
+    max-width: 240px;
+}
+
+/* ============================================================
+   PHASE 3 — RESPONSIVE
+   ============================================================ */
+@media (max-width: 860px) {
+    body.ui-pro .editor-grid-row {
+        grid-template-columns: 1fr 1fr;
+    }
+}
+
+@media (max-width: 640px) {
+    body.ui-pro .edit-header {
+        padding: 8px 0 12px;
+    }
+
+    body.ui-pro .synopsis-meta-grid {
+        grid-template-columns: 1fr;
+    }
+
+    body.ui-pro .stats-kpi-grid {
+        grid-template-columns: 1fr 1fr;
+    }
+
+    body.ui-pro .synopsis-tabs {
+        padding: 0 4px;
+    }
+
+    body.ui-pro .synopsis-tab-btn {
+        padding: 8px 10px;
+        font-size: 11px;
+    }
+}
+
+/* ============================================================
+   PHASE 3 SUITE — BADGES, AI CONFIG, AI USAGE, PROFIL
+   ============================================================ */
+
+/* ── Badges globaux ── */
+body.ui-pro .badge {
+    display: inline-flex;
+    align-items: center;
+    font-size: 11px;
+    font-weight: 600;
+    padding: 2px 8px;
+    border-radius: 10px;
+    white-space: nowrap;
+}
+
+body.ui-pro .badge-success {
+    background: rgba(34, 197, 94, .12);
+    color: var(--color-success);
+}
+
+body.ui-pro .badge-warning {
+    background: rgba(245, 158, 11, .12);
+    color: var(--color-warning);
+}
+
+body.ui-pro .badge-error {
+    background: rgba(239, 68, 68, .12);
+    color: var(--color-danger);
+}
+
+body.ui-pro .badge-info {
+    background: rgba(59, 130, 246, .12);
+    color: var(--color-info);
+}
+
+/* Alertes formulaire (form-alert) */
+body.ui-pro .form-alert {
+    padding: 9px 13px;
+    border-radius: var(--radius-sm);
+    font-size: 13px;
+    margin-bottom: 14px;
+}
+
+body.ui-pro .form-alert.success,
+body.ui-pro .form-alert:not(.error):not(.warning) {
+    background: var(--success-bg);
+    color: var(--success-text);
+}
+
+body.ui-pro .form-alert.error {
+    background: var(--error-bg);
+    color: var(--error-text);
+}
+
+body.ui-pro .form-alert.warning {
+    background: var(--warning-bg);
+    color: var(--warning-text);
+}
+
+body.ui-pro .alert-success {
+    background: var(--success-bg);
+    color: var(--success-text);
+    padding: 9px 13px;
+    border-radius: var(--radius-sm);
+    font-size: 13px;
+    margin-bottom: 14px;
+}
+
+/* Séparateur de section */
+body.ui-pro .section-divider {
+    font-size: 10px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--text-muted);
+    padding: 14px 0 8px;
+    border-bottom: 1px solid var(--input-border);
+    margin-bottom: 14px;
+}
+
+/* ── Configuration IA ── */
+body.ui-pro .ai-config-container {
+    max-width: 700px;
+}
+
+body.ui-pro .ai-config-card {
+    background: var(--card-bg);
+    border: 1px solid var(--input-border);
+    border-radius: var(--radius-sm);
+    overflow: hidden;
+}
+
+body.ui-pro .ai-config-header {
+    padding: 14px 18px;
+    border-bottom: 1px solid var(--input-border);
+    background: var(--table-header-bg);
+}
+
+body.ui-pro .ai-config-header h2 {
+    font-size: 15px;
+    font-weight: 700;
+    margin: 0 0 2px;
+}
+
+body.ui-pro .ai-config-header p {
+    font-size: 12px;
+    color: var(--text-muted);
+    margin: 0;
+}
+
+body.ui-pro .ai-config-card form {
+    padding: 16px 18px;
+}
+
+body.ui-pro .ai-config-card .form-actions {
+    display: flex;
+    justify-content: flex-end;
+    padding-top: 14px;
+    border-top: 1px solid var(--input-border);
+    margin-top: 14px;
+}
+
+/* ── Consommation IA ── */
+body.ui-pro .usage-container {
+    max-width: 900px;
+}
+
+body.ui-pro .usage-header {
+    margin-bottom: 20px;
+    padding-bottom: 14px;
+    border-bottom: 1px solid var(--input-border);
+}
+
+body.ui-pro .usage-header h2 {
+    font-size: 16px;
+    font-weight: 700;
+    margin: 0 0 3px;
+}
+
+body.ui-pro .usage-header p {
+    font-size: 12px;
+    color: var(--text-muted);
+    margin: 0;
+}
+
+body.ui-pro .stats-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 12px;
+}
+
+body.ui-pro .stat-card {
+    background: var(--card-bg);
+    border: 1px solid var(--input-border);
+    border-radius: var(--radius-sm);
+    padding: 14px 16px;
+}
+
+body.ui-pro .stat-card h3 {
+    font-size: 12px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    color: var(--text-muted);
+    margin: 0 0 8px;
+}
+
+body.ui-pro .stat-value {
+    font-size: 22px;
+    font-weight: 700;
+    color: var(--text-main);
+    line-height: 1.1;
+    margin-bottom: 10px;
+}
+
+body.ui-pro .stat-sub {
+    font-size: 13px;
+    font-weight: 400;
+    color: var(--text-muted);
+    margin-left: 4px;
+}
+
+body.ui-pro .stat-details {
+    font-size: 11px;
+    color: var(--text-muted);
+    display: flex;
+    flex-direction: column;
+    gap: 3px;
+    border-top: 1px solid var(--input-border);
+    padding-top: 8px;
+}
+
+body.ui-pro .stat-cost {
+    font-weight: 600;
+    color: var(--text-main);
+}
+
+/* ── Profil ── */
+body.ui-pro .profile-container {
+    max-width: 680px;
+}
+
+body.ui-pro .profile-card {
+    background: var(--card-bg);
+    border: 1px solid var(--input-border);
+    border-radius: var(--radius-sm);
+    overflow: hidden;
+}
+
+body.ui-pro .profile-card-header {
+    padding: 14px 18px;
+    border-bottom: 1px solid var(--input-border);
+    background: var(--table-header-bg);
+}
+
+body.ui-pro .profile-card-header h2 {
+    font-size: 15px;
+    font-weight: 700;
+    margin: 0 0 2px;
+}
+
+body.ui-pro .profile-card-header p {
+    font-size: 12px;
+    color: var(--text-muted);
+    margin: 0;
+}
+
+body.ui-pro .profile-card form {
+    padding: 16px 18px;
+}
+
+body.ui-pro .profile-photo-section {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    margin-bottom: 18px;
+    padding-bottom: 16px;
+    border-bottom: 1px solid var(--input-border);
+}
+
+body.ui-pro .profile-photo {
+    width: 64px;
+    height: 64px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 2px solid var(--input-border);
+    flex-shrink: 0;
+}
+
+/* ── Texte muted paragraphe ── */
+body.ui-pro .text-muted-para {
+    font-size: 12px;
+    color: var(--text-muted);
+    line-height: 1.6;
+    margin-bottom: 12px;
+}
+
+/* ── Responsive finale ── */
+@media (max-width: 640px) {
+    body.ui-pro .stats-grid {
+        grid-template-columns: 1fr;
+    }
+
+    body.ui-pro .ai-config-container,
+    body.ui-pro .profile-container {
+        max-width: 100%;
+    }
+}
+
+/* ============================================================
+   COLLABORATION PRO
+   ============================================================ */
+
+/* Cartes de demandes : réduire l'espacement entre cartes */
+body.ui-pro #requestsList .edit-card+.edit-card,
+body.ui-pro .collab-request-card+.collab-request-card {
+    margin-top: 8px;
+}
+
+/* Strip de statut sur le bord gauche */
+body.ui-pro .collab-request-card.pending {
+    border-left: 3px solid var(--color-warning, #f59e0b);
+}
+
+body.ui-pro .collab-request-card.approved {
+    border-left: 3px solid var(--color-success, #22c55e);
+}
+
+body.ui-pro .collab-request-card.rejected {
+    border-left: 3px solid var(--color-danger, #ef4444);
+}
+
+/* Header de demande plus compact */
+body.ui-pro .collab-req-header {
+    margin-bottom: 6px;
+}
+
+body.ui-pro .collab-req-message,
+body.ui-pro .collab-req-owner-note {
+    font-size: 12px;
+    margin: 4px 0;
+}
+
+/* Diff compact en Pro */
+body.ui-pro .collab-req-diff {
+    margin: 8px 0;
+    gap: 8px;
+}
+
+body.ui-pro .collab-diff-content {
+    max-height: 140px;
+    font-size: 12px;
+}
+
+/* ── Actions dans les data-table — apparition au hover ── */
+body.ui-pro table.data-table td.actions {
+    text-align: right;
+    white-space: nowrap;
+    opacity: 0;
+    transition: opacity 0.12s;
+}
+
+body.ui-pro table.data-table tr:hover td.actions {
+    opacity: 1;
+}
+
+/* ── Bouton disabled ── */
+body.ui-pro .button.disabled {
+    opacity: 0.35;
+    cursor: not-allowed;
+    pointer-events: none;
+    box-shadow: none;
+}
+
+/* ============================================================
+   RESPONSIVE COMPLÉMENTAIRE
+   ============================================================ */
+@media (max-width: 640px) {
+    body.ui-pro .collab-req-diff {
+        grid-template-columns: 1fr;
+    }
+
+    body.ui-pro table.data-table td.actions {
+        opacity: 1;
+    }
+}
+
+/* ── Mobile ≤480px : data-table → cartes empilées ── */
+@media (max-width: 480px) {
+
+    body.ui-pro table.data-table,
+    body.ui-pro table.data-table tbody,
+    body.ui-pro table.data-table tr,
+    body.ui-pro table.data-table td {
+        display: block;
+        width: 100%;
+    }
+
+    body.ui-pro table.data-table thead {
+        display: none;
+    }
+
+    body.ui-pro table.data-table tr {
+        border: 1px solid var(--input-border);
+        border-radius: var(--radius-sm);
+        margin-bottom: 8px;
+        background: var(--card-bg);
+        overflow: hidden;
+    }
+
+    body.ui-pro table.data-table td {
+        padding: 8px 12px;
+        border-bottom: 1px solid var(--input-border);
+        text-align: left !important;
+    }
+
+    body.ui-pro table.data-table td:last-child {
+        border-bottom: none;
+    }
+
+    body.ui-pro table.data-table td.actions {
+        opacity: 1;
+        padding: 8px 12px;
+        display: flex;
+        gap: 6px;
+        flex-wrap: wrap;
+    }
+
+    /* Label pseudo-élément via data-label si présent */
+    body.ui-pro table.data-table td[data-label]::before {
+        content: attr(data-label);
+        display: block;
+        font-size: 10px;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+        color: var(--text-muted);
+        margin-bottom: 2px;
+    }
+}
+
+/* ============================================================
+   PAGE PROJET — LAYOUT 2 COLONNES PRO
+   ============================================================ */
+
+/* Barre de progression horizontale (remplace le panneau contextuel) */
+.pro-project-progression {
+    display: none; /* masqué en mode classique */
+}
+
+body.ui-pro .pro-project-progression {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    padding: 10px 16px;
+    background: var(--card-bg);
+    border: 1px solid var(--input-border);
+    border-radius: var(--radius-sm);
+    margin-bottom: 16px;
+}
+
+body.ui-pro .pro-progression-stat {
+    display: flex;
+    align-items: baseline;
+    gap: 5px;
+    flex-shrink: 0;
+}
+
+body.ui-pro .pro-progression-bar-wrap {
+    flex: 1;
+    min-width: 60px;
+}
+
+body.ui-pro .pro-progression-bar-wrap .pro-context-bar {
+    margin: 0;
+    height: 6px;
+}
+
+body.ui-pro .pro-progression-meta {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    flex-shrink: 0;
+}
+
+body.ui-pro .pro-progression-pct {
+    font-size: 13px;
+    font-weight: 700;
+    color: var(--text-main);
+    flex-shrink: 0;
+}
+
+body.ui-pro .pro-progression-words {
+    margin-left: auto;
+    font-size: 12px;
+    color: var(--text-muted);
+    flex-shrink: 0;
+}
+
+body.ui-pro .pro-progression-words small {
+    font-size: 11px;
+}
+
+/* Section du panneau */
+body.ui-pro .pro-context-section {
+    padding: 12px 14px;
+    border-bottom: 1px solid var(--input-border);
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+body.ui-pro .pro-context-section:last-child {
+    border-bottom: none;
+}
+
+body.ui-pro .pro-context-title {
+    font-size: 10px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    color: var(--text-muted);
+    margin-bottom: 4px;
+}
+
+/* Statistiques */
+body.ui-pro .pro-context-stat {
+    display: flex;
+    align-items: baseline;
+    gap: 5px;
+}
+
+body.ui-pro .pro-context-value {
+    font-size: 18px;
+    font-weight: 700;
+    color: var(--text-main);
+    line-height: 1;
+}
+
+body.ui-pro .pro-context-label {
+    font-size: 11px;
+    color: var(--text-muted);
+}
+
+/* Barre de progression */
+body.ui-pro .pro-context-bar {
+    height: 4px;
+    background: var(--input-border);
+    border-radius: 2px;
+    overflow: hidden;
+    margin: 2px 0;
+}
+
+body.ui-pro .pro-context-bar-fill {
+    height: 100%;
+    background: var(--button-primary-bg);
+    border-radius: 2px;
+    transition: width 0.3s ease;
+}
+
+body.ui-pro .pro-context-pct {
+    font-size: 11px;
+    color: var(--text-muted);
+    text-align: right;
+}
+
+/* Liens rapides */
+body.ui-pro .pro-context-link {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 12px;
+    color: var(--text-main);
+    text-decoration: none;
+    padding: 3px 0;
+    transition: color 0.12s;
+}
+
+body.ui-pro .pro-context-link:hover {
+    color: var(--button-primary-bg);
+    text-decoration: none;
+    background: transparent;
+}
+
+body.ui-pro .pro-context-link i {
+    width: 12px;
+    text-align: center;
+    font-size: 11px;
+    color: var(--text-muted);
+    flex-shrink: 0;
+}
+
+body.ui-pro .pro-context-link:hover i {
+    color: var(--button-primary-bg);
+}
+
+body.ui-pro .pro-context-link-label {
+    flex: 1;
+}
+
+body.ui-pro .pro-context-link-count {
+    font-size: 11px;
+    font-weight: 600;
+    color: var(--text-muted);
+    background: var(--body-bg);
+    border: 1px solid var(--input-border);
+    border-radius: 10px;
+    padding: 0 6px;
+    line-height: 18px;
+    min-width: 20px;
+    text-align: center;
+    flex-shrink: 0;
+}
+
+body.ui-pro .pro-context-link:hover .pro-context-link-count {
+    border-color: var(--button-primary-bg);
+    color: var(--button-primary-bg);
+}
+
+/* Responsive : progression masquée sur mobile (peu de place) */
+@media (max-width: 640px) {
+    body.ui-pro .pro-project-progression {
+        display: none;
+    }
+}
+
+/* ============================================================
+   COLLAB — NAVIGATION PAR ONGLETS PRO
+   ============================================================ */
+
+/* Le bloc est masqué en classique */
+.pro-collab-tabs {
+    display: none;
+}
+
+body.ui-pro .pro-collab-tabs {
+    display: flex;
+    gap: 2px;
+    margin-bottom: 16px;
+    border-bottom: 1px solid var(--input-border);
+    padding-bottom: 0;
+}
+
+body.ui-pro .pro-collab-tab {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 8px 14px;
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--text-muted);
+    text-decoration: none;
+    border-bottom: 2px solid transparent;
+    margin-bottom: -1px;
+    transition: color 0.12s, border-color 0.12s;
+    white-space: nowrap;
+    cursor: pointer;
+}
+
+body.ui-pro .pro-collab-tab:hover {
+    color: var(--text-main);
+    text-decoration: none;
+}
+
+body.ui-pro .pro-collab-tab.is-active {
+    color: var(--button-primary-bg);
+    border-bottom-color: var(--button-primary-bg);
+    font-weight: 600;
+}
+
+body.ui-pro .pro-collab-tab .pro-nav-badge {
+    margin-left: 2px;
+    font-size: 10px;
+}
+
+/* ============================================================
+   RECHERCHE PRO
+   ============================================================ */
+
+/* Pleine largeur en Pro (le layout est déjà contenu) */
+body.ui-pro .search-page {
+    max-width: none;
+    margin: 0;
+}
+
+/* Barre de recherche compacte */
+body.ui-pro .search-input-row {
+    gap: 8px;
+    margin-bottom: 16px;
+}
+
+body.ui-pro .search-input-row .input-control {
+    height: auto;
+    font-size: 13px;
+}
+
+body.ui-pro .search-scope {
+    width: 160px;
+}
+
+/* Compteur de résultats */
+body.ui-pro .search-count {
+    font-size: 12px;
+    margin-bottom: 12px;
+}
+
+body.ui-pro .search-empty {
+    text-align: center;
+    padding: 40px 20px;
+    color: var(--text-muted);
+    font-size: 13px;
+}
+
+/* Cartes de résultats — plus compactes, sans box-shadow */
+body.ui-pro .search-result-card {
+    padding: 10px 14px;
+    border-radius: var(--radius-sm);
+    box-shadow: none !important;
+    gap: 12px;
+}
+
+body.ui-pro .search-result-card:hover {
+    box-shadow: none !important;
+}
+
+body.ui-pro .search-result-type {
+    min-width: 72px;
+    font-size: 10px;
+    gap: 3px;
+}
+
+body.ui-pro .search-result-title {
+    font-size: 13px;
+    font-weight: 600;
+}
+
+body.ui-pro .search-result-excerpt {
+    font-size: 12px;
+}
+
+body.ui-pro .search-results {
+    gap: 6px;
+}
+
+/* ============================================================
+   LEXIQUE (GLOSSAIRE) PRO
+   ============================================================ */
+
+/* Méta (nombre de termes) */
+body.ui-pro .glossary-meta {
+    font-size: 12px;
+    color: var(--text-muted);
+    margin-bottom: 12px;
+}
+
+/* Terme en gras, définition muted */
+body.ui-pro .glossary-term {
+    font-weight: 600;
+    font-size: 13px;
+    white-space: nowrap;
+}
+
+body.ui-pro .glossary-definition {
+    font-size: 12px;
+    color: var(--text-muted);
+    max-width: 480px;
+}
+
+/* Actions hover-reveal (classe non standard du glossaire) */
+body.ui-pro table.data-table td.compact-actions--wide {
+    text-align: right;
+    white-space: nowrap;
+    opacity: 0;
+    transition: opacity 0.12s;
+}
+
+body.ui-pro table.data-table tr:hover td.compact-actions--wide {
+    opacity: 1;
+}
+
+@media (max-width: 480px) {
+    body.ui-pro table.data-table td.compact-actions--wide {
+        opacity: 1;
+        text-align: left;
+    }
+}
+
+/* ============================================================
+   SLIDE PANELS → BOTTOM SHEETS (mobile ≤640px)
+   ============================================================ */
+@media (max-width: 640px) {
+    body.ui-pro .pro-slide-panel {
+        top: auto;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        width: 100%;
+        max-width: 100%;
+        height: 80vh;
+        border-left: none;
+        border-top: 1px solid var(--input-border);
+        border-radius: var(--radius-md) var(--radius-md) 0 0;
+        box-shadow: 0 -8px 32px rgba(0, 0, 0, 0.15);
+        transform: translateY(100%);
+    }
+
+    body.ui-pro .pro-slide-panel.is-open {
+        transform: translateY(0);
+    }
+
+    /* Poignée visuelle en haut du bottom sheet */
+    body.ui-pro .pro-slide-panel-header::before {
+        content: '';
+        display: block;
+        position: absolute;
+        top: 8px;
+        left: 50%;
+        transform: translateX(-50%);
+        width: 36px;
+        height: 4px;
+        border-radius: 2px;
+        background: var(--input-border);
+    }
+
+    body.ui-pro .pro-slide-panel-header {
+        position: relative;
+        padding-top: 20px;
+    }
+}
+
+/* ============================================================
+   SYNOPSIS PRO — colonne unique, tous les panneaux visibles
+   ============================================================ */
+
+body.ui-pro #synopsisForm .synopsis-tabs {
+    display: none;
+}
+
+body.ui-pro #synopsisForm .synopsis-tab-panel {
+    display: block !important;
+}
+
+/* ============================================================
+   PERSONNAGES PRO — layout maître-détail
+   ============================================================ */
+
+/* Masquer le layout maître-détail en classique */
+.char-layout {
+    display: none;
+}
+
+/* Masquer le bouton retour en Pro */
+body.ui-pro .btn-back-project {
+    display: none;
+}
+
+/* Libellé bouton "Nouveau" visible en Pro */
+.pro-btn-label {
+    display: none;
+}
+
+body.ui-pro .pro-btn-label {
+    display: inline;
+}
+
+/* ── Layout principal ── */
+body.ui-pro .char-layout {
+    display: grid;
+    grid-template-columns: 30% 1fr;
+    border: 1px solid var(--input-border);
+    border-radius: var(--radius-md, 8px);
+    overflow: hidden;
+    height: calc(100vh - 200px);
+    min-height: 480px;
+    background: var(--card-bg);
+}
+
+/* ── Colonne liste ── */
+body.ui-pro .char-list-col {
+    border-right: 1px solid var(--input-border);
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    background: var(--body-bg);
+}
+
+/* Barre de recherche */
+body.ui-pro .char-list-toolbar {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 10px;
+    border-bottom: 1px solid var(--input-border);
+    background: var(--table-header-bg);
+    flex-shrink: 0;
+}
+
+body.ui-pro .char-search-wrap {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    background: var(--input-bg);
+    border: 1px solid var(--input-border);
+    border-radius: var(--radius-sm, 5px);
+    padding: 4px 8px;
+    flex: 1;
+    font-size: .8rem;
+    color: var(--text-muted);
+}
+
+body.ui-pro .char-search-input {
+    border: none;
+    background: transparent;
+    outline: none;
+    flex: 1;
+    font-size: .82rem;
+    color: var(--text-main);
+    font-family: inherit;
+    min-width: 0;
+}
+
+body.ui-pro .char-search-input::placeholder {
+    color: var(--text-muted);
+}
+
+body.ui-pro .char-list-count {
+    font-size: .72rem;
+    color: var(--text-muted);
+    white-space: nowrap;
+    flex-shrink: 0;
+}
+
+/* Liste défilante */
+body.ui-pro .char-list {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    overflow-y: auto;
+    flex: 1;
+}
+
+/* Ligne de personnage */
+body.ui-pro .char-list-item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 8px 12px;
+    border-bottom: 1px solid var(--input-border);
+    cursor: pointer;
+    transition: background 0.1s;
+    position: relative;
+}
+
+body.ui-pro .char-list-item:last-child {
+    border-bottom: none;
+}
+
+body.ui-pro .char-list-item:hover {
+    background: var(--table-row-hover-bg);
+}
+
+body.ui-pro .char-list-item.is-active {
+    background: rgba(63, 81, 181, .08);
+    border-left: 3px solid var(--button-primary-bg, #3f51b5);
+}
+
+body.ui-pro .char-list-item:focus-visible {
+    outline: 2px solid var(--button-primary-bg);
+    outline-offset: -2px;
+}
+
+/* Avatar dans la liste */
+body.ui-pro .char-list-avatar {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    flex-shrink: 0;
+    overflow: hidden;
+    background: var(--table-header-bg);
+    border: 1px solid var(--input-border);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--text-muted);
+    font-size: .85rem;
+}
+
+body.ui-pro .char-list-avatar img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+}
+
+/* Nom + badge dans la liste */
+body.ui-pro .char-list-info {
+    flex: 1;
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+}
+
+body.ui-pro .char-list-name {
+    font-size: .85rem;
+    font-weight: 600;
+    color: var(--text-main);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+/* Actions rapides (hover) */
+body.ui-pro .char-list-actions {
+    display: flex;
+    gap: 3px;
+    opacity: 0;
+    transition: opacity 0.12s;
+    flex-shrink: 0;
+}
+
+body.ui-pro .char-list-item:hover .char-list-actions {
+    opacity: 1;
+}
+
+/* État vide liste */
+body.ui-pro .char-empty-state {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    padding: 40px 20px;
+    color: var(--text-muted);
+    font-size: .85rem;
+    text-align: center;
+}
+
+body.ui-pro .char-empty-state i {
+    font-size: 2rem;
+    opacity: .4;
+}
+
+/* ── Colonne détail ── */
+body.ui-pro .char-detail-col {
+    overflow-y: auto;
+    background: var(--card-bg);
+    display: flex;
+    flex-direction: column;
+}
+
+/* Empty state détail */
+body.ui-pro .char-detail-empty {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    color: var(--text-muted);
+    font-size: .9rem;
+    text-align: center;
+    padding: 40px;
+}
+
+body.ui-pro .char-detail-empty i {
+    font-size: 3rem;
+    opacity: .2;
+}
+
+/* Corps du détail */
+body.ui-pro .char-detail-body {
+    padding: 24px 28px;
+    flex: 1;
+}
+
+/* Header détail : avatar + nom côte à côte */
+body.ui-pro .char-detail-header {
+    display: flex;
+    align-items: center;
+    gap: 18px;
+    padding-bottom: 18px;
+    border-bottom: 1px solid var(--input-border);
+    margin-bottom: 18px;
+}
+
+body.ui-pro .char-detail-avatar {
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+    object-fit: cover;
+    flex-shrink: 0;
+    border: 2px solid var(--input-border);
+}
+
+body.ui-pro .char-detail-avatar--empty {
+    background: var(--table-header-bg);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--text-muted);
+    font-size: 2rem;
+    border: 2px solid var(--input-border);
+}
+
+body.ui-pro .char-detail-identity {
+    flex: 1;
+    min-width: 0;
+}
+
+body.ui-pro .char-detail-name {
+    font-size: 1.3rem;
+    font-weight: 700;
+    margin: 0 0 6px 0;
+    word-break: break-word;
+}
+
+/* Tableau des champs structurés */
+body.ui-pro .char-detail-fields {
+    width: 100%;
+    border-collapse: collapse;
+    margin-bottom: 18px;
+    font-size: .87rem;
+}
+
+body.ui-pro .char-detail-fields th {
+    text-align: left;
+    font-size: .7rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: .05em;
+    color: var(--text-muted);
+    padding: 5px 12px 5px 0;
+    white-space: nowrap;
+    width: 110px;
+    vertical-align: top;
+}
+
+body.ui-pro .char-detail-fields td {
+    padding: 5px 0;
+    color: var(--text-main);
+    line-height: 1.5;
+    border-bottom: 1px solid var(--input-border);
+}
+
+body.ui-pro .char-detail-fields tr:last-child td {
+    border-bottom: none;
+}
+
+/* Section description */
+body.ui-pro .char-detail-desc {
+    margin-bottom: 18px;
+    font-size: .9rem;
+    line-height: 1.6;
+    color: var(--text-main);
+}
+
+body.ui-pro .char-detail-section-label {
+    font-size: .68rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: .07em;
+    color: var(--text-muted);
+    margin-bottom: 8px;
+}
+
+/* Actions en bas du détail */
+body.ui-pro .char-detail-actions {
+    display: flex;
+    gap: 8px;
+    padding-top: 16px;
+    border-top: 1px solid var(--input-border);
+    margin-top: auto;
+}
+
+/* ============================================================
+   TEMPLATES PRO — table compacte
+   ============================================================ */
+
+body.ui-pro .tpl-col-actions {
+    width: 110px;
+}
+
+body.ui-pro .data-table .actions {
+    white-space: nowrap;
+}
+
+body.ui-pro .data-table .text-muted-small {
+    font-size: .8rem;
+    color: var(--text-muted);
+    max-width: 260px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+/* ============================================================
+   CONFIG IA PRO — onglets fournisseur
+   ============================================================ */
+
+.ai-provider-tabs {
+    display: none;
+}
+
+body.ui-pro .ai-provider-tabs {
+    display: flex;
+    gap: 2px;
+    border-bottom: 1px solid var(--input-border);
+    margin-bottom: 20px;
+    flex-wrap: wrap;
+}
+
+body.ui-pro .ai-provider-tab {
+    padding: 8px 16px;
+    font-size: .85rem;
+    font-weight: 600;
+    border: none;
+    background: transparent;
+    cursor: pointer;
+    border-bottom: 2px solid transparent;
+    color: var(--text-muted, #777);
+    transition: color .15s, border-color .15s;
+    margin-bottom: -1px;
+}
+
+body.ui-pro .ai-provider-tab:hover {
+    color: var(--text-main);
+}
+
+body.ui-pro .ai-provider-tab.is-active {
+    color: var(--button-primary-bg);
+    border-bottom-color: var(--button-primary-bg);
+}
+
+body.ui-pro #providerFormGroup {
+    display: none;
+}
+
+/* ============================================================
+   STATISTIQUES PRO — KPIs compacts en ligne
+   ============================================================ */
+
+body.ui-pro .stats-kpi-grid {
+    grid-template-columns: repeat(5, 1fr);
+    gap: 10px;
+    margin-bottom: 1rem;
+}
+
+body.ui-pro .stats-kpi-card {
+    padding: 12px 10px;
+    border-radius: var(--radius-md, 6px);
+    box-shadow: none;
+}
+
+body.ui-pro .stats-kpi-value {
+    font-size: 1.4rem;
+}
+
+body.ui-pro .stats-kpi-icon {
+    font-size: 1rem;
+    margin-bottom: 4px;
+}
+
+body.ui-pro .stats-card {
+    border-radius: var(--radius-md, 6px);
+    padding: 14px 16px;
+    margin-bottom: 1rem;
+    box-shadow: none;
+}
+
+body.ui-pro .stats-scope-form {
+    margin-bottom: 1rem;
+}
+
+body.ui-pro .stats-scope-form .input-control {
+    font-size: .84rem;
+    padding: 4px 8px;
+    max-width: 220px !important;
+}
+
+@media (max-width: 860px) {
+    body.ui-pro .stats-kpi-grid {
+        grid-template-columns: repeat(3, 1fr);
+    }
+}
+
+@media (max-width: 560px) {
+    body.ui-pro .stats-kpi-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}

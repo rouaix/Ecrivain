@@ -11,6 +11,54 @@ class ActController extends Controller
     }
 
     /**
+     * List all acts for a project
+     * GET /project/@pid/acts
+     */
+    public function listAll()
+    {
+        $pid = (int) $this->f3->get('PARAMS.pid');
+        $projectModel = new Project();
+        $project = $projectModel->findAndCast(['id=? AND user_id=?', $pid, $this->currentUser()['id']]);
+        if (!$project) { $this->f3->error(403); return; }
+        $project = $project[0];
+
+        $actModel = new Act();
+        $acts = $actModel->getAllByProject($pid);
+
+        // Chapter counts per act (top-level only)
+        $chapterModel = new Chapter();
+        $allChapters  = $chapterModel->getAllByProject($pid);
+        $chapterCounts = [];
+        foreach ($allChapters as $ch) {
+            if ($ch['act_id'] && !$ch['parent_id']) {
+                $chapterCounts[$ch['act_id']] = ($chapterCounts[$ch['act_id']] ?? 0) + 1;
+            }
+        }
+
+        // Embed chapter_count directly into each act for template access
+        foreach ($acts as &$a) {
+            $a['chapter_count'] = $chapterCounts[$a['id']] ?? 0;
+        }
+        unset($a);
+
+        $actsJson = json_encode(array_map(fn($a) => [
+            'id'            => (int)$a['id'],
+            'title'         => $a['title'],
+            'content'       => $a['content'] ?? '',
+            'resume'        => $a['resume'] ?? '',
+            'chapter_count' => $a['chapter_count'],
+        ], $acts));
+
+        $this->render('acts/list.html', [
+            'title'    => 'Actes — ' . $project['title'],
+            'project'  => $project,
+            'acts'     => $acts,
+            'actsJson' => $actsJson,
+            'isOwner'  => $this->isOwner($pid),
+        ]);
+    }
+
+    /**
      * Create a new act
      * GET /project/@pid/act/create
      */

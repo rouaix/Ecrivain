@@ -12,9 +12,9 @@
 
     <check if="{{ isset(@metaDescription) }}">
         <meta name="description" content="{{ @metaDescription | esc }}">
-    <false>
-        <meta name="description" content="Écrivain — logiciel d'écriture créative avec IA.">
-    </false>
+        <false>
+            <meta name="description" content="Écrivain — logiciel d'écriture créative avec IA.">
+        </false>
     </check>
 
     <link rel="icon" type="image/png" href="{{ @base }}/public/icons/icon-192.png">
@@ -27,11 +27,11 @@
     <script nonce="{{ @nonce }}" src="{{ @base }}/public/js/quill-adapter.js?v=26"></script>
     <script nonce="{{ @nonce }}" src="{{ @base }}/public/js/api-client.js?v=1"></script>
     <script nonce="{{ @nonce }}" src="{{ @base }}/public/js/notifications.js?v=1"></script>
-    <script nonce="{{ @nonce }}" src="{{ @base }}/public/js/pro-ui.js?v=1"></script>
+    <script nonce="{{ @nonce }}" src="{{ @base }}/public/js/pro-ui.js?v=3"></script>
 
     <!-- CSS : base + Pro -->
-    <link rel="stylesheet" href="{{ @base }}/public/style.css?v=42">
-    <link rel="stylesheet" href="{{ @base }}/public/css/pro/pro.css?v=1">
+    <link rel="stylesheet" href="{{ @base }}/public/style.css?v=49">
+    <link rel="stylesheet" href="{{ @base }}/public/css/pro/pro.css?v=29">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 
     <!-- Thème -->
@@ -39,7 +39,10 @@
     <link rel="stylesheet" href="{{ @base }}/public/css/themes/theme-{{ @selectedTheme }}.css">
 </head>
 
-<body class="theme-{{ @selectedTheme }} ui-pro">
+<body class="theme-{{ @selectedTheme }} ui-pro{{ isset(@bodyClass) ? ' '.@bodyClass : '' }}">
+
+    <!-- Skip link accessibilité clavier -->
+    <a href="#main-content" class="pro-skip-link">Aller au contenu</a>
 
     <!-- ════════════════════════════════════════════
          TOPBAR
@@ -47,7 +50,8 @@
     <header class="pro-topbar" role="banner">
 
         <!-- Toggle sidebar (mobile uniquement) -->
-        <button id="proSidebarToggle" class="pro-topbar-btn" style="display:none" aria-label="Ouvrir le menu" title="Menu">
+        <button id="proSidebarToggle" class="pro-topbar-btn" style="display:none" aria-label="Ouvrir le menu"
+            title="Menu">
             <i class="fas fa-bars" aria-hidden="true"></i>
         </button>
 
@@ -68,20 +72,27 @@
                     <a href="{{ @base }}/project/{{ @project.id }}">{{ @project.title | esc }}</a>
                     <span class="pro-breadcrumb-sep" aria-hidden="true">›</span>
                     <span class="pro-breadcrumb-current">{{ @chapter.title | esc }}</span>
-                <false>
-                    <check if="{{ isset(@act) }}">
-                        <a href="{{ @base }}/project/{{ @project.id }}">{{ @project.title | esc }}</a>
-                        <span class="pro-breadcrumb-sep" aria-hidden="true">›</span>
-                        <span class="pro-breadcrumb-current">{{ @act.title | esc }}</span>
                     <false>
-                        <span class="pro-breadcrumb-current">{{ @project.title | esc }}</span>
+                        <check if="{{ isset(@act) }}">
+                            <a href="{{ @base }}/project/{{ @project.id }}">{{ @project.title | esc }}</a>
+                            <span class="pro-breadcrumb-sep" aria-hidden="true">›</span>
+                            <span class="pro-breadcrumb-current">{{ @act.title | esc }}</span>
+                            <false>
+                                <check if="{{ isset(@pageSection) }}">
+                                    <a href="{{ @base }}/project/{{ @project.id }}">{{ @project.title | esc }}</a>
+                                    <span class="pro-breadcrumb-sep" aria-hidden="true">›</span>
+                                    <span class="pro-breadcrumb-current">{{ @pageSection | esc }}</span>
+                                    <false>
+                                        <span class="pro-breadcrumb-current">{{ @project.title | esc }}</span>
+                                    </false>
+                                </check>
+                            </false>
+                        </check>
                     </false>
-                    </check>
-                </false>
                 </check>
-            <false>
-                <span class="pro-breadcrumb-current">{{ @title | esc }}</span>
-            </false>
+                <false>
+                    <span class="pro-breadcrumb-current">{{ @title | esc }}</span>
+                </false>
             </check>
         </nav>
 
@@ -92,7 +103,8 @@
             <div class="pro-topbar-actions">
 
                 <!-- Recherche -->
-                <button type="button" id="searchToggleBtn" class="pro-topbar-btn" title="Rechercher (Ctrl+K)" aria-label="Ouvrir la recherche">
+                <button type="button" id="searchToggleBtn" class="pro-topbar-btn" title="Rechercher (Ctrl+K)"
+                    aria-label="Ouvrir la recherche">
                     <i class="fas fa-search" aria-hidden="true"></i>
                 </button>
 
@@ -105,14 +117,17 @@
                 <a href="{{ @base }}/collab/invitations" class="pro-topbar-btn" title="Invitations et collaborations">
                     <i class="fas fa-users" aria-hidden="true"></i>
                     <check if="{{ @pendingCollabCount > 0 }}">
-                        <span class="pro-topbar-badge" aria-label="{{ @pendingCollabCount }} en attente">{{ @pendingCollabCount }}</span>
+                        <span class="pro-topbar-badge" aria-label="{{ @pendingCollabCount }} en attente">{{
+                            @pendingCollabCount }}</span>
                     </check>
                 </a>
 
                 <!-- Menu utilisateur -->
                 <div class="pro-user-menu" id="proUserMenu">
-                    <button id="proUserBtn" class="pro-user-btn" aria-haspopup="true" aria-expanded="false" title="Menu utilisateur">
-                        <div class="pro-user-avatar" aria-hidden="true">{{ substr(@currentUser.username ?? 'U', 0, 1) }}</div>
+                    <button id="proUserBtn" class="pro-user-btn" aria-haspopup="true" aria-expanded="false"
+                        title="Menu utilisateur">
+                        <div class="pro-user-avatar" aria-hidden="true">{{ substr(@currentUser.username ?? 'U', 0, 1) }}
+                        </div>
                         <i class="fas fa-chevron-down pro-user-chevron" aria-hidden="true"></i>
                     </button>
 
@@ -140,11 +155,21 @@
                         <div class="pro-theme-picker">
                             <div class="pro-theme-picker-label">Thème</div>
                             <div class="pro-theme-swatches">
-                                <button type="button" class="pro-theme-swatch pro-theme-swatch--default {{ @selectedTheme == 'default' ? 'is-active' : '' }}" data-theme="default" title="Défaut"></button>
-                                <button type="button" class="pro-theme-swatch pro-theme-swatch--blue {{ @selectedTheme == 'blue' ? 'is-active' : '' }}" data-theme="blue" title="Bleu"></button>
-                                <button type="button" class="pro-theme-swatch pro-theme-swatch--dark {{ @selectedTheme == 'dark' ? 'is-active' : '' }}" data-theme="dark" title="Sombre"></button>
-                                <button type="button" class="pro-theme-swatch pro-theme-swatch--forest {{ @selectedTheme == 'forest' ? 'is-active' : '' }}" data-theme="forest" title="Forêt"></button>
-                                <button type="button" class="pro-theme-swatch pro-theme-swatch--moderne {{ @selectedTheme == 'moderne' ? 'is-active' : '' }}" data-theme="moderne" title="Moderne"></button>
+                                <button type="button"
+                                    class="pro-theme-swatch pro-theme-swatch--default {{ @selectedTheme == 'default' ? 'is-active' : '' }}"
+                                    data-theme="default" title="Défaut"></button>
+                                <button type="button"
+                                    class="pro-theme-swatch pro-theme-swatch--blue {{ @selectedTheme == 'blue' ? 'is-active' : '' }}"
+                                    data-theme="blue" title="Bleu"></button>
+                                <button type="button"
+                                    class="pro-theme-swatch pro-theme-swatch--dark {{ @selectedTheme == 'dark' ? 'is-active' : '' }}"
+                                    data-theme="dark" title="Sombre"></button>
+                                <button type="button"
+                                    class="pro-theme-swatch pro-theme-swatch--forest {{ @selectedTheme == 'forest' ? 'is-active' : '' }}"
+                                    data-theme="forest" title="Forêt"></button>
+                                <button type="button"
+                                    class="pro-theme-swatch pro-theme-swatch--moderne {{ @selectedTheme == 'moderne' ? 'is-active' : '' }}"
+                                    data-theme="moderne" title="Moderne"></button>
                             </div>
                             <!-- Formulaire caché pour poster le thème -->
                             <form id="proThemeForm" action="{{ @base }}/theme" method="POST" style="display:none">
@@ -159,7 +184,8 @@
                         <form action="{{ @base }}/ui-mode" method="POST" style="display:contents">
                             <input type="hidden" name="csrf_token" value="{{ @csrfToken }}">
                             <input type="hidden" name="mode" value="classic">
-                            <button type="submit" class="pro-user-dropdown-item" role="menuitem" title="Revenir à l'interface classique">
+                            <button type="submit" class="pro-user-dropdown-item" role="menuitem"
+                                title="Revenir à l'interface classique">
                                 <i class="fas fa-desktop" aria-hidden="true"></i> Interface classique
                             </button>
                         </form>
@@ -184,31 +210,41 @@
     <check if="isset(@SESSION.user_id)">
         <aside class="pro-sidebar" role="navigation" aria-label="Navigation principale">
 
-            <!-- Navigation globale -->
-            <div class="pro-nav-section">Navigation</div>
+            <!-- Couverture du projet -->
+            <check if="{{ isset(@project) && isset(@project.cover_image) && @project.cover_image }}">
+                <div class="pro-sidebar-cover">
+                    <img src="{{ @base }}/project/{{ @project.id }}/cover" alt="{{ @project.title | esc }}"
+                        class="pro-sidebar-cover-img">
+                </div>
+            </check>
 
-            <a href="{{ @base }}/dashboard"
-               class="pro-nav-item {{ @PATH == '/dashboard' ? 'is-active' : '' }}">
+            <div class="pro-nav-divider" style="margin-top: 0;"></div>
+
+            <!-- Navigation globale -->
+            <div class="pro-nav-section" style="display: none;">Navigation</div>
+
+            <a href="{{ @base }}/dashboard" title="Tableau de bord"
+                class="pro-nav-item {{ @PATH == '/dashboard' ? 'is-active' : '' }}">
                 <i class="fas fa-home" aria-hidden="true"></i> Tableau de bord
             </a>
 
-            <a href="{{ @base }}/stats"
-               class="pro-nav-item {{ substr(@PATH, 0, 6) == '/stats' ? 'is-active' : '' }}">
+            <a href="{{ @base }}/stats" title="Statistiques"
+                class="pro-nav-item {{ substr(@PATH, 0, 6) == '/stats' ? 'is-active' : '' }}">
                 <i class="fas fa-chart-bar" aria-hidden="true"></i> Statistiques
             </a>
 
-            <a href="{{ @base }}/share"
-               class="pro-nav-item {{ @PATH == '/share' ? 'is-active' : '' }}">
+            <a href="{{ @base }}/share" title="Partages"
+                class="pro-nav-item {{ @PATH == '/share' ? 'is-active' : '' }}">
                 <i class="fas fa-share-alt" aria-hidden="true"></i> Partages
             </a>
 
-            <a href="{{ @base }}/templates"
-               class="pro-nav-item {{ substr(@PATH, 0, 10) == '/templates' || substr(@PATH, 0, 9) == '/template' ? 'is-active' : '' }}">
+            <a href="{{ @base }}/templates" title="Templates"
+                class="pro-nav-item {{ substr(@PATH, 0, 10) == '/templates' || substr(@PATH, 0, 9) == '/template' ? 'is-active' : '' }}">
                 <i class="fas fa-layer-group" aria-hidden="true"></i> Templates
             </a>
 
-            <a href="{{ @base }}/collab/invitations"
-               class="pro-nav-item {{ substr(@PATH, 0, 7) == '/collab' ? 'is-active' : '' }}">
+            <a href="{{ @base }}/collab/invitations" title="Collaborations"
+                class="pro-nav-item {{ substr(@PATH, 0, 7) == '/collab' ? 'is-active' : '' }}">
                 <i class="fas fa-user-friends" aria-hidden="true"></i>
                 Collaborations
                 <check if="{{ @pendingCollabCount > 0 }}">
@@ -223,69 +259,69 @@
 
                 <div class="pro-nav-project-header">
                     <i class="fas fa-book" aria-hidden="true"></i>
-                    <span class="pro-nav-project-title" title="{{ @project.title | esc }}">{{ @project.title | esc }}</span>
+                    <span class="pro-nav-project-title" title="{{ @project.title | esc }}">{{ @project.title | esc
+                        }}</span>
                 </div>
 
-                <a href="{{ @base }}/project/{{ @project.id }}"
-                   class="pro-nav-item {{ @PATH == '/project/'~@project.id ? 'is-active' : '' }}">
-                    <i class="fas fa-th-large" aria-hidden="true"></i> Vue d'ensemble
+                <!-- Vue d'ensemble -->
+                <a href="{{ @base }}/project/{{ @project.id }}" title="Vue d'ensemble"
+                    class="pro-nav-item {{ @PATH == '/project/'.@project.id ? 'is-active' : '' }}">
+                    <i class="fas fa-th-large" aria-hidden="true"></i>
+                    <span class="pro-nav-label">Vue d'ensemble</span>
                 </a>
 
-                <check if="{{ !isset(@panelConfig) || @panelConfig.synopsis }}">
-                    <a href="{{ @base }}/project/{{ @project.id }}/synopsis"
-                       class="pro-nav-item {{ substr(@PATH, 0, strlen('/project/'~@project.id~'/synopsis')) == '/project/'~@project.id~'/synopsis' ? 'is-active' : '' }}">
-                        <i class="fas fa-file-alt" aria-hidden="true"></i> Synopsis
-                    </a>
-                </check>
-
-                <a href="{{ @base }}/project/{{ @project.id }}#chapters"
-                   class="pro-nav-item {{ (substr(@PATH, strlen('/project/'~@project.id~'/')) == 'chapter' || substr(@PATH, strlen('/project/'~@project.id~'/')) == 'act') ? 'is-active' : '' }}">
-                    <i class="fas fa-list-ol" aria-hidden="true"></i> Structure
-                </a>
-
-                <a href="{{ @base }}/project/{{ @project.id }}/characters"
-                   class="pro-nav-item {{ substr(@PATH, 0, strlen('/project/'~@project.id~'/character')) == '/project/'~@project.id~'/character' ? 'is-active' : '' }}">
-                    <i class="fas fa-users" aria-hidden="true"></i> Personnages
-                </a>
-
-                <a href="{{ @base }}/project/{{ @project.id }}/notes"
-                   class="pro-nav-item {{ substr(@PATH, 0, strlen('/project/'~@project.id~'/note')) == '/project/'~@project.id~'/note' ? 'is-active' : '' }}">
-                    <i class="fas fa-sticky-note" aria-hidden="true"></i> Notes
-                </a>
-
-                <a href="{{ @base }}/project/{{ @project.id }}/glossary"
-                   class="pro-nav-item {{ substr(@PATH, 0, strlen('/project/'~@project.id~'/glossary')) == '/project/'~@project.id~'/glossary' ? 'is-active' : '' }}">
-                    <i class="fas fa-book-open" aria-hidden="true"></i> Glossaire
-                </a>
-
-                <check if="{{ !isset(@panelConfig) || @panelConfig.scenario }}">
-                    <a href="{{ @base }}/project/{{ @project.id }}/scenarios"
-                       class="pro-nav-item {{ substr(@PATH, 0, strlen('/project/'~@project.id~'/scenario')) == '/project/'~@project.id~'/scenario' ? 'is-active' : '' }}">
-                        <i class="fas fa-film" aria-hidden="true"></i> Scénario
-                    </a>
+                <!-- Contenu du template (liste dynamique) -->
+                <check if="{{ isset(@sidebarModules) }}">
+                    <div class="pro-nav-section-label" style="display: none;">Contenu</div>
+                    <repeat group="{{ @sidebarModules }}" value="{{ @sm }}">
+                        <a href="{{ @base }}{{ @sm.path }}" title="{{ @sm.label | esc }}"
+                            class="pro-nav-item {{ @PATH == @sm.active_path ? 'is-active' : '' }}">
+                            <i class="fas fa-{{ @sm.icon }}" aria-hidden="true"></i>
+                            <span class="pro-nav-label">{{ @sm.label | esc }}</span>
+                            <check if="{{ @sm.nb > 0 }}">
+                                <span class="pro-nav-count">{{ @sm.nb }}</span>
+                            </check>
+                        </a>
+                    </repeat>
                 </check>
 
                 <div class="pro-nav-divider"></div>
 
-                <a href="{{ @base }}/project/{{ @project.id }}/mindmap"
-                   class="pro-nav-item {{ @PATH == '/project/'~@project.id~'/mindmap' ? 'is-active' : '' }}">
-                    <i class="fas fa-sitemap" aria-hidden="true"></i> Carte mentale
+                <!-- Outils -->
+                <a href="{{ @base }}/project/{{ @project.id }}/mindmap" title="Carte mentale"
+                    class="pro-nav-item {{ @PATH == '/project/'.@project.id.'/mindmap' ? 'is-active' : '' }}">
+                    <i class="fas fa-sitemap" aria-hidden="true"></i>
+                    <span class="pro-nav-label">Carte mentale</span>
                 </a>
 
-                <a href="{{ @base }}/project/{{ @project.id }}/lecture"
-                   class="pro-nav-item">
-                    <i class="fas fa-glasses" aria-hidden="true"></i> Mode lecture
+                <a href="{{ @base }}/project/{{ @project.id }}/lecture" title="Mode lecture"
+                    class="pro-nav-item {{ substr(@PATH, 0, strlen('/project/'.@project.id.'/lecture')) == '/project/'.@project.id.'/lecture' ? 'is-active' : '' }}">
+                    <i class="fas fa-glasses" aria-hidden="true"></i>
+                    <span class="pro-nav-label">Mode lecture</span>
+                </a>
+
+                <a href="{{ @base }}/project/{{ @project.id }}/relecture" title="Mode relecture"
+                    class="pro-nav-item {{ substr(@PATH, 0, strlen('/project/'.@project.id.'/relecture')) == '/project/'.@project.id.'/relecture' ? 'is-active' : '' }}">
+                    <i class="fas fa-highlighter" aria-hidden="true"></i>
+                    <span class="pro-nav-label">Mode relecture</span>
+                </a>
+
+                <a href="#" id="proExportBtn" title="Exporter" class="pro-nav-item">
+                    <i class="fas fa-file-export" aria-hidden="true"></i>
+                    <span class="pro-nav-label">Exporter</span>
                 </a>
 
                 <check if="{{ isset(@isOwner) && @isOwner }}">
-                    <a href="{{ @base }}/project/{{ @project.id }}/collaborateurs"
-                       class="pro-nav-item {{ @PATH == '/project/'~@project.id~'/collaborateurs' ? 'is-active' : '' }}">
-                        <i class="fas fa-user-plus" aria-hidden="true"></i> Collaborateurs
+                    <a href="{{ @base }}/project/{{ @project.id }}/collaborateurs" title="Collaborateurs"
+                        class="pro-nav-item {{ @PATH == '/project/'.@project.id.'/collaborateurs' ? 'is-active' : '' }}">
+                        <i class="fas fa-user-plus" aria-hidden="true"></i>
+                        <span class="pro-nav-label">Collaborateurs</span>
                     </a>
 
-                    <a href="{{ @base }}/project/{{ @project.id }}/activity"
-                       class="pro-nav-item {{ @PATH == '/project/'~@project.id~'/activity' ? 'is-active' : '' }}">
-                        <i class="fas fa-history" aria-hidden="true"></i> Activité
+                    <a href="{{ @base }}/project/{{ @project.id }}/activity" title="Activité"
+                        class="pro-nav-item {{ @PATH == '/project/'.@project.id.'/activity' ? 'is-active' : '' }}">
+                        <i class="fas fa-history" aria-hidden="true"></i>
+                        <span class="pro-nav-label">Activité</span>
                     </a>
                 </check>
 
@@ -293,7 +329,8 @@
 
             <!-- Footer sidebar -->
             <div class="pro-sidebar-footer">
-                <a href="{{ @base }}/profile" class="pro-nav-item {{ @PATH == '/profile' ? 'is-active' : '' }}">
+                <a href="{{ @base }}/profile" title="Profil &amp; compte"
+                    class="pro-nav-item {{ @PATH == '/profile' ? 'is-active' : '' }}">
                     <i class="fas fa-user-cog" aria-hidden="true"></i> Profil &amp; compte
                 </a>
             </div>
@@ -308,19 +345,17 @@
         <div class="pro-content-inner">
 
             <!-- Messages flash -->
-            <check if="{{ isset(@SESSION.success) }}">
+            <check if="{{ isset(@flash_success) }}">
                 <div class="pro-alert pro-alert--success">
                     <i class="fas fa-check-circle" aria-hidden="true"></i>
-                    {{ @SESSION.success | esc }}
+                    {{ @flash_success | esc }}
                 </div>
-                <set SESSION.success="" />
             </check>
-            <check if="{{ isset(@SESSION.error) }}">
+            <check if="{{ isset(@flash_error) }}">
                 <div class="pro-alert pro-alert--error">
                     <i class="fas fa-exclamation-circle" aria-hidden="true"></i>
-                    {{ @SESSION.error | esc }}
+                    {{ @flash_error | esc }}
                 </div>
-                <set SESSION.error="" />
             </check>
 
             {{ @content | raw }}
@@ -340,9 +375,8 @@
                 <form method="get" action="{{ @base }}/search" id="searchOverlayForm">
                     <div class="search-overlay-input-wrap">
                         <i class="fas fa-search search-overlay-icon" aria-hidden="true"></i>
-                        <input type="text" name="q" id="searchOverlayInput"
-                               placeholder="Rechercher dans vos textes…"
-                               autocomplete="off" spellcheck="false">
+                        <input type="text" name="q" id="searchOverlayInput" placeholder="Rechercher dans vos textes…"
+                            autocomplete="off" spellcheck="false">
                         <kbd class="search-overlay-esc">Esc</kbd>
                     </div>
                 </form>
@@ -409,20 +443,25 @@
             display: none;
             position: fixed;
             inset: 0;
-            background: rgba(0,0,0,.55);
+            background: rgba(0, 0, 0, .55);
             z-index: 9000;
             align-items: flex-start;
             justify-content: center;
             padding-top: 15vh;
         }
-        #searchOverlay.is-open { display: flex; }
+
+        #searchOverlay.is-open {
+            display: flex;
+        }
+
         #searchOverlayBox {
             background: var(--card-bg, #fff);
             border-radius: 12px;
-            box-shadow: 0 20px 60px rgba(0,0,0,.35);
+            box-shadow: 0 20px 60px rgba(0, 0, 0, .35);
             width: min(640px, 92vw);
             overflow: hidden;
         }
+
         .search-overlay-input-wrap {
             display: flex;
             align-items: center;
@@ -430,28 +469,52 @@
             padding: 16px 20px;
             border-bottom: 1px solid var(--border-color, #e0e0e0);
         }
-        .search-overlay-icon { font-size: 1.1rem; color: var(--text-muted, #888); flex-shrink: 0; }
-        #searchOverlayInput {
-            flex: 1; border: none; outline: none;
-            background: transparent; font-size: 1.15rem;
-            color: var(--text-main, #333); font-family: inherit;
+
+        .search-overlay-icon {
+            font-size: 1.1rem;
+            color: var(--text-muted, #888);
+            flex-shrink: 0;
         }
-        #searchOverlayInput::placeholder { color: var(--text-muted, #aaa); }
+
+        #searchOverlayInput {
+            flex: 1;
+            border: none;
+            outline: none;
+            background: transparent;
+            font-size: 1.15rem;
+            color: var(--text-main, #333);
+            font-family: inherit;
+        }
+
+        #searchOverlayInput::placeholder {
+            color: var(--text-muted, #aaa);
+        }
+
         .search-overlay-esc {
-            font-size: .7rem; padding: 2px 6px; border-radius: 4px;
+            font-size: .7rem;
+            padding: 2px 6px;
+            border-radius: 4px;
             border: 1px solid var(--border-color, #ccc);
             color: var(--text-muted, #888);
             background: var(--table-header-bg, #f5f5f5);
-            font-family: inherit; flex-shrink: 0;
+            font-family: inherit;
+            flex-shrink: 0;
         }
+
         .search-overlay-hint {
-            font-size: .78rem; color: var(--text-muted, #999);
-            padding: 10px 20px; margin: 0;
+            font-size: .78rem;
+            color: var(--text-muted, #999);
+            padding: 10px 20px;
+            margin: 0;
         }
+
         .search-overlay-hint kbd {
-            font-size: .75rem; padding: 1px 5px; border-radius: 3px;
+            font-size: .75rem;
+            padding: 1px 5px;
+            border-radius: 3px;
             border: 1px solid var(--border-color, #ccc);
-            background: var(--table-header-bg, #f5f5f5); font-family: inherit;
+            background: var(--table-header-bg, #f5f5f5);
+            font-family: inherit;
         }
     </style>
 
@@ -471,8 +534,8 @@
 
         // Search overlay
         var searchOverlay = document.getElementById('searchOverlay');
-        var searchInput   = document.getElementById('searchOverlayInput');
-        var searchToggle  = document.getElementById('searchToggleBtn');
+        var searchInput = document.getElementById('searchOverlayInput');
+        var searchToggle = document.getElementById('searchToggleBtn');
 
         function openSearch() {
             if (!searchOverlay) return;
@@ -506,16 +569,16 @@
     <script nonce="{{ @nonce }}">
         document.addEventListener('DOMContentLoaded', function () {
             // ── IA Modal ──
-            var aiModal    = document.getElementById('aiRequestModal');
-            var aiBtn      = document.getElementById('aiRequestBtn');
-            var aiClose    = document.getElementById('closeAiModal');
-            var sendBtn    = document.getElementById('sendAiRequest');
-            var fileInput  = document.getElementById('aiContextFile');
+            var aiModal = document.getElementById('aiRequestModal');
+            var aiBtn = document.getElementById('aiRequestBtn');
+            var aiClose = document.getElementById('closeAiModal');
+            var sendBtn = document.getElementById('sendAiRequest');
+            var fileInput = document.getElementById('aiContextFile');
             var resContainer = document.getElementById('aiResponseContainer');
-            var resContent   = document.getElementById('aiResponseContent');
-            var sysPrompt    = document.getElementById('aiSystemPrompt');
-            var userPrompt   = document.getElementById('aiUserPrompt');
-            var userPreset   = document.getElementById('aiUserPromptPreset');
+            var resContent = document.getElementById('aiResponseContent');
+            var sysPrompt = document.getElementById('aiSystemPrompt');
+            var userPrompt = document.getElementById('aiUserPrompt');
+            var userPreset = document.getElementById('aiUserPromptPreset');
 
             if (aiBtn) aiBtn.addEventListener('click', function (e) {
                 e.preventDefault();
@@ -544,21 +607,21 @@
                         headers: { 'Content-Type': 'application/json', 'X-CSRF-Token': window.CSRF_TOKEN },
                         body: JSON.stringify({ system_prompt: sp, prompt: up, context: ctx, task: 'custom' })
                     })
-                    .then(function (r) { return r.json(); })
-                    .then(function (data) {
-                        sendBtn.disabled = false;
-                        if (data.text) { resContent.innerHTML = data.text.replace(/\n/g, '<br>'); }
-                        else if (data.error) { resContent.innerHTML = '<span class="text-error">Erreur: ' + data.error + '</span>'; }
-                        if (data.debug) {
-                            var ds = document.getElementById('aiModalDebug');
-                            var db = document.getElementById('aiModalDebugBody');
-                            if (ds && db) {
-                                db.textContent = 'Modèle: ' + data.debug.model + '\n\n--- SYSTEM ---\n' + data.debug.system + '\n\n--- USER ---\n' + data.debug.user;
-                                ds.classList.add('is-visible');
+                        .then(function (r) { return r.json(); })
+                        .then(function (data) {
+                            sendBtn.disabled = false;
+                            if (data.text) { resContent.innerHTML = data.text.replace(/\n/g, '<br>'); }
+                            else if (data.error) { resContent.innerHTML = '<span class="text-error">Erreur: ' + data.error + '</span>'; }
+                            if (data.debug) {
+                                var ds = document.getElementById('aiModalDebug');
+                                var db = document.getElementById('aiModalDebugBody');
+                                if (ds && db) {
+                                    db.textContent = 'Modèle: ' + data.debug.model + '\n\n--- SYSTEM ---\n' + data.debug.system + '\n\n--- USER ---\n' + data.debug.user;
+                                    ds.classList.add('is-visible');
+                                }
                             }
-                        }
-                    })
-                    .catch(function () { sendBtn.disabled = false; resContent.innerHTML = '<span class="text-error">Erreur de communication.</span>'; });
+                        })
+                        .catch(function () { sendBtn.disabled = false; resContent.innerHTML = '<span class="text-error">Erreur de communication.</span>'; });
                 };
 
                 if (file) {
@@ -577,5 +640,111 @@
         });
     </script>
 
+    <script nonce="{{ @nonce }}">
+        // Mode focus éditeur : sidebar 56px + barre de statut basse
+        (function () {
+            var path = window.location.pathname;
+            if (/\/chapter\/\d+/.test(path)) {
+                document.body.classList.add('editor-mode');
+            }
+        })();
+    </script>
+
+    <script nonce="{{ @nonce }}">
+        // Topbar shadow au scroll
+        (function () {
+            var ticking = false;
+            window.addEventListener('scroll', function () {
+                if (!ticking) {
+                    requestAnimationFrame(function () {
+                        document.body.classList.toggle('is-scrolled', window.scrollY > 4);
+                        ticking = false;
+                    });
+                    ticking = true;
+                }
+            }, { passive: true });
+        })();
+    </script>
+
+    <!-- ════════════════════════════════════════════
+         MODALE EXPORT PRO
+         ════════════════════════════════════════════ -->
+    <check if="{{ isset(@project) }}">
+        <div id="proExportModal" class="modal-overlay" role="dialog" aria-modal="true" aria-label="Exporter le projet">
+            <div class="modal-content modal-sm">
+                <div class="modal-header">
+                    <h3><i class="fas fa-file-export" aria-hidden="true"></i> Exporter le projet</h3>
+                    <button class="modal-close button" id="proExportModalClose" title="Fermer">✕</button>
+                </div>
+                <div class="modal-body">
+                    <ul class="export-options-list">
+                        <li>
+                            <a class="button" href="{{ @base }}/project/{{ @project.id }}/export">
+                                Texte (.txt)
+                            </a>
+                            <span class="export-format-desc">Texte brut formaté, titres en majuscules</span>
+                        </li>
+                        <li>
+                            <a class="button" href="{{ @base }}/project/{{ @project.id }}/export/markdown">
+                                Markdown (.md)
+                            </a>
+                            <span class="export-format-desc">Format Markdown avec titres # et mise en forme</span>
+                        </li>
+                        <li>
+                            <a class="button" href="{{ @base }}/project/{{ @project.id }}/export/html">
+                                HTML (.html)
+                            </a>
+                            <span class="export-format-desc">Document web complet avec styles CSS</span>
+                        </li>
+                        <li>
+                            <a class="button" href="{{ @base }}/project/{{ @project.id }}/export/epub">
+                                EPUB (.epub)
+                            </a>
+                            <span class="export-format-desc">Format liseuse numérique</span>
+                        </li>
+                        <li>
+                            <a class="button" href="{{ @base }}/project/{{ @project.id }}/export/odt">
+                                OpenDocument (.odt)
+                            </a>
+                            <span class="export-format-desc">Compatible LibreOffice et Microsoft Word</span>
+                        </li>
+                        <li>
+                            <a class="button" href="{{ @base }}/project/{{ @project.id }}/export/vector">
+                                JSON (.json)
+                            </a>
+                            <span class="export-format-desc">Pour vectorisation et traitement IA</span>
+                        </li>
+                        <li>
+                            <a class="button" href="{{ @base }}/project/{{ @project.id }}/export/clean">
+                                Texte brut (.txt)
+                            </a>
+                            <span class="export-format-desc">Tout en minuscules, sans mise en forme</span>
+                        </li>
+                        <li>
+                            <a class="button" href="{{ @base }}/project/{{ @project.id }}/export/summaries">
+                                Résumés (.txt)
+                            </a>
+                            <span class="export-format-desc">Titres et résumés uniquement</span>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+        <script nonce="{{ @nonce }}">
+            (function () {
+                var modal = document.getElementById('proExportModal');
+                var close = document.getElementById('proExportModalClose');
+                if (!modal) return;
+                function closeModal() { modal.classList.remove('is-visible'); }
+                var btn = document.getElementById('proExportBtn');
+                if (btn) btn.addEventListener('click', function (e) { e.preventDefault(); modal.classList.add('is-visible'); });
+                close.addEventListener('click', closeModal);
+                modal.addEventListener('click', function (e) { if (e.target === modal) closeModal(); });
+                document.addEventListener('keydown', function (e) { if (e.key === 'Escape') closeModal(); });
+            })();
+        </script>
+    </check>
+
 </body>
+
 </html>

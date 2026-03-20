@@ -13,12 +13,20 @@ body.ui-pro .pro-nav-section {
     user-select: none;
 }
 
+.ui-pro .ql-editor,
+.ui-pro .chapters-preview-content .ql-editor,
+.ui-pro .acts-preview-resume .ql-editor {
+    max-height: none;
+}
+
+
 /* ── Nav item (link or button) ── */
-body.ui-pro .pro-nav-item {
+body.ui-pro .pro-nav-item,
+body.ui-pro a.pro-nav-item {
     display: flex;
     align-items: center;
     gap: 10px;
-    padding: 8px 14px 8px 16px;
+    padding: 5px 10px !important;
     font-size: 13.5px;
     color: var(--text-main);
     text-decoration: none;
@@ -28,6 +36,8 @@ body.ui-pro .pro-nav-item {
     border-bottom: none;
     background: none;
     width: 100%;
+    min-width: 0;
+    box-sizing: border-box;
     text-align: left;
     font-family: inherit;
     cursor: pointer;
@@ -35,15 +45,17 @@ body.ui-pro .pro-nav-item {
     line-height: 1.4;
 }
 
-body.ui-pro .pro-nav-item:hover {
+body.ui-pro .pro-nav-item:hover,
+body.ui-pro a.pro-nav-item:hover {
     background: var(--table-row-hover-bg);
     color: var(--text-main);
     text-decoration: none;
 }
 
-body.ui-pro .pro-nav-item.is-active {
+body.ui-pro .pro-nav-item.is-active,
+body.ui-pro a.pro-nav-item.is-active {
     background: var(--table-row-hover-bg);
-    border-left-color: var(--button-primary-bg);
+    border-left-color: var(--button-hover);
     font-weight: 600;
     color: var(--button-primary-bg);
 }
@@ -89,7 +101,7 @@ body.ui-pro .pro-nav-project-header {
     display: flex;
     align-items: center;
     gap: 8px;
-    padding: 12px 14px 4px;
+    padding: 10px;
     font-size: 11px;
     font-weight: 700;
     letter-spacing: 0.05em;
@@ -136,11 +148,13 @@ body.ui-pro .pro-topbar-logo {
     opacity: 1;
     transition: opacity 0.15s;
 }
+
 body.ui-pro .pro-topbar-logo:hover {
     opacity: 0.85;
     text-decoration: none;
     color: var(--header-text);
 }
+
 body.ui-pro .pro-topbar-logo i {
     font-size: 14px;
 }
@@ -174,6 +188,7 @@ body.ui-pro .pro-breadcrumb a {
     flex-shrink: 0;
     transition: color 0.12s;
 }
+
 body.ui-pro .pro-breadcrumb a:hover {
     color: #fff;
     text-decoration: none;
@@ -224,6 +239,7 @@ body.ui-pro .pro-topbar-btn {
     position: relative;
     flex-shrink: 0;
 }
+
 body.ui-pro .pro-topbar-btn:hover {
     background: rgba(255, 255, 255, 0.15);
     color: #fff;
@@ -266,6 +282,7 @@ body.ui-pro .pro-user-btn {
     font-family: inherit;
     transition: background 0.12s;
 }
+
 body.ui-pro .pro-user-btn:hover {
     background: rgba(255, 255, 255, 0.2);
 }
@@ -289,6 +306,7 @@ body.ui-pro .pro-user-chevron {
     opacity: 0.7;
     transition: transform 0.15s;
 }
+
 body.ui-pro .pro-user-menu.is-open .pro-user-chevron {
     transform: rotate(180deg);
 }
@@ -307,25 +325,36 @@ body.ui-pro .pro-user-dropdown {
     z-index: 500;
     overflow: hidden;
 }
+
 body.ui-pro .pro-user-dropdown.is-open {
     display: block;
     animation: proDropdownIn 0.12s ease;
 }
+
 @keyframes proDropdownIn {
-    from { opacity: 0; transform: translateY(-4px); }
-    to   { opacity: 1; transform: translateY(0); }
+    from {
+        opacity: 0;
+        transform: translateY(-4px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
 }
 
 body.ui-pro .pro-user-dropdown-header {
     padding: 12px 14px 10px;
     border-bottom: 1px solid var(--input-border);
 }
+
 body.ui-pro .pro-user-dropdown-name {
     font-size: 13px;
     font-weight: 600;
     color: var(--text-main);
     margin-bottom: 1px;
 }
+
 body.ui-pro .pro-user-dropdown-email {
     font-size: 12px;
     color: var(--text-muted);
@@ -338,7 +367,7 @@ body.ui-pro .pro-user-dropdown-item {
     display: flex;
     align-items: center;
     gap: 10px;
-    padding: 9px 14px;
+    padding: 9px 14px !important;
     font-size: 13px;
     color: var(--text-main);
     text-decoration: none;
@@ -350,17 +379,21 @@ body.ui-pro .pro-user-dropdown-item {
     text-align: left;
     font-family: inherit;
 }
+
 body.ui-pro .pro-user-dropdown-item:hover {
     background: var(--table-row-hover-bg);
     color: var(--text-main);
     text-decoration: none;
 }
+
 body.ui-pro .pro-user-dropdown-item.is-danger {
     color: var(--color-danger);
 }
+
 body.ui-pro .pro-user-dropdown-item.is-danger:hover {
     background: var(--error-bg);
 }
+
 body.ui-pro .pro-user-dropdown-item i {
     width: 14px;
     text-align: center;
@@ -368,6 +401,7 @@ body.ui-pro .pro-user-dropdown-item i {
     color: var(--text-muted);
     flex-shrink: 0;
 }
+
 body.ui-pro .pro-user-dropdown-item.is-danger i {
     color: var(--color-danger);
 }
@@ -382,6 +416,7 @@ body.ui-pro .pro-user-dropdown-sep {
 body.ui-pro .pro-theme-picker {
     padding: 8px 14px 10px;
 }
+
 body.ui-pro .pro-theme-picker-label {
     font-size: 11px;
     font-weight: 600;
@@ -390,10 +425,12 @@ body.ui-pro .pro-theme-picker-label {
     color: var(--text-muted);
     margin-bottom: 7px;
 }
+
 body.ui-pro .pro-theme-swatches {
     display: flex;
     gap: 7px;
 }
+
 body.ui-pro .pro-theme-swatch {
     width: 22px;
     height: 22px;
@@ -404,30 +441,192 @@ body.ui-pro .pro-theme-swatch {
     flex-shrink: 0;
     padding: 0;
 }
+
 body.ui-pro .pro-theme-swatch:hover {
     transform: scale(1.15);
 }
+
 body.ui-pro .pro-theme-swatch.is-active {
     border-color: var(--button-primary-bg);
     box-shadow: 0 0 0 2px var(--card-bg), 0 0 0 4px var(--button-primary-bg);
 }
+
 body.ui-pro .pro-theme-swatch--default {
     background: linear-gradient(135deg, #fff 50%, #d65151 50%);
     border: 1px solid #d65151;
 }
+
 body.ui-pro .pro-theme-swatch--blue {
     background: linear-gradient(135deg, #e8f0fe 50%, #2563eb 50%);
     border: 1px solid #2563eb;
 }
+
 body.ui-pro .pro-theme-swatch--dark {
     background: linear-gradient(135deg, #1e2433 50%, #60a5fa 50%);
     border: 1px solid #444;
 }
+
 body.ui-pro .pro-theme-swatch--forest {
     background: linear-gradient(135deg, #f0f7f0 50%, #4a7a59 50%);
     border: 1px solid #4a7a59;
 }
+
 body.ui-pro .pro-theme-swatch--moderne {
     background: linear-gradient(135deg, #f5f5f5 50%, #3f51b5 50%);
     border: 1px solid #3f51b5;
+}
+
+
+/* ── Mode icônes seules (640–900px) ── */
+@media (max-width: 900px) {
+
+    /* Masquer les libellés texte */
+    body.ui-pro .pro-nav-section,
+    body.ui-pro .pro-nav-project-header,
+    body.ui-pro .pro-nav-badge {
+        display: none;
+    }
+
+    /* Items centrés sur l'icône */
+    body.ui-pro .pro-nav-item {
+        font-size: 0;
+        /* cache les text nodes */
+        justify-content: center;
+        padding: 10px 0;
+        gap: 0;
+        border-left-width: 2px;
+    }
+
+    body.ui-pro .pro-nav-item i {
+        font-size: 15px;
+        width: auto;
+    }
+
+    /* Séparateur plus compact */
+    body.ui-pro .pro-nav-divider {
+        margin: 4px 8px;
+    }
+
+    /* Logo : icône seule */
+    body.ui-pro .pro-topbar-logo {
+        font-size: 0;
+    }
+
+    body.ui-pro .pro-topbar-logo i {
+        font-size: 16px;
+    }
+}
+
+/* Restaurer l'affichage complet dans le drawer mobile (overlay) */
+@media (max-width: 640px) {
+    body.ui-pro .pro-nav-section {
+        display: block;
+    }
+
+    body.ui-pro .pro-nav-project-header {
+        display: flex;
+    }
+
+    body.ui-pro .pro-nav-badge {
+        display: flex;
+    }
+
+    body.ui-pro .pro-nav-item {
+        font-size: 13.5px;
+        justify-content: flex-start;
+        padding: 8px 14px 8px 16px;
+        gap: 10px;
+        border-left-width: 3px;
+    }
+
+    body.ui-pro .pro-nav-item i {
+        font-size: 12px;
+        width: 15px;
+    }
+
+    body.ui-pro .pro-topbar-logo {
+        font-size: 15px;
+    }
+
+    body.ui-pro .pro-topbar-logo i {
+        font-size: 14px;
+    }
+}
+
+
+/* ── Label texte dans les nav-items ── */
+body.ui-pro .pro-nav-item .pro-nav-label {
+    flex: 1;
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+/* ── Compteur d'éléments (badge neutre) ── */
+body.ui-pro .pro-nav-count {
+    font-size: 10px;
+    font-weight: 600;
+    color: var(--text-muted);
+    background: var(--table-header-bg, rgba(0, 0, 0, .05));
+    border: 1px solid var(--input-border);
+    border-radius: 10px;
+    padding: 0 5px;
+    line-height: 1.7;
+    min-width: 18px;
+    text-align: center;
+    flex-shrink: 0;
+}
+
+body.ui-pro .pro-nav-item.is-active .pro-nav-count {
+    color: var(--button-primary-bg);
+    border-color: var(--button-primary-bg);
+    background: rgba(63, 81, 181, 0.08);
+}
+
+/* ── Sous-section label dans le projet ── */
+body.ui-pro .pro-nav-section-label {
+    padding: 10px;
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--text-muted);
+    user-select: none;
+    opacity: 0.65;
+}
+
+/* Masquer labels et compteurs en mode icônes ── */
+@media (max-width: 900px) {
+
+    body.ui-pro .pro-nav-count,
+    body.ui-pro .pro-nav-section-label {
+        display: none;
+    }
+}
+
+
+@media (max-width: 640px) {
+    body.ui-pro .pro-nav-count {
+        display: inline-block;
+    }
+
+    body.ui-pro .pro-nav-section-label {
+        display: block;
+    }
+}
+
+/* ── Couverture projet en haut de sidebar ── */
+body.ui-pro .pro-sidebar-cover {
+    width: 100%;
+    overflow: hidden;
+    flex-shrink: 0;
+}
+
+body.ui-pro .pro-sidebar-cover-img {
+    display: block;
+    width: 100%;
+    /*height: 140px;*/
+    object-fit: cover;
+    object-position: center top;
 }

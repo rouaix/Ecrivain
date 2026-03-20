@@ -22,6 +22,7 @@ body.theme-default {
     --button-primary-bg: #d65151;
     --button-secondary-bg: #999999;
     --button-delete-bg: #d65151;
+    --button-hover-text: #ffffff;
     --button-hover-bg: #222222;
     --button-delete-hover-bg: #8d1e1e;
 
@@ -102,6 +103,8 @@ a.button.delete:hover,
 /* Liens */
 body.theme-default a {
     color: var(--link-color);
+    text-decoration: none !important;
+    padding: 2px;
 }
 
 body.theme-default a:hover {

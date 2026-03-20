@@ -3,18 +3,18 @@
    Tout scoped sous body.ui-pro pour isolation totale
    ============================================================ */
 
-/* Neutralise le chrome classique */
-body.ui-pro > header,
-body.ui-pro > footer {
+/* Neutralise le chrome classique (mais pas la topbar Pro) */
+body.ui-pro>header:not(.pro-topbar),
+body.ui-pro>footer {
     display: none !important;
 }
 
-body.ui-pro > main {
+body.ui-pro>main {
     padding: 0;
     margin: 0;
 }
 
-body.ui-pro > main > .container {
+body.ui-pro>main>.container {
     max-width: none;
     padding: 0;
     margin: 0;
@@ -66,9 +66,11 @@ body.ui-pro .pro-sidebar {
 body.ui-pro .pro-sidebar::-webkit-scrollbar {
     width: 4px;
 }
+
 body.ui-pro .pro-sidebar::-webkit-scrollbar-track {
     background: transparent;
 }
+
 body.ui-pro .pro-sidebar::-webkit-scrollbar-thumb {
     background: var(--input-border);
     border-radius: 2px;
@@ -83,17 +85,31 @@ body.ui-pro .pro-content {
 }
 
 body.ui-pro .pro-content-inner {
-    padding: 28px 32px;
-    max-width: 1440px;
+    padding: 20px;
+    max-width: 100%;
 }
 
 /* ── Responsive ── */
-@media (max-width: 900px) {
+
+/* 900–1200px : sidebar réduite mais lisible */
+@media (max-width: 1200px) {
     body.ui-pro .pro-sidebar {
         width: 200px;
     }
+
     body.ui-pro .pro-content {
         margin-left: 200px;
+    }
+}
+
+/* 640–900px : sidebar icônes seules */
+@media (max-width: 900px) {
+    body.ui-pro .pro-sidebar {
+        width: 56px;
+    }
+
+    body.ui-pro .pro-content {
+        margin-left: 56px;
     }
 }
 
@@ -105,14 +121,59 @@ body.ui-pro .pro-content-inner {
         z-index: 300;
         box-shadow: 4px 0 24px rgba(0, 0, 0, 0.15);
     }
+
     body.ui-pro .pro-sidebar.is-open {
         transform: translateX(0);
     }
+
     body.ui-pro .pro-content {
         margin-left: 0;
     }
+
     body.ui-pro #proSidebarToggle {
         display: flex !important;
+    }
+}
+
+/* ── Mode éditeur (body.editor-mode) ── */
+/* La sidebar reste à sa largeur normale — seul padding-bottom est ajouté */
+body.ui-pro.editor-mode .pro-content {
+    padding-bottom: 44px; /* espace pour la status bar */
+}
+
+/* Barre de statut fixe en bas (uniquement en mode Pro éditeur) */
+body.ui-pro.editor-mode .editor-top-bar {
+    position: fixed;
+    bottom: 0;
+    left: 240px;
+    right: 0;
+    height: 36px;
+    background: var(--card-bg);
+    border-top: 1px solid var(--input-border);
+    padding: 0 20px;
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    z-index: 90;
+    font-size: 12px;
+}
+
+@media (max-width: 1200px) {
+    body.ui-pro.editor-mode .editor-top-bar {
+        left: 200px;
+    }
+}
+
+@media (max-width: 900px) {
+    body.ui-pro.editor-mode .editor-top-bar {
+        left: 56px;
+    }
+}
+
+/* Ajustement status bar sur mobile (pas de sidebar fixe) */
+@media (max-width: 640px) {
+    body.ui-pro.editor-mode .editor-top-bar {
+        left: 0;
     }
 }
 
@@ -124,6 +185,7 @@ body.ui-pro .pro-backdrop {
     background: rgba(0, 0, 0, 0.4);
     z-index: 250;
 }
+
 body.ui-pro .pro-backdrop.is-visible {
     display: block;
 }

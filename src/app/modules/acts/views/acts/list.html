@@ -1,0 +1,306 @@
+<div class="edit-page-layout">
+
+    <div class="edit-header">
+        <h2><i class="fas fa-layer-group" aria-hidden="true"></i> Actes — {{ @project.title | esc }}</h2>
+        <div class="header-actions">
+            <a href="{{ @base }}/project/{{ @project.id }}" class="button secondary" title="Retour au projet">
+                <i class="fas fa-arrow-left" aria-hidden="true"></i>
+            </a>
+            <check if="{{ @isOwner }}">
+                <a href="{{ @base }}/project/{{ @project.id }}/act/create" class="button" title="Nouvel acte">
+                    <i class="fas fa-plus" aria-hidden="true"></i>
+                </a>
+            </check>
+        </div>
+    </div>
+
+    <check if="{{ count(@acts) == 0 }}">
+        <div class="edit-card mt-20">
+            <p class="text-muted-para empty-state-block">
+                <i class="fas fa-layer-group" aria-hidden="true"
+                    style="font-size:2rem;opacity:.3;display:block;margin-bottom:.5rem"></i>
+                Aucun acte créé pour ce projet.
+                <check if="{{ @isOwner }}">
+                    <a href="{{ @base }}/project/{{ @project.id }}/act/create" class="button mt-10">
+                        <i class="fas fa-plus" aria-hidden="true"></i> Créer le premier acte
+                    </a>
+                </check>
+            </p>
+        </div>
+    </check>
+
+    <check if="{{ count(@acts) > 0 }}">
+        <div class="acts-layout mt-20">
+
+            <div class="acts-list-col" id="actsList">
+                <repeat group="{{ @acts }}" value="{{ @act }}">
+                    <div class="act-list-item" data-id="{{ @act.id }}" tabindex="0"
+                         title="{{ @act.title | esc }}">
+                        <div class="act-list-body">
+                            <div class="act-list-title">{{ @act.title | esc }}</div>
+                            <div class="act-list-meta">
+                                <check if="{{ @act.chapter_count > 0 }}">
+                                    <span>
+                                        <i class="fas fa-list-ol" aria-hidden="true"></i>
+                                        {{ @act.chapter_count }} chapitre{{ @act.chapter_count > 1 ? 's' : '' }}
+                                    </span>
+                                </check>
+                            </div>
+                        </div>
+                        <div class="act-list-actions">
+                            <a href="{{ @base }}/act/{{ @act.id }}/edit" class="button small" title="Éditer"
+                               onclick="event.stopPropagation()">
+                                <i class="fas fa-edit" aria-hidden="true"></i>
+                            </a>
+                            <check if="{{ @isOwner && @act.chapter_count == 0 }}">
+                                <a href="{{ @base }}/act/{{ @act.id }}/delete"
+                                   class="button small delete js-confirm"
+                                   data-confirm="Supprimer cet acte ?" title="Supprimer"
+                                   onclick="event.stopPropagation()">
+                                    <i class="fas fa-trash" aria-hidden="true"></i>
+                                </a>
+                            </check>
+                        </div>
+                    </div>
+                </repeat>
+            </div>
+
+            <!-- Panneau d'aperçu (Pro uniquement) -->
+            <div class="acts-preview-col" id="actsPreview" aria-live="polite">
+                <div class="acts-preview-empty" id="actsPreviewEmpty">
+                    <i class="fas fa-hand-pointer" aria-hidden="true"></i>
+                    <p>Sélectionnez un acte pour l'apercevoir</p>
+                </div>
+                <div class="acts-preview-content" id="actsPreviewContent" style="display:none">
+                    <div class="acts-preview-header">
+                        <h3 id="actsPreviewTitle"></h3>
+                        <a id="actsPreviewEdit" href="#" class="button small" title="Éditer">
+                            <i class="fas fa-edit" aria-hidden="true"></i>
+                        </a>
+                    </div>
+                    <div class="acts-preview-meta" id="actsPreviewMeta"></div>
+                    <div class="acts-preview-body ql-editor" id="actsPreviewBody"></div>
+                    <div class="acts-preview-resume" id="actsPreviewResume" style="display:none">
+                        <div class="acts-preview-resume-label">
+                            <i class="fas fa-align-left" aria-hidden="true"></i> Résumé
+                        </div>
+                        <div class="ql-editor" id="actsPreviewResumeBody"></div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </check>
+
+</div>
+
+<script type="application/json" id="actsJson">{{ @actsJson | raw }}</script>
+
+<style nonce="{{ @nonce }}">
+    .acts-layout {
+        display: block;
+    }
+
+    body.ui-pro .acts-layout {
+        display: grid;
+        grid-template-columns: 35% 1fr;
+        gap: 20px;
+        align-items: start;
+    }
+
+    .acts-preview-col {
+        display: none;
+    }
+
+    body.ui-pro .acts-preview-col {
+        display: block;
+        position: sticky;
+        top: 64px;
+        background: var(--card-bg);
+        border: 1px solid var(--input-border);
+        border-radius: var(--radius-md, 8px);
+        min-height: 300px;
+        overflow: hidden;
+    }
+
+    .act-list-item {
+        display: flex;
+        align-items: center;
+        background: var(--card-bg);
+        border: 1px solid var(--input-border);
+        border-radius: var(--radius-md, 8px);
+        margin-bottom: .5rem;
+        cursor: pointer;
+        transition: box-shadow 0.15s, border-color 0.15s;
+        overflow: hidden;
+    }
+
+    .act-list-item:hover,
+    .act-list-item:focus {
+        border-color: var(--button-primary-bg, #3f51b5);
+        box-shadow: 0 2px 8px rgba(0,0,0,.08);
+        outline: none;
+    }
+
+    .act-list-item.is-active {
+        border-color: var(--button-primary-bg, #3f51b5);
+        box-shadow: 0 0 0 2px rgba(63,81,181,.18);
+    }
+
+    .act-list-body {
+        flex: 1;
+        padding: .6rem .75rem;
+        min-width: 0;
+    }
+
+    .act-list-title {
+        font-weight: 600;
+        font-size: .88rem;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+
+    .act-list-meta {
+        font-size: .74rem;
+        color: var(--text-muted, #888);
+        margin-top: 2px;
+    }
+
+    .act-list-actions {
+        display: flex;
+        gap: .25rem;
+        padding: 0 .5rem;
+        flex-shrink: 0;
+    }
+
+    .acts-preview-empty {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        min-height: 300px;
+        color: var(--text-muted, #aaa);
+        gap: .75rem;
+        font-size: .9rem;
+    }
+
+    .acts-preview-empty i { font-size: 2rem; opacity: .3; }
+
+    .acts-preview-header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 1rem;
+        padding: 1rem 1.25rem .75rem;
+        border-bottom: 1px solid var(--input-border);
+    }
+
+    .acts-preview-header h3 {
+        margin: 0;
+        font-size: 1rem;
+        font-weight: 700;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+
+    .acts-preview-meta {
+        font-size: .75rem;
+        color: var(--text-muted, #888);
+        padding: .4rem 1.25rem 0;
+    }
+
+    .acts-preview-body {
+        padding: 1rem 1.25rem;
+        font-size: .88rem;
+        overflow-y: auto;
+    }
+
+    .acts-preview-body img { max-width: 100%; height: auto; }
+
+    .acts-preview-resume {
+        border-top: 1px solid var(--input-border);
+        padding: .75rem 1.25rem;
+        background: var(--input-bg, #f9f9f9);
+    }
+
+    .acts-preview-resume-label {
+        font-size: .74rem;
+        font-weight: 700;
+        text-transform: uppercase;
+        color: var(--text-muted, #999);
+        margin-bottom: .4rem;
+    }
+
+    .acts-preview-resume .ql-editor {
+        font-size: .84rem;
+        padding: 0;
+        max-height: 140px;
+        overflow-y: auto;
+    }
+
+    @media (max-width: 700px) {
+        body.ui-pro .acts-layout { grid-template-columns: 1fr; }
+        body.ui-pro .acts-preview-col { display: none; }
+    }
+</style>
+
+<script nonce="{{ @nonce }}">
+(function () {
+    var BASE = '{{ @base }}';
+    var IS_PRO = document.body.classList.contains('ui-pro');
+
+    var data = {};
+    try {
+        JSON.parse(document.getElementById('actsJson').textContent)
+            .forEach(function (a) { data[a.id] = a; });
+    } catch (e) {}
+
+    var previewEmpty      = document.getElementById('actsPreviewEmpty');
+    var previewContent    = document.getElementById('actsPreviewContent');
+    var previewTitle      = document.getElementById('actsPreviewTitle');
+    var previewMeta       = document.getElementById('actsPreviewMeta');
+    var previewBody       = document.getElementById('actsPreviewBody');
+    var previewEdit       = document.getElementById('actsPreviewEdit');
+    var previewResume     = document.getElementById('actsPreviewResume');
+    var previewResumeBody = document.getElementById('actsPreviewResumeBody');
+
+    function showPreview(id) {
+        var act = data[id];
+        if (!act) return;
+        previewTitle.textContent = act.title;
+        previewMeta.textContent = act.chapter_count
+            ? act.chapter_count + ' chapitre' + (act.chapter_count > 1 ? 's' : '')
+            : '';
+        previewBody.innerHTML = act.content || '<p class="text-muted-para">Aucun contenu.</p>';
+        previewEdit.href = BASE + '/act/' + id + '/edit';
+        if (act.resume && act.resume.replace(/<[^>]*>/g, '').trim()) {
+            previewResumeBody.innerHTML = act.resume;
+            previewResume.style.display = '';
+        } else {
+            previewResume.style.display = 'none';
+        }
+        previewEmpty.style.display = 'none';
+        previewContent.style.display = '';
+    }
+
+    document.querySelectorAll('.act-list-item').forEach(function (item) {
+        item.addEventListener('click', function () {
+            var id = parseInt(this.dataset.id, 10);
+            if (!IS_PRO) {
+                window.location.href = BASE + '/act/' + id + '/edit';
+                return;
+            }
+            document.querySelectorAll('.act-list-item').forEach(function (el) {
+                el.classList.remove('is-active');
+            });
+            this.classList.add('is-active');
+            showPreview(id);
+        });
+        item.addEventListener('keydown', function (e) {
+            if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); this.click(); }
+        });
+    });
+})();
+</script>

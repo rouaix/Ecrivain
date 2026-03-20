@@ -1,37 +1,125 @@
 <div class="edit-header">
 
-    <h2>Personnages : {{ @project.title }}</h2>
+    <h2>Personnages</h2>
 
     <span>
 
         <a href="{{ @base }}/project/{{ @project.id }}/characters/relations" class="button secondary"
-            title="Graphe des relations" title="Graphe des relations">
+            title="Graphe des relations">
             <i class="fas fa-project-diagram" aria-hidden="true"></i>
         </a>
 
-        <a href="{{ @base }}/project/{{ @project.id }}/character/create" class="button" title="Nouveau personnage"
-            title="Nouveau personnage"><i class="fas fa-plus" aria-hidden="true"></i></a>
+        <a href="{{ @base }}/project/{{ @project.id }}/character/create" class="button" title="Nouveau personnage">
+            <i class="fas fa-plus" aria-hidden="true"></i>
+        </a>
 
-        <a href="{{ @base }}/project/{{ @project.id }}" class="button" title="Retour au projet"
-            title="Retour au projet"><i class="fas fa-arrow-left" aria-hidden="true"></i></a>
+        <a href="{{ @base }}/project/{{ @project.id }}" class="button btn-back-project" title="Retour au projet">
+            <i class="fas fa-arrow-left" aria-hidden="true"></i>
+        </a>
 
     </span>
 
 </div>
 
-<check if="{{ empty(@characters) }}">
+<!-- Layout maître-détail -->
+<div class="char-layout">
 
-    <true>
+    <!-- ── Colonne gauche : liste ── -->
+    <div class="char-list-col">
 
-        <div class="panel-empty">
-
-            <p>Aucun personnage créé pour ce projet.</p>
-
+        <div class="char-list-toolbar">
+            <div class="char-search-wrap">
+                <i class="fas fa-search" aria-hidden="true"></i>
+                <input type="search" id="charSearchInput" class="char-search-input" placeholder="Filtrer…"
+                    autocomplete="off">
+            </div>
+            <span class="char-list-count" id="charCount"></span>
         </div>
 
-    </true>
+        <check if="{{ empty(@characters) }}">
 
-    <false>
+            <true>
+                <div class="char-empty-state">
+                    <i class="fas fa-users" aria-hidden="true"></i>
+                    <p>Aucun personnage</p>
+                    <a href="{{ @base }}/project/{{ @project.id }}/character/create" class="button small">
+                        <i class="fas fa-plus" aria-hidden="true"></i> Créer
+                    </a>
+                </div>
+            </true>
+
+            <false>
+                <ul class="char-list" id="charGrid">
+
+                    <repeat group="{{ @characters }}" value="{{ @char }}">
+
+                        <li class="char-list-item" data-name="{{ @char.name | esc }}" data-age="{{ @char.age | esc }}"
+                            data-traits="{{ @char.traits | esc }}" data-motivations="{{ @char.motivations | esc }}"
+                            data-arc="{{ @char.arc | esc }}" data-flaws="{{ @char.flaws | esc }}" tabindex="0"
+                            role="button" aria-label="{{ @char.name | esc }}">
+
+                            <div class="char-list-avatar">
+                                <check if="{{ @char.avatar }}">
+                                    <img src="{{ @base }}/public/{{ @char.avatar | esc }}" alt="{{ @char.name | esc }}">
+                                    <false>
+                                        <i class="fas fa-user" aria-hidden="true"></i>
+                                    </false>
+                                </check>
+                            </div>
+
+                            <div class="char-list-info">
+                                <span class="char-list-name">{{ @char.name | esc }}</span>
+                                <check if="{{ @char.group_name }}">
+                                    <span class="character-group-badge">{{ @char.group_name | esc }}</span>
+                                </check>
+                            </div>
+
+                            <!-- données cachées pour la prévisualisation classique -->
+                            <div class="char-description-data" hidden>{{ @char.description | raw }}</div>
+
+                            <!-- actions rapides (survol) -->
+                            <div class="char-list-actions">
+                                <a class="button small" href="{{ @base }}/character/{{ @char.id }}/edit"
+                                    title="Modifier" onclick="event.stopPropagation()">
+                                    <i class="fas fa-edit" aria-hidden="true"></i>
+                                </a>
+                                <a class="button small delete js-confirm"
+                                    href="{{ @base }}/character/{{ @char.id }}/delete"
+                                    data-confirm="Confirmer la suppression de ce personnage ?" title="Supprimer"
+                                    onclick="event.stopPropagation()">
+                                    <i class="fas fa-trash" aria-hidden="true"></i>
+                                </a>
+                            </div>
+
+                        </li>
+
+                    </repeat>
+
+                </ul>
+            </false>
+
+        </check>
+
+    </div><!-- /.char-list-col -->
+
+    <!-- ── Colonne droite : détail fixe ── -->
+    <div class="char-detail-col" id="charDetailCol">
+
+        <div class="char-detail-empty" id="charDetailEmpty" style="display:none;">
+            <i class="fas fa-user-circle" aria-hidden="true"></i>
+            <p>Sélectionnez un personnage</p>
+        </div>
+
+        <div class="char-detail-body" id="charDetailBody" hidden></div>
+
+    </div><!-- /.char-detail-col -->
+
+</div><!-- /.char-layout -->
+
+<!-- Vue classique : grille de cards (cachée en Pro) -->
+<div class="char-classic-grid">
+
+    <check if="{{ !empty(@characters) }}">
 
         <div class="characters-grid">
 
@@ -41,45 +129,33 @@
 
                     <check if="{{ @char.avatar }}">
                         <div class="character-avatar-wrap">
-                            <img class="character-avatar" src="{{ @base }}/public/{{ @char.avatar | esc }}" alt="{{ @char.name | esc }}">
+                            <img class="character-avatar" src="{{ @base }}/public/{{ @char.avatar | esc }}"
+                                alt="{{ @char.name | esc }}">
                         </div>
                     </check>
 
                     <div class="character-header">
-
-                        <h3 class="character-name">{{ @char.name | esc }}<check if="{{ @char.group_name }}"><span class="character-group-badge">{{ @char.group_name | esc }}</span></check>
-
+                        <h3 class="character-name">{{ @char.name | esc }}<check if="{{ @char.group_name }}"><span
+                                    class="character-group-badge">{{ @char.group_name | esc }}</span></check>
                             <div class="character-actions">
-
                                 <a class="button small" href="{{ @base }}/character/{{ @char.id }}/edit"
-                                    title="Modifier" title="Modifier le personnage"><i class="fas fa-edit" aria-hidden="true"></i></a>
-
+                                    title="Modifier"><i class="fas fa-edit" aria-hidden="true"></i></a>
                                 <a class="button small delete js-confirm"
                                     href="{{ @base }}/character/{{ @char.id }}/delete"
-                                    data-confirm="Confirmer la suppression de ce personnage ?" title="Supprimer"
-                                    title="Supprimer le personnage"><i class="fas fa-trash" aria-hidden="true"></i></a>
-
+                                    data-confirm="Confirmer la suppression de ce personnage ?" title="Supprimer"><i
+                                        class="fas fa-trash" aria-hidden="true"></i></a>
                             </div>
-
                         </h3>
-
                     </div>
 
-                    <div class="character-description">
-
-                        {{ @char.description | raw }}
-
-                    </div>
+                    <div class="character-description">{{ @char.description | raw }}</div>
 
                     <div class="character-actions">
-
-                        <a class="button small" href="{{ @base }}/character/{{ @char.id }}/edit" title="Modifier"
-                            title="Modifier le personnage"><i class="fas fa-edit" aria-hidden="true"></i></a>
-
+                        <a class="button small" href="{{ @base }}/character/{{ @char.id }}/edit" title="Modifier"><i
+                                class="fas fa-edit" aria-hidden="true"></i></a>
                         <a class="button small delete js-confirm" href="{{ @base }}/character/{{ @char.id }}/delete"
-                            data-confirm="Confirmer la suppression de ce personnage ?" title="Supprimer"
-                            title="Supprimer le personnage"><i class="fas fa-trash" aria-hidden="true"></i></a>
-
+                            data-confirm="Confirmer la suppression de ce personnage ?" title="Supprimer"><i
+                                class="fas fa-trash" aria-hidden="true"></i></a>
                     </div>
 
                 </div>
@@ -88,30 +164,148 @@
 
         </div>
 
-    </false>
+    </check>
 
-</check>
+    <check if="{{ empty(@characters) }}">
+        <div class="panel-empty">
+            <p>Aucun personnage créé pour ce projet.</p>
+        </div>
+    </check>
+
+</div><!-- /.char-classic-grid -->
 
 <script nonce="{{ @nonce }}">
-
     document.addEventListener('DOMContentLoaded', function () {
-
         document.querySelectorAll('.js-confirm').forEach(function (el) {
-
             el.addEventListener('click', function (e) {
-
-                if (!confirm(this.dataset.confirm || 'Confirmer ?')) {
-
-                    e.preventDefault();
-
-                }
-
+                if (!confirm(this.dataset.confirm || 'Confirmer ?')) e.preventDefault();
             });
-
         });
-
     });
-
 </script>
 
-</content>
+<script nonce="{{ @nonce }}">
+    (function () {
+        if (!document.body.classList.contains('ui-pro')) return;
+
+        var BASE = '{{ @base }}';
+        var items = document.querySelectorAll('.char-list-item');
+        var countEl = document.getElementById('charCount');
+        var searchInput = document.getElementById('charSearchInput');
+        var detailEmpty = document.getElementById('charDetailEmpty');
+        var detailBody = document.getElementById('charDetailBody');
+
+        // ── Compteur ──
+        if (countEl) countEl.textContent = items.length + ' personnage' + (items.length > 1 ? 's' : '');
+
+        // ── Recherche ──
+        if (searchInput) {
+            searchInput.addEventListener('input', function () {
+                var q = this.value.toLowerCase().trim();
+                var n = 0;
+                items.forEach(function (li) {
+                    var name = (li.dataset.name || '').toLowerCase();
+                    var badge = li.querySelector('.character-group-badge');
+                    var group = badge ? badge.textContent.toLowerCase() : '';
+                    var match = !q || name.includes(q) || group.includes(q);
+                    li.style.display = match ? '' : 'none';
+                    if (match) n++;
+                });
+                if (countEl) countEl.textContent = n + ' personnage' + (n > 1 ? 's' : '');
+            });
+        }
+
+        // ── Helpers ──
+        function esc(s) {
+            var d = document.createElement('div');
+            d.textContent = s || '';
+            return d.innerHTML;
+        }
+
+        function field(label, value) {
+            if (!value || !value.trim()) return '';
+            return '<tr><th>' + label + '</th><td>' + esc(value) + '</td></tr>';
+        }
+
+        // ── Affichage du détail ──
+        function showDetail(item) {
+            var name = item.dataset.name || '';
+            var age = item.dataset.age || '';
+            var traits = item.dataset.traits || '';
+            var mots = item.dataset.motivations || '';
+            var arc = item.dataset.arc || '';
+            var flaws = item.dataset.flaws || '';
+            var imgEl = item.querySelector('img');
+            var badge = item.querySelector('.character-group-badge');
+            var descEl = item.querySelector('.char-description-data');
+            var editA = item.querySelector('a[href*="/edit"]');
+            var delA = item.querySelector('a[href*="/delete"]');
+
+            var html = '<div class="char-detail-header">';
+
+            // Avatar
+            if (imgEl) {
+                html += '<img src="' + imgEl.src + '" alt="' + esc(imgEl.alt) + '" class="char-detail-avatar">';
+            } else {
+                html += '<div class="char-detail-avatar char-detail-avatar--empty"><i class="fas fa-user" aria-hidden="true"></i></div>';
+            }
+
+            html += '<div class="char-detail-identity">';
+            html += '<h2 class="char-detail-name">' + esc(name) + '</h2>';
+            if (badge) html += '<span class="character-group-badge">' + esc(badge.textContent) + '</span>';
+            html += '</div></div>'; // .char-detail-identity .char-detail-header
+
+            // Champs structurés
+            var rows = field('Âge', age) + field('Traits', traits) + field('Motivations', mots) + field('Arc', arc) + field('Défauts', flaws);
+            if (rows) {
+                html += '<table class="char-detail-fields"><tbody>' + rows + '</tbody></table>';
+            }
+
+            // Description
+            var descHtml = descEl ? descEl.innerHTML : '';
+            if (descHtml.replace(/<[^>]*>/g, '').trim()) {
+                html += '<div class="char-detail-desc">';
+                html += '<div class="char-detail-section-label">Description</div>';
+                html += descHtml;
+                html += '</div>';
+            }
+
+            // Actions
+            html += '<div class="char-detail-actions">';
+            if (editA) html += '<a href="' + editA.href + '" class="button"><i class="fas fa-edit" aria-hidden="true"></i> Modifier</a>';
+            if (delA) html += '<a href="' + delA.href + '" class="button delete js-confirm-panel" data-confirm="' + esc(delA.dataset.confirm || 'Supprimer ?') + '" title="Supprimer"><i class="fas fa-trash" aria-hidden="true"></i> Supprimer</a>';
+            html += '</div>';
+
+            detailBody.innerHTML = html;
+            detailBody.hidden = false;
+            detailEmpty.hidden = true;
+
+            // Confirm sur le lien cloné
+            var clDel = detailBody.querySelector('.js-confirm-panel');
+            if (clDel) {
+                clDel.addEventListener('click', function (e) {
+                    if (!confirm(this.dataset.confirm || 'Confirmer ?')) e.preventDefault();
+                });
+            }
+
+            // État actif
+            items.forEach(function (li) { li.classList.remove('is-active'); });
+            item.classList.add('is-active');
+        }
+
+        // ── Événements ──
+        items.forEach(function (item) {
+            item.addEventListener('click', function (e) {
+                if (e.target.closest('.char-list-actions')) return;
+                showDetail(item);
+            });
+            item.addEventListener('keydown', function (e) {
+                if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); showDetail(item); }
+            });
+        });
+
+        // Ouvrir le premier personnage par défaut
+        if (items.length > 0) showDetail(items[0]);
+
+    })();
+</script>
