@@ -306,6 +306,11 @@
                     <span class="pro-nav-label">Mode relecture</span>
                 </a>
 
+                <a href="#" id="proAiAssistantBtn" title="Assistant Narratif IA" class="pro-nav-item">
+                    <i class="fas fa-magic" aria-hidden="true"></i>
+                    <span class="pro-nav-label">Assistant IA</span>
+                </a>
+
                 <a href="#" id="proExportBtn" title="Exporter" class="pro-nav-item">
                     <i class="fas fa-file-export" aria-hidden="true"></i>
                     <span class="pro-nav-label">Exporter</span>
@@ -741,6 +746,113 @@
                 close.addEventListener('click', closeModal);
                 modal.addEventListener('click', function (e) { if (e.target === modal) closeModal(); });
                 document.addEventListener('keydown', function (e) { if (e.key === 'Escape') closeModal(); });
+            })();
+        </script>
+
+        <!-- ════════════════════════════════════════════
+             MODALE ASSISTANT NARRATIF PRO
+             ════════════════════════════════════════════ -->
+        <div id="proAiAssistantModal" class="modal-overlay" role="dialog" aria-modal="true" aria-label="Assistant Narratif IA">
+            <div class="modal-content modal-lg modal-tall">
+                <div class="modal-header">
+                    <h3><i class="fas fa-magic" aria-hidden="true"></i> Assistant Narratif</h3>
+                    <button type="button" class="modal-close" id="closeProAiAssistantModal" title="Fermer">&times;</button>
+                </div>
+                <div class="modal-body" style="flex:1; display:flex; flex-direction:column; overflow:hidden;">
+                    <div class="ai-panel" style="height:100%; display:flex; flex-direction:column;">
+                        <div style="margin-bottom:12px;">
+                            <span class="editor-badge-context">Contexte Projet</span>
+                        </div>
+                        <div class="ai-messages" id="proAiChatOutput" style="flex:1; overflow-y:auto; margin-bottom:16px;">
+                            <div class="ai-msg system">
+                                Je connais l'intégralité de votre projet « {{ @project.title }} ». Posez-moi une question sur l'intrigue, les personnages ou la cohérence.
+                            </div>
+                        </div>
+                        <div class="ai-input-area">
+                            <textarea class="ai-textarea" id="proAiPrompt" placeholder="Ex: Que fait Sage au chapitre 3 ? Est-ce cohérent avec son histoire personnelle ?"></textarea>
+                            <div class="ai-actions">
+                                <span></span>
+                                <button type="button" id="btnProAiAsk" class="button secondary" title="Envoyer la question à l'IA">
+                                    <i class="fas fa-paper-plane" aria-hidden="true"></i> Envoyer
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <script nonce="{{ @nonce }}">
+            (function () {
+                var btn = document.getElementById('proAiAssistantBtn');
+                var modal = document.getElementById('proAiAssistantModal');
+                var closeBtn = document.getElementById('closeProAiAssistantModal');
+                var askBtn = document.getElementById('btnProAiAsk');
+                var promptEl = document.getElementById('proAiPrompt');
+                var chatOutput = document.getElementById('proAiChatOutput');
+                var projectId = '{{ @project.id }}';
+
+                if (!btn || !modal) return;
+
+                function openModal() {
+                    modal.classList.add('is-visible');
+                    if (promptEl) promptEl.focus();
+                }
+                function closeModal() { modal.classList.remove('is-visible'); }
+
+                btn.addEventListener('click', function (e) { e.preventDefault(); openModal(); });
+                if (closeBtn) closeBtn.addEventListener('click', closeModal);
+                modal.addEventListener('click', function (e) { if (e.target === modal) closeModal(); });
+                document.addEventListener('keydown', function (e) {
+                    if (e.key === 'Escape' && modal.classList.contains('is-visible')) closeModal();
+                });
+
+                function addMsg(text, cls) {
+                    var div = document.createElement('div');
+                    div.className = 'ai-msg ' + cls;
+                    div.innerHTML = text.replace(/\n/g, '<br>');
+                    chatOutput.appendChild(div);
+                    chatOutput.scrollTop = chatOutput.scrollHeight;
+                    return div;
+                }
+
+                function ask() {
+                    var prompt = promptEl.value.trim();
+                    if (!prompt) return;
+                    addMsg(prompt, 'user');
+                    promptEl.value = '';
+                    promptEl.disabled = true;
+                    askBtn.disabled = true;
+                    var loading = addMsg('Analyse du manuscrit en cours…', 'ai loading');
+
+                    fetch('{{ @base }}/ai/ask', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json', 'X-CSRF-Token': window.CSRF_TOKEN },
+                        body: JSON.stringify({ project_id: projectId, prompt: prompt })
+                    })
+                        .then(function (r) { return r.json(); })
+                        .then(function (data) {
+                            loading.remove();
+                            if (data.success) addMsg(data.answer, 'ai');
+                            else addMsg('Erreur : ' + (data.error || 'inconnue'), 'system error');
+                        })
+                        .catch(function (e) {
+                            loading.remove();
+                            addMsg('Erreur réseau : ' + e.message, 'system error');
+                        })
+                        .finally(function () {
+                            promptEl.disabled = false;
+                            askBtn.disabled = false;
+                            promptEl.focus();
+                        });
+                }
+
+                if (askBtn) askBtn.addEventListener('click', ask);
+                if (promptEl) {
+                    promptEl.addEventListener('keydown', function (e) {
+                        if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); ask(); }
+                    });
+                }
             })();
         </script>
     </check>
