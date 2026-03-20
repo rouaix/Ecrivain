@@ -7,7 +7,7 @@
     </a>
   </div>
 
-  <div id="generate-error" class="error edit-error" class="is-hidden" ></div>
+  <div id="generate-error" class="error edit-error" class="is-hidden"></div>
 
   <form id="scenariste-form">
 
@@ -81,9 +81,9 @@
         <p class="form-hint">Uploadez un fichier texte comme source alternative ou complémentaire.</p>
         <div class="form-group">
           <input type="file" id="source-file" accept=".md,.txt" class="input-control">
-          <p id="upload-status" class="form-hint" class="is-hidden" ></p>
+          <p id="upload-status" class="form-hint" class="is-hidden"></p>
         </div>
-        <textarea id="uploaded-content" name="uploaded_content" class="is-hidden" ></textarea>
+        <textarea id="uploaded-content" name="uploaded_content" class="is-hidden"></textarea>
       </div>
 
       <!-- Contexte libre -->
@@ -118,9 +118,9 @@
       <div class="edit-actions">
         <button type="submit" id="generate-btn" class="button primary large">
           <span id="btn-label">Générer le scénario</span>
-          <span id="btn-spinner" class="is-hidden" >Génération en cours…</span>
+          <span id="btn-spinner" class="is-hidden">Génération en cours…</span>
         </button>
-        <a href="{{ @base }}/project/{{ @project.id }}" class="button">Annuler</a>
+        <a href="{{ @base }}/project/{{ @project.id }}" class="button delete">Annuler</a>
       </div>
 
     </div>
@@ -131,7 +131,7 @@
 
 <!-- Loading overlay -->
 <div id="loading-overlay"
-  style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:9999;display:none;align-items:center;justify-content:center;">
+  style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:9999;align-items:center;justify-content:center;">
   <div
     style="background:var(--card-bg,#fff);border-radius:10px;padding:2.5rem 3rem;text-align:center;max-width:360px;box-shadow:0 20px 60px rgba(0,0,0,.25);">
     <div
@@ -278,7 +278,7 @@
         return;
       }
 
-      overlay.classList.remove('is-hidden');
+      overlay.style.display = 'flex';
       btnLabel.classList.add('is-hidden');
       btnSpinner.style.display = 'inline';
       generateBtn.disabled = true;
@@ -293,7 +293,7 @@
           if (data.success) {
             window.location.href = base + data.redirect;
           } else {
-            overlay.classList.add('is-hidden');
+            overlay.style.display = 'none';
             btnLabel.style.display = 'inline';
             btnSpinner.classList.add('is-hidden');
             generateBtn.disabled = false;
@@ -303,7 +303,7 @@
         })
         .catch(function () {
           stopSteps();
-          overlay.classList.add('is-hidden');
+          overlay.style.display = 'none';
           btnLabel.style.display = 'inline';
           btnSpinner.classList.add('is-hidden');
           generateBtn.disabled = false;

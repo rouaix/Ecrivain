@@ -60,11 +60,11 @@
 
       <!-- Actions -->
       <div class="edit-actions" class="d-flex gap-10 align-center flex-wrap">
-        <button type="submit" id="save-btn" class="button primary large">
-          <i class="fas fa-save" aria-hidden="true"></i> <span id="save-label">Sauvegarder</span>
+        <button type="submit" id="save-btn" class="button primary large" title="Sauvegarder">
+          <i class="fas fa-save" aria-hidden="true"></i>
         </button>
-        <a href="{{ @base }}/scenariste/{{ @note.id }}/download" class="button large">
-          <i class="fas fa-download" aria-hidden="true"></i> Télécharger .md
+        <a href="{{ @base }}/scenariste/{{ @note.id }}/download" class="button large" title="Télécharger .md">
+          <i class="fas fa-download" aria-hidden="true"></i>
         </a>
         <span id="save-status" style="font-size:.85rem;color:var(--success-color,#16a34a);"></span>
         <span class="flex-1"></span>

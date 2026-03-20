@@ -389,6 +389,12 @@
     </div>
 </div>
 
+<!-- Toast chargement IA (fixe, visible quel que soit le scroll) -->
+<div id="synopsisAiToast" style="display:none; position:fixed; bottom:1.5rem; left:50%; transform:translateX(-50%); z-index:9999; background:var(--link-color,#3f51b5); color:#fff; border-radius:24px; padding:.6rem 1.4rem; font-size:.9rem; font-weight:500; box-shadow:0 4px 16px rgba(0,0,0,.25); align-items:center; gap:.6rem; white-space:nowrap;">
+    <i class="fas fa-spinner fa-spin" aria-hidden="true"></i>
+    <span id="synopsisAiToastMsg">Génération en cours…</span>
+</div>
+
 <!-- Modal : Aperçu des beats générés -->
 <div class="modal-overlay" id="modalBeatsPreview">
     <div class="modal-content modal-md">
@@ -609,9 +615,24 @@
         }
     }
 
+    var _aiToast = document.getElementById('synopsisAiToast');
+    var _aiToastMsg = document.getElementById('synopsisAiToastMsg');
+    var _aiToastCount = 0;
+
+    function showAiToast(msg) {
+        _aiToastCount++;
+        if (_aiToastMsg) _aiToastMsg.textContent = msg || 'Génération en cours…';
+        if (_aiToast) _aiToast.style.display = 'flex';
+    }
+    function hideAiToast() {
+        _aiToastCount = Math.max(0, _aiToastCount - 1);
+        if (_aiToastCount === 0 && _aiToast) _aiToast.style.display = 'none';
+    }
+
     function postAI(url, payload, btnEl, loadingText) {
         var orig = btnEl ? btnEl.textContent : '';
         if (btnEl) { btnEl.disabled = true; btnEl.textContent = loadingText || 'Génération…'; }
+        showAiToast(loadingText || 'Génération en cours…');
         return fetch(BASE + url, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json', 'X-CSRF-Token': CSRF_TOKEN },
@@ -619,7 +640,10 @@
         }).then(function (r) {
             if (!r.ok) return r.text().then(function (t) { throw new Error('HTTP ' + r.status + (t ? ' — ' + t.substring(0, 200) : '')); });
             return r.json();
-        }).finally(function () { if (btnEl) { btnEl.disabled = false; btnEl.textContent = orig; } });
+        }).finally(function () {
+            if (btnEl) { btnEl.disabled = false; btnEl.textContent = orig; }
+            hideAiToast();
+        });
     }
 
     function aiError(err) {
@@ -672,16 +696,13 @@
     // ── Générer depuis le projet ──────────────────────────────────────────
     document.getElementById('btnAiFromProject').addEventListener('click', function () {
         if (!confirm('L\'IA va lire les chapitres et personnages du projet pour générer un synopsis. Continuer ?')) return;
-        var btn = this;
-        btn.disabled = true; btn.textContent = 'Analyse du projet…';
         postAI('/ai/synopsis/generate-from-project', {
             project_id: PROJECT_ID,
             structure_method: document.getElementById('structure_method').value
-        }, null, '').then(function (data) {
-            btn.disabled = false; btn.textContent = 'Générer depuis le projet';
+        }, this, 'Analyse…').then(function (data) {
             if (!data.success) { alert('Erreur : ' + (data.error || 'Erreur IA')); return; }
             showBeatsPreview(data.beats);
-        }).catch(function (err) { btn.disabled = false; btn.textContent = 'Générer depuis le projet'; aiError(err); });
+        }).catch(aiError);
     });
 
     // ── Aperçu beats ─────────────────────────────────────────────────────

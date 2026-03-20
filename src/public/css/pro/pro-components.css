@@ -1119,12 +1119,33 @@ body.ui-pro .pro-content-inner h2 {
 
 body.ui-pro .pro-content-inner h3 {
     font-size: 14px;
-    margin-bottom: 10px;
+    line-break: auto;
+    /*margin-bottom: 10px;*/
+    padding: 10px;
+}
+
+body.ui-pro .modal-header {
+    margin-bottom: 0;
+}
+
+body.ui-pro button.modal-close {
+    font-size: 1.6em;
+    color: var(--body-bg) !important;
+    padding: 10px;
+}
+
+body.ui-pro button.modal-close:hover {
+    color: var(--button-hover-bg) !important;
 }
 
 /* Formulaires : inputs plus compacts */
 body.ui-pro .form-group {
     margin-bottom: 14px;
+}
+
+body.ui-pro .modalTitle {
+    padding: 10px;
+    margin: 0;
 }
 
 body.ui-pro input[type="text"],
@@ -2009,7 +2030,8 @@ body.ui-pro .button.disabled {
 
 /* Barre de progression horizontale (remplace le panneau contextuel) */
 .pro-project-progression {
-    display: none; /* masqué en mode classique */
+    display: none;
+    /* masqué en mode classique */
 }
 
 body.ui-pro .pro-project-progression {
