@@ -144,6 +144,7 @@ class ElementController extends Controller
             $elementModel = new Element();
             $eid = $elementModel->create($pid, $templateElementId, $title, $parentId);
             if ($eid) {
+                unset($_SESSION['_ai_ctx_' . $pid]);
                 $this->logActivity($pid, 'create', 'element', $eid, $title);
                 $this->f3->set('SESSION.success', 'Élément créé avec succès.');
                 $this->f3->reroute('/element/' . $eid);
@@ -313,6 +314,7 @@ class ElementController extends Controller
 
         $elementModel->parent_id = $parentId;
         $elementModel->save();
+        unset($_SESSION['_ai_ctx_' . $elementModel->project_id]);
         $this->logActivity($elementModel->project_id, 'update', 'element', $eid, $title);
 
         if ($this->f3->get('AJAX')) {
@@ -345,6 +347,7 @@ class ElementController extends Controller
         $pid   = $elementModel->project_id;
         $label = $elementModel->title;
         $elementModel->erase();
+        unset($_SESSION['_ai_ctx_' . $pid]);
         $this->logActivity($pid, 'delete', 'element', $eid, $label);
         $this->f3->reroute('/project/' . $pid);
     }

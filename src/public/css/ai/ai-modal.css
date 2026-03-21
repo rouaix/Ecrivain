@@ -270,10 +270,10 @@
 
 button.modal-close,
 button#closeAiModal {
-    background: var(--button-bg);
+    /*background: var(--button-bg);*/
     color: var(--button-text);
-    border: 1px solid var(--border-color);
-    border-radius: 4px;
+    /*border: 1px solid var(--border-color);
+    border-radius: 4px;*/
     padding: 8px 16px;
     cursor: pointer;
     transition: all 0.2s ease;
@@ -281,7 +281,7 @@ button#closeAiModal {
 
 button.modal-close:hover,
 button#closeAiModal:hover {
-    background: var(--button-hover-bg);
+    color: var(--button-hover-bg);
 }
 
 .modal-body {

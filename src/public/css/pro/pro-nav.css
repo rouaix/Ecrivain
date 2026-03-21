@@ -133,12 +133,39 @@ body.ui-pro .pro-sidebar-footer {
    TOPBAR
    ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
 
+/* ── Isolation thème : couleur des liens et boutons de la topbar ── */
+/* Spécificité (0,2,x) bat toutes les règles body.theme-* header a (0,1,x) */
+body.ui-pro .pro-topbar a,
+body.ui-pro .pro-topbar button {
+    color: rgba(255, 255, 255, 0.8);
+    text-decoration: none;
+}
+
+body.ui-pro .pro-topbar a:hover,
+body.ui-pro .pro-topbar button:hover {
+    color: #fff !important;
+    text-decoration: none;
+}
+
+/* ── Exception dropdown — fond clair, couleurs normales ── */
+body.ui-pro .pro-user-dropdown a,
+body.ui-pro .pro-user-dropdown button {
+    color: var(--text-main);
+    text-decoration: none;
+}
+
+body.ui-pro .pro-user-dropdown a:hover,
+body.ui-pro .pro-user-dropdown button:hover {
+    color: var(--text-main) !important;
+    text-decoration: none;
+}
+
 /* ── Logo ── */
 body.ui-pro .pro-topbar-logo {
     display: flex;
     align-items: center;
     gap: 8px;
-    color: var(--header-text);
+    color: rgba(255, 255, 255, 0.9);
     text-decoration: none;
     font-size: 15px;
     font-weight: 700;
@@ -146,13 +173,13 @@ body.ui-pro .pro-topbar-logo {
     flex-shrink: 0;
     white-space: nowrap;
     opacity: 1;
-    transition: opacity 0.15s;
+    transition: opacity 0.15s, color 0.12s;
 }
 
 body.ui-pro .pro-topbar-logo:hover {
     opacity: 0.85;
     text-decoration: none;
-    color: var(--header-text);
+    color: #fff;
 }
 
 body.ui-pro .pro-topbar-logo i {
@@ -276,15 +303,16 @@ body.ui-pro .pro-user-btn {
     border-radius: 6px;
     background: rgba(255, 255, 255, 0.1);
     border: 1px solid rgba(255, 255, 255, 0.15);
-    color: var(--header-text);
+    color: rgba(255, 255, 255, 0.9);
     cursor: pointer;
     font-size: 13px;
     font-family: inherit;
-    transition: background 0.12s;
+    transition: background 0.12s, color 0.12s;
 }
 
 body.ui-pro .pro-user-btn:hover {
     background: rgba(255, 255, 255, 0.2);
+    color: #fff;
 }
 
 body.ui-pro .pro-user-avatar {
@@ -392,6 +420,7 @@ body.ui-pro .pro-user-dropdown-item.is-danger {
 
 body.ui-pro .pro-user-dropdown-item.is-danger:hover {
     background: var(--error-bg);
+    color: var(--color-danger) !important;
 }
 
 body.ui-pro .pro-user-dropdown-item i {

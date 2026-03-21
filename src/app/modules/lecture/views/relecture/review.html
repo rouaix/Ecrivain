@@ -4,7 +4,7 @@
         <div class="header-actions">
             <a href="{{ @base }}/project/{{ @project.id }}/relecture/rapport" class="button secondary"
                 title="Rapport d'annotations">
-                <i class="fas fa-file-alt" aria-hidden="true"></i> Rapport
+                <i class="fas fa-file-alt" aria-hidden="true"></i>
             </a>
             <a href="{{ @base }}/project/{{ @project.id }}/lecture" class="button" title="Mode lecture">
                 <i class="fas fa-book-open" aria-hidden="true"></i>
@@ -37,14 +37,54 @@
                                     <details class="synopsis-beats-reading">
                                         <summary>Structure narrative ▸</summary>
                                         <dl>
-                                            <check if="{{ @item.situation }}"><true><dt>Situation</dt><dd>{{ @item.situation | esc }}</dd></true></check>
-                                            <check if="{{ @item.trigger_evt }}"><true><dt>Déclencheur</dt><dd>{{ @item.trigger_evt | esc }}</dd></true></check>
-                                            <check if="{{ @item.plot_point1 }}"><true><dt>1er tournant</dt><dd>{{ @item.plot_point1 | esc }}</dd></true></check>
-                                            <check if="{{ @item.development }}"><true><dt>Développement</dt><dd>{{ @item.development | raw }}</dd></true></check>
-                                            <check if="{{ @item.midpoint }}"><true><dt>Point médian</dt><dd>{{ @item.midpoint | esc }}</dd></true></check>
-                                            <check if="{{ @item.crisis }}"><true><dt>Crise</dt><dd>{{ @item.crisis | esc }}</dd></true></check>
-                                            <check if="{{ @item.climax }}"><true><dt>Climax</dt><dd>{{ @item.climax | raw }}</dd></true></check>
-                                            <check if="{{ @item.resolution }}"><true><dt>Résolution</dt><dd>{{ @item.resolution | raw }}</dd></true></check>
+                                            <check if="{{ @item.situation }}">
+                                                <true>
+                                                    <dt>Situation</dt>
+                                                    <dd>{{ @item.situation | esc }}</dd>
+                                                </true>
+                                            </check>
+                                            <check if="{{ @item.trigger_evt }}">
+                                                <true>
+                                                    <dt>Déclencheur</dt>
+                                                    <dd>{{ @item.trigger_evt | esc }}</dd>
+                                                </true>
+                                            </check>
+                                            <check if="{{ @item.plot_point1 }}">
+                                                <true>
+                                                    <dt>1er tournant</dt>
+                                                    <dd>{{ @item.plot_point1 | esc }}</dd>
+                                                </true>
+                                            </check>
+                                            <check if="{{ @item.development }}">
+                                                <true>
+                                                    <dt>Développement</dt>
+                                                    <dd>{{ @item.development | raw }}</dd>
+                                                </true>
+                                            </check>
+                                            <check if="{{ @item.midpoint }}">
+                                                <true>
+                                                    <dt>Point médian</dt>
+                                                    <dd>{{ @item.midpoint | esc }}</dd>
+                                                </true>
+                                            </check>
+                                            <check if="{{ @item.crisis }}">
+                                                <true>
+                                                    <dt>Crise</dt>
+                                                    <dd>{{ @item.crisis | esc }}</dd>
+                                                </true>
+                                            </check>
+                                            <check if="{{ @item.climax }}">
+                                                <true>
+                                                    <dt>Climax</dt>
+                                                    <dd>{{ @item.climax | raw }}</dd>
+                                                </true>
+                                            </check>
+                                            <check if="{{ @item.resolution }}">
+                                                <true>
+                                                    <dt>Résolution</dt>
+                                                    <dd>{{ @item.resolution | raw }}</dd>
+                                                </true>
+                                            </check>
                                         </dl>
                                     </details>
                                 </check>
@@ -104,7 +144,7 @@
                 </div>
 
                 <!-- Suggestion filters (shown only on suggestions tab) -->
-                <div class="review-filters" id="suggestionFilters" class="is-hidden" >
+                <div class="review-filters" id="suggestionFilters" class="is-hidden">
                     <button class="sug-filter active" data-sfilter="all">Tout</button>
                     <button class="sug-filter" data-sfilter="pending" title="En attente" title="En attente">
                         <span class="ann-dot" class="relation-dot relation-dot--purple"></span>
@@ -119,7 +159,7 @@
             </div>
 
             <div class="review-annotations-list" id="annotationsList"></div>
-            <div class="review-annotations-list" id="suggestionsList" class="is-hidden" ></div>
+            <div class="review-annotations-list" id="suggestionsList" class="is-hidden"></div>
         </div>
     </div>
 </div>
@@ -155,7 +195,7 @@
     </div>
 
     <!-- Suggestion fields -->
-    <div id="suggestionFields" class="is-hidden" >
+    <div id="suggestionFields" class="is-hidden">
         <label class="popup-field-label">Texte original :</label>
         <div class="suggestion-original-preview" id="suggestionOriginalPreview"></div>
         <label class="popup-field-label">Correction proposée :</label>

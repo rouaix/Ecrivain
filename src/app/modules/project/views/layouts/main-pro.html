@@ -31,7 +31,7 @@
 
     <!-- CSS : base + Pro -->
     <link rel="stylesheet" href="{{ @base }}/public/style.css?v=49">
-    <link rel="stylesheet" href="{{ @base }}/public/css/pro/pro.css?v=29">
+    <link rel="stylesheet" href="{{ @base }}/public/css/pro/pro.css?v=38">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 
     <!-- Thème -->
@@ -401,7 +401,12 @@
                 </div>
                 <div class="modal-body">
                     <div class="form-group">
-                        <label for="aiSystemPrompt">Prompt Système</label>
+                        <label for="aiSystemPrompt" style="display:flex;align-items:center;justify-content:space-between;">
+                            Prompt Système
+                            <button type="button" id="clearSystemPrompt" class="button small secondary" title="Effacer le prompt système">
+                                <i class="fas fa-times" aria-hidden="true"></i> Effacer
+                            </button>
+                        </label>
                         <textarea id="aiSystemPrompt" class="input-block" rows="3"
                             placeholder="Définissez le rôle de l'IA...">{{ @aiSystemPrompt | esc }}</textarea>
                     </div>
@@ -581,6 +586,12 @@
             var sysPrompt = document.getElementById('aiSystemPrompt');
             var userPrompt = document.getElementById('aiUserPrompt');
             var userPreset = document.getElementById('aiUserPromptPreset');
+            var clearSysPromptBtn = document.getElementById('clearSystemPrompt');
+
+            if (clearSysPromptBtn) clearSysPromptBtn.addEventListener('click', function () {
+                sysPrompt.value = '';
+                sysPrompt.focus();
+            });
 
             if (aiBtn) aiBtn.addEventListener('click', function (e) {
                 e.preventDefault();
@@ -600,7 +611,7 @@
                 if (!up) { alert('Veuillez entrer un prompt.'); return; }
 
                 resContainer.classList.add('is-visible');
-                resContent.innerHTML = '<em>Génération en cours...</em>';
+                resContent.innerHTML = '<em>Analyse en cours...</em>';
                 sendBtn.disabled = true;
 
                 var send = function (ctx) {
@@ -749,27 +760,33 @@
         <!-- ════════════════════════════════════════════
              MODALE ASSISTANT NARRATIF PRO
              ════════════════════════════════════════════ -->
-        <div id="proAiAssistantModal" class="modal-overlay" role="dialog" aria-modal="true" aria-label="Assistant Narratif IA">
+        <div id="proAiAssistantModal" class="modal-overlay" role="dialog" aria-modal="true"
+            aria-label="Assistant Narratif IA">
             <div class="modal-content modal-lg modal-tall">
                 <div class="modal-header">
                     <h3><i class="fas fa-magic" aria-hidden="true"></i> Assistant Narratif</h3>
-                    <button type="button" class="modal-close" id="closeProAiAssistantModal" title="Fermer">&times;</button>
+                    <button type="button" class="modal-close" id="closeProAiAssistantModal"
+                        title="Fermer">&times;</button>
                 </div>
                 <div class="modal-body" style="flex:1; display:flex; flex-direction:column; overflow:hidden;">
                     <div class="ai-panel" style="height:100%; display:flex; flex-direction:column;">
                         <div style="margin-bottom:12px;">
                             <span class="editor-badge-context">Contexte Projet</span>
                         </div>
-                        <div class="ai-messages" id="proAiChatOutput" style="flex:1; overflow-y:auto; margin-bottom:16px;">
+                        <div class="ai-messages" id="proAiChatOutput"
+                            style="flex:1; overflow-y:auto; margin-bottom:16px;">
                             <div class="ai-msg system">
-                                Je connais l'intégralité de votre projet « {{ @project.title }} ». Posez-moi une question sur l'intrigue, les personnages ou la cohérence.
+                                Je connais l'intégralité de votre projet « {{ @project.title }} ». Posez-moi une
+                                question.
                             </div>
                         </div>
                         <div class="ai-input-area">
-                            <textarea class="ai-textarea" id="proAiPrompt" placeholder="Ex: Que fait Sage au chapitre 3 ? Est-ce cohérent avec son histoire personnelle ?"></textarea>
+                            <textarea class="ai-textarea" id="proAiPrompt"
+                                placeholder="Ex: Que fait Sage au chapitre 3 ? Est-ce cohérent avec son histoire personnelle ?"></textarea>
                             <div class="ai-actions">
                                 <span></span>
-                                <button type="button" id="btnProAiAsk" class="button secondary" title="Envoyer la question à l'IA">
+                                <button type="button" id="btnProAiAsk" class="button secondary"
+                                    title="Envoyer la question à l'IA">
                                     <i class="fas fa-paper-plane" aria-hidden="true"></i> Envoyer
                                 </button>
                             </div>

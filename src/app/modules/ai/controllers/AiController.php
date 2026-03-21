@@ -605,9 +605,22 @@ class AiController extends Controller
                 }
                 $lines[] = "- " . $ch->title . ": " . ($resume ?: "(vide)");
             }
-        } else {
-            echo json_encode(['success' => false, 'error' => 'Aucun contenu trouvé pour analyser le contexte.']);
-            return;
+        }
+
+        // Éléments personnalisés (scénario, essai, etc.)
+        $elementModel = new \Element($db);
+        $elements = $elementModel->getTopLevelByProject($projectId);
+        if ($elements) {
+            $currentType = null;
+            foreach ($elements as $el) {
+                $type = $el['element_type'] ?? 'Éléments';
+                if ($type !== $currentType) {
+                    $currentType = $type;
+                    $lines[] = "\n" . $type . ":";
+                }
+                $content = $truncate(trim(strip_tags($el['content'] ?? '')), 200);
+                $lines[] = "- " . $el['title'] . ($content ? ": " . $content : "");
+            }
         }
 
         $contextText = implode("\n", $lines);
@@ -623,9 +636,9 @@ class AiController extends Controller
         $service = new AiService($provider, $apiKey, $model);
 
         $system = "Tu es un assistant éditorial expert. Tu as accès au résumé structuré du projet ci-dessous : " .
-            "titre, sections (synopsis, pitch…), personnages, notes et résumés des chapitres. " .
+            "titre, sections (synopsis, pitch…), personnages, notes, chapitres et éléments personnalisés. " .
             "Réponds aux questions de l'auteur sur la cohérence, l'intrigue, les personnages ou le style. " .
-            "Utilise un ton constructif et professionnel. Cite des références précises (noms de chapitres, actes, personnages) si pertinent.\n\n" .
+            "Utilise un ton constructif et professionnel. Cite des références précises (noms de chapitres, actes, personnages, éléments) si pertinent.\n\n" .
             $contextText;
 
         $t0     = microtime(true);

@@ -44,7 +44,7 @@ modules/{name}/
 └── views/         # F3 template files
 ```
 
-Modules: `acts`, `ai`, `api`, `auth`, `chapter`, `characters`, `collab`, `element`, `glossary`, `lecture`, `mcp`, `note`, `project`, `scenariste`, `search`, `section`, `share`, `stats`, `template`
+Modules: `acts`, `ai`, `api`, `auth`, `chapter`, `characters`, `collab`, `element`, `glossary`, `lecture`, `mcp`, `note`, `project`, `scenariste`, `search`, `section`, `share`, `stats`, `synopsis`, `template`
 
 ### Routing & Autoloading
 
@@ -79,7 +79,9 @@ Migration rules:
 | `src/app/core/Migrations.php` | Auto-migration system |
 | `src/app/controllers/Controller.php` | Base controller (CSRF, auth checks, render, rate limiting) |
 | `src/public/js/quill-adapter.js` | Quill editor integration (singleton QuillTools) |
-| `src/app/modules/project/views/layouts/main.html` | Main layout (JS/CSS versioned URLs) |
+| `src/app/modules/project/views/layouts/main.html` | Classic UI layout (JS/CSS versioned URLs) |
+| `src/app/modules/project/views/layouts/main-pro.html` | Pro UI layout — includes `pro-ui.js` |
+| `src/app/controllers/UiModeController.php` | Handles `POST /ui-mode` to switch between `classic`/`pro` (cookie `ui_mode`, 1 year) |
 
 ### Base Controller Helpers
 
@@ -87,7 +89,7 @@ Available in all controllers (no import needed):
 
 | Method | Purpose |
 |--------|---------|
-| `$this->render($view, $data)` | Renders view inside `layouts/main.html`; auto-injects `@base`, `@csrfToken`, `@currentUser`, `@aiSystemPrompt`, `@aiUserPrompts`, `@pendingCollabCount` |
+| `$this->render($view, $data)` | Renders view inside `layouts/main.html` (classic) or `layouts/main-pro.html` (pro) depending on cookie `ui_mode`; auto-injects `@base`, `@csrfToken`, `@currentUser`, `@aiSystemPrompt`, `@aiUserPrompts`, `@pendingCollabCount` |
 | `$this->currentUser()` | Returns current user array or null |
 | `$this->isOwner(int $pid)` | True if current user owns the project |
 | `$this->isCollaborator(int $pid)` | True if current user is an accepted collaborator |
@@ -176,10 +178,14 @@ Subdirectory layout under `src/public/css/`:
 
 ### JS/CSS Cache Busting
 
-After modifying any JS or CSS file, increment the `?v=` parameter in `src/app/modules/project/views/layouts/main.html`:
+After modifying any JS or CSS file, increment the `?v=` parameter in **both** layouts (`main.html` and `main-pro.html`):
 ```html
-<link rel="stylesheet" href="{{ @base }}/public/style.css?v=39">
+<link rel="stylesheet" href="{{ @base }}/public/style.css?v=46">
 <script src="{{ @base }}/public/js/quill-adapter.js?v=26"></script>
+<script src="{{ @base }}/public/js/api-client.js?v=1"></script>
+<script src="{{ @base }}/public/js/notifications.js?v=1"></script>
+<!-- Pro layout only: -->
+<script src="{{ @base }}/public/js/pro-ui.js?v=3"></script>
 ```
 
 ### Quill Instances

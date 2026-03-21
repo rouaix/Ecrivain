@@ -65,7 +65,7 @@
 .modal-content.modal-tall .modal-body {
     flex: 1;
     overflow-y: auto;
-    padding: 4px 0;
+    padding: 10px;
 }
 
 /* Header / footer */
