@@ -1705,7 +1705,7 @@ body.ui-pro .section-divider {
 
 /* ── Configuration IA ── */
 body.ui-pro .ai-config-container {
-    max-width: 700px;
+    max-width: 80vw;
 }
 
 body.ui-pro .ai-config-card {
@@ -1822,7 +1822,7 @@ body.ui-pro .stat-cost {
 
 /* ── Profil ── */
 body.ui-pro .profile-container {
-    max-width: 680px;
+    max-width: 80vw;
 }
 
 body.ui-pro .profile-card {
