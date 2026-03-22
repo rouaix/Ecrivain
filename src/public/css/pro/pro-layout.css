@@ -138,7 +138,8 @@ body.ui-pro .pro-content-inner {
 /* ── Mode éditeur (body.editor-mode) ── */
 /* La sidebar reste à sa largeur normale — seul padding-bottom est ajouté */
 body.ui-pro.editor-mode .pro-content {
-    padding-bottom: 44px; /* espace pour la status bar */
+    padding-bottom: 44px;
+    /* espace pour la status bar */
 }
 
 /* Barre de statut fixe en bas (uniquement en mode Pro éditeur) */

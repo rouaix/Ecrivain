@@ -375,4 +375,26 @@ class SynopsisController extends Controller
         $synopsis = $synopsisModel->getByProject($pid) ?? [];
         return [$project[0], $synopsis];
     }
+
+    /**
+     * GET /project/@pid/synopsis/delete
+     * Supprime le synopsis du projet (sera recréé vide à la prochaine visite).
+     */
+    public function delete()
+    {
+        $pid = (int) $this->f3->get('PARAMS.pid');
+
+        if (!$this->isOwner($pid)) {
+            $this->f3->error(403);
+            return;
+        }
+
+        $synopsisModel = new Synopsis();
+        $synopsisModel->load(['project_id=?', $pid]);
+        if (!$synopsisModel->dry()) {
+            $synopsisModel->erase();
+        }
+
+        $this->f3->reroute('/project/' . $pid);
+    }
 }

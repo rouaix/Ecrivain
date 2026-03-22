@@ -42,8 +42,7 @@
                         <tr>
                             <td class="scenarios-col-ref">
                                 <check if="{{ @sc.meta_saison }}">
-                                    <span class="scenario-ref-badge">S{{ @sc.meta_saison | esc }}E{{ @sc.meta_episode |
-                                        esc }}</span>
+                                    <span class="scenario-ref-badge">S{{ @sc.meta_saison | esc }}E{{ @sc.meta_episode | esc }}</span>
                                     <false>
                                         <span class="text-muted-para">—</span>
                                     </false>
@@ -56,11 +55,14 @@
                             </td>
                             <td class="scenarios-col-genre">
                                 <check if="{{ @sc.meta_genre }}">
-                                    <span class="text-muted-para" style="font-size:.82rem">{{ @sc.meta_genre | esc
-                                        }}</span>
+                                    <span class="text-muted-para" style="font-size:.82rem">{{ @sc.meta_genre | esc }}</span>
                                 </check>
                             </td>
                             <td class="scenarios-col-actions actions">
+                                <input type="checkbox" class="export-toggle-list" data-type="scenario"
+                                    data-id="{{ @sc.id }}" data-pid="{{ @project.id }}"
+                                    {{ @sc.is_exported ? 'checked' : '' }}
+                                    title="Inclure dans l'export">
                                 <a href="{{ @base }}/scenariste/{{ @sc.id }}/edit" class="button small" title="Éditer">
                                     <i class="fas fa-edit" aria-hidden="true"></i>
                                 </a>
@@ -127,6 +129,24 @@
 </style>
 
 <script nonce="{{ @nonce }}">
+    var BASE = '{{ @base }}';
+
+    document.querySelectorAll('.export-toggle-list').forEach(function (cb) {
+        cb.addEventListener('change', function () {
+            var pid = this.dataset.pid;
+            var id = parseInt(this.dataset.id, 10);
+            var type = this.dataset.type;
+            var checked = this.checked;
+            fetch(BASE + '/project/' + pid + '/export-toggle', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json', 'X-CSRF-Token': window.CSRF_TOKEN },
+                body: JSON.stringify({ id: id, type: type, is_exported: checked ? 1 : 0 })
+            }).then(function (r) {
+                if (!r.ok) { cb.checked = !checked; }
+            });
+        });
+    });
+
     document.querySelectorAll('.js-confirm').forEach(function (el) {
         el.addEventListener('click', function (e) {
             if (!confirm(this.dataset.confirm || 'Confirmer ?')) e.preventDefault();

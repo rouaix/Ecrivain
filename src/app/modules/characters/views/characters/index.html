@@ -79,6 +79,10 @@
 
                             <!-- actions rapides (survol) -->
                             <div class="char-list-actions">
+                                <input type="checkbox" class="export-toggle-list" data-type="character"
+                                    data-id="{{ @char.id }}" data-pid="{{ @project.id }}"
+                                    {{ @char.is_exported ? 'checked' : '' }}
+                                    title="Inclure dans l'export" onclick="event.stopPropagation()">
                                 <a class="button small" href="{{ @base }}/character/{{ @char.id }}/edit"
                                     title="Modifier" onclick="event.stopPropagation()">
                                     <i class="fas fa-edit" aria-hidden="true"></i>
@@ -151,6 +155,10 @@
                     <div class="character-description">{{ @char.description | raw }}</div>
 
                     <div class="character-actions">
+                        <input type="checkbox" class="export-toggle-list" data-type="character"
+                            data-id="{{ @char.id }}" data-pid="{{ @project.id }}"
+                            {{ @char.is_exported ? 'checked' : '' }}
+                            title="Inclure dans l'export">
                         <a class="button small" href="{{ @base }}/character/{{ @char.id }}/edit" title="Modifier"><i
                                 class="fas fa-edit" aria-hidden="true"></i></a>
                         <a class="button small delete js-confirm" href="{{ @base }}/character/{{ @char.id }}/delete"
@@ -179,6 +187,23 @@
         document.querySelectorAll('.js-confirm').forEach(function (el) {
             el.addEventListener('click', function (e) {
                 if (!confirm(this.dataset.confirm || 'Confirmer ?')) e.preventDefault();
+            });
+        });
+
+        var BASE = '{{ @base }}';
+        document.querySelectorAll('.export-toggle-list').forEach(function (cb) {
+            cb.addEventListener('change', function () {
+                var pid = this.dataset.pid;
+                var id = parseInt(this.dataset.id, 10);
+                var type = this.dataset.type;
+                var checked = this.checked;
+                fetch(BASE + '/project/' + pid + '/export-toggle', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json', 'X-CSRF-Token': window.CSRF_TOKEN },
+                    body: JSON.stringify({ id: id, type: type, is_exported: checked ? 1 : 0 })
+                }).then(function (r) {
+                    if (!r.ok) { cb.checked = !checked; }
+                });
             });
         });
     });

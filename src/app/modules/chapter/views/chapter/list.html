@@ -47,6 +47,10 @@
                             </check>
                         </div>
                         <div class="chapter-list-actions">
+                            <input type="checkbox" class="export-toggle-list" data-type="chapter"
+                                data-id="{{ @ch.id }}" data-pid="{{ @project.id }}"
+                                {{ @ch.is_exported ? 'checked' : '' }}
+                                title="Inclure dans l'export" onclick="event.stopPropagation()">
                             <a href="{{ @base }}/chapter/{{ @ch.id }}" class="button small" title="Éditer"
                                onclick="event.stopPropagation()">
                                 <i class="fas fa-edit" aria-hidden="true"></i>
@@ -73,6 +77,10 @@
                                 <div class="chapter-list-title">{{ @sub.title | esc }}</div>
                             </div>
                             <div class="chapter-list-actions">
+                                <input type="checkbox" class="export-toggle-list" data-type="chapter"
+                                    data-id="{{ @sub.id }}" data-pid="{{ @project.id }}"
+                                    {{ @sub.is_exported ? 'checked' : '' }}
+                                    title="Inclure dans l'export" onclick="event.stopPropagation()">
                                 <a href="{{ @base }}/chapter/{{ @sub.id }}" class="button small" title="Éditer"
                                    onclick="event.stopPropagation()">
                                     <i class="fas fa-edit" aria-hidden="true"></i>
@@ -214,6 +222,15 @@
         gap: .25rem;
         padding: 0 .5rem;
         flex-shrink: 0;
+        opacity: 0;
+        transition: opacity 0.15s;
+    }
+
+    .chapter-list-item:hover .chapter-list-actions,
+    .chapter-list-item:focus .chapter-list-actions,
+    .chapter-list-item:focus-within .chapter-list-actions,
+    .chapter-list-item.is-active .chapter-list-actions {
+        opacity: 1;
     }
 
     .chapters-preview-empty {
@@ -326,6 +343,22 @@
         previewEmpty.style.display = 'none';
         previewContent.style.display = '';
     }
+
+    document.querySelectorAll('.export-toggle-list').forEach(function (cb) {
+        cb.addEventListener('change', function () {
+            var pid = this.dataset.pid;
+            var id = parseInt(this.dataset.id, 10);
+            var type = this.dataset.type;
+            var checked = this.checked;
+            fetch(BASE + '/project/' + pid + '/export-toggle', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json', 'X-CSRF-Token': window.CSRF_TOKEN },
+                body: JSON.stringify({ id: id, type: type, is_exported: checked ? 1 : 0 })
+            }).then(function (r) {
+                if (!r.ok) { cb.checked = !checked; }
+            });
+        });
+    });
 
     document.querySelectorAll('.chapter-list-item').forEach(function (item) {
         item.addEventListener('click', function () {

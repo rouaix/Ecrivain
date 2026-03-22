@@ -4,11 +4,18 @@
    ========================================== */
 
 /* Icônes inline suivies de texte */
-.icon-mr { margin-right: 6px; }
-.icon-ml { margin-left: 6px; }
+.icon-mr {
+    margin-right: 6px;
+}
+
+.icon-ml {
+    margin-left: 6px;
+}
 
 /* Séparateur flex entre titre et actions */
-.flex-spacer { flex: 1; }
+.flex-spacer {
+    flex: 1;
+}
 
 /* Texte + icône en ligne */
 .inline-flex-center {
@@ -52,7 +59,7 @@
     border: 1px solid var(--border-color);
     border-radius: 12px;
     box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05);
-    padding: 30px;
+    padding: 10px;
     margin-bottom: 30px;
 }
 
@@ -437,6 +444,18 @@ input[type="checkbox"].export-toggle {
     height: 15px;
     font-size: 11px;
     position: relative;
+}
+
+/* Export toggle in list rows */
+input[type="checkbox"].export-toggle-list {
+    accent-color: var(--text-muted, #222);
+    width: 12px;
+    height: 12px;
+    cursor: pointer !important;
+    vertical-align: middle;
+    flex-shrink: 0;
+    align-self: center;
+    margin: 0;
 }
 
 /* HTML details element support */

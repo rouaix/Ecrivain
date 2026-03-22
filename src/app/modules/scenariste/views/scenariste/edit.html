@@ -7,6 +7,11 @@
     </a>
   </div>
 
+  <label class="synopsis-export-toggle" title="Inclure dans l'export, la lecture et la mindmap">
+    <input type="checkbox" id="exportToggle" {{ (@note.is_exported ?? 1) ? 'checked' : '' }}>
+    Inclure dans l'export
+  </label>
+
   <check if="{{ @saved }}">
     <true>
       <div class="success edit-success" class="mb-15">
@@ -59,17 +64,15 @@
       </div>
 
       <!-- Actions -->
-      <div class="edit-actions" class="d-flex gap-10 align-center flex-wrap">
-        <button type="submit" id="save-btn" class="button primary large" title="Sauvegarder">
-          <i class="fas fa-save" aria-hidden="true"></i>
-        </button>
-        <a href="{{ @base }}/scenariste/{{ @note.id }}/download" class="button large" title="Télécharger .md">
+
+      <div class="edit-actions">
+        <input type="submit" id="save-btn" value="Enregistrer" class="button primary large" title="Enregistrer">
+        <span id="save-status" style="font-size:.85rem;color:var(--success-color,#16a34a);"></span>
+        <a href="{{ @base }}/scenariste/{{ @note.id }}/download" class="button secondary" title="Télécharger .md">
           <i class="fas fa-download" aria-hidden="true"></i>
         </a>
-        <span id="save-status" style="font-size:.85rem;color:var(--success-color,#16a34a);"></span>
-        <span class="flex-1"></span>
         <a href="{{ @base }}/scenariste/{{ @note.id }}/delete" class="button delete"
-          onclick="return confirm('Supprimer ce scénario définitivement ?')" title="Supprimer" title="Supprimer">
+          onclick="return confirm('Supprimer ce scénario définitivement ?')" title="Supprimer">
           <i class="fas fa-trash" aria-hidden="true"></i>
         </a>
       </div>
@@ -98,7 +101,6 @@
 
   var wordCountEl = document.getElementById('word-count');
   var saveStatus = document.getElementById('save-status');
-  var saveLabel = document.getElementById('save-label');
   var saveBtn = document.getElementById('save-btn');
   var contentInput = document.getElementById('content-input');
 
@@ -166,7 +168,6 @@
   // --- Save ---
   function save() {
     saveStatus.textContent = 'Sauvegarde\u2026';
-    saveLabel.textContent = 'Sauvegarde\u2026';
     saveBtn.disabled = true;
 
     var fd = new FormData();
@@ -182,7 +183,6 @@
       .then(function (r) { return r.json(); })
       .then(function (data) {
         saveBtn.disabled = false;
-        saveLabel.textContent = 'Sauvegarder';
         if (data.success) {
           saveStatus.textContent = '\u2713 Sauvegard\u00e9';
           setTimeout(function () { saveStatus.textContent = ''; }, 3000);
@@ -192,9 +192,21 @@
       })
       .catch(function () {
         saveBtn.disabled = false;
-        saveLabel.textContent = 'Sauvegarder';
         saveStatus.textContent = '\u2717 Erreur r\u00e9seau';
       });
+  }
+
+  var exportToggle = document.getElementById('exportToggle');
+  if (exportToggle) {
+    exportToggle.addEventListener('change', function () {
+      fetch('{{ @base }}/project/{{ @project.id }}/export-toggle', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ id: {{ @note.id }}, type: 'scenario', is_exported: this.checked ? 1 : 0 })
+      }).then(function (r) {
+          if (!r.ok) { exportToggle.checked = !exportToggle.checked; }
+        });
+    });
   }
 
   var form = document.getElementById('scenariste-save-form');

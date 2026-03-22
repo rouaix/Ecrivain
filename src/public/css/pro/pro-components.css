@@ -2042,7 +2042,7 @@ body.ui-pro .pro-project-progression {
     background: var(--card-bg);
     border: 1px solid var(--input-border);
     border-radius: var(--radius-sm);
-    margin-bottom: 16px;
+    margin-bottom: 8px;
 }
 
 body.ui-pro .pro-progression-stat {

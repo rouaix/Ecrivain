@@ -11,6 +11,11 @@
 
     </div>
 
+    <label class="synopsis-export-toggle" title="Inclure dans l'export, la lecture et la mindmap">
+        <input type="checkbox" id="exportToggle" {{ (@act.is_exported ?? 1) ? 'checked' : '' }}>
+        Inclure dans l'export
+    </label>
+
     <check if="!empty(@errors)">
 
         <div class="error edit-error">
@@ -333,6 +338,19 @@
 
             }
 
+        }
+
+        var exportToggle = document.getElementById('exportToggle');
+        if (exportToggle) {
+            exportToggle.addEventListener('change', function () {
+                fetch('{{ @base }}/project/{{ @project.id }}/export-toggle', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ id: {{ @act.id }}, type: 'act', is_exported: this.checked ? 1 : 0 })
+                }).then(function (r) {
+                    if (!r.ok) { exportToggle.checked = !exportToggle.checked; }
+                });
+            });
         }
 
     });

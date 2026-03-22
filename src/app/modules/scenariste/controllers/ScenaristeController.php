@@ -29,12 +29,10 @@ class ScenaristeController extends Controller
         $scenarioModel = new Scenario();
         $scenarios = $scenarioModel->getAllByProject($pid);
 
-        // Decode meta JSON for each scenario
         foreach ($scenarios as &$sc) {
-            $meta = !empty($sc['meta']) ? json_decode($sc['meta'], true) : [];
-            $sc['meta_saison']  = $meta['saison']  ?? '';
-            $sc['meta_episode'] = $meta['episode'] ?? '';
-            $sc['meta_genre']   = $meta['genre']   ?? '';
+            $sc['meta_saison']  = $sc['saison']  ?? '';
+            $sc['meta_episode'] = $sc['episode'] ?? '';
+            $sc['meta_genre']   = $sc['genre']   ?? '';
         }
         unset($sc);
 

@@ -48,6 +48,10 @@
                             </div>
                         </div>
                         <div class="act-list-actions">
+                            <input type="checkbox" class="export-toggle-list" data-type="act"
+                                data-id="{{ @act.id }}" data-pid="{{ @project.id }}"
+                                {{ @act.is_exported ? 'checked' : '' }}
+                                title="Inclure dans l'export" onclick="event.stopPropagation()">
                             <a href="{{ @base }}/act/{{ @act.id }}/edit" class="button small" title="Éditer"
                                onclick="event.stopPropagation()">
                                 <i class="fas fa-edit" aria-hidden="true"></i>
@@ -172,6 +176,15 @@
         gap: .25rem;
         padding: 0 .5rem;
         flex-shrink: 0;
+        opacity: 0;
+        transition: opacity 0.15s;
+    }
+
+    .act-list-item:hover .act-list-actions,
+    .act-list-item:focus .act-list-actions,
+    .act-list-item:focus-within .act-list-actions,
+    .act-list-item.is-active .act-list-actions {
+        opacity: 1;
     }
 
     .acts-preview-empty {
@@ -300,6 +313,21 @@
         });
         item.addEventListener('keydown', function (e) {
             if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); this.click(); }
+        });
+    });
+    document.querySelectorAll('.export-toggle-list').forEach(function (cb) {
+        cb.addEventListener('change', function () {
+            var pid = this.dataset.pid;
+            var id = parseInt(this.dataset.id, 10);
+            var type = this.dataset.type;
+            var checked = this.checked;
+            fetch(BASE + '/project/' + pid + '/export-toggle', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json', 'X-CSRF-Token': window.CSRF_TOKEN },
+                body: JSON.stringify({ id: id, type: type, is_exported: checked ? 1 : 0 })
+            }).then(function (r) {
+                if (!r.ok) { cb.checked = !checked; }
+            });
         });
     });
 })();

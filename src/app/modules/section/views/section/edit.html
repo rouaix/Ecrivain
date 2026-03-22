@@ -23,6 +23,13 @@
 
     </div>
 
+    <check if="{{ @section.id }}">
+        <label class="synopsis-export-toggle" title="Inclure dans l'export, la lecture et la mindmap">
+            <input type="checkbox" id="exportToggle" {{ (@section.is_exported ?? 1) ? 'checked' : '' }}>
+            Inclure dans l'export
+        </label>
+    </check>
+
     <check if="!empty(@errors)">
 
         <div class="error edit-error">
@@ -53,8 +60,6 @@
 
             <div class="edit-card-section">
 
-                <h3>Informations générales</h3>
-
                 <div class="form-group">
 
                     <label for="title">Titre (optionnel)</label>
@@ -73,8 +78,6 @@
 
                 <div class="edit-card-section">
 
-                    <h3>Image de couverture</h3>
-
                     <div class="form-group">
 
                         <label for="image">Image</label>
@@ -87,8 +90,8 @@
                                     class="image-preview__img">
 
                                 <a href="{{ @base }}/project/{{ @project.id }}/section/{{ @sectionType }}/image/delete"
-                                   class="button delete small js-confirm"
-                                   data-confirm="Supprimer l'image de couverture ?">
+                                    class="button delete small js-confirm"
+                                    data-confirm="Supprimer l'image de couverture ?">
                                     Supprimer l'image
                                 </a>
 
@@ -110,7 +113,6 @@
 
             <div class="edit-card-section">
 
-                <h3>Contenu</h3>
 
                 <div id="editor-wrapper" class="editor-wrapper">
 
@@ -143,8 +145,6 @@
             <!-- Comment Section -->
 
             <div class="edit-card-section">
-
-                <h3>Commentaire</h3>
 
                 <div class="form-group">
 
@@ -311,6 +311,19 @@
 
             QuillTools.quill.clipboard.dangerouslyPasteHTML(decodedContent);
 
+        }
+
+        var exportToggle = document.getElementById('exportToggle');
+        if (exportToggle) {
+            exportToggle.addEventListener('change', function () {
+                fetch('{{ @base }}/project/{{ @project.id }}/export-toggle', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ id: {{ @section.id }}, type: 'section', is_exported: this.checked ? 1 : 0 })
+                }).then(function (r) {
+                    if (!r.ok) { exportToggle.checked = !exportToggle.checked; }
+                });
+            });
         }
 
     });
