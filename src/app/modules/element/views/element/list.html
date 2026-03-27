@@ -35,7 +35,17 @@
                             <check if="{{ @el.sub_count > 0 }}">
                                 <div class="element-list-meta">{{ @el.sub_count }} sous-élément(s)</div>
                             </check>
+                            <check if="{{ @el.resume }}">
+                                <div class="element-list-resume">{{ @el.resume | esc }}</div>
+                            </check>
                         </div>
+                        <check if="{{ @el.sub_count > 0 }}">
+                            <button type="button" class="button small element-ai-btn ai-element-summary-btn"
+                                data-id="{{ @el.id }}" title="Générer un résumé IA"
+                                onclick="event.stopPropagation()">
+                                <i class="fas fa-magic" aria-hidden="true"></i>
+                            </button>
+                        </check>
                         <div class="element-list-actions">
                             <input type="checkbox" class="export-toggle-list" data-type="element"
                                 data-id="{{ @el.id }}" data-pid="{{ @project.id }}"
@@ -118,8 +128,19 @@
                     <div class="elements-preview-section" id="elementsPreviewResumeWrap" style="display:none">
                         <div class="elements-preview-section-label">
                             <i class="fas fa-align-left" aria-hidden="true"></i> Résumé
+                            <button type="button" class="button small element-ai-btn ai-element-summary-btn"
+                                id="elementsPreviewAiBtn" data-id="" title="Regénérer le résumé IA"
+                                style="margin-left:auto">
+                                <i class="fas fa-magic" aria-hidden="true"></i>
+                            </button>
                         </div>
                         <div class="ql-editor elements-preview-resume-body" id="elementsPreviewResumeBody"></div>
+                    </div>
+                    <div class="elements-preview-section" id="elementsPreviewAiWrap" style="display:none">
+                        <button type="button" class="button small element-ai-btn ai-element-summary-btn"
+                            id="elementsPreviewAiBtnEmpty" data-id="" title="Générer un résumé IA">
+                            <i class="fas fa-magic" aria-hidden="true"></i> Générer un résumé IA
+                        </button>
                     </div>
                     <div class="elements-preview-section" id="elementsPreviewSubsWrap" style="display:none">
                         <div class="elements-preview-section-label">
@@ -211,6 +232,36 @@
         font-size: .74rem;
         color: var(--text-muted, #888);
         margin-top: 3px;
+    }
+
+    /* Resume snippet in list */
+    .element-list-resume {
+        font-size: .74rem;
+        color: var(--text-muted, #777);
+        margin-top: 4px;
+        overflow: hidden;
+        display: -webkit-box;
+        -webkit-line-clamp: 2;
+        -webkit-box-orient: vertical;
+        font-style: italic;
+    }
+
+    /* AI button — hidden until hover/focus/active, like other actions */
+    .element-ai-btn {
+        flex-shrink: 0;
+        opacity: 0;
+        transition: opacity 0.15s;
+        color: var(--button-primary-bg, #3f51b5);
+        background: transparent;
+        border-color: transparent;
+        margin-right: .1rem;
+    }
+
+    .element-list-item:hover .element-ai-btn,
+    .element-list-item:focus .element-ai-btn,
+    .element-list-item:focus-within .element-ai-btn,
+    .element-list-item.is-active .element-ai-btn {
+        opacity: 1;
     }
 
     /* Actions: hidden until hover/focus/active */
@@ -371,6 +422,16 @@
         gap: .4rem;
     }
 
+    #elementsPreviewAiWrap {
+        padding: .6rem 1.25rem;
+    }
+
+    #elementsPreviewAiBtnEmpty {
+        width: 100%;
+        justify-content: center;
+        gap: .4rem;
+    }
+
     .elements-preview-resume-body {
         font-size: .84rem;
         padding: 0;
@@ -442,6 +503,9 @@
         var previewEdit = document.getElementById('elementsPreviewEdit');
         var previewResumeWrap = document.getElementById('elementsPreviewResumeWrap');
         var previewResumeBody = document.getElementById('elementsPreviewResumeBody');
+        var previewAiBtn = document.getElementById('elementsPreviewAiBtn');
+        var previewAiWrap = document.getElementById('elementsPreviewAiWrap');
+        var previewAiBtnEmpty = document.getElementById('elementsPreviewAiBtnEmpty');
         var previewSubsWrap = document.getElementById('elementsPreviewSubsWrap');
         var previewSubsList = document.getElementById('elementsPreviewSubsList');
 
@@ -471,12 +535,19 @@
             previewBody.innerHTML = el.content || '<p class="text-muted-para">Aucun contenu.</p>';
             previewEdit.href = BASE + '/element/' + id;
 
-            // Resume
+            // Resume + AI buttons
+            var isParent = !el.parent_id && (el.subs || []).length > 0;
             if (el.resume && hasContent(el.resume)) {
                 previewResumeBody.innerHTML = el.resume;
                 previewResumeWrap.style.display = '';
+                if (previewAiBtn) previewAiBtn.dataset.id = id;
+                if (previewAiWrap) previewAiWrap.style.display = 'none';
             } else {
                 previewResumeWrap.style.display = 'none';
+                if (previewAiWrap) {
+                    previewAiWrap.style.display = isParent ? '' : 'none';
+                    if (previewAiBtnEmpty) previewAiBtnEmpty.dataset.id = id;
+                }
             }
 
             // Sub-elements (only for parents)
@@ -585,5 +656,67 @@
                 if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); this.click(); }
             });
         });
+
+        // AI summary — shared function
+        var aiSystemPrompt = {{ @aiSystemPrompt ? json_encode(@aiSystemPrompt) : '""' }};
+
+        function runAiSummary(elementId, btn) {
+            if (!elementId) return;
+            var icon = btn.querySelector('i');
+            if (!confirm('Voulez-vous générer un résumé basé sur les sous-éléments ? Cela remplacera le résumé actuel.')) {
+                return;
+            }
+            if (icon) icon.className = 'fas fa-spinner fa-spin';
+            btn.disabled = true;
+
+            fetch(BASE + '/ai/summarize-element', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json', 'X-CSRF-Token': window.CSRF_TOKEN },
+                body: JSON.stringify({ element_id: elementId, system_prompt: aiSystemPrompt })
+            })
+            .then(function (r) { return r.json(); })
+            .then(function (data) {
+                if (icon) icon.className = 'fas fa-magic';
+                btn.disabled = false;
+                if (data.success) {
+                    window.location.reload();
+                } else {
+                    alert('Erreur : ' + (data.error || 'Erreur inconnue'));
+                }
+            })
+            .catch(function (err) {
+                if (icon) icon.className = 'fas fa-magic';
+                btn.disabled = false;
+                console.error(err);
+                alert('Erreur de communication avec le serveur.');
+            });
+        }
+
+        // Boutons AI dans la liste (toujours visibles sur les parents)
+        document.querySelectorAll('.element-list-item .ai-element-summary-btn').forEach(function (btn) {
+            btn.addEventListener('click', function (e) {
+                e.preventDefault();
+                e.stopPropagation();
+                runAiSummary(this.dataset.id, this);
+            });
+        });
+
+        // Bouton AI dans le panneau preview (régénérer)
+        if (previewAiBtn) {
+            previewAiBtn.addEventListener('click', function (e) {
+                e.preventDefault();
+                e.stopPropagation();
+                runAiSummary(this.dataset.id, this);
+            });
+        }
+
+        // Bouton AI dans le panneau preview (générer — pas encore de résumé)
+        if (previewAiBtnEmpty) {
+            previewAiBtnEmpty.addEventListener('click', function (e) {
+                e.preventDefault();
+                e.stopPropagation();
+                runAiSummary(this.dataset.id, this);
+            });
+        }
     })();
 </script>

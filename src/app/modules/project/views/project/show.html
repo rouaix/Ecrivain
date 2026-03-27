@@ -420,6 +420,44 @@
 
     });
 
+    // AI Element Summary Logic
+    document.querySelectorAll('.ai-element-summary-btn').forEach(btn => {
+        btn.addEventListener('click', function (e) {
+            e.preventDefault();
+            e.stopPropagation();
+            const elementId = this.dataset.id;
+            const icon = this.querySelector('i');
+            if (!confirm('Voulez-vous générer un résumé pour cet élément basé sur ses sous-éléments ? Cela remplacera le résumé actuel.')) {
+                return;
+            }
+            if (icon) icon.className = 'fas fa-spinner fa-spin';
+            this.disabled = true;
+            const self = this;
+            fetch('{{ @base }}/ai/summarize-element', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json', 'X-CSRF-Token': window.CSRF_TOKEN },
+                body: JSON.stringify({ element_id: elementId, system_prompt: aiSystemPrompt })
+            })
+            .then(r => r.json())
+            .then(data => {
+                if (icon) icon.className = 'fas fa-magic';
+                self.disabled = false;
+                if (data.success) {
+                    alert('Résumé généré et enregistré avec succès !');
+                    window.location.reload();
+                } else {
+                    alert('Erreur : ' + (data.error || 'Erreur inconnue'));
+                }
+            })
+            .catch(err => {
+                if (icon) icon.className = 'fas fa-magic';
+                self.disabled = false;
+                console.error(err);
+                alert('Erreur de communication avec le serveur.');
+            });
+        });
+    });
+
     }); // DOMContentLoaded
 
 </script>

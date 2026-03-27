@@ -79,6 +79,14 @@ tr:last-child td {
     opacity: 1;
 }
 
+.compact-actions .ai-element-summary-btn {
+    opacity: 0;
+}
+
+.compact-table tr:hover .compact-actions .ai-element-summary-btn {
+    opacity: 1;
+}
+
 .compact-meta--narrow {
     width: 80px;
 }

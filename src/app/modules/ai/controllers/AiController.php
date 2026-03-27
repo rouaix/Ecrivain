@@ -481,6 +481,95 @@ class AiController extends Controller
     }
 
     /**
+     * Generate a summary for a parent element based on its sub-elements.
+     */
+    public function summarizeElement()
+    {
+        $json = json_decode($this->f3->get('BODY'), true);
+        $elementId = $json['element_id'] ?? null;
+
+        if (!$elementId) {
+            $this->f3->error(400, 'ID d\'élément requis');
+            return;
+        }
+
+        $db = $this->f3->get('DB');
+        $elementModel = new \Element($db);
+        $elementModel->load(['id=?', $elementId]);
+
+        if ($elementModel->dry()) {
+            $this->f3->error(404, 'Élément introuvable');
+            return;
+        }
+
+        // SECURITY: Verify ownership before summarizing
+        $projectModel = new \Project($db);
+        if (!$projectModel->count(['id=? AND user_id=?', $elementModel->project_id, $this->currentUser()['id']])) {
+            http_response_code(403);
+            echo json_encode(['success' => false, 'error' => 'Accès non autorisé']);
+            return;
+        }
+
+        if (!$this->checkRateLimit('ai_gen', 10, 60)) {
+            http_response_code(429);
+            echo json_encode(['success' => false, 'error' => 'Trop de requêtes IA. Attendez quelques secondes avant de réessayer.']);
+            return;
+        }
+
+        // Load sub-elements
+        $subModel = new \Element($db);
+        $subs = $subModel->find(['parent_id=?', $elementId], ['order' => 'order_index ASC, id ASC']);
+
+        if (!$subs) {
+            echo json_encode(['success' => false, 'error' => 'Aucun sous-élément pour cet élément.']);
+            return;
+        }
+
+        $content = "";
+        foreach ($subs as $sub) {
+            $subSummary = !empty($sub->resume) ? $sub->resume : substr(strip_tags($sub->content), 0, 500) . "...";
+            $content .= "\n\n[" . $sub->title . "]\n" . $subSummary;
+        }
+
+        // Prepare prompt
+        $userConfig = $this->getUserConfig();
+        $prompts = $this->getDefaultPrompts();
+
+        $provider = $userConfig['active_provider'] ?? 'openai';
+        $apiKey = $userConfig['providers'][$provider]['api_key'] ?? $this->f3->get('OPENAI_API_KEY');
+        $model = $userConfig['providers'][$provider]['model'] ?? ($this->f3->get('OPENAI_MODEL') ?: 'gpt-4o');
+
+        $service = new AiService($provider, $apiKey, $model);
+
+        $configSystem = $userConfig['prompts']['system'] ?? '';
+        $systemPrompt = !empty($configSystem) ? $configSystem : ($json['system_prompt'] ?? $prompts['system']);
+        $taskPrompt = $userConfig['prompts']['summarize_element']
+            ?? ($prompts['summarize_element']
+            ?? "Fais un résumé synthétique de cet élément à partir du contenu de ses sous-éléments. Le résumé doit être clair, bien écrit et capturer l'essentiel.");
+
+        $fullPrompt = $taskPrompt . "\n\n[" . $elementModel->title . "]\n[SOUS-ÉLÉMENTS]\n" . $content;
+
+        $systemPrompt = $this->compressPrompt($systemPrompt);
+        $t0     = microtime(true);
+        $result = $service->generate($systemPrompt, $fullPrompt, 0.7, 500);
+        $elapsed = microtime(true) - $t0;
+
+        if ($result['success']) {
+            $summary = $result['text'];
+
+            $elementModel->resume = $summary;
+            $elementModel->save();
+
+            $this->logAiUsage($model, $result['prompt_tokens'] ?? 0, $result['completion_tokens'] ?? 0, 'summarize_element');
+            $this->notifyAiCompletionIfNeeded($elapsed, 'summarize_element');
+
+            echo json_encode(['success' => true, 'summary' => $summary]);
+        } else {
+            echo json_encode(['success' => false, 'error' => $result['error']]);
+        }
+    }
+
+    /**
      * Ask a question about the whole project.
      */
     public function ask()

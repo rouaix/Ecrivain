@@ -62,7 +62,7 @@ All routes and autoload paths are declared in `src/app/config.ini`. F3 scans the
 
 ### Database Migrations
 
-Migrations in `src/data/migrations/` run automatically on every app load (only unexecuted ones). Naming format: `NNN_description.sql` (alphabetical = execution order). Current highest: `025_`.
+Migrations in `src/data/migrations/` run automatically on every app load (only unexecuted ones). Naming format: `NNN_description.sql` (alphabetical = execution order). Current highest: `029_`.
 
 Migration rules:
 - Always use `CREATE TABLE IF NOT EXISTS`
@@ -77,10 +77,17 @@ Migration rules:
 | `src/www/index.php` | Bootstrap: env loading, DB init, session config, CSP headers, nonce generation |
 | `src/app/config.ini` | F3 routes, UI paths, autoload paths |
 | `src/app/core/Migrations.php` | Auto-migration system |
+| `src/app/core/ContentTransformer.php` | Centralised HTML-to-plain-text conversion (used by API, MCP, export) |
+| `src/app/core/Logger.php` | Structured logging with severity levels |
+| `src/app/core/TokenService.php` | Unified JWT/bearer token validation and decryption |
 | `src/app/controllers/Controller.php` | Base controller (CSRF, auth checks, render, rate limiting) |
+| `src/app/controllers/ApiBaseController.php` | Base for JSON endpoints — Bearer auth in `beforeRoute`, `jsonOut()`, `jsonError()`, `getBody()` |
+| `src/app/services/AiPricingService.php` | AI cost calculations |
+| `src/app/services/ProjectService.php` | Shared project business logic |
 | `src/public/js/quill-adapter.js` | Quill editor integration (singleton QuillTools) |
+| `src/public/js/offline-reader.js` | Offline reading support |
 | `src/app/modules/project/views/layouts/main.html` | Classic UI layout (JS/CSS versioned URLs) |
-| `src/app/modules/project/views/layouts/main-pro.html` | Pro UI layout — includes `pro-ui.js` |
+| `src/app/modules/project/views/layouts/main-pro.html` | Pro UI layout — includes `pro-ui.js` and `pro/pro.css` |
 | `src/app/controllers/UiModeController.php` | Handles `POST /ui-mode` to switch between `classic`/`pro` (cookie `ui_mode`, 1 year) |
 
 ### Base Controller Helpers
@@ -129,7 +136,7 @@ Valid `content_type` values: `chapter`, `act`, `section`, `note`, `element`, `ch
 
 ### API & MCP Integration
 
-**REST API** (`src/app/modules/api/controllers/ApiController.php`): Full CRUD for all content types under `/api/...`. Authenticated via `Authorization: Bearer <jwt>` using `$this->authenticateApiRequest()` in `beforeRoute` — bypasses CSRF. Add `api/controllers/` to `AUTOLOAD` when adding new API controllers.
+**REST API** (`src/app/modules/api/controllers/ApiController.php`): Full CRUD for all content types under `/api/...`. API controllers extend `ApiBaseController` (not `Controller`) — Bearer JWT auth is handled in its `beforeRoute`, bypassing CSRF/session. Add `api/controllers/` to `AUTOLOAD` when adding new API controllers.
 
 **MCP server** — two modes:
 - **HTTP** (`POST /mcp` via `McpController`): Same Bearer JWT auth. Configure in Claude Desktop with `"url"` + `"headers": {"Authorization": "Bearer TOKEN"}`.
@@ -171,20 +178,24 @@ Subdirectory layout under `src/public/css/`:
 - `modules/` — feature styles (chapters, characters, notes…)
 - `editor/` — Quill overrides
 - `ai/`, `auth/` — section-specific styles
-- `features/` — standalone features: `reading.css`, `reading-mode.css`, `export.css`, `mindmap.css`, `template-editor.css`
+- `features/` — standalone features: `reading.css`, `reading-mode.css`, `export.css`, `mindmap.css`, `template-editor.css`, `dictation.css`
+- `utilities/` — atomic helpers: `helpers.css`, `spacing.css`, `text.css`, `visibility.css`
 - `themes/` — `theme-default.css`, `theme-dark.css`, `theme-blue.css`, `theme-forest.css`, `theme-moderne.css`
+- `pro/` — Pro UI styles: `pro.css` (aggregator), `pro-layout.css`, `pro-nav.css`, `pro-components.css`, `pro-overrides.css`, `pro-polish.css`
 
 **Modal visibility**: modals use `.is-visible` (adds `display: flex`) — never toggle `.is-hidden` on a `.modal-overlay`. Open: `modal.classList.add('is-visible')`, close: `modal.classList.remove('is-visible')`.
 
 ### JS/CSS Cache Busting
 
-After modifying any JS or CSS file, increment the `?v=` parameter in **both** layouts (`main.html` and `main-pro.html`):
+After modifying any JS or CSS file, increment the `?v=` parameter in **both** layouts (`main.html` and `main-pro.html`). The two layouts track separate CSS versions:
 ```html
-<link rel="stylesheet" href="{{ @base }}/public/style.css?v=46">
+<!-- main.html: style.css?v=48 | main-pro.html: style.css?v=51, pro/pro.css?v=38 -->
+<link rel="stylesheet" href="{{ @base }}/public/style.css?v=48">
 <script src="{{ @base }}/public/js/quill-adapter.js?v=26"></script>
 <script src="{{ @base }}/public/js/api-client.js?v=1"></script>
 <script src="{{ @base }}/public/js/notifications.js?v=1"></script>
 <!-- Pro layout only: -->
+<link rel="stylesheet" href="{{ @base }}/public/css/pro/pro.css?v=38">
 <script src="{{ @base }}/public/js/pro-ui.js?v=3"></script>
 ```
 

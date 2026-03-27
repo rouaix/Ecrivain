@@ -881,6 +881,9 @@
                       <check if="{{ isset(@ce.subs) && count(@ce.subs) > 0 }}">
                         <span class="panel-count">{{ count(@ce.subs) }}</span>
                       </check>
+                      <check if="{{ !empty(@ce.resume) }}">
+                        <div class="chapter-resume"><strong>Résumé :</strong><br>{{ @ce.resume | raw }}</div>
+                      </check>
                     </td>
                     <td class="compact-meta stats">
                       {{ @ce.total_wc }} mots
@@ -906,6 +909,12 @@
                       <a class="button small" href="{{ @base }}/element/{{ @ce.id }}" title="Éditer" title="Éditer">
                         <i class="fas fa-edit" aria-hidden="true"></i>
                       </a>
+                      <check if="{{ isset(@ce.subs) && count(@ce.subs) > 0 }}">
+                        <button class="button small ai-element-summary-btn" data-id="{{ @ce.id }}"
+                          title="Résumé IA">
+                          <i class="fas fa-magic" aria-hidden="true"></i>
+                        </button>
+                      </check>
                       <check if="{{ !isset(@ce.subs) || count(@ce.subs) == 0 }}">
                         <a class="button small delete js-confirm" href="{{ @base }}/element/{{ @ce.id }}/delete"
                           data-confirm="Supprimer cet élément ?" title="Supprimer" title="Supprimer">
