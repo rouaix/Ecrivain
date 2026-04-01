@@ -680,24 +680,28 @@
 
                 modalTitle.innerText = filename;
 
-                // Check if it's an image or PDF for preview
+                var url = '{{ @base }}/project/' + projectId + '/file/' + fileId + '/download';
+                var isText = filetype && (filetype.startsWith('text/') || filetype === 'application/json');
+                var isMd = filename && filename.toLowerCase().endsWith('.md');
 
-                if (filetype && (filetype.startsWith('image/') || filetype === 'application/pdf')) {
-
-                    if (filetype.startsWith('image/')) {
-
-                        modalBody.innerHTML = '<img src="{{ @base }}/project/' + projectId + '/file/' + fileId + '/download" style="max-width: 100%; height: auto;">';
-
-                    } else if (filetype === 'application/pdf') {
-
-                        modalBody.innerHTML = '<iframe src="{{ @base }}/project/' + projectId + '/file/' + fileId + '/download" style="width: 100%; height: 600px; border: none;"></iframe>';
-
-                    }
-
+                if (filetype && filetype.startsWith('image/')) {
+                    modalBody.innerHTML = '<img src="' + url + '" style="max-width:100%;height:auto;display:block;margin:auto">';
+                } else if (filetype === 'application/pdf') {
+                    modalBody.innerHTML = '<iframe src="' + url + '" style="width:100%;height:600px;border:none"></iframe>';
+                } else if (isText || isMd) {
+                    modalBody.innerHTML = '<p style="color:var(--text-muted);font-size:12px;margin-bottom:8px">Chargement…</p>';
+                    fetch(url)
+                        .then(function (r) { if (!r.ok) throw new Error('HTTP ' + r.status); return r.text(); })
+                        .then(function (text) {
+                            var pre = document.createElement('pre');
+                            pre.style.cssText = 'white-space:pre-wrap;word-break:break-word;font-size:13px;line-height:1.6;max-height:600px;overflow:auto;margin:0;padding:0;background:none;border:none;font-family:var(--font-mono,monospace)';
+                            pre.textContent = text;
+                            modalBody.innerHTML = '';
+                            modalBody.appendChild(pre);
+                        })
+                        .catch(function () { modalBody.innerHTML = '<p style="color:var(--text-muted)">Impossible de charger le fichier.</p>'; });
                 } else {
-
-                    modalBody.innerHTML = '<p>Prévisualisation non disponible pour ce type de fichier.</p><p><a href="{{ @base }}/project/' + projectId + '/file/' + fileId + '/download" class="button" download>Télécharger le fichier</a></p>';
-
+                    modalBody.innerHTML = '<p style="color:var(--text-muted);margin-bottom:12px">Prévisualisation non disponible pour ce type de fichier.</p><a href="' + url + '" class="button" download><i class="fas fa-download"></i> Télécharger</a>';
                 }
 
                 modal.classList.add('is-visible');
