@@ -7,7 +7,11 @@ Options -Indexes -MultiViews
 RewriteEngine On
 
 # Block access to sensitive file types
-<FilesMatch "\.(ini|env|txt|log|json|md|sql|sh|lock|phar)$">
+# Exception: public/manifest.json is needed for PWA (excluded from json rule below)
+<FilesMatch "\.(ini|env|txt|log|md|sql|sh|lock|phar)$">
+    Require all denied
+</FilesMatch>
+<FilesMatch "^(?!manifest\.json$).*\.json$">
     Require all denied
 </FilesMatch>
 

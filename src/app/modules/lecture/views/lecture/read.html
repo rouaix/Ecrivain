@@ -377,8 +377,11 @@
                 item.addEventListener('click', function () {
                     const page = parseInt(this.dataset.page);
                     const targetSection = document.querySelector(`[data-page-start="${page}"]`);
-                    if (targetSection) {
-                        targetSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                    if (targetSection && content) {
+                        const containerRect = content.getBoundingClientRect();
+                        const sectionRect = targetSection.getBoundingClientRect();
+                        const offset = sectionRect.top - containerRect.top + content.scrollTop - 20;
+                        content.scrollTo({ top: offset, behavior: 'smooth' });
                     }
                 });
             });
