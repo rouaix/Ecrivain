@@ -1,0 +1,196 @@
+@import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@600;700&family=Inter:wght@400;500;600&display=swap');
+
+/* Moderne theme: palette Material Design indigo, tons gris neutres */
+body.theme-moderne {
+    /* Core */
+    --body-bg: #f6f6f6;
+    --card-bg: #ffffff;
+    --text-main: #333333;
+    --text-muted: #666666;
+    --link-color: #3f51b5;
+    --disabled-color: #dddddd;
+
+    /* Header & Footer */
+    --header-bg: #3f51b5;
+    --header-text: #ffffff;
+    --footer-bg: #eeeeee;
+    --footer-text: #666666;
+
+    /* Buttons */
+    --button-bg: #4caf50;
+    --button-text: #ffffff;
+    --button-primary-bg: #3f51b5;
+    --button-secondary-bg: #9e9e9e;
+    --button-delete-bg: #f44336;
+    --button-hover-bg: #283593;
+    --button-delete-hover-bg: #c62828;
+
+    /* Borders & Inputs */
+    --border-color: #dddddd;
+    --border-light: #eeeeee;
+    --input-bg: #ffffff;
+    --input-text: #333333;
+    --input-border: #cccccc;
+
+    /* Tables */
+    --table-header-bg: #f0f0f0;
+    --table-row-bg: #f9f9f9;
+    --table-row-hover-bg: #f0f4f8;
+
+    /* Accents */
+    --panel-hover-shadow: rgba(63, 81, 181, 0.08);
+
+    /* Typography */
+    font-family: 'Inter', system-ui, sans-serif;
+    font-size: 0.95rem;
+    line-height: 1.6;
+    -webkit-font-smoothing: antialiased;
+}
+
+body.theme-moderne .button.disabled,
+body.theme-moderne .button.small.disabled {
+    cursor: default;
+    background-color: var(--disabled-color);
+}
+
+/* Titres */
+body.theme-moderne h1,
+body.theme-moderne h2,
+body.theme-moderne h3,
+body.theme-moderne .project-card__title {
+    font-family: 'Space Grotesk', system-ui, sans-serif;
+    font-weight: 700;
+    letter-spacing: -0.02em;
+    color: #1a237e;
+}
+
+/* Boutons */
+body.theme-moderne .button {
+    font-family: 'Inter', system-ui, sans-serif;
+    font-weight: 500;
+    letter-spacing: 0.01em;
+    border-radius: 6px;
+}
+
+body.theme-moderne .button.secondary {
+    background: var(--button-secondary-bg);
+    color: var(--button-text);
+}
+
+body.theme-moderne .button.delete {
+    background: var(--button-delete-bg);
+}
+
+body.theme-moderne .button.secondary:hover,
+body.theme-moderne .button:hover,
+body.theme-moderne a.button.secondary:hover,
+body.theme-moderne a.button:hover,
+body.theme-moderne a.button.small.secondary:hover,
+body.theme-moderne a.button.small:hover {
+    background: var(--button-hover-bg);
+}
+
+body.theme-moderne .button.delete:hover {
+    background: var(--button-delete-hover-bg);
+}
+
+/* Liens */
+body.theme-moderne a {
+    color: var(--link-color);
+}
+
+body.theme-moderne a:hover {
+    color: #ffffff;
+    background: var(--button-hover-bg);
+}
+
+/* Buttons styled as links: restore text color on hover */
+body.theme-moderne a.button:hover {
+    color: var(--button-text);
+}
+
+/* Header */
+body.theme-moderne header {
+    border-bottom: 3px solid #3949ab;
+}
+
+body.theme-moderne header a {
+    color: var(--header-text);
+}
+
+body.theme-moderne header a:hover {
+    color: #c5cae9;
+    background: transparent;
+}
+
+/* Project cards */
+body.theme-moderne .project-card {
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.06);
+    transition: box-shadow 0.2s, transform 0.2s;
+}
+
+body.theme-moderne .project-card:hover {
+    transform: translateY(-2px);
+    border-color: #9fa8da;
+    box-shadow: 0 4px 12px rgba(63, 81, 181, 0.15);
+}
+
+body.theme-moderne .project-card__cover {
+    background: linear-gradient(135deg, #3f51b5 0%, #7986cb 100%);
+    background-size: cover;
+    background-position: center;
+    border-bottom: 1px solid var(--border-color);
+}
+
+body.theme-moderne .project-card__title-overlay {
+    color: var(--header-text);
+}
+
+/* Inputs & forms */
+body.theme-moderne input:focus,
+body.theme-moderne textarea:focus,
+body.theme-moderne select:focus {
+    border-color: var(--link-color);
+    outline: none;
+    box-shadow: 0 0 0 3px rgba(63, 81, 181, 0.2);
+}
+
+/* Badges et accents */
+body.theme-moderne .badge,
+body.theme-moderne .editor-badge-context {
+    background: var(--link-color);
+    color: var(--button-text);
+}
+
+/* Panneaux latéraux */
+body.theme-moderne .panel-section-header {
+    border-left: 3px solid var(--link-color);
+}
+
+/* Metric / stat cards */
+body.theme-moderne .metric-card strong,
+body.theme-moderne .project-stat .value {
+    color: var(--link-color);
+}
+
+/* Headings colors */
+body.theme-moderne h1,
+body.theme-moderne h2,
+body.theme-moderne h3,
+body.theme-moderne h4,
+body.theme-moderne h5,
+body.theme-moderne h6 {
+    color: var(--text-main);
+}
+
+/* Headings in header */
+body.theme-moderne header h1,
+body.theme-moderne header h2,
+body.theme-moderne header h3,
+body.theme-moderne header h4,
+body.theme-moderne header h5,
+body.theme-moderne header h6 {
+    color: var(--header-text);
+}

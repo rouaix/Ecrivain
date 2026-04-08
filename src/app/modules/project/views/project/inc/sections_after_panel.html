@@ -1,0 +1,117 @@
+<!-- After Chapters -->
+
+<details class="panel" id="panel-after" data-persist="true">
+
+  <summary>Sections apr&egrave;s les chapitres <span class="panel-count">{{ @stats.after_count }}</span></summary>
+
+  <div class="sortable-groups" id="afterChaptersGroups">
+
+    <repeat group="{{ @afterGroups }}" value="{{ @group }}">
+
+      <div class="section-group-block" data-type="{{ @group.type }}">
+
+        <div class="section-group-heading">
+
+          <h4>
+
+            {{ @group.name }}
+
+          </h4>
+
+          <check if="{{ @group.show_add }}">
+
+            <a class="button small" href="{{ @base }}/project/{{ @project.id }}/section/{{ @group.type }}"
+              title="+ Ajouter une annexe"><i class="fas fa-plus"></i></a>
+
+          </check>
+
+          <check if="{{ @group.show_create }}">
+
+            <a class="button small" href="{{ @base }}/project/{{ @project.id }}/section/{{ @group.type }}"
+              title="Cr&eacute;er"><i class="fas fa-plus"></i></a>
+
+          </check>
+
+        </div>
+
+        <check if="{{ !empty(@group.items) }}">
+
+          <true>
+
+            <table class="compact-table data-table">
+
+              <tbody class="sortable-items" data-type="{{ @group.type }}">
+
+                <repeat group="{{ @group.items }}" value="{{ @section }}">
+
+                  <tr data-id="{{ @section.id }}">
+
+                    <td>
+
+                      <div class="section-actions">
+
+                        <input type="checkbox" class="export-toggle" data-type="section" data-id="{{ @section.id }}" {{
+                          @section.is_exported_attr }} title="Inclure dans l'export">
+
+                        <input type="number" class="order-input" data-type="section" data-id="{{ @section.id }}"
+                          value="{{ @section.order_index + 1 }}">
+
+                        {{ @section.title ?: @group.name }}
+
+                      </div>
+
+                      <check if="{{ !empty(@section.comment)}}">
+
+                        <div class="section-comment">
+
+                          <span>Remarques : </span>{{ @section.comment }}
+
+                        </div>
+
+                      </check>
+
+                    </td>
+
+                    <td class="compact-meta compact-meta--narrow">{{ @section.wc }} mots
+
+                    </td>
+
+                    <td class="compact-actions compact-actions--wide">
+
+                      <button class="button small preview-btn" data-type="section" data-id="{{ @section.id }}"
+                        title="Voir"><i class="fas fa-eye"></i></button>
+
+                      <a class="button small"
+                        href="{{ @base }}/project/{{ @project.id }}/section/{{ @group.type }}?id={{ @section.id }}"
+                        title="Modifier"><i class="fas fa-edit"></i></a>
+
+                      <a class="button small delete js-confirm" href="{{ @base }}/section/{{ @section.id }}/delete"
+                        data-confirm="Supprimer cette section ?" title="Supprimer"><i class="fas fa-trash"></i></a>
+
+                    </td>
+
+                  </tr>
+
+                </repeat>
+
+              </tbody>
+
+            </table>
+
+          </true>
+
+          <false>
+
+            <p class="panel-empty">Aucun contenu cr&eacute;&eacute;.</p>
+
+          </false>
+
+        </check>
+
+      </div>
+
+    </repeat>
+
+  </div>
+
+</details>

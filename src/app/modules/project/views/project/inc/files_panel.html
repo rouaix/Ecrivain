@@ -1,0 +1,118 @@
+<!-- Files Panel -->
+<details class="panel" id="panel-files" data-persist="true">
+
+  <summary>Fichiers <span class="panel-count">{{ @stats.file_count ?? 0 }}</span></summary>
+
+  <div class="section-group-block" data-type="files">
+
+    <div class="section-group-heading">
+
+      <h4>Fichiers du projet</h4>
+
+      <button type="button" class="button small" id="addFileBtn" title="+ Ajouter un fichier"><i
+          class="fas fa-plus"></i></button>
+
+    </div>
+
+    <check if="{{ !empty(@files) }}">
+
+      <true>
+
+        <table class="compact-table data-table">
+
+          <tbody class="sortable-items" data-type="files">
+
+            <repeat group="{{ @files }}" value="{{ @file }}">
+
+              <tr data-id="{{ @file.id }}">
+
+                <td>
+
+                  <div class="file-actions">
+
+                    <i class="fas fa-file"></i>
+
+                    {{ @file.filename }}
+
+                  </div>
+
+                  <check if="{{ @file.comment }}">
+
+                    <div class="file-comment">
+
+                      <span>Remarques : </span>{{ @file.comment }}
+
+                    </div>
+
+                  </check>
+
+                </td>
+
+                <td class="compact-meta compact-meta--narrow stats">{{ @file.size_formatted }}</td>
+
+                <td class="compact-actions compact-actions--wide actions">
+
+                  <button class="button small preview-file-btn" data-id="{{ @file.id }}"
+                    data-filename="{{ @file.filename }}" data-type="{{ @file.filetype }}" title="Pr&eacute;visualiser"><i
+                      class="fas fa-eye"></i></button>
+
+                  <a class="button small" href="{{ @base }}/project/{{ @project.id }}/file/{{ @file.id }}/download"
+                    title="T&eacute;l&eacute;charger" download><i class="fas fa-download"></i></a>
+
+                  <a class="button small delete js-confirm"
+                    href="{{ @base }}/project/{{ @project.id }}/file/{{ @file.id }}/delete"
+                    data-confirm="Supprimer ce fichier ?" title="Supprimer"><i class="fas fa-trash"></i></a>
+
+                </td>
+
+              </tr>
+
+            </repeat>
+
+          </tbody>
+
+        </table>
+
+      </true>
+
+      <false>
+
+        <p class="panel-empty">Aucun fichier ajout&eacute;.</p>
+
+      </false>
+
+    </check>
+
+  </div>
+
+</details>
+
+<!-- File Upload Modal -->
+<div class="modal-overlay" id="fileUploadModal">
+  <div class="modal-content">
+    <div class="modal-header">
+      <h3>Ajouter un fichier</h3>
+      <button type="button" class="modal-close" id="closeFileModal">&times;</button>
+    </div>
+    <div class="modal-body">
+      <form id="fileUploadForm" enctype="multipart/form-data">
+        <input type="hidden" name="csrf_token" value="{{ @csrfToken }}">
+
+        <div class="form-group">
+          <label for="fileInput">Fichier</label>
+          <input type="file" id="fileInput" name="file" required class="input-control">
+          <small>Taille maximale: 10 MB</small>
+        </div>
+
+        <div class="form-group">
+          <label for="fileComment">Commentaire (optionnel)</label>
+          <textarea id="fileComment" name="comment" class="input-control" rows="3"></textarea>
+        </div>
+
+        <div class="form-actions-right">
+          <button type="submit" class="button primary">Envoyer</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>

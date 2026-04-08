@@ -1,0 +1,955 @@
+<div class="project-split-layout">
+
+  <!-- LEFT COLUMN (40%) -->
+
+  <div class="project-col-left">
+
+    <!-- Notes Panel -->
+
+    <details class="panel" id="panel-notes" data-persist="true">
+
+      <summary>Notes <span class="panel-count">{{ @stats.note_count }}</span></summary>
+
+      <div class="section-group-block" data-type="notes">
+
+        <div class="section-group-heading">
+
+          <h4>Notes du projet</h4>
+
+          <a class="button small" href="{{ @base }}/project/{{ @project.id }}/note/edit">+ Ajouter une
+
+            note</a>
+
+        </div>
+
+        <check if="{{ !empty(@notes) }}">
+
+          <true>
+
+            <table class="compact-table data-table">
+
+              <tbody class="sortable-items" data-type="notes">
+
+                <repeat group="{{ @notes }}" value="{{ @note }}">
+
+                  <tr data-id="{{ @note.id }}">
+
+                    <td>
+
+                      <div class="notes-actions">
+
+                        <input type="checkbox" class="export-toggle" data-type="note" data-id="{{ @note.id }}" {{
+
+                          @note.is_exported_attr }} title="Inclure dans l'export">
+
+                        <input type="number" class="order-input" data-type="note" data-id="{{ @note.id }}"
+
+                          value="{{ @note.order_index + 1 }}">
+
+                        {{ @note.title ?: 'Note sans titre' }}
+
+                      </div>
+
+                      <check if="{{ @note.comment }}">
+
+                        <div class="note-comment">
+
+                          <span>Remarques : </span>{{ @note.comment }}
+
+                        </div>
+
+                      </check>
+
+                    </td>
+
+                    <td class="compact-meta compact-meta--narrow stats">{{ @note.wc }} mots</td>
+
+                    <td class="compact-actions compact-actions--wide actions">
+
+                      <button class="button small preview-btn" data-type="note" data-id="{{ @note.id }}"
+
+                        title="Aperçu rapide">Voir</button>
+
+                      <a class="button small"
+
+                        href="{{ @base }}/project/{{ @project.id }}/note/edit?id={{ @note.id }}">Modifier</a>
+
+                      <a class="button small delete js-confirm" href="{{ @base }}/note/{{ @note.id }}/delete"
+
+                        data-confirm="Supprimer cette note ?">Supprimer</a>
+
+                    </td>
+
+                  </tr>
+
+                </repeat>
+
+              </tbody>
+
+            </table>
+
+          </true>
+
+          <false>
+
+            <p class="panel-empty">Aucune note créée.</p>
+
+          </false>
+
+        </check>
+
+      </div>
+
+    </details>
+
+    <details class="panel" id="panel-characters" data-persist="true">
+
+      <summary>Personnages <span class="panel-count">{{ @stats.character_count }}</span></summary>
+
+      <check if="{{ empty(@characters) }}">
+
+        <true>
+
+          <p class="panel-empty">Aucun personnage défini.</p>
+
+        </true>
+
+        <false>
+
+          <ul class="character-list">
+
+            <repeat group="{{ @characters }}" value="{{ @char }}">
+
+              <li>{{ @char.name }}
+
+                <check if="{{ @char.comment }}">
+
+                  <div class="char-comment">
+
+                    <span>Remarques : </span>{{ @char.comment }}
+
+                  </div>
+
+                </check>
+
+              </li>
+
+            </repeat>
+
+          </ul>
+
+        </false>
+
+      </check>
+
+      <div class="panel-actions panel-actions-row">
+
+        <a class="button small" href="{{ @base }}/project/{{ @project.id }}/characters">Gérer les
+
+          personnages</a>
+
+      </div>
+
+    </details>
+
+  </div>
+
+  <!-- RIGHT COLUMN (60%) -->
+
+  <div class="project-col-right">
+
+    <!-- Before Groups -->
+
+    <details class="panel" id="panel-before" data-persist="true">
+
+      <summary>Sections avant les chapitres <span class="panel-count">{{ @stats.before_count }}</span></summary>
+
+      <div class="sortable-groups" id="beforeChaptersGroups">
+
+        <repeat group="{{ @beforeGroups }}" value="{{ @group }}">
+
+          <div class="section-group-block" data-type="{{ @group.type }}">
+
+            <div class="section-group-heading">
+
+              <h4>
+
+                {{ @group.name }}
+
+              </h4>
+
+              <check if="{{ @group.show_create }}">
+
+                <a class="button small" href="{{ @base }}/project/{{ @project.id }}/section/{{ @group.type }}">Créer</a>
+
+              </check>
+
+            </div>
+
+            <check if="{{ !empty(@group.items) }}">
+
+              <true>
+
+                <table class="compact-table data-table">
+
+                  <tbody class="sortable-items" data-type="{{ @group.type }}">
+
+                    <repeat group="{{ @group.items }}" value="{{ @section }}">
+
+                      <tr data-id="{{ @section.id }}">
+
+                        <td>
+
+                          <div class="section-actions">
+
+                            <input type="checkbox" class="export-toggle" data-type="section" data-id="{{ @section.id }}"
+
+                              {{ @section.is_exported_attr }} title="Inclure dans l'export">
+
+                            <input type="number" class="order-input" data-type="section" data-id="{{ @section.id }}"
+
+                              value="{{ @section.order_index + 1 }}">
+
+                            {{ @section.title ?: @group.name }}
+
+                          </div>
+
+                          <check if="{{ !empty(@section.comment)}}">
+
+                            <div class="section-comment">
+
+                              <span>Remarques : </span>{{ @section.comment }}
+
+                            </div>
+
+                          </check>
+
+                        </td>
+
+                        <td class="compact-meta stats">{{ @section.wc }} mots
+
+                        </td>
+
+                        <td class="compact-actions actions">
+
+                          <button class="button small preview-btn" data-type="section" data-id="{{ @section.id }}"
+
+                            title="Aperçu rapide">Voir</button>
+
+                          <a class="button small"
+
+                            href="{{ @base }}/project/{{ @project.id }}/section/{{ @group.type }}?id={{ @section.id }}">Modifier</a>
+
+                          <a class="button small delete js-confirm" href="{{ @base }}/section/{{ @section.id }}/delete"
+
+                            data-confirm="Supprimer cette section ?">Supprimer</a>
+
+                        </td>
+
+                      </tr>
+
+                    </repeat>
+
+                  </tbody>
+
+                </table>
+
+              </true>
+
+              <false>
+
+                <p class="panel-empty">Aucun contenu créé.</p>
+
+              </false>
+
+            </check>
+
+          </div>
+
+        </repeat>
+
+      </div>
+
+    </details>
+
+    <!-- Chapters -->
+
+    <section class="panel panel-open">
+
+      <div class="panel-heading">
+
+        <div>
+
+          <h3>Actes et Chapitres</h3>
+
+          <p class="panel-subtitle">Structure principale du récit.</p>
+
+        </div>
+
+        <div class="panel-actions">
+
+          <a class="button" href="{{ @base }}/project/{{ @project.id }}/act/create">Ajouter un acte</a>
+
+          <a class="button" href="{{ @base }}/project/{{ @project.id }}/chapter/create">Ajouter un
+
+            chapitre</a>
+
+        </div>
+
+      </div>
+
+      <check if="{{ empty(@acts) && empty(@chaptersWithoutAct) }}">
+
+        <true>
+
+          <p>Aucun chapitre ou acte pour ce projet.</p>
+
+        </true>
+
+        <false>
+
+          <repeat group="{{ @acts }}" value="{{ @act }}">
+
+            <details class="act-container" id="act-{{ @act.id }}" data-persist="true">
+
+              <summary class="act-summary">
+
+                <h4>
+
+                  <input type="checkbox" class="export-toggle js-stop-propagation" data-type="act"
+
+                    data-id="{{ @act.id }}" {{ @act.is_exported_attr }} title="Inclure dans l'export">
+
+                  <input type="number" class="order-input js-stop-propagation" data-type="act" data-id="{{ @act.id }}"
+
+                    value="{{ @act.order_index + 1 }}">
+
+                  {{ @act.title }}
+
+                  <span class="act-meta">
+
+                    ({{ @act.stats_chapters }} chapitres / {{ @act.stats_pages }} pages)
+
+                  </span>
+
+                </h4>
+
+                <div class="act-actions">
+
+                  <button class="button small ai-act-summary-btn js-stop-propagation" data-id="{{ @act.id }}"
+
+                    title="Générer un résumé de l'acte via IA">Résumé
+
+                    IA</button>
+
+                  <a class="button small js-stop-propagation" href="{{ @base }}/act/{{ @act.id }}/edit">Modifier
+
+                    l'acte</a>
+
+                  <a class="button small delete js-confirm js-stop-propagation"
+
+                    href="{{ @base }}/act/{{ @act.id }}/delete"
+
+                    data-confirm="Supprimer cet acte et tous ses chapitres ?">Supprimer</a>
+
+                </div>
+
+              </summary>
+
+              <check if="{{ !empty(@act.content) }}">
+
+                <div class="act-description">
+
+                  {{ @act.content | raw }}
+
+                </div>
+
+              </check>
+
+              <check if="{{ !empty(@act.resume) }}">
+
+                <div class="act-resume">
+
+                  <strong>Résumé :</strong><br />
+
+                  {{ @act.resume | raw }}
+
+                </div>
+
+              </check>
+
+              <check if="{{ !empty(@act.comment)}}">
+
+                <div class="act-comment">
+
+                  <span>Remarques : </span>{{ @act.comment }}
+
+                </div>
+
+              </check>
+
+              <check if="{{ !isset(@chaptersByAct[@act.id]) }}">
+
+                <true>
+
+                  <p>Aucun chapitre dans cet acte.</p>
+
+                </true>
+
+                <false>
+
+                  <details class="act-chapters" id="act-chapters-{{ @act.id }}" data-persist="true">
+
+                    <summary>Chapitres de l'acte <span class="panel-count">{{
+
+                        count(@chaptersByAct[@act.id]) }}</span></summary>
+
+                    <table class="data-table">
+
+                      <thead>
+
+                        <tr>
+
+                          <th>Titre</th>
+
+                          <th class="stats">Stats</th>
+
+                          <th class="actions">Actions</th>
+
+                        </tr>
+
+                      </thead>
+
+                      <tbody class="sortable-chapters">
+
+                        <repeat group="{{ @chaptersByAct[@act.id] }}" value="{{ @ch }}">
+
+                          <tr data-id="{{ @ch.id }}">
+
+                            <td class="chapter-actions">
+
+                              <input type="checkbox" class="export-toggle" data-type="chapter" data-id="{{ @ch.id }}" {{
+
+                                @ch.is_exported_attr }} title="Inclure dans l'export">
+
+                              <input type="number" class="order-input" data-type="chapter" data-id="{{ @ch.id }}"
+
+                                value="{{ @ch.order_index + 1 }}">
+
+                              <check if="{{ count(@ch.subs) > 0 }}">
+
+                                <span class="collapse-toggle" data-target="{{ @ch.id }}">▼</span>
+
+                              </check>
+
+                              <strong>
+
+                                {{ @ch.title }}
+
+                              </strong>
+
+                              <check if="{{ !empty(@ch.content) }}">
+
+                                <div class="act-description">
+
+                                  {{ @ch.content | raw }}
+
+                                </div>
+
+                              </check>
+
+                              <check if="{{ !empty(@ch.resume) }}">
+
+                                <div class="chapter-resume">
+
+                                  <strong>Résumé :</strong><br>
+
+                                  {{ @ch.resume | raw }}
+
+                                </div>
+
+                              </check>
+
+                              <check if="{{ !empty(@ch.comment)}}">
+
+                                <div class="chapter-comment">
+
+                                  <span>Remarques : </span>{{ @ch.comment | raw }}
+
+                                </div>
+
+                              </check>
+
+                            </td>
+
+                            <td class="stats">
+
+                              {{ @ch.total_wc }} mots<br>{{ @ch.total_lines }}
+
+                              lignes
+
+                              <br>{{
+
+                              @ch.total_pages }}
+
+                              pages
+
+                            </td>
+
+                            <td class="actions">
+
+                              <a class="button small"
+
+                                href="{{ @base }}/project/{{ @project.id }}/chapter/create?parent_id={{ @ch.id }}&act_id={{ @ch.act_id }}">
+
+                                + Sous-chapitre</a>
+
+                              <button class="button small ai-summary-btn" data-id="{{ @ch.id }}"
+
+                                title="Générer un résumé via IA">Résumé
+
+                                IA</button><br />
+
+                              <button class="button small preview-btn" data-type="chapter" data-id="{{ @ch.id }}"
+
+                                title="Aperçu rapide">Voir</button>
+
+                              <a class="button small" href="{{ @base }}/chapter/{{ @ch.id }}">Éditer</a>
+
+                              <a class="button small delete js-confirm" href="{{ @base }}/chapter/{{ @ch.id }}/delete"
+
+                                data-confirm="Supprimer ce chapitre ?">Supprimer</a>
+
+                            </td>
+
+                          </tr>
+
+                          <repeat group="{{ @ch.subs }}" value="{{ @sub }}">
+
+                            <tr data-id="{{ @sub.id }}" class="sub-chapter sub-of-{{ @ch.id }}">
+
+                              <td class="sous-chapitre">
+
+                                <input type="checkbox" class="export-toggle" data-type="chapter" data-id="{{ @sub.id }}"
+
+                                  {{ @sub.is_exported_attr }} title="Inclure dans l'export">
+
+                                <input type="number" class="order-input" data-type="chapter" data-id="{{ @sub.id }}"
+
+                                  value="{{ @sub.order_index + 1 }}">
+
+                                <span>
+
+                                  {{ @sub.title }}
+
+                                </span>
+
+                                <check if="{{ !empty(@sub.comment)}}">
+
+                                  <div class="sub-chapter-comment">
+
+                                    <span>Remarques : </span>{{ @sub.comment | raw
+
+                                    }}
+
+                                  </div>
+
+                                </check>
+
+                              </td>
+
+                              <td class="stats">
+
+                                {{ @sub.wc }} mots<br>{{
+
+                                @sub.lines }} lignes
+
+                                <br>{{ @sub.pages }}
+
+                                pages
+
+                              </td>
+
+                              <td class="actions">
+
+                                <button class="button small preview-btn" data-type="chapter" data-id="{{ @sub.id }}"
+
+                                  title="Aperçu rapide">Voir</button>
+
+                                <a class="button small" href="{{ @base }}/chapter/{{ @sub.id }}">Éditer</a>
+
+                                <a class="button small delete js-confirm"
+
+                                  href="{{ @base }}/chapter/{{ @sub.id }}/delete"
+
+                                  data-confirm="Supprimer ce sous-chapitre ?">Supprimer</a>
+
+                              </td>
+
+                            </tr>
+
+                          </repeat>
+
+                        </repeat>
+
+                      </tbody>
+
+                    </table>
+
+                  </details>
+
+                </false>
+
+              </check>
+
+            </details>
+
+          </repeat>
+
+          <check if="{{ !empty(@chaptersWithoutAct) }}">
+
+            <details class="act-container" id="act-orphan" data-persist="true">
+
+              <summary class="act-summary">
+
+                <h4>
+
+                  Acte ?
+
+                  <span class="act-meta">
+
+                    ({{ @orphanStats.chapters }} chapitres / {{ @orphanStats.pages }} pages)
+
+                  </span>
+
+                </h4>
+
+              </summary>
+
+              <div class="act-description">
+
+                Chapitres hors actes
+
+              </div>
+
+              <details class="act-chapters" id="act-orphan-chapters" data-persist="true" open>
+
+                <summary>Chapitres de l'acte <span class="panel-count">{{ count(@chaptersWithoutAct)
+
+                    }}</span></summary>
+
+                <table class="data-table">
+
+                  <thead>
+
+                    <tr>
+
+                      <th>Titre</th>
+
+                      <th class="stats">Stats</th>
+
+                      <th class="actions">Actions</th>
+
+                    </tr>
+
+                  </thead>
+
+                  <tbody class="sortable-chapters">
+
+                    <repeat group="{{ @chaptersWithoutAct }}" value="{{ @ch }}">
+
+                      <tr data-id="{{ @ch.id }}">
+
+                        <td class="chapter-actions">
+
+                          <input type="checkbox" class="export-toggle" data-type="chapter" data-id="{{ @ch.id }}" {{
+
+                            @ch.is_exported_attr }} title="Inclure dans l'export">
+
+                          <input type="number" class="order-input" data-type="chapter" data-id="{{ @ch.id }}"
+
+                            value="{{ @ch.order_index + 1 }}">
+
+                          <check if="{{ count(@ch.subs) > 0 }}">
+
+                            <span class="collapse-toggle" data-target="{{ @ch.id }}">▼</span>
+
+                          </check>
+
+                          {{ @ch.title }}
+
+                          <check if="{{ !empty(@ch.content) }}">
+
+                            <div class="act-description">
+
+                              {{ @ch.content | raw }}
+
+                            </div>
+
+                          </check>
+
+                          <check if="{{ !empty(@ch.resume) }}">
+
+                            <div class="chapter-resume">
+
+                              <strong>Résumé :</strong><br>
+
+                              {{ @ch.resume | raw }}
+
+                            </div>
+
+                          </check>
+
+                          <check if="{{ !empty(@ch.comment)}}">
+
+                            <div class="chapter-comment">
+
+                              <span>Remarques : </span>{{ @ch.comment | raw }}
+
+                            </div>
+
+                          </check>
+
+                        </td>
+
+                        <td>
+
+                          {{ @ch.total_wc }} mots<br>{{ @ch.total_lines }}
+
+                          lignes<br>{{@ch.total_pages }} pages
+
+                          <check if="{{ @ch.wc_subs_only > 0 }}">
+
+                            <br>({{ @ch.wc }} + {{
+
+                            @ch.wc_subs_only
+
+                            }})
+
+                          </check>
+
+                        </td>
+
+                        <td class="actions">
+
+                          <a class="button small"
+
+                            href="{{ @base }}/project/{{ @project.id }}/chapter/create?parent_id={{ @ch.id }}&act_id={{ @ch.act_id }}">
+
+                            + Sous-chapitre</a>
+
+                          <button class="button small ai-summary-btn" data-id="{{ @ch.id }}"
+
+                            title="Générer un résumé via IA">Résumé IA</button><br />
+
+                          <button class="button small preview-btn" data-type="chapter" data-id="{{ @ch.id }}"
+
+                            title="Aperçu rapide">Voir</button>
+
+                          <a class="button small" href="{{ @base }}/chapter/{{ @ch.id }}">Éditer</a>
+
+                          <a class="button small delete js-confirm" href="{{ @base }}/chapter/{{ @ch.id }}/delete"
+
+                            data-confirm="Supprimer ce chapitre ?">Supprimer</a>
+
+                        </td>
+
+                      </tr>
+
+                      <repeat group="{{ @ch.subs }}" value="{{ @sub }}">
+
+                        <tr data-id="{{ @sub.id }}" class="sub-chapter sub-of-{{ @ch.id }}">
+
+                          <td class="sous-chapitre">
+
+                            <input type="checkbox" class="export-toggle" data-type="chapter" data-id="{{ @sub.id }}" {{
+
+                              @sub.is_exported_attr }} title="Inclure dans l'export">
+
+                            <input type="number" class="order-input" data-type="chapter" data-id="{{ @sub.id }}"
+
+                              value="{{ @sub.order_index + 1 }}">
+
+                            <span>{{ @sub.title }}</span>
+
+                            <check if="{{ !empty(@sub.comment)}}">
+
+                              <div class="sub-chapter-comment">
+
+                                <span>Remarques : </span>{{ @sub.comment | raw }}
+
+                              </div>
+
+                            </check>
+
+                          </td>
+
+                          <td class="stats">
+
+                            {{ @sub.wc }} mots<br>{{ @sub.lines }} lignes
+
+                            <br>{{ @sub.pages }} pages
+
+                          </td>
+
+                          <td class="actions">
+
+                            <button class="button small preview-btn" data-type="chapter" data-id="{{ @sub.id }}"
+
+                              title="Aperçu rapide">Voir</button>
+
+                            <a class="button small" href="{{ @base }}/chapter/{{ @sub.id }}">Éditer</a>
+
+                            <a class="button small delete js-confirm" href="{{ @base }}/chapter/{{ @sub.id }}/delete"
+
+                              data-confirm="Supprimer ce sous-chapitre ?">Supprimer</a>
+
+                          </td>
+
+                        </tr>
+
+                      </repeat>
+
+                    </repeat>
+
+                  </tbody>
+
+                </table>
+
+              </details>
+
+            </details>
+
+          </check>
+
+        </false>
+
+      </check>
+
+    </section>
+
+    <!-- After Chapters -->
+
+    <details class="panel" id="panel-after" data-persist="true">
+
+      <summary>Sections après les chapitres <span class="panel-count">{{ @stats.after_count }}</span></summary>
+
+      <div class="sortable-groups" id="afterChaptersGroups">
+
+        <repeat group="{{ @afterGroups }}" value="{{ @group }}">
+
+          <div class="section-group-block" data-type="{{ @group.type }}">
+
+            <div class="section-group-heading">
+
+              <h4>
+
+                {{ @group.name }}
+
+              </h4>
+
+              <check if="{{ @group.show_add }}">
+
+                <a class="button small" href="{{ @base }}/project/{{ @project.id }}/section/{{ @group.type }}">+
+
+                  Ajouter une annexe</a>
+
+              </check>
+
+              <check if="{{ @group.show_create }}">
+
+                <a class="button small" href="{{ @base }}/project/{{ @project.id }}/section/{{ @group.type }}">Créer</a>
+
+              </check>
+
+            </div>
+
+            <check if="{{ !empty(@group.items) }}">
+
+              <true>
+
+                <table class="compact-table data-table">
+
+                  <tbody class="sortable-items" data-type="{{ @group.type }}">
+
+                    <repeat group="{{ @group.items }}" value="{{ @section }}">
+
+                      <tr data-id="{{ @section.id }}">
+
+                        <td>
+
+                          <div class="section-actions">
+
+                            <input type="checkbox" class="export-toggle" data-type="section" data-id="{{ @section.id }}"
+
+                              {{ @section.is_exported_attr }} title="Inclure dans l'export">
+
+                            <input type="number" class="order-input" data-type="section" data-id="{{ @section.id }}"
+
+                              value="{{ @section.order_index + 1 }}">
+
+                            {{ @section.title ?: @group.name }}
+
+                          </div>
+
+                          <check if="{{ !empty(@section.comment)}}">
+
+                            <div class="section-comment">
+
+                              <span>Remarques : </span>{{ @section.comment }}
+
+                            </div>
+
+                          </check>
+
+                        </td>
+
+                        <td class="compact-meta compact-meta--narrow">{{ @section.wc }} mots
+
+                        </td>
+
+                        <td class="compact-actions compact-actions--wide">
+
+                          <button class="button small preview-btn" data-type="section" data-id="{{ @section.id }}"
+
+                            title="Aperçu rapide">Voir</button>
+
+                          <a class="button small"
+
+                            href="{{ @base }}/project/{{ @project.id }}/section/{{ @group.type }}?id={{ @section.id }}">Modifier</a>
+
+                          <a class="button small delete js-confirm" href="{{ @base }}/section/{{ @section.id }}/delete"
+
+                            data-confirm="Supprimer cette section ?">Supprimer</a>
+
+                        </td>
+
+                      </tr>
+
+                    </repeat>
+
+                  </tbody>
+
+                </table>
+
+              </true>
+
+              <false>
+
+                <p class="panel-empty">Aucun contenu créé.</p>
+
+              </false>
+
+            </check>
+
+          </div>
+
+        </repeat>
+
+      </div>
+
+    </details>
+
+  </div>
+
+</div>

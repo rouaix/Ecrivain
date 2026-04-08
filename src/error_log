@@ -1,0 +1,729 @@
+[31-Jan-2026 18:10:26 Europe/Paris] Saving Author: Daniel ROUAIX
+[31-Jan-2026 18:10:26 Europe/Paris] Settings JSON: {"author":"Daniel ROUAIX"}
+[31-Jan-2026 19:02:34 Europe/Paris] Call to undefined function finfo_open() [/home/cp28663/public_html/ecrivain/src/app/controllers/Controller.php:445]
+[31-Jan-2026 19:02:34 Europe/Paris] [ecrivain/src/app/modules/project/controllers/ProjectController.php:499] Controller->validateImageUpload()
+[31-Jan-2026 19:02:34 Europe/Paris] [ecrivain/src/www/index.php:129] Base->run()
+[31-Jan-2026 19:08:44 Europe/Paris] Call to undefined function finfo_open() [/home/cp28663/public_html/ecrivain/src/app/controllers/Controller.php:445]
+[31-Jan-2026 19:08:44 Europe/Paris] [ecrivain/src/app/modules/project/controllers/ProjectController.php:499] Controller->validateImageUpload()
+[31-Jan-2026 19:08:44 Europe/Paris] [ecrivain/src/www/index.php:129] Base->run()
+[31-Jan-2026 19:09:03 Europe/Paris] Call to undefined function finfo_open() [/home/cp28663/public_html/ecrivain/src/app/controllers/Controller.php:445]
+[31-Jan-2026 19:09:03 Europe/Paris] [ecrivain/src/app/modules/project/controllers/ProjectController.php:499] Controller->validateImageUpload()
+[31-Jan-2026 19:09:03 Europe/Paris] [ecrivain/src/www/index.php:129] Base->run()
+[31-Jan-2026 19:09:35 Europe/Paris] Cover uploaded successfully: public/uploads/covers/project_2_couverture_1769882975.jpg
+[31-Jan-2026 19:09:35 Europe/Paris] Saving Author: Daniel ROUAIX
+[31-Jan-2026 19:09:35 Europe/Paris] Settings JSON: {"author":"Daniel ROUAIX"}
+[01-Feb-2026 16:14:35 Europe/Paris] === setTheme() called ===
+[01-Feb-2026 16:14:35 Europe/Paris] Theme value from POST: 'paper'
+[01-Feb-2026 16:14:35 Europe/Paris] Theme is valid: paper
+[01-Feb-2026 16:14:35 Europe/Paris] Headers NOT sent yet, safe to set cookie
+[01-Feb-2026 16:14:35 Europe/Paris] isHttps: true
+[01-Feb-2026 16:14:35 Europe/Paris] setcookie() returned: true
+[01-Feb-2026 16:14:35 Europe/Paris] Updated $_COOKIE['theme'] to: paper
+[01-Feb-2026 16:14:35 Europe/Paris] F3 COOKIE synced
+[01-Feb-2026 16:14:35 Europe/Paris] About to redirect. Referer: https://www.rouaix.com/ecrivain/dashboard
+[01-Feb-2026 16:14:35 Europe/Paris] Redirecting to referer
+[01-Feb-2026 16:14:37 Europe/Paris] === setTheme() called ===
+[01-Feb-2026 16:14:37 Europe/Paris] Theme value from POST: 'modern'
+[01-Feb-2026 16:14:37 Europe/Paris] Theme is valid: modern
+[01-Feb-2026 16:14:37 Europe/Paris] Headers NOT sent yet, safe to set cookie
+[01-Feb-2026 16:14:37 Europe/Paris] isHttps: true
+[01-Feb-2026 16:14:37 Europe/Paris] setcookie() returned: true
+[01-Feb-2026 16:14:37 Europe/Paris] Updated $_COOKIE['theme'] to: modern
+[01-Feb-2026 16:14:37 Europe/Paris] F3 COOKIE synced
+[01-Feb-2026 16:14:37 Europe/Paris] About to redirect. Referer: https://www.rouaix.com/ecrivain/dashboard
+[01-Feb-2026 16:14:37 Europe/Paris] Redirecting to referer
+[02-Feb-2026 07:49:32 Europe/Paris] === setTheme() called ===
+[02-Feb-2026 07:49:32 Europe/Paris] Theme value from POST: 'writer'
+[02-Feb-2026 07:49:32 Europe/Paris] Theme is valid: writer
+[02-Feb-2026 07:49:32 Europe/Paris] Headers NOT sent yet, safe to set cookie
+[02-Feb-2026 07:49:32 Europe/Paris] isHttps: true
+[02-Feb-2026 07:49:32 Europe/Paris] setcookie() returned: true
+[02-Feb-2026 07:49:32 Europe/Paris] Updated $_COOKIE['theme'] to: writer
+[02-Feb-2026 07:49:32 Europe/Paris] F3 COOKIE synced
+[02-Feb-2026 07:49:32 Europe/Paris] About to redirect. Referer: https://www.rouaix.com/ecrivain/dashboard
+[02-Feb-2026 07:49:32 Europe/Paris] Redirecting to referer
+[02-Feb-2026 07:49:33 Europe/Paris] === setTheme() called ===
+[02-Feb-2026 07:49:33 Europe/Paris] Theme value from POST: 'paper'
+[02-Feb-2026 07:49:33 Europe/Paris] Theme is valid: paper
+[02-Feb-2026 07:49:33 Europe/Paris] Headers NOT sent yet, safe to set cookie
+[02-Feb-2026 07:49:33 Europe/Paris] isHttps: true
+[02-Feb-2026 07:49:33 Europe/Paris] setcookie() returned: true
+[02-Feb-2026 07:49:33 Europe/Paris] Updated $_COOKIE['theme'] to: paper
+[02-Feb-2026 07:49:33 Europe/Paris] F3 COOKIE synced
+[02-Feb-2026 07:49:33 Europe/Paris] About to redirect. Referer: https://www.rouaix.com/ecrivain/dashboard
+[02-Feb-2026 07:49:33 Europe/Paris] Redirecting to referer
+[02-Feb-2026 07:49:58 Europe/Paris] Saving Author: Daniel ROUAIX
+[02-Feb-2026 07:49:58 Europe/Paris] Settings JSON: {"author":"Daniel ROUAIX"}
+[02-Feb-2026 09:26:30 Europe/Paris] === setTheme() called ===
+[02-Feb-2026 09:26:30 Europe/Paris] Theme value from POST: 'writer'
+[02-Feb-2026 09:26:30 Europe/Paris] Theme is valid: writer
+[02-Feb-2026 09:26:30 Europe/Paris] Headers NOT sent yet, safe to set cookie
+[02-Feb-2026 09:26:30 Europe/Paris] isHttps: true
+[02-Feb-2026 09:26:30 Europe/Paris] setcookie() returned: true
+[02-Feb-2026 09:26:30 Europe/Paris] Updated $_COOKIE['theme'] to: writer
+[02-Feb-2026 09:26:30 Europe/Paris] F3 COOKIE synced
+[02-Feb-2026 09:26:30 Europe/Paris] About to redirect. Referer: https://www.rouaix.com/ecrivain/dashboard
+[02-Feb-2026 09:26:30 Europe/Paris] Redirecting to referer
+[02-Feb-2026 09:26:31 Europe/Paris] === setTheme() called ===
+[02-Feb-2026 09:26:31 Europe/Paris] Theme value from POST: 'paper'
+[02-Feb-2026 09:26:31 Europe/Paris] Theme is valid: paper
+[02-Feb-2026 09:26:31 Europe/Paris] Headers NOT sent yet, safe to set cookie
+[02-Feb-2026 09:26:31 Europe/Paris] isHttps: true
+[02-Feb-2026 09:26:31 Europe/Paris] setcookie() returned: true
+[02-Feb-2026 09:26:31 Europe/Paris] Updated $_COOKIE['theme'] to: paper
+[02-Feb-2026 09:26:31 Europe/Paris] F3 COOKIE synced
+[02-Feb-2026 09:26:31 Europe/Paris] About to redirect. Referer: https://www.rouaix.com/ecrivain/dashboard
+[02-Feb-2026 09:26:31 Europe/Paris] Redirecting to referer
+[02-Feb-2026 09:26:33 Europe/Paris] === setTheme() called ===
+[02-Feb-2026 09:26:33 Europe/Paris] Theme value from POST: 'default'
+[02-Feb-2026 09:26:33 Europe/Paris] Theme is valid: default
+[02-Feb-2026 09:26:33 Europe/Paris] Headers NOT sent yet, safe to set cookie
+[02-Feb-2026 09:26:33 Europe/Paris] isHttps: true
+[02-Feb-2026 09:26:33 Europe/Paris] setcookie() returned: true
+[02-Feb-2026 09:26:33 Europe/Paris] Updated $_COOKIE['theme'] to: default
+[02-Feb-2026 09:26:33 Europe/Paris] F3 COOKIE synced
+[02-Feb-2026 09:26:33 Europe/Paris] About to redirect. Referer: https://www.rouaix.com/ecrivain/dashboard
+[02-Feb-2026 09:26:33 Europe/Paris] Redirecting to referer
+[11-Feb-2026 07:28:44 Europe/Paris] Saving Author: Daniel ROUAIX
+[11-Feb-2026 07:28:44 Europe/Paris] Settings JSON: {"author":"Daniel ROUAIX"}
+[11-Feb-2026 07:29:28 Europe/Paris] Saving Author: Daniel ROUAIX
+[11-Feb-2026 07:29:28 Europe/Paris] Settings JSON: {"author":"Daniel ROUAIX"}
+[11-Feb-2026 13:52:50 Europe/Paris] HTTP 404 (GET /element/images/shadow.png)
+[11-Feb-2026 13:52:50 Europe/Paris] [ecrivain/src/www/index.php:286] Base->run()
+[11-Feb-2026 13:52:50 Europe/Paris] HTTP 404 (GET /element/images/loading-icon.gif)
+[11-Feb-2026 13:52:50 Europe/Paris] [ecrivain/src/www/index.php:286] Base->run()
+[18-Feb-2026 20:04:33 Europe/Paris] HTTP 404 (GET /public/js/quill-adapter.js?v=22)
+[18-Feb-2026 20:04:33 Europe/Paris] [ecrivain/src/www/index.php:286] Base->run()
+[18-Feb-2026 20:04:33 Europe/Paris] HTTP 404 (GET /public/style.css?v=25)
+[18-Feb-2026 20:04:33 Europe/Paris] [ecrivain/src/www/index.php:286] Base->run()
+[18-Feb-2026 20:04:33 Europe/Paris] HTTP 404 (GET /public/theme-default.css)
+[18-Feb-2026 20:04:33 Europe/Paris] [ecrivain/src/www/index.php:286] Base->run()
+[18-Feb-2026 20:04:33 Europe/Paris] HTTP 404 (GET /public/js/quill-adapter.js?v=22)
+[18-Feb-2026 20:04:33 Europe/Paris] [ecrivain/src/www/index.php:286] Base->run()
+[18-Feb-2026 20:04:33 Europe/Paris] HTTP 404 (GET /public/style.css?v=25)
+[18-Feb-2026 20:04:33 Europe/Paris] [ecrivain/src/www/index.php:286] Base->run()
+[18-Feb-2026 20:04:33 Europe/Paris] HTTP 404 (GET /public/theme-default.css)
+[18-Feb-2026 20:04:33 Europe/Paris] [ecrivain/src/www/index.php:286] Base->run()
+[18-Feb-2026 20:04:33 Europe/Paris] HTTP 404 (GET /public/icons/icon-192.png)
+[18-Feb-2026 20:04:33 Europe/Paris] [ecrivain/src/www/index.php:286] Base->run()
+[18-Feb-2026 20:04:48 Europe/Paris] Migration executed: 000_init_schema
+[18-Feb-2026 20:04:48 Europe/Paris] Migration executed: 004_writing_stats
+[18-Feb-2026 20:04:48 Europe/Paris] Migration executed: 005_chapter_versions
+[18-Feb-2026 20:04:48 Europe/Paris] Migration executed: 006_project_dictionary
+[18-Feb-2026 20:04:48 Europe/Paris] Migration executed: 007_new_templates
+[18-Feb-2026 20:04:48 Europe/Paris] HTTP 404 (GET /public/theme-default.css)
+[18-Feb-2026 20:04:48 Europe/Paris] [ecrivain/src/www/index.php:286] Base->run()
+[18-Feb-2026 20:04:48 Europe/Paris] HTTP 404 (GET /public/js/quill-adapter.js?v=22)
+[18-Feb-2026 20:04:48 Europe/Paris] [ecrivain/src/www/index.php:286] Base->run()
+[18-Feb-2026 20:04:48 Europe/Paris] HTTP 404 (GET /public/style.css?v=25)
+[18-Feb-2026 20:04:48 Europe/Paris] [ecrivain/src/www/index.php:286] Base->run()
+[18-Feb-2026 20:04:48 Europe/Paris] HTTP 404 (GET /public/js/quill-adapter.js?v=22)
+[18-Feb-2026 20:04:48 Europe/Paris] [ecrivain/src/www/index.php:286] Base->run()
+[18-Feb-2026 20:04:48 Europe/Paris] HTTP 404 (GET /public/style.css?v=25)
+[18-Feb-2026 20:04:48 Europe/Paris] [ecrivain/src/www/index.php:286] Base->run()
+[18-Feb-2026 20:04:48 Europe/Paris] HTTP 404 (GET /public/theme-default.css)
+[18-Feb-2026 20:04:48 Europe/Paris] [ecrivain/src/www/index.php:286] Base->run()
+[18-Feb-2026 20:04:48 Europe/Paris] HTTP 404 (GET /public/icons/icon-192.png)
+[18-Feb-2026 20:04:48 Europe/Paris] [ecrivain/src/www/index.php:286] Base->run()
+[18-Feb-2026 20:05:06 Europe/Paris] HTTP 404 (GET /public/theme-default.css)
+[18-Feb-2026 20:05:06 Europe/Paris] [ecrivain/src/www/index.php:286] Base->run()
+[18-Feb-2026 20:05:06 Europe/Paris] HTTP 404 (GET /public/style.css?v=25)
+[18-Feb-2026 20:05:06 Europe/Paris] [ecrivain/src/www/index.php:286] Base->run()
+[18-Feb-2026 20:05:06 Europe/Paris] HTTP 404 (GET /public/theme-default.css)
+[18-Feb-2026 20:05:06 Europe/Paris] [ecrivain/src/www/index.php:286] Base->run()
+[18-Feb-2026 20:05:06 Europe/Paris] HTTP 404 (GET /public/style.css?v=25)
+[18-Feb-2026 20:05:06 Europe/Paris] [ecrivain/src/www/index.php:286] Base->run()
+[18-Feb-2026 20:06:42 Europe/Paris] Cover file not found at path: public/uploads/covers/project_2_couverture_1770395770.jpg
+[18-Feb-2026 20:06:42 Europe/Paris] HTTP 404 (GET /project/2/cover)
+[18-Feb-2026 20:06:42 Europe/Paris] [ecrivain/src/app/modules/project/controllers/ProjectController.php:861] Base->error()
+[18-Feb-2026 20:06:42 Europe/Paris] [ecrivain/src/www/index.php:286] Base->run()
+[18-Feb-2026 20:07:16 Europe/Paris] Cover file not found at path: public/uploads/covers/project_2_couverture_1770395770.jpg
+[18-Feb-2026 20:07:16 Europe/Paris] HTTP 404 (GET /project/2/cover)
+[18-Feb-2026 20:07:16 Europe/Paris] [ecrivain/src/app/modules/project/controllers/ProjectController.php:861] Base->error()
+[18-Feb-2026 20:07:16 Europe/Paris] [ecrivain/src/www/index.php:286] Base->run()
+[18-Feb-2026 20:07:19 Europe/Paris] Cover file not found at path: public/uploads/covers/project_2_couverture_1770395770.jpg
+[18-Feb-2026 20:07:19 Europe/Paris] HTTP 404 (GET /project/2/cover)
+[18-Feb-2026 20:07:19 Europe/Paris] [ecrivain/src/app/modules/project/controllers/ProjectController.php:861] Base->error()
+[18-Feb-2026 20:07:19 Europe/Paris] [ecrivain/src/www/index.php:286] Base->run()
+[18-Feb-2026 20:07:58 Europe/Paris] Cover file not found at path: public/uploads/covers/project_2_couverture_1770395770.jpg
+[18-Feb-2026 20:07:58 Europe/Paris] HTTP 404 (GET /project/2/cover?v=750647969)
+[18-Feb-2026 20:07:58 Europe/Paris] [ecrivain/src/app/modules/project/controllers/ProjectController.php:861] Base->error()
+[18-Feb-2026 20:07:58 Europe/Paris] [ecrivain/src/www/index.php:286] Base->run()
+[18-Feb-2026 20:08:10 Europe/Paris] Cover file not found at path: public/uploads/covers/project_2_couverture_1770395770.jpg
+[18-Feb-2026 20:08:10 Europe/Paris] HTTP 404 (GET /project/2/cover?v=1985170892)
+[18-Feb-2026 20:08:10 Europe/Paris] [ecrivain/src/app/modules/project/controllers/ProjectController.php:861] Base->error()
+[18-Feb-2026 20:08:10 Europe/Paris] [ecrivain/src/www/index.php:286] Base->run()
+[18-Feb-2026 20:08:49 Europe/Paris] Cover uploaded successfully: public/uploads/covers/project_2_couverture_1771441729.jpg
+[18-Feb-2026 20:08:49 Europe/Paris] Saving Author: Daniel ROUAIX
+[18-Feb-2026 20:08:49 Europe/Paris] Settings JSON: {"author":"Daniel ROUAIX"}
+[18-Feb-2026 20:10:29 Europe/Paris] Deleted old cover: public/uploads/covers/project_2_couverture_1771441729.jpg
+[18-Feb-2026 20:10:29 Europe/Paris] Cover uploaded successfully: public/uploads/covers/project_2_couverture_1771441829.jpg
+[18-Feb-2026 20:10:29 Europe/Paris] Saving Author: Daniel ROUAIX
+[18-Feb-2026 20:10:29 Europe/Paris] Settings JSON: {"author":"Daniel ROUAIX"}
+[18-Feb-2026 20:10:59 Europe/Paris] Deleted old cover: public/uploads/covers/project_2_couverture_1771441829.jpg
+[18-Feb-2026 20:10:59 Europe/Paris] Cover uploaded successfully: public/uploads/covers/project_2_couverture_1771441859.jpg
+[18-Feb-2026 20:10:59 Europe/Paris] Saving Author: Daniel ROUAIX
+[18-Feb-2026 20:10:59 Europe/Paris] Settings JSON: {"author":"Daniel ROUAIX"}
+[18-Feb-2026 20:21:22 Europe/Paris] Migration executed: 008_annotations
+[18-Feb-2026 20:23:34 Europe/Paris] Saving Author: Daniel ROUAIX
+[18-Feb-2026 20:23:34 Europe/Paris] Settings JSON: {"author":"Daniel ROUAIX"}
+[19-Feb-2026 18:58:11 Europe/Paris] Cover file not found at path: data/daniel@rouaix.com/projects/2/project_2_couverture_1771441859.jpg
+[19-Feb-2026 18:58:11 Europe/Paris] HTTP 404 (GET /project/2/cover)
+[19-Feb-2026 18:58:11 Europe/Paris] [ecrivain/src/app/modules/project/controllers/ProjectController.php:862] Base->error()
+[19-Feb-2026 18:58:11 Europe/Paris] [ecrivain/src/www/index.php:294] Base->run()
+[19-Feb-2026 18:58:15 Europe/Paris] Cover file not found at path: data/daniel@rouaix.com/projects/2/project_2_couverture_1771441859.jpg
+[19-Feb-2026 18:58:15 Europe/Paris] HTTP 404 (GET /project/2/cover)
+[19-Feb-2026 18:58:15 Europe/Paris] [ecrivain/src/app/modules/project/controllers/ProjectController.php:862] Base->error()
+[19-Feb-2026 18:58:15 Europe/Paris] [ecrivain/src/www/index.php:294] Base->run()
+[19-Feb-2026 18:58:28 Europe/Paris] Cover file not found at path: data/daniel@rouaix.com/projects/2/project_2_couverture_1771441859.jpg
+[19-Feb-2026 18:58:28 Europe/Paris] HTTP 404 (GET /project/2/cover?v=2007473746)
+[19-Feb-2026 18:58:28 Europe/Paris] [ecrivain/src/app/modules/project/controllers/ProjectController.php:862] Base->error()
+[19-Feb-2026 18:58:28 Europe/Paris] [ecrivain/src/www/index.php:294] Base->run()
+[19-Feb-2026 18:58:44 Europe/Paris] Cover uploaded successfully: data/daniel@rouaix.com/projects/2/cover.jpg
+[19-Feb-2026 18:58:44 Europe/Paris] Saving Author: Daniel ROUAIX
+[19-Feb-2026 18:58:44 Europe/Paris] Settings JSON: {"author":"Daniel ROUAIX"}
+[21-Feb-2026 23:19:48 Europe/Paris] Saving Author: 
+[21-Feb-2026 23:19:48 Europe/Paris] Settings JSON: {"author":""}
+[22-Feb-2026 13:40:12 Europe/Paris] Token CSRF invalide.
+[22-Feb-2026 13:40:12 Europe/Paris] [ecrivain/src/app/controllers/Controller.php:240] Base->error()
+[22-Feb-2026 13:40:12 Europe/Paris] [ecrivain/src/app/controllers/Controller.php:27] Controller->requireCsrf()
+[22-Feb-2026 13:40:12 Europe/Paris] [ecrivain/src/app/modules/element/controllers/ElementController.php:7] Controller->beforeRoute()
+[22-Feb-2026 13:40:12 Europe/Paris] [ecrivain/src/www/index.php:294] Base->run()
+[24-Feb-2026 14:39:36 Europe/Paris] Cover uploaded successfully: data/daniel@rouaix.com/projects/2/cover.jpg
+[24-Feb-2026 14:39:36 Europe/Paris] Saving Author: Daniel ROUAIX
+[24-Feb-2026 14:39:36 Europe/Paris] Settings JSON: {"author":"Daniel ROUAIX"}
+[24-Feb-2026 14:58:32 Europe/Paris] Cover uploaded successfully: data/daniel@rouaix.com/projects/2/cover.jpg
+[24-Feb-2026 14:58:32 Europe/Paris] Saving Author: Daniel ROUAIX
+[24-Feb-2026 14:58:32 Europe/Paris] Settings JSON: {"author":"Daniel ROUAIX"}
+[25-Feb-2026 07:59:15 Europe/Paris] Saving Author: 
+[25-Feb-2026 07:59:15 Europe/Paris] Settings JSON: {"author":""}
+[25-Feb-2026 07:59:42 Europe/Paris] Cover uploaded successfully: data/daniel@rouaix.com/projects/5/cover.png
+[25-Feb-2026 07:59:42 Europe/Paris] Saving Author: 
+[25-Feb-2026 07:59:42 Europe/Paris] Settings JSON: {"author":""}
+[25-Feb-2026 08:01:20 Europe/Paris] Deleted old cover: data/daniel@rouaix.com/projects/5/cover.png
+[25-Feb-2026 08:01:20 Europe/Paris] Cover uploaded successfully: data/daniel@rouaix.com/projects/5/cover.jpg
+[25-Feb-2026 08:01:20 Europe/Paris] Saving Author: 
+[25-Feb-2026 08:01:20 Europe/Paris] Settings JSON: {"author":""}
+[25-Feb-2026 08:02:23 Europe/Paris] Saving Author: 
+[25-Feb-2026 08:02:23 Europe/Paris] Settings JSON: {"author":""}
+[25-Feb-2026 14:10:26 Europe/Paris] Migration executed: 009_share_links
+[25-Feb-2026 14:10:26 Europe/Paris] Migration executed: 010_share_link_projects
+[25-Feb-2026 15:15:02 Europe/Paris] Migration executed: 011_project_collaborators
+[25-Feb-2026 15:15:02 Europe/Paris] Migration executed: 012_collaboration_requests
+[25-Feb-2026 15:48:00 Europe/Paris] Cover not found - Project: 1, Cover: none
+[25-Feb-2026 15:48:00 Europe/Paris] HTTP 404 (GET /project/1/cover)
+[25-Feb-2026 15:48:00 Europe/Paris] [ecrivain/src/app/modules/project/controllers/ProjectController.php:973] Base->error()
+[25-Feb-2026 15:48:00 Europe/Paris] [ecrivain/src/www/index.php:294] Base->run()
+[25-Feb-2026 15:48:29 Europe/Paris] Cover not found - Project: 1, Cover: none
+[25-Feb-2026 15:48:29 Europe/Paris] HTTP 404 (GET /project/1/cover)
+[25-Feb-2026 15:48:29 Europe/Paris] [ecrivain/src/app/modules/project/controllers/ProjectController.php:973] Base->error()
+[25-Feb-2026 15:48:29 Europe/Paris] [ecrivain/src/www/index.php:294] Base->run()
+[25-Feb-2026 15:49:12 Europe/Paris] Cover not found - Project: 1, Cover: none
+[25-Feb-2026 15:49:12 Europe/Paris] HTTP 404 (GET /project/1/cover)
+[25-Feb-2026 15:49:12 Europe/Paris] [ecrivain/src/app/modules/project/controllers/ProjectController.php:973] Base->error()
+[25-Feb-2026 15:49:12 Europe/Paris] [ecrivain/src/www/index.php:294] Base->run()
+[25-Feb-2026 16:04:33 Europe/Paris] Cover not found - Project: 1, Cover: none
+[25-Feb-2026 16:04:33 Europe/Paris] HTTP 404 (GET /project/1/cover)
+[25-Feb-2026 16:04:33 Europe/Paris] [ecrivain/src/app/modules/project/controllers/ProjectController.php:973] Base->error()
+[25-Feb-2026 16:04:33 Europe/Paris] [ecrivain/src/www/index.php:294] Base->run()
+[25-Feb-2026 16:05:43 Europe/Paris] HTTP 403 (GET /project/1/preview/chapter/161)
+[25-Feb-2026 16:05:43 Europe/Paris] [ecrivain/src/app/modules/project/controllers/ProjectController.php:2539] Base->error()
+[25-Feb-2026 16:05:43 Europe/Paris] [ecrivain/src/www/index.php:294] Base->run()
+[25-Feb-2026 16:05:46 Europe/Paris] HTTP 403 (GET /project/1/preview/chapter/161)
+[25-Feb-2026 16:05:46 Europe/Paris] [ecrivain/src/app/modules/project/controllers/ProjectController.php:2539] Base->error()
+[25-Feb-2026 16:05:46 Europe/Paris] [ecrivain/src/www/index.php:294] Base->run()
+[01-Mar-2026 18:12:14 Europe/Paris] HTTP 405 (HEAD /)
+[01-Mar-2026 18:12:14 Europe/Paris] [ecrivain/src/www/index.php:294] Base->run()
+[01-Mar-2026 18:12:16 Europe/Paris] HTTP 405 (HEAD /login)
+[01-Mar-2026 18:12:16 Europe/Paris] [ecrivain/src/www/index.php:294] Base->run()
+[01-Mar-2026 18:12:16 Europe/Paris] HTTP 405 (HEAD /register)
+[01-Mar-2026 18:12:16 Europe/Paris] [ecrivain/src/www/index.php:294] Base->run()
+[01-Mar-2026 18:12:17 Europe/Paris] HTTP 405 (HEAD /password/forgot)
+[01-Mar-2026 18:12:17 Europe/Paris] [ecrivain/src/www/index.php:294] Base->run()
+[03-Mar-2026 11:26:21 Europe/Paris] HTTP 404 (GET /favicon-256x256.png)
+[03-Mar-2026 11:26:21 Europe/Paris] [ecrivain/src/www/index.php:294] Base->run()
+[03-Mar-2026 11:26:21 Europe/Paris] HTTP 404 (GET /style.css)
+[03-Mar-2026 11:26:21 Europe/Paris] [ecrivain/src/www/index.php:294] Base->run()
+[03-Mar-2026 11:26:21 Europe/Paris] HTTP 404 (GET /favicon.ico)
+[03-Mar-2026 11:26:21 Europe/Paris] [ecrivain/src/www/index.php:294] Base->run()
+[03-Mar-2026 11:26:24 Europe/Paris] HTTP 404 (GET /favicon-256x256.png)
+[03-Mar-2026 11:26:24 Europe/Paris] [ecrivain/src/www/index.php:294] Base->run()
+[03-Mar-2026 11:26:24 Europe/Paris] HTTP 404 (GET /style.css)
+[03-Mar-2026 11:26:24 Europe/Paris] [ecrivain/src/www/index.php:294] Base->run()
+[03-Mar-2026 11:28:03 Europe/Paris] HTTP 404 (GET /data)
+[03-Mar-2026 11:28:03 Europe/Paris] [ecrivain/src/www/index.php:294] Base->run()
+[03-Mar-2026 12:51:32 Europe/Paris] McpController::callTool error: SQLSTATE[42S22]: Column not found: 1054 Unknown column 'position' in 'order clause'
+[03-Mar-2026 12:51:36 Europe/Paris] McpController::callTool error: SQLSTATE[42S22]: Column not found: 1054 Unknown column 'a.description' in 'field list'
+[03-Mar-2026 12:52:12 Europe/Paris] McpController::callTool error: SQLSTATE[42S22]: Column not found: 1054 Unknown column 'position' in 'order clause'
+[03-Mar-2026 12:53:13 Europe/Paris] McpController::callTool error: SQLSTATE[42S22]: Column not found: 1054 Unknown column 'a.description' in 'field list'
+[03-Mar-2026 12:54:51 Europe/Paris] McpController::callTool error: SQLSTATE[42S22]: Column not found: 1054 Unknown column 'a.description' in 'field list'
+[04-Mar-2026 07:09:01 Europe/Paris] McpController::callTool error: SQLSTATE[42S22]: Column not found: 1054 Unknown column 'a.description' in 'field list'
+[05-Mar-2026 07:03:27 Europe/Paris] Migration executed: 013_project_tags
+[05-Mar-2026 07:03:27 Europe/Paris] Migration executed: 014_character_relations
+[05-Mar-2026 07:03:27 Europe/Paris] Migration executed: 015_project_status
+[05-Mar-2026 07:03:28 Europe/Paris] Migration executed: 016_glossary
+[05-Mar-2026 07:03:28 Europe/Paris] Migration executed: 017_inline_suggestions
+[05-Mar-2026 07:08:11 Europe/Paris] syntax error, unexpected token "~" [/home/cp28663/public_html/ecrivain/src/tmp/1lwubqvjornkn.31pumrjekbuog.php:31]
+[05-Mar-2026 07:08:11 Europe/Paris] [ecrivain/src/app/controllers/Controller.php:334] Preview->render()
+[05-Mar-2026 07:08:11 Europe/Paris] [ecrivain/src/app/modules/glossary/controllers/GlossaryController.php:56] Controller->render()
+[05-Mar-2026 07:08:11 Europe/Paris] [ecrivain/src/www/index.php:294] Base->run()
+[05-Mar-2026 07:08:21 Europe/Paris] syntax error, unexpected token "~" [/home/cp28663/public_html/ecrivain/src/tmp/1lwubqvjornkn.31pumrjekbuog.php:31]
+[05-Mar-2026 07:08:21 Europe/Paris] [ecrivain/src/app/controllers/Controller.php:334] Preview->render()
+[05-Mar-2026 07:08:21 Europe/Paris] [ecrivain/src/app/modules/glossary/controllers/GlossaryController.php:56] Controller->render()
+[05-Mar-2026 07:08:21 Europe/Paris] [ecrivain/src/www/index.php:294] Base->run()
+[05-Mar-2026 07:08:29 Europe/Paris] syntax error, unexpected token "~" [/home/cp28663/public_html/ecrivain/src/tmp/1lwubqvjornkn.31pumrjekbuog.php:31]
+[05-Mar-2026 07:08:29 Europe/Paris] [ecrivain/src/app/controllers/Controller.php:334] Preview->render()
+[05-Mar-2026 07:08:29 Europe/Paris] [ecrivain/src/app/modules/glossary/controllers/GlossaryController.php:56] Controller->render()
+[05-Mar-2026 07:08:29 Europe/Paris] [ecrivain/src/www/index.php:294] Base->run()
+[05-Mar-2026 19:24:05 Europe/Paris] McpController::callTool error: SQLSTATE[42S22]: Column not found: 1054 Unknown column 'a.description' in 'field list'
+[06-Mar-2026 07:46:03 Europe/Paris] McpController::callTool error: SQLSTATE[42S22]: Column not found: 1054 Unknown column 'a.description' in 'field list'
+[06-Mar-2026 07:49:46 Europe/Paris] McpController::callTool error: SQLSTATE[23000]: Integrity constraint violation: 1452 Cannot add or update a child row: a foreign key constraint fails (`ecrivain`.`elements`, CONSTRAINT `fk_elements_template_element` FOREIGN KEY (`template_element_id`) REFERENCES `template_elements` (`id`) ON DELETE RESTRICT)
+[06-Mar-2026 09:20:03 Europe/Paris] HTTP 404 (GET /mcp/.well-known/oauth-authorization-server)
+[06-Mar-2026 09:20:03 Europe/Paris] [ecrivain/src/www/index.php:294] Base->run()
+[06-Mar-2026 09:20:10 Europe/Paris] HTTP 404 (GET /mcp/.well-known/oauth-authorization-server)
+[06-Mar-2026 09:20:10 Europe/Paris] [ecrivain/src/www/index.php:294] Base->run()
+[06-Mar-2026 09:47:49 Europe/Paris] HTTP 404 (GET /mcp/.well-known/oauth-authorization-server)
+[06-Mar-2026 09:47:49 Europe/Paris] [ecrivain/src/www/index.php:294] Base->run()
+[06-Mar-2026 09:47:51 Europe/Paris] HTTP 404 (GET /mcp/.well-known/openid-configuration)
+[06-Mar-2026 09:47:51 Europe/Paris] [ecrivain/src/www/index.php:294] Base->run()
+[06-Mar-2026 09:47:52 Europe/Paris] HTTP 404 (GET /mcp/.well-known/oauth-authorization-server)
+[06-Mar-2026 09:47:52 Europe/Paris] [ecrivain/src/www/index.php:294] Base->run()
+[06-Mar-2026 09:47:53 Europe/Paris] HTTP 404 (GET /mcp/.well-known/openid-configuration)
+[06-Mar-2026 09:47:53 Europe/Paris] [ecrivain/src/www/index.php:294] Base->run()
+[06-Mar-2026 09:47:56 Europe/Paris] HTTP 404 (GET /mcp/.well-known/oauth-authorization-server)
+[06-Mar-2026 09:47:56 Europe/Paris] [ecrivain/src/www/index.php:294] Base->run()
+[06-Mar-2026 09:47:56 Europe/Paris] HTTP 404 (GET /mcp/.well-known/openid-configuration)
+[06-Mar-2026 09:47:56 Europe/Paris] [ecrivain/src/www/index.php:294] Base->run()
+[06-Mar-2026 09:47:58 Europe/Paris] HTTP 404 (GET /mcp/.well-known/oauth-authorization-server)
+[06-Mar-2026 09:47:58 Europe/Paris] [ecrivain/src/www/index.php:294] Base->run()
+[06-Mar-2026 09:47:58 Europe/Paris] HTTP 404 (GET /mcp/.well-known/openid-configuration)
+[06-Mar-2026 09:47:58 Europe/Paris] [ecrivain/src/www/index.php:294] Base->run()
+[06-Mar-2026 09:48:47 Europe/Paris] HTTP 404 (GET /mcp/.well-known/oauth-authorization-server)
+[06-Mar-2026 09:48:47 Europe/Paris] [ecrivain/src/www/index.php:294] Base->run()
+[06-Mar-2026 09:48:48 Europe/Paris] HTTP 404 (GET /mcp/.well-known/openid-configuration)
+[06-Mar-2026 09:48:48 Europe/Paris] [ecrivain/src/www/index.php:294] Base->run()
+[06-Mar-2026 09:48:49 Europe/Paris] HTTP 404 (GET /mcp/.well-known/oauth-authorization-server)
+[06-Mar-2026 09:48:49 Europe/Paris] [ecrivain/src/www/index.php:294] Base->run()
+[06-Mar-2026 09:48:49 Europe/Paris] HTTP 404 (GET /mcp/.well-known/openid-configuration)
+[06-Mar-2026 09:48:49 Europe/Paris] [ecrivain/src/www/index.php:294] Base->run()
+[06-Mar-2026 09:55:01 Europe/Paris] HTTP 404 (GET /mcp/.well-known/oauth-authorization-server)
+[06-Mar-2026 09:55:01 Europe/Paris] [ecrivain/src/www/index.php:294] Base->run()
+[06-Mar-2026 09:55:01 Europe/Paris] HTTP 404 (GET /mcp/.well-known/openid-configuration)
+[06-Mar-2026 09:55:01 Europe/Paris] [ecrivain/src/www/index.php:294] Base->run()
+[06-Mar-2026 09:55:02 Europe/Paris] HTTP 404 (GET /mcp/.well-known/oauth-authorization-server)
+[06-Mar-2026 09:55:02 Europe/Paris] [ecrivain/src/www/index.php:294] Base->run()
+[06-Mar-2026 09:55:03 Europe/Paris] HTTP 404 (GET /mcp/.well-known/openid-configuration)
+[06-Mar-2026 09:55:03 Europe/Paris] [ecrivain/src/www/index.php:294] Base->run()
+[06-Mar-2026 10:14:17 Europe/Paris] HTTP 404 (GET /mcp/.well-known/oauth-authorization-server)
+[06-Mar-2026 10:14:17 Europe/Paris] [ecrivain/src/www/index.php:294] Base->run()
+[06-Mar-2026 10:14:18 Europe/Paris] HTTP 404 (GET /mcp/.well-known/openid-configuration)
+[06-Mar-2026 10:14:18 Europe/Paris] [ecrivain/src/www/index.php:294] Base->run()
+[06-Mar-2026 10:14:19 Europe/Paris] HTTP 404 (GET /mcp/.well-known/oauth-authorization-server)
+[06-Mar-2026 10:14:19 Europe/Paris] [ecrivain/src/www/index.php:294] Base->run()
+[06-Mar-2026 10:14:19 Europe/Paris] HTTP 404 (GET /mcp/.well-known/openid-configuration)
+[06-Mar-2026 10:14:19 Europe/Paris] [ecrivain/src/www/index.php:294] Base->run()
+[06-Mar-2026 10:58:21 Europe/Paris] HTTP 404 (GET /mcp/.well-known/oauth-authorization-server)
+[06-Mar-2026 10:58:21 Europe/Paris] [ecrivain/src/www/index.php:294] Base->run()
+[06-Mar-2026 10:58:22 Europe/Paris] HTTP 404 (GET /mcp/.well-known/openid-configuration)
+[06-Mar-2026 10:58:22 Europe/Paris] [ecrivain/src/www/index.php:294] Base->run()
+[06-Mar-2026 10:58:23 Europe/Paris] HTTP 404 (GET /mcp/.well-known/oauth-authorization-server)
+[06-Mar-2026 10:58:23 Europe/Paris] [ecrivain/src/www/index.php:294] Base->run()
+[06-Mar-2026 10:58:24 Europe/Paris] HTTP 404 (GET /mcp/.well-known/openid-configuration)
+[06-Mar-2026 10:58:24 Europe/Paris] [ecrivain/src/www/index.php:294] Base->run()
+[06-Mar-2026 11:01:13 Europe/Paris] HTTP 404 (GET /oauth/authorize/.well-known/oauth-authorization-server)
+[06-Mar-2026 11:01:13 Europe/Paris] [ecrivain/src/www/index.php:294] Base->run()
+[06-Mar-2026 11:01:15 Europe/Paris] HTTP 404 (GET /oauth/authorize/.well-known/openid-configuration)
+[06-Mar-2026 11:01:15 Europe/Paris] [ecrivain/src/www/index.php:294] Base->run()
+[06-Mar-2026 11:51:14 Europe/Paris] HTTP 404 (GET /mcp/.well-known/oauth-authorization-server)
+[06-Mar-2026 11:51:14 Europe/Paris] [ecrivain/src/www/index.php:294] Base->run()
+[06-Mar-2026 11:51:16 Europe/Paris] HTTP 404 (GET /mcp/.well-known/openid-configuration)
+[06-Mar-2026 11:51:16 Europe/Paris] [ecrivain/src/www/index.php:294] Base->run()
+[06-Mar-2026 11:51:17 Europe/Paris] HTTP 404 (GET /mcp/.well-known/oauth-authorization-server)
+[06-Mar-2026 11:51:17 Europe/Paris] [ecrivain/src/www/index.php:294] Base->run()
+[06-Mar-2026 11:51:18 Europe/Paris] HTTP 404 (GET /mcp/.well-known/openid-configuration)
+[06-Mar-2026 11:51:18 Europe/Paris] [ecrivain/src/www/index.php:294] Base->run()
+[06-Mar-2026 12:02:30 Europe/Paris] HTTP 404 (GET /mcp/.well-known/oauth-authorization-server)
+[06-Mar-2026 12:02:30 Europe/Paris] [ecrivain/src/www/index.php:294] Base->run()
+[06-Mar-2026 12:02:30 Europe/Paris] HTTP 404 (GET /mcp/.well-known/openid-configuration)
+[06-Mar-2026 12:02:30 Europe/Paris] [ecrivain/src/www/index.php:294] Base->run()
+[06-Mar-2026 12:02:31 Europe/Paris] HTTP 404 (GET /mcp/.well-known/oauth-authorization-server)
+[06-Mar-2026 12:02:31 Europe/Paris] [ecrivain/src/www/index.php:294] Base->run()
+[06-Mar-2026 12:02:32 Europe/Paris] HTTP 404 (GET /mcp/.well-known/openid-configuration)
+[06-Mar-2026 12:02:32 Europe/Paris] [ecrivain/src/www/index.php:294] Base->run()
+[06-Mar-2026 13:27:23 Europe/Paris] McpController::callTool error: SQLSTATE[42S22]: Column not found: 1054 Unknown column 'a.description' in 'field list'
+[06-Mar-2026 13:51:27 Europe/Paris] McpController::callTool error: SQLSTATE[42S22]: Column not found: 1054 Unknown column 'a.description' in 'field list'
+[07-Mar-2026 12:40:29 Europe/Paris] Undefined array key "tags"
+[07-Mar-2026 12:40:29 Europe/Paris] [ecrivain/src/tmp/2a98ye1n598gk.mdxjcwizfgha.php:91] Base->{closure}()
+[07-Mar-2026 12:40:29 Europe/Paris] [ecrivain/src/app/controllers/Controller.php:355] Preview->render()
+[07-Mar-2026 12:40:29 Europe/Paris] [ecrivain/src/app/modules/project/controllers/ProjectController.php:185] Controller->render()
+[07-Mar-2026 12:40:29 Europe/Paris] [ecrivain/src/www/index.php:294] Base->run()
+[07-Mar-2026 12:40:33 Europe/Paris] Undefined array key "tags"
+[07-Mar-2026 12:40:33 Europe/Paris] [ecrivain/src/tmp/2a98ye1n598gk.mdxjcwizfgha.php:91] Base->{closure}()
+[07-Mar-2026 12:40:33 Europe/Paris] [ecrivain/src/app/controllers/Controller.php:355] Preview->render()
+[07-Mar-2026 12:40:33 Europe/Paris] [ecrivain/src/app/modules/project/controllers/ProjectController.php:185] Controller->render()
+[07-Mar-2026 12:40:33 Europe/Paris] [ecrivain/src/www/index.php:294] Base->run()
+[07-Mar-2026 13:16:16 Europe/Paris] Saving Author: Daniel ROUAIX
+[07-Mar-2026 13:16:16 Europe/Paris] Settings JSON: {"author":"Daniel ROUAIX"}
+[07-Mar-2026 13:17:32 Europe/Paris] Cover uploaded successfully: data/daniel@rouaix.com/projects/6/cover.png
+[07-Mar-2026 13:17:32 Europe/Paris] Saving Author: 
+[07-Mar-2026 13:17:32 Europe/Paris] Settings JSON: {"author":""}
+[07-Mar-2026 13:22:47 Europe/Paris] Deleted old cover: data/daniel@rouaix.com/projects/6/cover.png
+[07-Mar-2026 13:22:47 Europe/Paris] Cover uploaded successfully: data/daniel@rouaix.com/projects/6/cover.jpg
+[07-Mar-2026 13:22:47 Europe/Paris] Saving Author: 
+[07-Mar-2026 13:22:47 Europe/Paris] Settings JSON: {"author":""}
+[07-Mar-2026 13:27:02 Europe/Paris] Saving Author: 
+[07-Mar-2026 13:27:02 Europe/Paris] Settings JSON: {"author":""}
+[07-Mar-2026 13:27:14 Europe/Paris] Saving Author: Daniel ROUAIX
+[07-Mar-2026 13:27:14 Europe/Paris] Settings JSON: {"author":"Daniel ROUAIX"}
+[07-Mar-2026 13:27:31 Europe/Paris] Saving Author: Daniel ROUAIX
+[07-Mar-2026 13:27:31 Europe/Paris] Settings JSON: {"author":"Daniel ROUAIX"}
+[07-Mar-2026 13:28:15 Europe/Paris] Saving Author: 
+[07-Mar-2026 13:28:15 Europe/Paris] Settings JSON: {"author":""}
+[07-Mar-2026 13:28:42 Europe/Paris] Saving Author: Daniel
+[07-Mar-2026 13:28:42 Europe/Paris] Settings JSON: {"author":"Daniel"}
+[07-Mar-2026 14:09:18 Europe/Paris] HTTP 405 (GET /oauth/token)
+[07-Mar-2026 14:09:18 Europe/Paris] [ecrivain/src/www/index.php:294] Base->run()
+[07-Mar-2026 16:01:08 Europe/Paris] Token CSRF invalide.
+[07-Mar-2026 16:01:08 Europe/Paris] [ecrivain/src/app/controllers/Controller.php:321] Base->error()
+[07-Mar-2026 16:01:08 Europe/Paris] [ecrivain/src/app/controllers/Controller.php:27] Controller->requireCsrf()
+[07-Mar-2026 16:01:08 Europe/Paris] [ecrivain/src/app/modules/project/controllers/ProjectContentController.php:7] Controller->beforeRoute()
+[07-Mar-2026 16:01:08 Europe/Paris] [ecrivain/src/www/index.php:294] Base->run()
+[07-Mar-2026 16:03:12 Europe/Paris] Token CSRF invalide.
+[07-Mar-2026 16:03:12 Europe/Paris] [ecrivain/src/app/controllers/Controller.php:321] Base->error()
+[07-Mar-2026 16:03:12 Europe/Paris] [ecrivain/src/app/controllers/Controller.php:27] Controller->requireCsrf()
+[07-Mar-2026 16:03:12 Europe/Paris] [ecrivain/src/app/modules/project/controllers/ProjectContentController.php:7] Controller->beforeRoute()
+[07-Mar-2026 16:03:12 Europe/Paris] [ecrivain/src/www/index.php:294] Base->run()
+[07-Mar-2026 16:06:39 Europe/Paris] Class "User" not found [/home/cp28663/public_html/ecrivain/src/app/controllers/Controller.php:374]
+[07-Mar-2026 16:06:39 Europe/Paris] [ecrivain/src/app/modules/project/controllers/ProjectContentController.php:8] Controller->currentUser()
+[07-Mar-2026 16:06:39 Europe/Paris] [ecrivain/src/www/index.php:294] Base->run()
+[09-Mar-2026 10:45:38 Europe/Paris] Token CSRF invalide.
+[09-Mar-2026 10:45:38 Europe/Paris] [ecrivain/src/app/controllers/Controller.php:321] Base->error()
+[09-Mar-2026 10:45:38 Europe/Paris] [ecrivain/src/app/controllers/Controller.php:27] Controller->requireCsrf()
+[09-Mar-2026 10:45:38 Europe/Paris] [ecrivain/src/app/modules/auth/controllers/AuthController.php:11] Controller->beforeRoute()
+[09-Mar-2026 10:45:38 Europe/Paris] [ecrivain/src/www/index.php:294] Base->run()
+[09-Mar-2026 10:45:46 Europe/Paris] Token CSRF invalide.
+[09-Mar-2026 10:45:46 Europe/Paris] [ecrivain/src/app/controllers/Controller.php:321] Base->error()
+[09-Mar-2026 10:45:46 Europe/Paris] [ecrivain/src/app/controllers/Controller.php:27] Controller->requireCsrf()
+[09-Mar-2026 10:45:46 Europe/Paris] [ecrivain/src/app/modules/auth/controllers/AuthController.php:11] Controller->beforeRoute()
+[09-Mar-2026 10:45:46 Europe/Paris] [ecrivain/src/www/index.php:294] Base->run()
+[09-Mar-2026 10:49:04 Europe/Paris] Saving Author: Daniel ROUAIX
+[09-Mar-2026 10:49:04 Europe/Paris] Settings JSON: {"author":"Daniel ROUAIX"}
+[10-Mar-2026 15:24:54 Europe/Paris] Class "Scenario" not found [/home/cp28663/public_html/ecrivain/src/app/modules/project/controllers/ProjectController.php:494]
+[10-Mar-2026 15:24:54 Europe/Paris] [ecrivain/src/www/index.php:294] Base->run()
+[10-Mar-2026 15:25:06 Europe/Paris] Class "Scenario" not found [/home/cp28663/public_html/ecrivain/src/app/modules/project/controllers/ProjectController.php:494]
+[10-Mar-2026 15:25:06 Europe/Paris] [ecrivain/src/www/index.php:294] Base->run()
+[10-Mar-2026 15:25:10 Europe/Paris] Class "Scenario" not found [/home/cp28663/public_html/ecrivain/src/app/modules/project/controllers/ProjectController.php:494]
+[10-Mar-2026 15:25:10 Europe/Paris] [ecrivain/src/www/index.php:294] Base->run()
+[10-Mar-2026 15:26:36 Europe/Paris] Migration executed: 018_notes_type
+[10-Mar-2026 15:26:36 Europe/Paris] Migration executed: 019_notes_meta
+[10-Mar-2026 15:26:36 Europe/Paris] Migration executed: 020_scenarios_table
+[10-Mar-2026 15:26:36 Europe/Paris] Migration executed: 021_template_element_type_scenario
+[10-Mar-2026 15:26:36 Europe/Paris] Migration executed: 022_scenario_template_element
+[10-Mar-2026 15:26:36 Europe/Paris] Migration executed: 023_scenario_is_exported
+[10-Mar-2026 15:26:36 Europe/Paris] Class "DB\SQL\Mapper" not found [/home/cp28663/public_html/ecrivain/src/vendor/kalao/libs/libs/Mapper.php:7]
+[10-Mar-2026 15:26:36 Europe/Paris] [ecrivain/src/vendor/composer/ClassLoader.php:576] include()
+[10-Mar-2026 15:26:36 Europe/Paris] [ecrivain/src/vendor/composer/ClassLoader.php:427] Composer\Autoload\{closure}()
+[10-Mar-2026 15:26:36 Europe/Paris] [ecrivain/src/app/modules/auth/models/User.php:5] Composer\Autoload\ClassLoader->loadClass()
+[10-Mar-2026 15:26:36 Europe/Paris] [ecrivain/src/app/controllers/Controller.php:374] Base->autoload()
+[10-Mar-2026 15:26:36 Europe/Paris] [ecrivain/src/app/modules/project/controllers/ProjectController.php:18] Controller->currentUser()
+[10-Mar-2026 15:26:36 Europe/Paris] [ecrivain/src/www/index.php:294] Base->run()
+[14-Mar-2026 11:36:00 Europe/Paris] Saving Author: Daniel ROUAIX
+[14-Mar-2026 11:36:00 Europe/Paris] Settings JSON: {"author":"Daniel ROUAIX"}
+[17-Mar-2026 12:50:40 Europe/Paris] Migration executed: 024_character_fields
+[18-Mar-2026 09:51:21 Europe/Paris] Undefined variable $jwtSecret
+[18-Mar-2026 09:51:21 Europe/Paris] [ecrivain/src/app/modules/auth/controllers/AuthController.php:742] Base->{closure}()
+[18-Mar-2026 09:51:21 Europe/Paris] [ecrivain/src/www/index.php:309] Base->run()
+[18-Mar-2026 09:51:21 Europe/Paris] Undefined variable $jwtSecret
+[18-Mar-2026 09:51:21 Europe/Paris] [ecrivain/src/app/modules/auth/controllers/AuthController.php:742] Base->{closure}()
+[18-Mar-2026 09:51:21 Europe/Paris] [ecrivain/src/www/index.php:309] Base->run()
+[18-Mar-2026 09:51:28 Europe/Paris] Undefined variable $jwtSecret
+[18-Mar-2026 09:51:28 Europe/Paris] [ecrivain/src/app/modules/auth/controllers/AuthController.php:742] Base->{closure}()
+[18-Mar-2026 09:51:28 Europe/Paris] [ecrivain/src/www/index.php:309] Base->run()
+[18-Mar-2026 09:51:28 Europe/Paris] Undefined variable $jwtSecret
+[18-Mar-2026 09:51:28 Europe/Paris] [ecrivain/src/app/modules/auth/controllers/AuthController.php:742] Base->{closure}()
+[18-Mar-2026 09:51:28 Europe/Paris] [ecrivain/src/www/index.php:309] Base->run()
+[18-Mar-2026 09:52:29 Europe/Paris] Undefined variable $jwtSecret
+[18-Mar-2026 09:52:29 Europe/Paris] [ecrivain/src/app/modules/auth/controllers/AuthController.php:742] Base->{closure}()
+[18-Mar-2026 09:52:29 Europe/Paris] [ecrivain/src/www/index.php:309] Base->run()
+[18-Mar-2026 09:52:29 Europe/Paris] Undefined variable $jwtSecret
+[18-Mar-2026 09:52:29 Europe/Paris] [ecrivain/src/app/modules/auth/controllers/AuthController.php:742] Base->{closure}()
+[18-Mar-2026 09:52:29 Europe/Paris] [ecrivain/src/www/index.php:309] Base->run()
+[18-Mar-2026 09:55:12 Europe/Paris] Undefined variable $jwtSecret
+[18-Mar-2026 09:55:12 Europe/Paris] [ecrivain/src/app/modules/auth/controllers/AuthController.php:742] Base->{closure}()
+[18-Mar-2026 09:55:12 Europe/Paris] [ecrivain/src/www/index.php:309] Base->run()
+[18-Mar-2026 09:55:12 Europe/Paris] Undefined variable $jwtSecret
+[18-Mar-2026 09:55:12 Europe/Paris] [ecrivain/src/app/modules/auth/controllers/AuthController.php:742] Base->{closure}()
+[18-Mar-2026 09:55:12 Europe/Paris] [ecrivain/src/www/index.php:309] Base->run()
+[18-Mar-2026 13:52:12 Europe/Paris] Migration executed: 025_activity_logs
+[18-Mar-2026 19:45:12 Europe/Paris] HTTP 404 (GET /https%3A/rouaix.com/)
+[18-Mar-2026 19:45:12 Europe/Paris] [ecrivain/src/www/index.php:309] Base->run()
+[18-Mar-2026 19:45:12 Europe/Paris] HTTP 404 (GET /public/style.css%3Fv%3D40)
+[18-Mar-2026 19:45:12 Europe/Paris] [ecrivain/src/www/index.php:309] Base->run()
+[19-Mar-2026 08:36:29 Europe/Paris] Migration failed: 026_synopsis - SQLSTATE[HY000]: General error: 1824 Failed to open the referenced table 'projects'
+[19-Mar-2026 08:36:29 Europe/Paris] Migration error: SQLSTATE[HY000]: General error: 1824 Failed to open the referenced table 'projects'
+[19-Mar-2026 08:36:30 Europe/Paris] Migration failed: 026_synopsis - SQLSTATE[HY000]: General error: 1824 Failed to open the referenced table 'projects'
+[19-Mar-2026 08:36:30 Europe/Paris] Migration error: SQLSTATE[HY000]: General error: 1824 Failed to open the referenced table 'projects'
+[19-Mar-2026 08:36:34 Europe/Paris] Migration failed: 026_synopsis - SQLSTATE[HY000]: General error: 1824 Failed to open the referenced table 'projects'
+[19-Mar-2026 08:36:34 Europe/Paris] Migration error: SQLSTATE[HY000]: General error: 1824 Failed to open the referenced table 'projects'
+[19-Mar-2026 08:36:34 Europe/Paris] Migration failed: 026_synopsis - SQLSTATE[HY000]: General error: 1824 Failed to open the referenced table 'projects'
+[19-Mar-2026 08:36:34 Europe/Paris] Migration error: SQLSTATE[HY000]: General error: 1824 Failed to open the referenced table 'projects'
+[19-Mar-2026 08:36:35 Europe/Paris] Migration failed: 026_synopsis - SQLSTATE[HY000]: General error: 1824 Failed to open the referenced table 'projects'
+[19-Mar-2026 08:36:35 Europe/Paris] Migration error: SQLSTATE[HY000]: General error: 1824 Failed to open the referenced table 'projects'
+[19-Mar-2026 08:36:36 Europe/Paris] Migration failed: 026_synopsis - SQLSTATE[HY000]: General error: 1824 Failed to open the referenced table 'projects'
+[19-Mar-2026 08:36:36 Europe/Paris] Migration error: SQLSTATE[HY000]: General error: 1824 Failed to open the referenced table 'projects'
+[19-Mar-2026 08:36:36 Europe/Paris] Migration failed: 026_synopsis - SQLSTATE[HY000]: General error: 1824 Failed to open the referenced table 'projects'
+[19-Mar-2026 08:36:36 Europe/Paris] Migration error: SQLSTATE[HY000]: General error: 1824 Failed to open the referenced table 'projects'
+[19-Mar-2026 08:36:36 Europe/Paris] Migration failed: 026_synopsis - SQLSTATE[HY000]: General error: 1824 Failed to open the referenced table 'projects'
+[19-Mar-2026 08:36:36 Europe/Paris] Migration error: SQLSTATE[HY000]: General error: 1824 Failed to open the referenced table 'projects'
+[19-Mar-2026 08:36:36 Europe/Paris] Migration failed: 026_synopsis - SQLSTATE[HY000]: General error: 1824 Failed to open the referenced table 'projects'
+[19-Mar-2026 08:36:36 Europe/Paris] Migration error: SQLSTATE[HY000]: General error: 1824 Failed to open the referenced table 'projects'
+[19-Mar-2026 08:36:38 Europe/Paris] Migration failed: 026_synopsis - SQLSTATE[HY000]: General error: 1824 Failed to open the referenced table 'projects'
+[19-Mar-2026 08:36:38 Europe/Paris] Migration error: SQLSTATE[HY000]: General error: 1824 Failed to open the referenced table 'projects'
+[19-Mar-2026 08:36:39 Europe/Paris] Migration failed: 026_synopsis - SQLSTATE[HY000]: General error: 1824 Failed to open the referenced table 'projects'
+[19-Mar-2026 08:36:39 Europe/Paris] Migration error: SQLSTATE[HY000]: General error: 1824 Failed to open the referenced table 'projects'
+[19-Mar-2026 08:36:40 Europe/Paris] Migration failed: 026_synopsis - SQLSTATE[HY000]: General error: 1824 Failed to open the referenced table 'projects'
+[19-Mar-2026 08:36:40 Europe/Paris] Migration error: SQLSTATE[HY000]: General error: 1824 Failed to open the referenced table 'projects'
+[19-Mar-2026 08:36:43 Europe/Paris] Migration failed: 026_synopsis - SQLSTATE[HY000]: General error: 1824 Failed to open the referenced table 'projects'
+[19-Mar-2026 08:36:43 Europe/Paris] Migration error: SQLSTATE[HY000]: General error: 1824 Failed to open the referenced table 'projects'
+[19-Mar-2026 08:36:45 Europe/Paris] Migration failed: 026_synopsis - SQLSTATE[HY000]: General error: 1824 Failed to open the referenced table 'projects'
+[19-Mar-2026 08:36:45 Europe/Paris] Migration error: SQLSTATE[HY000]: General error: 1824 Failed to open the referenced table 'projects'
+[19-Mar-2026 08:36:48 Europe/Paris] Migration failed: 026_synopsis - SQLSTATE[HY000]: General error: 1824 Failed to open the referenced table 'projects'
+[19-Mar-2026 08:36:48 Europe/Paris] Migration error: SQLSTATE[HY000]: General error: 1824 Failed to open the referenced table 'projects'
+[19-Mar-2026 08:37:03 Europe/Paris] Migration failed: 026_synopsis - SQLSTATE[HY000]: General error: 1824 Failed to open the referenced table 'projects'
+[19-Mar-2026 08:37:03 Europe/Paris] Migration error: SQLSTATE[HY000]: General error: 1824 Failed to open the referenced table 'projects'
+[19-Mar-2026 08:37:03 Europe/Paris] Migration failed: 026_synopsis - SQLSTATE[HY000]: General error: 1824 Failed to open the referenced table 'projects'
+[19-Mar-2026 08:37:03 Europe/Paris] Migration error: SQLSTATE[HY000]: General error: 1824 Failed to open the referenced table 'projects'
+[19-Mar-2026 08:37:06 Europe/Paris] Migration failed: 026_synopsis - SQLSTATE[HY000]: General error: 1824 Failed to open the referenced table 'projects'
+[19-Mar-2026 08:37:06 Europe/Paris] Migration error: SQLSTATE[HY000]: General error: 1824 Failed to open the referenced table 'projects'
+[19-Mar-2026 08:37:21 Europe/Paris] Migration failed: 026_synopsis - SQLSTATE[HY000]: General error: 1824 Failed to open the referenced table 'projects'
+[19-Mar-2026 08:37:21 Europe/Paris] Migration error: SQLSTATE[HY000]: General error: 1824 Failed to open the referenced table 'projects'
+[19-Mar-2026 08:37:21 Europe/Paris] Migration failed: 026_synopsis - SQLSTATE[HY000]: General error: 1824 Failed to open the referenced table 'projects'
+[19-Mar-2026 08:37:21 Europe/Paris] Migration error: SQLSTATE[HY000]: General error: 1824 Failed to open the referenced table 'projects'
+[19-Mar-2026 08:37:24 Europe/Paris] Migration failed: 026_synopsis - SQLSTATE[HY000]: General error: 1824 Failed to open the referenced table 'projects'
+[19-Mar-2026 08:37:24 Europe/Paris] Migration error: SQLSTATE[HY000]: General error: 1824 Failed to open the referenced table 'projects'
+[19-Mar-2026 08:37:29 Europe/Paris] Migration failed: 026_synopsis - SQLSTATE[HY000]: General error: 1824 Failed to open the referenced table 'projects'
+[19-Mar-2026 08:37:29 Europe/Paris] Migration error: SQLSTATE[HY000]: General error: 1824 Failed to open the referenced table 'projects'
+[19-Mar-2026 08:37:30 Europe/Paris] Migration failed: 026_synopsis - SQLSTATE[HY000]: General error: 1824 Failed to open the referenced table 'projects'
+[19-Mar-2026 08:37:30 Europe/Paris] Migration error: SQLSTATE[HY000]: General error: 1824 Failed to open the referenced table 'projects'
+[19-Mar-2026 08:37:33 Europe/Paris] Migration failed: 026_synopsis - SQLSTATE[HY000]: General error: 1824 Failed to open the referenced table 'projects'
+[19-Mar-2026 08:37:33 Europe/Paris] Migration error: SQLSTATE[HY000]: General error: 1824 Failed to open the referenced table 'projects'
+[19-Mar-2026 08:37:35 Europe/Paris] Migration failed: 026_synopsis - SQLSTATE[HY000]: General error: 1824 Failed to open the referenced table 'projects'
+[19-Mar-2026 08:37:35 Europe/Paris] Migration error: SQLSTATE[HY000]: General error: 1824 Failed to open the referenced table 'projects'
+[19-Mar-2026 08:37:38 Europe/Paris] Migration failed: 026_synopsis - SQLSTATE[HY000]: General error: 1824 Failed to open the referenced table 'projects'
+[19-Mar-2026 08:37:38 Europe/Paris] Migration error: SQLSTATE[HY000]: General error: 1824 Failed to open the referenced table 'projects'
+[19-Mar-2026 08:37:39 Europe/Paris] Migration failed: 026_synopsis - SQLSTATE[HY000]: General error: 1824 Failed to open the referenced table 'projects'
+[19-Mar-2026 08:37:39 Europe/Paris] Migration error: SQLSTATE[HY000]: General error: 1824 Failed to open the referenced table 'projects'
+[19-Mar-2026 08:37:40 Europe/Paris] Migration failed: 026_synopsis - SQLSTATE[HY000]: General error: 1824 Failed to open the referenced table 'projects'
+[19-Mar-2026 08:37:40 Europe/Paris] Migration error: SQLSTATE[HY000]: General error: 1824 Failed to open the referenced table 'projects'
+[19-Mar-2026 08:37:45 Europe/Paris] Migration failed: 026_synopsis - SQLSTATE[HY000]: General error: 1824 Failed to open the referenced table 'projects'
+[19-Mar-2026 08:37:45 Europe/Paris] Migration error: SQLSTATE[HY000]: General error: 1824 Failed to open the referenced table 'projects'
+[19-Mar-2026 08:37:51 Europe/Paris] Migration failed: 026_synopsis - SQLSTATE[HY000]: General error: 1824 Failed to open the referenced table 'projects'
+[19-Mar-2026 08:37:51 Europe/Paris] Migration error: SQLSTATE[HY000]: General error: 1824 Failed to open the referenced table 'projects'
+[19-Mar-2026 08:37:51 Europe/Paris] Migration failed: 026_synopsis - SQLSTATE[HY000]: General error: 1824 Failed to open the referenced table 'projects'
+[19-Mar-2026 08:37:51 Europe/Paris] Migration error: SQLSTATE[HY000]: General error: 1824 Failed to open the referenced table 'projects'
+[19-Mar-2026 08:37:54 Europe/Paris] Migration failed: 026_synopsis - SQLSTATE[HY000]: General error: 1824 Failed to open the referenced table 'projects'
+[19-Mar-2026 08:37:54 Europe/Paris] Migration error: SQLSTATE[HY000]: General error: 1824 Failed to open the referenced table 'projects'
+[19-Mar-2026 08:37:55 Europe/Paris] Migration failed: 026_synopsis - SQLSTATE[HY000]: General error: 1824 Failed to open the referenced table 'projects'
+[19-Mar-2026 08:37:55 Europe/Paris] Migration error: SQLSTATE[HY000]: General error: 1824 Failed to open the referenced table 'projects'
+[19-Mar-2026 08:37:56 Europe/Paris] Migration failed: 026_synopsis - SQLSTATE[HY000]: General error: 1824 Failed to open the referenced table 'projects'
+[19-Mar-2026 08:37:56 Europe/Paris] Migration error: SQLSTATE[HY000]: General error: 1824 Failed to open the referenced table 'projects'
+[19-Mar-2026 08:37:59 Europe/Paris] Migration failed: 026_synopsis - SQLSTATE[HY000]: General error: 1824 Failed to open the referenced table 'projects'
+[19-Mar-2026 08:37:59 Europe/Paris] Migration error: SQLSTATE[HY000]: General error: 1824 Failed to open the referenced table 'projects'
+[19-Mar-2026 08:39:14 Europe/Paris] Migration failed: 026_synopsis - SQLSTATE[HY000]: General error: 1824 Failed to open the referenced table 'projects'
+[19-Mar-2026 08:39:14 Europe/Paris] Migration error: SQLSTATE[HY000]: General error: 1824 Failed to open the referenced table 'projects'
+[19-Mar-2026 08:39:16 Europe/Paris] Migration failed: 026_synopsis - SQLSTATE[HY000]: General error: 1824 Failed to open the referenced table 'projects'
+[19-Mar-2026 08:39:16 Europe/Paris] Migration error: SQLSTATE[HY000]: General error: 1824 Failed to open the referenced table 'projects'
+[19-Mar-2026 08:39:16 Europe/Paris] Migration failed: 026_synopsis - SQLSTATE[HY000]: General error: 1824 Failed to open the referenced table 'projects'
+[19-Mar-2026 08:39:16 Europe/Paris] Migration error: SQLSTATE[HY000]: General error: 1824 Failed to open the referenced table 'projects'
+[19-Mar-2026 08:39:19 Europe/Paris] Migration failed: 026_synopsis - SQLSTATE[HY000]: General error: 1824 Failed to open the referenced table 'projects'
+[19-Mar-2026 08:39:19 Europe/Paris] Migration error: SQLSTATE[HY000]: General error: 1824 Failed to open the referenced table 'projects'
+[19-Mar-2026 08:49:25 Europe/Paris] Migration failed: 026_synopsis - SQLSTATE[HY000]: General error: 1824 Failed to open the referenced table 'projects'
+[19-Mar-2026 08:49:25 Europe/Paris] Migration error: SQLSTATE[HY000]: General error: 1824 Failed to open the referenced table 'projects'
+[19-Mar-2026 08:49:28 Europe/Paris] Migration failed: 026_synopsis - SQLSTATE[HY000]: General error: 1824 Failed to open the referenced table 'projects'
+[19-Mar-2026 08:49:28 Europe/Paris] Migration error: SQLSTATE[HY000]: General error: 1824 Failed to open the referenced table 'projects'
+[19-Mar-2026 08:49:28 Europe/Paris] Migration failed: 026_synopsis - SQLSTATE[HY000]: General error: 1824 Failed to open the referenced table 'projects'
+[19-Mar-2026 08:49:28 Europe/Paris] Migration error: SQLSTATE[HY000]: General error: 1824 Failed to open the referenced table 'projects'
+[19-Mar-2026 08:49:28 Europe/Paris] Migration failed: 026_synopsis - SQLSTATE[HY000]: General error: 1824 Failed to open the referenced table 'projects'
+[19-Mar-2026 08:49:28 Europe/Paris] Migration error: SQLSTATE[HY000]: General error: 1824 Failed to open the referenced table 'projects'
+[19-Mar-2026 08:49:32 Europe/Paris] Migration failed: 026_synopsis - SQLSTATE[HY000]: General error: 1824 Failed to open the referenced table 'projects'
+[19-Mar-2026 08:49:32 Europe/Paris] Migration error: SQLSTATE[HY000]: General error: 1824 Failed to open the referenced table 'projects'
+[19-Mar-2026 08:49:50 Europe/Paris] Migration failed: 026_synopsis - SQLSTATE[HY000]: General error: 1824 Failed to open the referenced table 'projects'
+[19-Mar-2026 08:49:50 Europe/Paris] Migration error: SQLSTATE[HY000]: General error: 1824 Failed to open the referenced table 'projects'
+[19-Mar-2026 08:49:50 Europe/Paris] Migration failed: 026_synopsis - SQLSTATE[HY000]: General error: 1824 Failed to open the referenced table 'projects'
+[19-Mar-2026 08:49:50 Europe/Paris] Migration error: SQLSTATE[HY000]: General error: 1824 Failed to open the referenced table 'projects'
+[19-Mar-2026 08:49:54 Europe/Paris] Migration failed: 026_synopsis - SQLSTATE[HY000]: General error: 1824 Failed to open the referenced table 'projects'
+[19-Mar-2026 08:49:54 Europe/Paris] Migration error: SQLSTATE[HY000]: General error: 1824 Failed to open the referenced table 'projects'
+[19-Mar-2026 08:49:57 Europe/Paris] Migration failed: 026_synopsis - SQLSTATE[HY000]: General error: 1824 Failed to open the referenced table 'projects'
+[19-Mar-2026 08:49:57 Europe/Paris] Migration error: SQLSTATE[HY000]: General error: 1824 Failed to open the referenced table 'projects'
+[19-Mar-2026 08:49:58 Europe/Paris] Migration failed: 026_synopsis - SQLSTATE[HY000]: General error: 1824 Failed to open the referenced table 'projects'
+[19-Mar-2026 08:49:58 Europe/Paris] Migration error: SQLSTATE[HY000]: General error: 1824 Failed to open the referenced table 'projects'
+[19-Mar-2026 08:50:01 Europe/Paris] Migration failed: 026_synopsis - SQLSTATE[HY000]: General error: 1824 Failed to open the referenced table 'projects'
+[19-Mar-2026 08:50:01 Europe/Paris] Migration error: SQLSTATE[HY000]: General error: 1824 Failed to open the referenced table 'projects'
+[19-Mar-2026 08:50:05 Europe/Paris] Migration failed: 026_synopsis - SQLSTATE[HY000]: General error: 1824 Failed to open the referenced table 'projects'
+[19-Mar-2026 08:50:05 Europe/Paris] Migration error: SQLSTATE[HY000]: General error: 1824 Failed to open the referenced table 'projects'
+[19-Mar-2026 08:50:08 Europe/Paris] Migration failed: 026_synopsis - SQLSTATE[HY000]: General error: 1824 Failed to open the referenced table 'projects'
+[19-Mar-2026 08:50:08 Europe/Paris] Migration error: SQLSTATE[HY000]: General error: 1824 Failed to open the referenced table 'projects'
+[19-Mar-2026 08:50:09 Europe/Paris] Migration failed: 026_synopsis - SQLSTATE[HY000]: General error: 1824 Failed to open the referenced table 'projects'
+[19-Mar-2026 08:50:09 Europe/Paris] Migration error: SQLSTATE[HY000]: General error: 1824 Failed to open the referenced table 'projects'
+[19-Mar-2026 08:50:09 Europe/Paris] Migration failed: 026_synopsis - SQLSTATE[HY000]: General error: 1824 Failed to open the referenced table 'projects'
+[19-Mar-2026 08:50:09 Europe/Paris] Migration error: SQLSTATE[HY000]: General error: 1824 Failed to open the referenced table 'projects'
+[19-Mar-2026 08:50:12 Europe/Paris] Migration failed: 026_synopsis - SQLSTATE[HY000]: General error: 1824 Failed to open the referenced table 'projects'
+[19-Mar-2026 08:50:12 Europe/Paris] Migration error: SQLSTATE[HY000]: General error: 1824 Failed to open the referenced table 'projects'
+[19-Mar-2026 08:50:22 Europe/Paris] Migration failed: 026_synopsis - SQLSTATE[HY000]: General error: 1824 Failed to open the referenced table 'projects'
+[19-Mar-2026 08:50:22 Europe/Paris] Migration error: SQLSTATE[HY000]: General error: 1824 Failed to open the referenced table 'projects'
+[19-Mar-2026 08:50:22 Europe/Paris] Migration failed: 026_synopsis - SQLSTATE[HY000]: General error: 1824 Failed to open the referenced table 'projects'
+[19-Mar-2026 08:50:22 Europe/Paris] Migration error: SQLSTATE[HY000]: General error: 1824 Failed to open the referenced table 'projects'
+[19-Mar-2026 08:50:24 Europe/Paris] Migration failed: 026_synopsis - SQLSTATE[HY000]: General error: 1824 Failed to open the referenced table 'projects'
+[19-Mar-2026 08:50:24 Europe/Paris] Migration error: SQLSTATE[HY000]: General error: 1824 Failed to open the referenced table 'projects'
+[19-Mar-2026 08:50:25 Europe/Paris] Migration failed: 026_synopsis - SQLSTATE[HY000]: General error: 1824 Failed to open the referenced table 'projects'
+[19-Mar-2026 08:50:25 Europe/Paris] Migration error: SQLSTATE[HY000]: General error: 1824 Failed to open the referenced table 'projects'
+[19-Mar-2026 08:50:28 Europe/Paris] Migration failed: 026_synopsis - SQLSTATE[HY000]: General error: 1824 Failed to open the referenced table 'projects'
+[19-Mar-2026 08:50:28 Europe/Paris] Migration error: SQLSTATE[HY000]: General error: 1824 Failed to open the referenced table 'projects'
+[19-Mar-2026 08:54:17 Europe/Paris] Migration failed: 026_synopsis - SQLSTATE[HY000]: General error: 1824 Failed to open the referenced table 'projects'
+[19-Mar-2026 08:54:17 Europe/Paris] Migration error: SQLSTATE[HY000]: General error: 1824 Failed to open the referenced table 'projects'
+[19-Mar-2026 09:00:57 Europe/Paris] Migration failed: 026_synopsis - SQLSTATE[HY000]: General error: 1824 Failed to open the referenced table 'projects'
+[19-Mar-2026 09:00:57 Europe/Paris] Migration error: SQLSTATE[HY000]: General error: 1824 Failed to open the referenced table 'projects'
+[19-Mar-2026 09:01:00 Europe/Paris] Migration failed: 026_synopsis - SQLSTATE[HY000]: General error: 1824 Failed to open the referenced table 'projects'
+[19-Mar-2026 09:01:00 Europe/Paris] Migration error: SQLSTATE[HY000]: General error: 1824 Failed to open the referenced table 'projects'
+[19-Mar-2026 09:01:00 Europe/Paris] Migration failed: 026_synopsis - SQLSTATE[HY000]: General error: 1824 Failed to open the referenced table 'projects'
+[19-Mar-2026 09:01:00 Europe/Paris] Migration error: SQLSTATE[HY000]: General error: 1824 Failed to open the referenced table 'projects'
+[19-Mar-2026 09:01:00 Europe/Paris] Migration failed: 026_synopsis - SQLSTATE[HY000]: General error: 1824 Failed to open the referenced table 'projects'
+[19-Mar-2026 09:01:00 Europe/Paris] Migration error: SQLSTATE[HY000]: General error: 1824 Failed to open the referenced table 'projects'
+[19-Mar-2026 09:01:03 Europe/Paris] Migration failed: 026_synopsis - SQLSTATE[HY000]: General error: 1824 Failed to open the referenced table 'projects'
+[19-Mar-2026 09:01:03 Europe/Paris] Migration error: SQLSTATE[HY000]: General error: 1824 Failed to open the referenced table 'projects'
+[19-Mar-2026 09:01:09 Europe/Paris] Migration failed: 026_synopsis - SQLSTATE[HY000]: General error: 1824 Failed to open the referenced table 'projects'
+[19-Mar-2026 09:01:09 Europe/Paris] Migration error: SQLSTATE[HY000]: General error: 1824 Failed to open the referenced table 'projects'
+[19-Mar-2026 09:01:09 Europe/Paris] Migration failed: 026_synopsis - SQLSTATE[HY000]: General error: 1824 Failed to open the referenced table 'projects'
+[19-Mar-2026 09:01:09 Europe/Paris] Migration error: SQLSTATE[HY000]: General error: 1824 Failed to open the referenced table 'projects'
+[19-Mar-2026 09:01:12 Europe/Paris] Migration failed: 026_synopsis - SQLSTATE[HY000]: General error: 1824 Failed to open the referenced table 'projects'
+[19-Mar-2026 09:01:12 Europe/Paris] Migration error: SQLSTATE[HY000]: General error: 1824 Failed to open the referenced table 'projects'
+[19-Mar-2026 09:01:12 Europe/Paris] Migration failed: 026_synopsis - SQLSTATE[HY000]: General error: 1824 Failed to open the referenced table 'projects'
+[19-Mar-2026 09:01:12 Europe/Paris] Migration error: SQLSTATE[HY000]: General error: 1824 Failed to open the referenced table 'projects'
+[19-Mar-2026 09:01:15 Europe/Paris] Migration failed: 026_synopsis - SQLSTATE[HY000]: General error: 1824 Failed to open the referenced table 'projects'
+[19-Mar-2026 09:01:15 Europe/Paris] Migration error: SQLSTATE[HY000]: General error: 1824 Failed to open the referenced table 'projects'
+[19-Mar-2026 09:01:19 Europe/Paris] Migration failed: 026_synopsis - SQLSTATE[HY000]: General error: 1824 Failed to open the referenced table 'projects'
+[19-Mar-2026 09:01:19 Europe/Paris] Migration error: SQLSTATE[HY000]: General error: 1824 Failed to open the referenced table 'projects'
+[19-Mar-2026 09:01:22 Europe/Paris] Migration failed: 026_synopsis - SQLSTATE[HY000]: General error: 1824 Failed to open the referenced table 'projects'
+[19-Mar-2026 09:01:22 Europe/Paris] Migration error: SQLSTATE[HY000]: General error: 1824 Failed to open the referenced table 'projects'
+[19-Mar-2026 09:01:22 Europe/Paris] Migration failed: 026_synopsis - SQLSTATE[HY000]: General error: 1824 Failed to open the referenced table 'projects'
+[19-Mar-2026 09:01:22 Europe/Paris] Migration error: SQLSTATE[HY000]: General error: 1824 Failed to open the referenced table 'projects'
+[19-Mar-2026 09:01:25 Europe/Paris] Migration failed: 026_synopsis - SQLSTATE[HY000]: General error: 1824 Failed to open the referenced table 'projects'
+[19-Mar-2026 09:01:25 Europe/Paris] Migration error: SQLSTATE[HY000]: General error: 1824 Failed to open the referenced table 'projects'
+[19-Mar-2026 09:01:30 Europe/Paris] Migration failed: 026_synopsis - SQLSTATE[HY000]: General error: 1824 Failed to open the referenced table 'projects'
+[19-Mar-2026 09:01:30 Europe/Paris] Migration error: SQLSTATE[HY000]: General error: 1824 Failed to open the referenced table 'projects'
+[19-Mar-2026 09:01:30 Europe/Paris] Migration failed: 026_synopsis - SQLSTATE[HY000]: General error: 1824 Failed to open the referenced table 'projects'
+[19-Mar-2026 09:01:30 Europe/Paris] Migration error: SQLSTATE[HY000]: General error: 1824 Failed to open the referenced table 'projects'
+[19-Mar-2026 09:01:31 Europe/Paris] Migration failed: 026_synopsis - SQLSTATE[HY000]: General error: 1824 Failed to open the referenced table 'projects'
+[19-Mar-2026 09:01:31 Europe/Paris] Migration error: SQLSTATE[HY000]: General error: 1824 Failed to open the referenced table 'projects'
+[19-Mar-2026 09:01:32 Europe/Paris] Migration failed: 026_synopsis - SQLSTATE[HY000]: General error: 1824 Failed to open the referenced table 'projects'
+[19-Mar-2026 09:01:32 Europe/Paris] Migration error: SQLSTATE[HY000]: General error: 1824 Failed to open the referenced table 'projects'
+[19-Mar-2026 09:01:35 Europe/Paris] Migration failed: 026_synopsis - SQLSTATE[HY000]: General error: 1824 Failed to open the referenced table 'projects'
+[19-Mar-2026 09:01:35 Europe/Paris] Migration error: SQLSTATE[HY000]: General error: 1824 Failed to open the referenced table 'projects'
+[19-Mar-2026 09:30:12 Europe/Paris] Migration failed: 026_synopsis - SQLSTATE[HY000]: General error: 1824 Failed to open the referenced table 'projects'
+[19-Mar-2026 09:30:12 Europe/Paris] Migration error: SQLSTATE[HY000]: General error: 1824 Failed to open the referenced table 'projects'
+[19-Mar-2026 09:30:17 Europe/Paris] Migration failed: 026_synopsis - SQLSTATE[HY000]: General error: 1824 Failed to open the referenced table 'projects'
+[19-Mar-2026 09:30:17 Europe/Paris] Migration error: SQLSTATE[HY000]: General error: 1824 Failed to open the referenced table 'projects'
+[19-Mar-2026 09:30:17 Europe/Paris] Migration failed: 026_synopsis - SQLSTATE[HY000]: General error: 1824 Failed to open the referenced table 'projects'
+[19-Mar-2026 09:30:17 Europe/Paris] Migration error: SQLSTATE[HY000]: General error: 1824 Failed to open the referenced table 'projects'
+[19-Mar-2026 09:30:18 Europe/Paris] Migration failed: 026_synopsis - SQLSTATE[HY000]: General error: 1824 Failed to open the referenced table 'projects'
+[19-Mar-2026 09:30:18 Europe/Paris] Migration error: SQLSTATE[HY000]: General error: 1824 Failed to open the referenced table 'projects'
+[19-Mar-2026 09:30:20 Europe/Paris] Migration failed: 026_synopsis - SQLSTATE[HY000]: General error: 1824 Failed to open the referenced table 'projects'
+[19-Mar-2026 09:30:20 Europe/Paris] Migration error: SQLSTATE[HY000]: General error: 1824 Failed to open the referenced table 'projects'
+[19-Mar-2026 09:30:20 Europe/Paris] Migration failed: 026_synopsis - SQLSTATE[HY000]: General error: 1824 Failed to open the referenced table 'projects'
+[19-Mar-2026 09:30:20 Europe/Paris] Migration error: SQLSTATE[HY000]: General error: 1824 Failed to open the referenced table 'projects'
+[19-Mar-2026 09:30:20 Europe/Paris] Migration failed: 026_synopsis - SQLSTATE[HY000]: General error: 1824 Failed to open the referenced table 'projects'
+[19-Mar-2026 09:30:20 Europe/Paris] Migration error: SQLSTATE[HY000]: General error: 1824 Failed to open the referenced table 'projects'
+[19-Mar-2026 09:30:20 Europe/Paris] Migration failed: 026_synopsis - SQLSTATE[HY000]: General error: 1824 Failed to open the referenced table 'projects'
+[19-Mar-2026 09:30:20 Europe/Paris] Migration error: SQLSTATE[HY000]: General error: 1824 Failed to open the referenced table 'projects'
+[19-Mar-2026 09:30:20 Europe/Paris] Migration failed: 026_synopsis - SQLSTATE[HY000]: General error: 1824 Failed to open the referenced table 'projects'
+[19-Mar-2026 09:30:20 Europe/Paris] Migration error: SQLSTATE[HY000]: General error: 1824 Failed to open the referenced table 'projects'
+[19-Mar-2026 09:30:22 Europe/Paris] Migration failed: 026_synopsis - SQLSTATE[HY000]: General error: 1824 Failed to open the referenced table 'projects'
+[19-Mar-2026 09:30:22 Europe/Paris] Migration error: SQLSTATE[HY000]: General error: 1824 Failed to open the referenced table 'projects'
+[19-Mar-2026 09:30:22 Europe/Paris] Migration failed: 026_synopsis - SQLSTATE[HY000]: General error: 1824 Failed to open the referenced table 'projects'
+[19-Mar-2026 09:30:22 Europe/Paris] Migration error: SQLSTATE[HY000]: General error: 1824 Failed to open the referenced table 'projects'
+[19-Mar-2026 09:30:24 Europe/Paris] Migration failed: 026_synopsis - SQLSTATE[HY000]: General error: 1824 Failed to open the referenced table 'projects'
+[19-Mar-2026 09:30:24 Europe/Paris] Migration error: SQLSTATE[HY000]: General error: 1824 Failed to open the referenced table 'projects'
+[19-Mar-2026 09:30:24 Europe/Paris] SQLSTATE[42S02]: Base table or view not found: 1146 Table 'ecrivain.synopsis' doesn't exist [/home/cp28663/public_html/ecrivain/src/vendor/bcosca/fatfree-core/db/sql.php:226]
+[19-Mar-2026 09:30:24 Europe/Paris] [ecrivain/src/vendor/bcosca/fatfree-core/db/sql.php:226] PDOStatement->execute()
+[19-Mar-2026 09:30:24 Europe/Paris] [ecrivain/src/vendor/bcosca/fatfree-core/db/sql.php:388] DB\SQL->exec()
+[19-Mar-2026 09:30:24 Europe/Paris] [ecrivain/src/vendor/bcosca/fatfree-core/db/sql/mapper.php:700] DB\SQL->schema()
+[19-Mar-2026 09:30:24 Europe/Paris] [ecrivain/src/vendor/kalao/libs/libs/Mapper.php:118] DB\SQL\Mapper->__construct()
+[19-Mar-2026 09:30:24 Europe/Paris] [ecrivain/src/app/modules/synopsis/controllers/SynopsisController.php:34] KS\Mapper->__construct()
+[19-Mar-2026 09:30:24 Europe/Paris] [ecrivain/src/www/index.php:309] Base->run()
+[19-Mar-2026 09:31:24 Europe/Paris] Migration failed: 026_synopsis - SQLSTATE[HY000]: General error: 1824 Failed to open the referenced table 'projects'
+[19-Mar-2026 09:31:24 Europe/Paris] Migration error: SQLSTATE[HY000]: General error: 1824 Failed to open the referenced table 'projects'
+[19-Mar-2026 09:31:29 Europe/Paris] Migration failed: 026_synopsis - SQLSTATE[HY000]: General error: 1824 Failed to open the referenced table 'projects'
+[19-Mar-2026 09:31:29 Europe/Paris] Migration error: SQLSTATE[HY000]: General error: 1824 Failed to open the referenced table 'projects'
+[19-Mar-2026 09:31:29 Europe/Paris] Migration failed: 026_synopsis - SQLSTATE[HY000]: General error: 1824 Failed to open the referenced table 'projects'
+[19-Mar-2026 09:31:29 Europe/Paris] Migration error: SQLSTATE[HY000]: General error: 1824 Failed to open the referenced table 'projects'
+[19-Mar-2026 09:31:33 Europe/Paris] Migration failed: 026_synopsis - SQLSTATE[HY000]: General error: 1824 Failed to open the referenced table 'projects'
+[19-Mar-2026 09:31:33 Europe/Paris] Migration error: SQLSTATE[HY000]: General error: 1824 Failed to open the referenced table 'projects'
+[19-Mar-2026 09:31:33 Europe/Paris] Migration failed: 026_synopsis - SQLSTATE[HY000]: General error: 1824 Failed to open the referenced table 'projects'
+[19-Mar-2026 09:31:33 Europe/Paris] Migration error: SQLSTATE[HY000]: General error: 1824 Failed to open the referenced table 'projects'
+[19-Mar-2026 09:31:34 Europe/Paris] Migration failed: 026_synopsis - SQLSTATE[HY000]: General error: 1824 Failed to open the referenced table 'projects'
+[19-Mar-2026 09:31:34 Europe/Paris] Migration error: SQLSTATE[HY000]: General error: 1824 Failed to open the referenced table 'projects'
+[19-Mar-2026 09:31:34 Europe/Paris] Migration failed: 026_synopsis - SQLSTATE[HY000]: General error: 1824 Failed to open the referenced table 'projects'
+[19-Mar-2026 09:31:34 Europe/Paris] Migration error: SQLSTATE[HY000]: General error: 1824 Failed to open the referenced table 'projects'
+[19-Mar-2026 09:31:35 Europe/Paris] Migration failed: 026_synopsis - SQLSTATE[HY000]: General error: 1824 Failed to open the referenced table 'projects'
+[19-Mar-2026 09:31:35 Europe/Paris] Migration error: SQLSTATE[HY000]: General error: 1824 Failed to open the referenced table 'projects'
+[19-Mar-2026 09:31:35 Europe/Paris] Migration failed: 026_synopsis - SQLSTATE[HY000]: General error: 1824 Failed to open the referenced table 'projects'
+[19-Mar-2026 09:31:35 Europe/Paris] Migration error: SQLSTATE[HY000]: General error: 1824 Failed to open the referenced table 'projects'
+[19-Mar-2026 09:31:35 Europe/Paris] Migration failed: 026_synopsis - SQLSTATE[HY000]: General error: 1824 Failed to open the referenced table 'projects'
+[19-Mar-2026 09:31:35 Europe/Paris] Migration error: SQLSTATE[HY000]: General error: 1824 Failed to open the referenced table 'projects'
+[19-Mar-2026 09:31:38 Europe/Paris] Migration failed: 026_synopsis - SQLSTATE[HY000]: General error: 1824 Failed to open the referenced table 'projects'
+[19-Mar-2026 09:31:38 Europe/Paris] Migration error: SQLSTATE[HY000]: General error: 1824 Failed to open the referenced table 'projects'
+[19-Mar-2026 09:31:38 Europe/Paris] Migration failed: 026_synopsis - SQLSTATE[HY000]: General error: 1824 Failed to open the referenced table 'projects'
+[19-Mar-2026 09:31:38 Europe/Paris] Migration error: SQLSTATE[HY000]: General error: 1824 Failed to open the referenced table 'projects'
+[19-Mar-2026 09:31:38 Europe/Paris] Migration failed: 026_synopsis - SQLSTATE[HY000]: General error: 1824 Failed to open the referenced table 'projects'
+[19-Mar-2026 09:31:38 Europe/Paris] Migration error: SQLSTATE[HY000]: General error: 1824 Failed to open the referenced table 'projects'
+[19-Mar-2026 09:31:40 Europe/Paris] Migration failed: 026_synopsis - SQLSTATE[HY000]: General error: 1824 Failed to open the referenced table 'projects'
+[19-Mar-2026 09:31:40 Europe/Paris] Migration error: SQLSTATE[HY000]: General error: 1824 Failed to open the referenced table 'projects'
+[19-Mar-2026 09:31:40 Europe/Paris] SQLSTATE[42S02]: Base table or view not found: 1146 Table 'ecrivain.synopsis' doesn't exist [/home/cp28663/public_html/ecrivain/src/vendor/bcosca/fatfree-core/db/sql.php:226]
+[19-Mar-2026 09:31:40 Europe/Paris] [ecrivain/src/vendor/bcosca/fatfree-core/db/sql.php:226] PDOStatement->execute()
+[19-Mar-2026 09:31:40 Europe/Paris] [ecrivain/src/vendor/bcosca/fatfree-core/db/sql.php:388] DB\SQL->exec()
+[19-Mar-2026 09:31:40 Europe/Paris] [ecrivain/src/vendor/bcosca/fatfree-core/db/sql/mapper.php:700] DB\SQL->schema()
+[19-Mar-2026 09:31:40 Europe/Paris] [ecrivain/src/vendor/kalao/libs/libs/Mapper.php:118] DB\SQL\Mapper->__construct()
+[19-Mar-2026 09:31:40 Europe/Paris] [ecrivain/src/app/modules/synopsis/controllers/SynopsisController.php:34] KS\Mapper->__construct()
+[19-Mar-2026 09:31:40 Europe/Paris] [ecrivain/src/www/index.php:309] Base->run()
+[19-Mar-2026 09:33:37 Europe/Paris] Migration failed: 026_synopsis - SQLSTATE[HY000]: General error: 1824 Failed to open the referenced table 'projects'
+[19-Mar-2026 09:33:37 Europe/Paris] Migration error: SQLSTATE[HY000]: General error: 1824 Failed to open the referenced table 'projects'
+[19-Mar-2026 09:33:37 Europe/Paris] SQLSTATE[42S02]: Base table or view not found: 1146 Table 'ecrivain.synopsis' doesn't exist [/home/cp28663/public_html/ecrivain/src/vendor/bcosca/fatfree-core/db/sql.php:226]
+[19-Mar-2026 09:33:37 Europe/Paris] [ecrivain/src/vendor/bcosca/fatfree-core/db/sql.php:226] PDOStatement->execute()
+[19-Mar-2026 09:33:37 Europe/Paris] [ecrivain/src/vendor/bcosca/fatfree-core/db/sql.php:388] DB\SQL->exec()
+[19-Mar-2026 09:33:37 Europe/Paris] [ecrivain/src/vendor/bcosca/fatfree-core/db/sql/mapper.php:700] DB\SQL->schema()
+[19-Mar-2026 09:33:37 Europe/Paris] [ecrivain/src/vendor/kalao/libs/libs/Mapper.php:118] DB\SQL\Mapper->__construct()
+[19-Mar-2026 09:33:37 Europe/Paris] [ecrivain/src/app/modules/synopsis/controllers/SynopsisController.php:34] KS\Mapper->__construct()
+[19-Mar-2026 09:33:37 Europe/Paris] [ecrivain/src/www/index.php:309] Base->run()
+[19-Mar-2026 09:40:33 Europe/Paris] Undefined array key "id"
+[19-Mar-2026 09:40:33 Europe/Paris] [ecrivain/src/tmp/2a98ye1n598gk.117yrbv2yu38v.php:218] Base->{closure}()
+[19-Mar-2026 09:40:33 Europe/Paris] [ecrivain/src/app/modules/lecture/controllers/LectureController.php:477] Preview->render()
+[19-Mar-2026 09:40:33 Europe/Paris] [ecrivain/src/www/index.php:309] Base->run()
+[20-Mar-2026 18:59:01 Europe/Paris] Migration executed: 027_template_element_type_synopsis
+[20-Mar-2026 18:59:01 Europe/Paris] Migration executed: 028_add_synopsis_to_templates
+[22-Mar-2026 11:41:58 Europe/Paris] Migration warning (ignored): SQLSTATE[42S21]: Column already exists: 1060 Duplicate column name 'is_exported'
+[22-Mar-2026 11:41:58 Europe/Paris] Migration warning (ignored): SQLSTATE[42S21]: Column already exists: 1060 Duplicate column name 'is_exported'
+[22-Mar-2026 11:41:58 Europe/Paris] Migration executed: 029_is_exported_notes_characters
+[24-Mar-2026 17:43:49 Europe/Paris] HTTP 404 (GET /l)
+[24-Mar-2026 17:43:49 Europe/Paris] [ecrivain/src/www/index.php:309] Base->run()
+[24-Mar-2026 17:45:32 Europe/Paris] Undefined array key "id"
+[24-Mar-2026 17:45:32 Europe/Paris] [ecrivain/src/tmp/1lwubqvjornkn.117yrbv2yu38v.php:218] Base->{closure}()
+[24-Mar-2026 17:45:32 Europe/Paris] [ecrivain/src/app/modules/lecture/controllers/LectureController.php:477] Preview->render()
+[24-Mar-2026 17:45:32 Europe/Paris] [ecrivain/src/www/index.php:309] Base->run()
+[29-Mar-2026 14:02:49 Europe/Paris] HTTP 404 (GET /public/js/'%20+%20BASE%20+%20'/stats)
+[29-Mar-2026 14:02:49 Europe/Paris] [ecrivain/src/www/index.php:309] Base->run()
+[31-Mar-2026 10:55:45 Europe/Paris] HTTP 404 (GET /favicon-256x256.png)
+[31-Mar-2026 10:55:45 Europe/Paris] [ecrivain/src/www/index.php:309] Base->run()
+[04-Apr-2026 12:08:41 Europe/Paris] Undefined array key "id"
+[04-Apr-2026 12:08:41 Europe/Paris] [ecrivain/src/tmp/2a98ye1n598gk.117yrbv2yu38v.php:218] Base->{closure}()
+[04-Apr-2026 12:08:41 Europe/Paris] [ecrivain/src/app/modules/lecture/controllers/LectureController.php:477] Preview->render()
+[04-Apr-2026 12:08:41 Europe/Paris] [ecrivain/src/www/index.php:309] Base->run()
+[06-Apr-2026 10:37:30 Europe/Paris] Token CSRF invalide.
+[06-Apr-2026 10:37:30 Europe/Paris] [ecrivain/src/app/controllers/Controller.php:215] Base->error()
+[06-Apr-2026 10:37:30 Europe/Paris] [ecrivain/src/app/controllers/Controller.php:39] Controller->requireCsrf()
+[06-Apr-2026 10:37:30 Europe/Paris] [ecrivain/src/app/modules/project/controllers/ProjectFileController.php:7] Controller->beforeRoute()
+[06-Apr-2026 10:37:30 Europe/Paris] [ecrivain/src/www/index.php:309] Base->run()
+[06-Apr-2026 10:37:44 Europe/Paris] Token CSRF invalide.
+[06-Apr-2026 10:37:44 Europe/Paris] [ecrivain/src/app/controllers/Controller.php:215] Base->error()
+[06-Apr-2026 10:37:44 Europe/Paris] [ecrivain/src/app/controllers/Controller.php:39] Controller->requireCsrf()
+[06-Apr-2026 10:37:44 Europe/Paris] [ecrivain/src/app/modules/project/controllers/ProjectFileController.php:7] Controller->beforeRoute()
+[06-Apr-2026 10:37:44 Europe/Paris] [ecrivain/src/www/index.php:309] Base->run()

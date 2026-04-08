@@ -1,0 +1,27 @@
+# Environment variables - NEVER commit credentials
+.env
+.env.local
+
+# Logs
+logs/
+*.log
+www/entry_log.txt
+
+# Cache & temporary files
+tmp/
+cache/
+
+# User data
+data/*/
+
+# IDE
+.idea/
+.vscode/
+*.swp
+*.swo
+*~
+.claude
+
+# OS
+.DS_Store
+Thumbs.db
