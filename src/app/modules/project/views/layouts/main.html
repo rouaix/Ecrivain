@@ -71,7 +71,7 @@
 
     <script nonce="{{ @nonce }}" src="{{ @base }}/public/js/notifications.js?v=1"></script>
 
-    <link rel="stylesheet" href="{{ @base }}/public/style.css?v=52">
+    <link rel="stylesheet" href="{{ @base }}/public/style.css?v=53">
 
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 
@@ -82,6 +82,9 @@
 </head>
 
 <body class="theme-{{ @selectedTheme }}">
+
+    <!-- Skip link accessibilité clavier -->
+    <a href="#main-content" class="classic-skip-link">Aller au contenu</a>
 
     <header>
 
@@ -121,7 +124,23 @@
                             <i class="fas fa-th-large" aria-hidden="true"></i> Pro
                         </button>
                     </form>
-                    <a href="{{ @base }}/logout">Déconnexion</a>
+                    <div class="classic-user-menu" id="classicUserMenu">
+                        <button type="button" id="classicUserBtn" class="nav-search-btn classic-user-btn" aria-haspopup="true" aria-expanded="false" title="Menu utilisateur">
+                            <i class="fas fa-user-circle" aria-hidden="true"></i>
+                        </button>
+                        <div id="classicUserDropdown" class="classic-user-dropdown" role="menu">
+                            <a href="{{ @base }}/profile" class="classic-dropdown-item" role="menuitem">
+                                <i class="fas fa-user" aria-hidden="true"></i> Mon profil
+                            </a>
+                            <a href="{{ @base }}/ai/config" class="classic-dropdown-item" role="menuitem">
+                                <i class="fas fa-magic" aria-hidden="true"></i> Configuration IA
+                            </a>
+                            <div class="classic-dropdown-sep"></div>
+                            <a href="{{ @base }}/logout" class="classic-dropdown-item classic-dropdown-item--danger" role="menuitem">
+                                <i class="fas fa-sign-out-alt" aria-hidden="true"></i> Déconnexion
+                            </a>
+                        </div>
+                    </div>
 
                 </true>
 
@@ -141,9 +160,48 @@
 
     </header>
 
-    <main>
+    <!-- Barre de navigation contextuelle projet -->
+    <check if="{{ isset(@project) && isset(@SESSION.user_id) }}">
+        <nav class="classic-project-bar" aria-label="Navigation projet">
+            <a href="{{ @base }}/project/{{ @project.id }}" class="classic-project-bar__title" title="Vue d'ensemble">
+                <i class="fas fa-book" aria-hidden="true"></i>
+                <span>{{ @project.title | esc }}</span>
+            </a>
+            <div class="classic-project-bar__links">
+                <a href="{{ @base }}/project/{{ @project.id }}/mindmap" title="Carte mentale">
+                    <i class="fas fa-sitemap" aria-hidden="true"></i> Carte mentale
+                </a>
+                <a href="{{ @base }}/project/{{ @project.id }}/lecture" title="Mode lecture">
+                    <i class="fas fa-glasses" aria-hidden="true"></i> Lecture
+                </a>
+                <a href="{{ @base }}/project/{{ @project.id }}/relecture" title="Mode relecture">
+                    <i class="fas fa-highlighter" aria-hidden="true"></i> Relecture
+                </a>
+                <a href="#" id="classicAiAssistantBtn" title="Assistant Narratif IA">
+                    <i class="fas fa-magic" aria-hidden="true"></i> Assistant IA
+                </a>
+                <a href="#" id="classicExportBtn" title="Exporter le projet">
+                    <i class="fas fa-file-export" aria-hidden="true"></i> Exporter
+                </a>
+            </div>
+        </nav>
+    </check>
+
+    <main id="main-content">
 
         <div class="container">
+
+            <!-- Flash messages -->
+            <check if="{{ isset(@flash_success) }}">
+                <div class="alert-success flash-message">
+                    <i class="fas fa-check-circle" aria-hidden="true"></i> {{ @flash_success | esc }}
+                </div>
+            </check>
+            <check if="{{ isset(@flash_error) }}">
+                <div class="error flash-message">
+                    <i class="fas fa-exclamation-circle" aria-hidden="true"></i> {{ @flash_error | esc }}
+                </div>
+            </check>
 
             {{ @content | raw }}
 
@@ -180,6 +238,146 @@
     <!-- Register service worker for PWA support -->
 
     <style>
+        /* Skip link accessibilité */
+        .classic-skip-link {
+            position: absolute;
+            left: -9999px;
+            top: 8px;
+            z-index: 99999;
+            background: var(--link-color, #3f51b5);
+            color: #fff;
+            padding: 8px 16px;
+            border-radius: 4px;
+            font-size: .9rem;
+            text-decoration: none;
+        }
+        .classic-skip-link:focus {
+            left: 8px;
+        }
+
+        /* Flash messages */
+        .flash-message {
+            margin-bottom: 16px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        /* Barre de navigation projet contextuelle */
+        .classic-project-bar {
+            background: var(--card-bg, #fff);
+            border-bottom: 1px solid var(--border-color, #e0e0e0);
+            display: flex;
+            align-items: center;
+            gap: 0;
+            padding: 0 20px;
+            overflow-x: auto;
+            white-space: nowrap;
+        }
+        .classic-project-bar__title {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-weight: 700;
+            font-size: .88rem;
+            color: var(--text-main, #333);
+            text-decoration: none;
+            padding: 9px 14px 9px 0;
+            border-right: 1px solid var(--border-color, #e0e0e0);
+            margin-right: 8px;
+            flex-shrink: 0;
+            max-width: 200px;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+        .classic-project-bar__title i {
+            color: var(--link-color, #3f51b5);
+            flex-shrink: 0;
+        }
+        .classic-project-bar__title:hover {
+            color: var(--link-color, #3f51b5);
+        }
+        .classic-project-bar__links {
+            display: flex;
+            align-items: center;
+            gap: 2px;
+        }
+        .classic-project-bar__links a {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            font-size: .82rem;
+            color: var(--text-muted, #666);
+            text-decoration: none;
+            padding: 7px 10px;
+            border-radius: 4px;
+            transition: background .15s, color .15s;
+            white-space: nowrap;
+        }
+        .classic-project-bar__links a:hover {
+            background: var(--table-header-bg, #f5f5f5);
+            color: var(--link-color, #3f51b5);
+        }
+
+        /* User menu dropdown */
+        .classic-user-menu {
+            position: relative;
+        }
+        .classic-user-btn {
+            display: flex;
+            align-items: center;
+            gap: 4px;
+            font-size: 1.1rem;
+        }
+        .classic-user-dropdown {
+            display: none;
+            position: absolute;
+            top: calc(100% + 6px);
+            right: 0;
+            background: var(--card-bg, #fff);
+            border: 1px solid var(--border-color, #e0e0e0);
+            border-radius: 8px;
+            box-shadow: 0 8px 24px rgba(0,0,0,.15);
+            min-width: 180px;
+            z-index: 500;
+            padding: 4px 0;
+        }
+        .classic-user-dropdown.is-open {
+            display: block;
+        }
+        .classic-dropdown-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 8px 14px;
+            font-size: .88rem;
+            color: var(--text-main, #333);
+            text-decoration: none;
+            transition: background .15s;
+        }
+        .classic-dropdown-item:hover {
+            background: var(--table-header-bg, #f5f5f5);
+        }
+        .classic-dropdown-item--danger {
+            color: #dc2626;
+        }
+        .classic-dropdown-sep {
+            height: 1px;
+            background: var(--border-color, #e0e0e0);
+            margin: 4px 0;
+        }
+
+        /* Header éditeur sticky en mode classique */
+        .edit-page-layout .edit-header {
+            position: sticky;
+            top: 0;
+            z-index: 50;
+            background: var(--card-bg, #fff);
+            border-bottom: 1px solid var(--border-color, #e0e0e0);
+            margin: 0 0 20px;
+            padding: 8px 0;
+        }
+
         /* Nav collab badge */
         .nav-collab-link {
             position: relative;
@@ -366,6 +564,58 @@
         }
 
     </script>
+
+    <!-- Modal Export projet (classique) -->
+    <check if="{{ isset(@project) && isset(@SESSION.user_id) }}">
+        <div id="classicExportModal" class="modal-overlay">
+            <div class="modal-content modal-sm">
+                <div class="modal-header">
+                    <h3><i class="fas fa-file-export" aria-hidden="true"></i> Exporter le projet</h3>
+                    <button class="modal-close" id="classicExportModalClose" title="Fermer">&times;</button>
+                </div>
+                <div class="modal-body">
+                    <ul class="export-options-list">
+                        <li><a class="button" href="{{ @base }}/project/{{ @project.id }}/export">Texte (.txt)</a><span class="export-format-desc">Texte brut formaté, titres en majuscules</span></li>
+                        <li><a class="button" href="{{ @base }}/project/{{ @project.id }}/export/markdown">Markdown (.md)</a><span class="export-format-desc">Format Markdown avec titres # et mise en forme</span></li>
+                        <li><a class="button" href="{{ @base }}/project/{{ @project.id }}/export/html">HTML (.html)</a><span class="export-format-desc">Document web complet avec styles CSS</span></li>
+                        <li><a class="button" href="{{ @base }}/project/{{ @project.id }}/export/epub">EPUB (.epub)</a><span class="export-format-desc">Format liseuse numérique</span></li>
+                        <li><a class="button" href="{{ @base }}/project/{{ @project.id }}/export/odt">OpenDocument (.odt)</a><span class="export-format-desc">Compatible LibreOffice et Microsoft Word</span></li>
+                        <li><a class="button" href="{{ @base }}/project/{{ @project.id }}/export/vector">JSON (.json)</a><span class="export-format-desc">Pour vectorisation et traitement IA</span></li>
+                        <li><a class="button" href="{{ @base }}/project/{{ @project.id }}/export/clean">Texte brut (.txt)</a><span class="export-format-desc">Tout en minuscules, sans mise en forme</span></li>
+                        <li><a class="button" href="{{ @base }}/project/{{ @project.id }}/export/summaries">Résumés (.txt)</a><span class="export-format-desc">Titres et résumés uniquement</span></li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <!-- Modal Assistant Narratif IA (classique) -->
+        <div id="classicAiAssistantModal" class="modal-overlay" role="dialog" aria-modal="true" aria-label="Assistant Narratif IA" data-project-id="{{ @project.id }}">
+            <div class="modal-content modal-lg modal-tall">
+                <div class="modal-header">
+                    <h3><i class="fas fa-magic" aria-hidden="true"></i> Assistant Narratif</h3>
+                    <button type="button" class="modal-close" id="closeClassicAiAssistantModal" title="Fermer">&times;</button>
+                </div>
+                <div class="modal-body" style="flex:1; display:flex; flex-direction:column; overflow:hidden;">
+                    <div class="ai-panel" style="height:100%; display:flex; flex-direction:column;">
+                        <div class="ai-messages" id="classicAiChatOutput" style="flex:1; overflow-y:auto; margin-bottom:16px;">
+                            <div class="ai-msg system">
+                                Je connais l'intégralité de votre projet « {{ @project.title | esc }} ». Posez-moi une question.
+                            </div>
+                        </div>
+                        <div class="ai-input-area">
+                            <textarea class="ai-textarea" id="classicAiPrompt" placeholder="Ex : Que fait ce personnage au chapitre 3 ? Est-ce cohérent avec son histoire ?"></textarea>
+                            <div class="ai-actions">
+                                <span></span>
+                                <button type="button" id="btnClassicAiAsk" class="button secondary" title="Envoyer">
+                                    <i class="fas fa-paper-plane" aria-hidden="true"></i> Envoyer
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </check>
 
     <!-- AI Request Modal -->
 
@@ -668,6 +918,88 @@
 
                 });
 
+            }
+
+            // ── User menu dropdown ──
+            var userBtn = document.getElementById('classicUserBtn');
+            var userDropdown = document.getElementById('classicUserDropdown');
+            if (userBtn && userDropdown) {
+                userBtn.addEventListener('click', function (e) {
+                    e.stopPropagation();
+                    var open = userDropdown.classList.toggle('is-open');
+                    userBtn.setAttribute('aria-expanded', open);
+                });
+                document.addEventListener('click', function () {
+                    userDropdown.classList.remove('is-open');
+                    userBtn.setAttribute('aria-expanded', 'false');
+                });
+                userDropdown.addEventListener('click', function (e) { e.stopPropagation(); });
+            }
+
+            // ── Export modal (classique) ──
+            var exportModal = document.getElementById('classicExportModal');
+            var exportBtn = document.getElementById('classicExportBtn');
+            var exportClose = document.getElementById('classicExportModalClose');
+            if (exportBtn && exportModal) {
+                exportBtn.addEventListener('click', function (e) { e.preventDefault(); exportModal.classList.add('is-visible'); });
+                if (exportClose) exportClose.addEventListener('click', function () { exportModal.classList.remove('is-visible'); });
+                exportModal.addEventListener('click', function (e) { if (e.target === exportModal) exportModal.classList.remove('is-visible'); });
+            }
+
+            // ── Assistant Narratif IA (classique) ──
+            var aiAssistModal = document.getElementById('classicAiAssistantModal');
+            var aiAssistBtn = document.getElementById('classicAiAssistantBtn');
+            var aiAssistClose = document.getElementById('closeClassicAiAssistantModal');
+            var aiAssistPrompt = document.getElementById('classicAiPrompt');
+            var aiAssistOutput = document.getElementById('classicAiChatOutput');
+            var aiAssistSend = document.getElementById('btnClassicAiAsk');
+            var classicProjectId = aiAssistModal ? aiAssistModal.getAttribute('data-project-id') : null;
+
+            if (aiAssistBtn && aiAssistModal) {
+                aiAssistBtn.addEventListener('click', function (e) { e.preventDefault(); aiAssistModal.classList.add('is-visible'); if (aiAssistPrompt) aiAssistPrompt.focus(); });
+                if (aiAssistClose) aiAssistClose.addEventListener('click', function () { aiAssistModal.classList.remove('is-visible'); });
+                aiAssistModal.addEventListener('click', function (e) { if (e.target === aiAssistModal) aiAssistModal.classList.remove('is-visible'); });
+
+                function addAiMsg(text, cls) {
+                    var div = document.createElement('div');
+                    div.className = 'ai-msg ' + cls;
+                    div.innerHTML = text.replace(/\n/g, '<br>');
+                    aiAssistOutput.appendChild(div);
+                    aiAssistOutput.scrollTop = aiAssistOutput.scrollHeight;
+                    return div;
+                }
+
+                function sendAiAssist() {
+                    var prompt = aiAssistPrompt ? aiAssistPrompt.value.trim() : '';
+                    if (!prompt || !classicProjectId) return;
+                    addAiMsg(prompt, 'user');
+                    aiAssistPrompt.value = '';
+                    aiAssistPrompt.disabled = true;
+                    aiAssistSend.disabled = true;
+                    var loading = addAiMsg('Analyse du manuscrit en cours\u2026', 'ai loading');
+                    fetch('{{ @base }}/ai/ask', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json', 'X-CSRF-Token': window.CSRF_TOKEN },
+                        body: JSON.stringify({ project_id: classicProjectId, prompt: prompt })
+                    })
+                    .then(function (r) { return r.json(); })
+                    .then(function (data) {
+                        loading.remove();
+                        if (data.success) addAiMsg(data.answer, 'ai');
+                        else addAiMsg('Erreur : ' + (data.error || 'inconnue'), 'system error');
+                    })
+                    .catch(function (e) { loading.remove(); addAiMsg('Erreur réseau : ' + e.message, 'system error'); })
+                    .finally(function () {
+                        aiAssistPrompt.disabled = false;
+                        aiAssistSend.disabled = false;
+                        aiAssistPrompt.focus();
+                    });
+                }
+
+                if (aiAssistSend) aiAssistSend.addEventListener('click', sendAiAssist);
+                if (aiAssistPrompt) aiAssistPrompt.addEventListener('keydown', function (e) {
+                    if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); sendAiAssist(); }
+                });
             }
 
         });
