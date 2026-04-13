@@ -750,7 +750,30 @@ body.ui-pro .project-tag {
 }
 
 body.ui-pro .project-card__stats {
-    display: none;
+    display: flex;
+    gap: 12px;
+    padding: 6px 10px 8px;
+    border-top: 1px solid var(--input-border);
+}
+
+body.ui-pro .project-card__stats .project-stat {
+    display: flex;
+    flex-direction: column;
+    gap: 1px;
+}
+
+body.ui-pro .project-card__stats .project-stat .label {
+    font-size: 10px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    color: var(--text-muted);
+}
+
+body.ui-pro .project-card__stats .project-stat .value {
+    font-size: 12px;
+    font-weight: 700;
+    color: var(--text-main);
 }
 
 /* Actions — barre basse, visible au hover */
@@ -836,9 +859,15 @@ body.ui-pro .alert.alert-info {
    PHASE 2 — PAGE PROJET PRO
    ============================================================ */
 
-/* Masquer le gros hero cover (remplacé par en-tête compact) */
+/* Hero compact en Pro — flex horizontal, cover réduite à gauche */
 body.ui-pro .project-hero {
-    display: none;
+    display: flex;
+    gap: 0;
+    background: var(--card-bg);
+    border: 1px solid var(--input-border);
+    border-radius: var(--radius-sm);
+    overflow: hidden;
+    margin-bottom: 16px;
 }
 
 /* Miniature couverture (narrow strip) */
@@ -909,12 +938,9 @@ body.ui-pro .project-hero__author {
     font-style: italic;
 }
 
-/* Actions — row compact */
+/* Actions — masquées en Pro (navigation disponible dans la sidebar) */
 body.ui-pro .project-hero__actions {
-    display: flex;
-    flex-wrap: wrap;
-    align-items: center;
-    gap: 6px;
+    display: none;
 }
 
 body.ui-pro .project-hero__actions-group {

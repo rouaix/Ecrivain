@@ -93,11 +93,34 @@ body.ui-pro .edit-header h2 {
     margin: 0;
 }
 
-/* ── 17. Éditeur Pro — focus sur le contenu, sections secondaires masquées ── */
+/* ── 17. Éditeur Pro — focus sur le contenu ── */
 
-/* Masquer les sélecteurs acte/parent (méta-infos) — accessible via sidebar */
+/* Sélecteurs acte/parent — style compact en Pro */
 body.ui-pro.editor-mode .editor-grid-row {
-    display: none;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+    margin: 8px 0 4px;
+    padding: 10px 0 0;
+    border-top: 1px solid var(--input-border);
+}
+
+body.ui-pro.editor-mode .editor-grid-row .form-group {
+    margin-bottom: 0;
+}
+
+body.ui-pro.editor-mode .editor-grid-row label {
+    font-size: 11px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: var(--text-muted);
+    margin-bottom: 3px;
+}
+
+body.ui-pro.editor-mode .editor-grid-row select {
+    font-size: 12px;
+    padding: 4px 8px;
 }
 
 /* Quill editor — hauteur maximisée en mode focus */
@@ -105,10 +128,18 @@ body.ui-pro.editor-mode .editor-height-300 {
     min-height: 60vh;
 }
 
-/* Sections secondaires (grammaire, annotations, glossaire) → collapsées */
+/* Sections secondaires — compactes en Pro */
 body.ui-pro.editor-mode #glossaryFoundSection,
 body.ui-pro.editor-mode #annotationsSection {
-    display: none;
+    border-top: 1px solid var(--input-border);
+    padding-top: 10px;
+    margin-top: 4px;
+}
+
+body.ui-pro.editor-mode #glossaryFoundSection .grammar-header label,
+body.ui-pro.editor-mode #annotationsSection .grammar-header label {
+    font-size: 12px;
+    font-weight: 600;
 }
 
 /* Section grammaire — masquée par défaut, accessible via bouton du header */
@@ -121,9 +152,11 @@ body.ui-pro.editor-mode .editor-height-150 {
     min-height: 80px;
 }
 
-/* Compteur de mots inline — masqué, déplacé dans la status bar */
+/* Compteur de mots inline — visible en Pro */
 body.ui-pro.editor-mode .word-count.inline {
-    display: none;
+    font-size: 11px;
+    color: var(--text-muted);
+    font-weight: normal;
 }
 
 /* Actions éditeur — compact, collé en bas */
