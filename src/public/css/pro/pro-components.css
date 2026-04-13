@@ -859,15 +859,13 @@ body.ui-pro .alert.alert-info {
    PHASE 2 — PAGE PROJET PRO
    ============================================================ */
 
-/* Hero compact en Pro — flex horizontal, cover réduite à gauche */
+/* Section hero projet — masquée en Pro (remplacée par pro-project-progression + sidebar) */
+body.ui-pro .project-page.professional-show {
+    display: none;
+}
+
 body.ui-pro .project-hero {
-    display: flex;
-    gap: 0;
-    background: var(--card-bg);
-    border: 1px solid var(--input-border);
-    border-radius: var(--radius-sm);
-    overflow: hidden;
-    margin-bottom: 16px;
+    display: none;
 }
 
 /* Miniature couverture (narrow strip) */
