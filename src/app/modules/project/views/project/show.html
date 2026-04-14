@@ -2,29 +2,6 @@
 
 <include href="project/inc/new_body.html" />
 
-<!-- Preview Modal -->
-
-<div id="previewModal" class="modal-overlay">
-
-    <div class="modal-content">
-
-        <div class="modal-header">
-
-            <h3 id="modalTitle">Titre</h3>
-
-            <button class="modal-close">&times;</button>
-
-        </div>
-
-        <div id="modalBody" class="modal-body typography">
-
-            <!-- Content loaded via AJAX -->
-
-        </div>
-
-    </div>
-
-</div>
 
 <script nonce="{{ @nonce }}">
 
@@ -164,7 +141,7 @@
 
     const modalBody = document.getElementById('modalBody');
 
-    const closeModal = document.querySelector('.modal-close');
+    const closeModal = document.getElementById('closePreviewModal');
 
     if (modal) {
 
@@ -194,7 +171,7 @@
 
                         modalTitle.innerText = data.title;
 
-                        modalBody.innerHTML = data.content;
+                        modalBody.innerHTML = data.content || '<p class="text-muted-para">Aucun contenu pour le moment.</p>';
 
                     })
 

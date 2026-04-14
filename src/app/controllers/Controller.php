@@ -212,7 +212,8 @@ abstract class Controller
         $token = $_POST['csrf_token'] ?? ($_SERVER['HTTP_X_CSRF_TOKEN'] ?? '');
         $sessionToken = $_SESSION['csrf_token'] ?? '';
         if ($token === '' || $sessionToken === '' || !hash_equals($sessionToken, $token)) {
-            $this->f3->error(403, 'Token CSRF invalide.');
+            $_SESSION['error'] = 'Votre session a expiré. Veuillez vous reconnecter.';
+            $this->f3->reroute('/login');
         }
     }
     /**

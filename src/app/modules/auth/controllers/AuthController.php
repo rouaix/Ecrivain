@@ -39,11 +39,14 @@ class AuthController extends Controller
 
         // Render with F3 Template
 
+        $flashError = $_SESSION['error'] ?? '';
+        unset($_SESSION['error']);
+
         $this->render('auth/login.html', [
 
             'title' => 'Connexion',
 
-            'errors' => [],
+            'errors' => $flashError ? [$flashError] : [],
 
             'success' => '',
 
