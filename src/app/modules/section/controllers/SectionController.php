@@ -110,22 +110,13 @@ class SectionController extends Controller
                 $errors[] = $validation['error'];
             } else {
                 $uploadDir = 'data/' . $user['email'] . '/projects/' . $pid . '/sections/';
-                if (!is_dir($uploadDir)) {
-                    mkdir($uploadDir, 0755, true);
-                }
+                $imgSvc    = new ImageUploadService();
 
-                $extension = $validation['extension'];
-                $filename = $type . '.' . $extension;
-                $targetPath = $uploadDir . $filename;
+                // Supprime tout fichier existant pour ce type (peut avoir une extension différente)
+                $imgSvc->deleteOld($uploadDir, $type . '.*', $type . '.' . $validation['extension']);
 
-                // Delete any existing image for this type (may have different extension)
-                foreach (glob($uploadDir . $type . '.*') ?: [] as $old) {
-                    if ($old !== $targetPath) {
-                        unlink($old);
-                    }
-                }
-
-                if (move_uploaded_file($_FILES['image']['tmp_name'], $targetPath)) {
+                $dest = $imgSvc->move($_FILES['image'], $validation['extension'], $uploadDir, $type);
+                if ($dest) {
                     $imagePath = '/project/' . $pid . '/section/' . $type . '/image';
                 } else {
                     $errors[] = 'Erreur lors du téléchargement de l\'image.';
