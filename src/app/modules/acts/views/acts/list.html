@@ -2,15 +2,15 @@
 
     <set pageIcon="layer-group" />
     <set pageTitle="Actes" />
-    <set backUrl="{{ @base }}/project/{{ @project.id }}" />
-    <set createUrl="{{ @base }}/project/{{ @project.id }}/act/create" />
+    <set backUrl="{{ @base.'/project/'.@project.id }}" />
+    <set createUrl="{{ @base.'/project/'.@project.id.'/act/create' }}" />
     <set createTitle="Nouvel acte" />
     <include href="_page-header.html" />
 
     <check if="{{ count(@acts) == 0 }}">
         <set emptyIcon="layer-group" />
         <set emptyMessage="Aucun acte créé pour ce projet." />
-        <set emptyCreateUrl="{{ @base }}/project/{{ @project.id }}/act/create" />
+        <set emptyCreateUrl="{{ @base.'/project/'.@project.id.'/act/create' }}" />
         <set emptyCreateLabel="Créer le premier acte" />
         <include href="_empty-state.html" />
     </check>

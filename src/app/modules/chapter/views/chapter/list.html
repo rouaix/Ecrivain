@@ -2,15 +2,15 @@
 
     <set pageIcon="list-ol" />
     <set pageTitle="Chapitres" />
-    <set backUrl="{{ @base }}/project/{{ @project.id }}" />
-    <set createUrl="{{ @base }}/project/{{ @project.id }}/chapter/create" />
+    <set backUrl="{{ @base.'/project/'.@project.id }}" />
+    <set createUrl="{{ @base.'/project/'.@project.id.'/chapter/create' }}" />
     <set createTitle="Nouveau chapitre" />
     <include href="_page-header.html" />
 
     <check if="{{ count(@topLevel) == 0 }}">
         <set emptyIcon="list-ol" />
         <set emptyMessage="Aucun chapitre créé pour ce projet." />
-        <set emptyCreateUrl="{{ @base }}/project/{{ @project.id }}/chapter/create" />
+        <set emptyCreateUrl="{{ @base.'/project/'.@project.id.'/chapter/create' }}" />
         <set emptyCreateLabel="Créer le premier chapitre" />
         <include href="_empty-state.html" />
     </check>

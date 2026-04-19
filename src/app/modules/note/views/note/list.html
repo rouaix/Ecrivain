@@ -2,8 +2,8 @@
 
     <set pageIcon="sticky-note" />
     <set pageTitle="Notes" />
-    <set backUrl="{{ @base }}/project/{{ @project.id }}" />
-    <set createUrl="{{ @base }}/project/{{ @project.id }}/note/edit" />
+    <set backUrl="{{ @base.'/project/'.@project.id }}" />
+    <set createUrl="{{ @base.'/project/'.@project.id.'/note/edit' }}" />
     <set createTitle="Nouvelle note" />
     <include href="_page-header.html" />
 
