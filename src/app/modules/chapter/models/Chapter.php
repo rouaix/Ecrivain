@@ -4,6 +4,7 @@ use KS\Mapper;
 
 class Chapter extends Mapper
 {
+    use OrderableTrait;
     const TABLE = 'chapters';
 
     /**
@@ -109,25 +110,5 @@ class Chapter extends Mapper
         return $this->id;
     }
 
-    /**
-     * Reorder chapters.
-     */
-    public function reorder(int $projectId, array $orderedIds): bool
-    {
-        $this->db->begin();
-        try {
-            $index = 0;
-            foreach ($orderedIds as $cid) {
-                $this->db->exec(
-                    'UPDATE chapters SET order_index = ? WHERE id = ? AND project_id = ?',
-                    [$index++, $cid, $projectId]
-                );
-            }
-            $this->db->commit();
-            return true;
-        } catch (\Exception $e) {
-            $this->db->rollback();
-            return false;
-        }
-    }
+    // reorder() fourni par OrderableTrait
 }

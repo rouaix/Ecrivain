@@ -733,17 +733,14 @@ class ApiController extends ApiBaseController
 
         $ownerEmail = $this->getProjectOwnerEmail($pid);
         $uploadDir  = $this->f3->get('BASEPATH') . 'public/uploads/' . $pid . '/';
-        if (!is_dir($uploadDir)) mkdir($uploadDir, 0755, true);
+        $safeName   = bin2hex(random_bytes(8));
+        $dest       = (new ImageUploadService())->move($_FILES['file'], $validation['extension'], $uploadDir, $safeName);
 
-        $ext      = $validation['extension'];
-        $safeName = bin2hex(random_bytes(8)) . '.' . $ext;
-        $destPath = $uploadDir . $safeName;
-
-        if (!move_uploaded_file($_FILES['file']['tmp_name'], $destPath)) {
+        if (!$dest) {
             $this->jsonError('Erreur lors de la sauvegarde du fichier.', 500, 'SERVER_ERROR');
         }
 
-        $relPath = 'public/uploads/' . $pid . '/' . $safeName;
+        $relPath = 'public/uploads/' . $pid . '/' . basename($dest);
         $this->db->exec(
             'INSERT INTO project_files (project_id, filename, filepath, filetype, filesize) VALUES (?, ?, ?, ?, ?)',
             [$pid, $_FILES['file']['name'], $relPath, $_FILES['file']['type'], $_FILES['file']['size']]

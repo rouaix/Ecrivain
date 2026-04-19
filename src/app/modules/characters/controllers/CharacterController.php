@@ -423,15 +423,8 @@ class CharacterController extends Controller
         if (!$valid['success']) {
             return null;
         }
-        $ext      = $valid['extension'];
-        $filename = 'char_' . $charId . '_' . uniqid() . '.' . $ext;
-        $dir      = $this->f3->get('ROOT') . 'public/uploads/characters/';
-        if (!is_dir($dir)) {
-            mkdir($dir, 0775, true);
-        }
-        if (move_uploaded_file($file['tmp_name'], $dir . $filename)) {
-            return 'uploads/characters/' . $filename;
-        }
-        return null;
+        $dir  = $this->f3->get('ROOT') . 'public/uploads/characters/';
+        $dest = (new ImageUploadService())->move($file, $valid['extension'], $dir, 'char_' . $charId . '_' . uniqid());
+        return $dest ? 'uploads/characters/' . basename($dest) : null;
     }
 }

@@ -267,20 +267,8 @@ class ProjectController extends ProjectBaseController
         ];
 
         $db = $this->f3->get('DB');
-        if ($db->exists('templates') && $db->exists('template_elements')) {
-          try {
-            $templateId    = $project['template_id'] ?? null;
-            $templateModel = new ProjectTemplate();
-
-            if (!$templateId) {
-                $template   = $templateModel->getDefault();
-                $templateId = $template['id'] ?? null;
-            } else {
-                $template = $templateModel->findAndCast(['id=?', $templateId]);
-                $template = $template ? $template[0] : $templateModel->getDefault();
-            }
-
-            $templateElements = $template ? $templateModel->getElements($template['id']) : [];
+        try {
+            $templateElements = $this->loadProjectTemplateElements($project);
 
             if (!empty($templateElements)) {
                 $panelConfig = [
@@ -411,14 +399,13 @@ class ProjectController extends ProjectBaseController
 
                 $panelCss = $this->buildPanelOrderCss($templateElements);
             }
-          } catch (\Exception $e) {
-              $panelConfig = [
-                  'section_before' => true, 'content'  => true,
-                  'section_after'  => true, 'note'     => true,
-                  'character'      => true, 'file'     => true,
-                  'scenario'       => true, 'synopsis' => true,
-              ];
-          }
+        } catch (\Exception $e) {
+            $panelConfig = [
+                'section_before' => true, 'content'  => true,
+                'section_after'  => true, 'note'     => true,
+                'character'      => true, 'file'     => true,
+                'scenario'       => true, 'synopsis' => true,
+            ];
         }
 
         foreach (['act', 'chapter', 'note', 'character', 'file'] as $_pk) {
@@ -837,33 +824,17 @@ class ProjectController extends ProjectBaseController
                     error_log("Cover upload validation failed: " . $validation['error']);
                 } else {
                     $uploadDir = 'data/' . $user['email'] . '/projects/' . $pid . '/';
+                    $imgSvc    = new ImageUploadService();
+                    $dest      = $imgSvc->move($_FILES['cover_image'], $validation['extension'], $uploadDir, 'cover');
 
-                    if (!is_dir($uploadDir)) {
-                        if (!mkdir($uploadDir, 0755, true)) {
-                            error_log("Failed to create upload directory: {$uploadDir}");
-                            $errors[] = 'Impossible de créer le répertoire d\'upload.';
+                    if ($dest) {
+                        $newFilename = basename($dest);
+                        if (!empty($projectModel->cover_image) && $projectModel->cover_image !== $newFilename) {
+                            $imgSvc->deleteOld($uploadDir, 'cover.*', $newFilename);
                         }
-                    }
-
-                    if (empty($errors)) {
-                        $extension  = $validation['extension'];
-                        $filename   = 'cover.' . $extension;
-                        $targetPath = $uploadDir . $filename;
-
-                        if (move_uploaded_file($_FILES['cover_image']['tmp_name'], $targetPath)) {
-                            if (!empty($projectModel->cover_image) && $projectModel->cover_image !== $filename) {
-                                $oldFile = $uploadDir . $projectModel->cover_image;
-                                if (file_exists($oldFile)) {
-                                    unlink($oldFile);
-                                    error_log("Deleted old cover: {$oldFile}");
-                                }
-                            }
-                            $projectModel->cover_image = $filename;
-                            error_log("Cover uploaded successfully: {$targetPath}");
-                        } else {
-                            error_log("Failed to move uploaded file to: {$targetPath}");
-                            $errors[] = 'Erreur lors de l\'upload de l\'image.';
-                        }
+                        $projectModel->cover_image = $newFilename;
+                    } else {
+                        $errors[] = 'Erreur lors de l\'upload de l\'image.';
                     }
                 }
             } elseif ($coverFromFile > 0) {

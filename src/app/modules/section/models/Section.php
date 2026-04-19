@@ -4,6 +4,7 @@ use KS\Mapper;
 
 class Section extends Mapper
 {
+    use OrderableTrait;
     const TABLE = 'sections';
 
     // Define section types and their display order
@@ -147,26 +148,7 @@ class Section extends Mapper
         return $res ? $res[0] : null;
     }
 
-    /**
-     * Batch update the order of sections for a project.
-     */
-    public function reorder(int $projectId, array $order): bool
-    {
-        $this->db->begin();
-        try {
-            foreach ($order as $index => $id) {
-                $this->db->exec(
-                    'UPDATE sections SET order_index = ? WHERE id = ? AND project_id = ?',
-                    [$index, $id, $projectId]
-                );
-            }
-            $this->db->commit();
-            return true;
-        } catch (\Exception $e) {
-            $this->db->rollback();
-            return false;
-        }
-    }
+    // reorder() fourni par OrderableTrait
 
     /**
      * Get the display name for a section type.
