@@ -266,6 +266,7 @@ class ProjectController extends ProjectBaseController
             'synopsis'       => true,
         ];
 
+        $db = $this->f3->get('DB');
         try {
             $templateElements = $this->loadProjectTemplateElements($project);
 
