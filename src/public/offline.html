@@ -200,7 +200,7 @@
         var theme = (themeCookie && themeCookie[1]) || 'default';
         var validThemes = ['default', 'dark', 'blue', 'forest', 'moderne'];
         if (validThemes.indexOf(theme) === -1) theme = 'default';
-        document.getElementById('theme-css').href = 'theme-' + theme + '.css';
+        document.getElementById('theme-css').href = 'css/themes/theme-' + theme + '.css';
         document.body.className = 'reading-mode theme-' + theme;
 
         var viewList   = document.getElementById('view-list');
