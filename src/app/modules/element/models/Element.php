@@ -4,6 +4,7 @@ use KS\Mapper;
 
 class Element extends Mapper
 {
+    use OrderableTrait;
     const TABLE = 'elements';
 
     /**
@@ -146,25 +147,5 @@ class Element extends Mapper
         );
     }
 
-    /**
-     * Reorder elements.
-     */
-    public function reorder(int $projectId, array $orderedIds): bool
-    {
-        $this->db->begin();
-        try {
-            $index = 0;
-            foreach ($orderedIds as $eid) {
-                $this->db->exec(
-                    'UPDATE elements SET order_index = ? WHERE id = ? AND project_id = ?',
-                    [$index++, $eid, $projectId]
-                );
-            }
-            $this->db->commit();
-            return true;
-        } catch (\Exception $e) {
-            $this->db->rollback();
-            return false;
-        }
-    }
+    // reorder() fourni par OrderableTrait
 }
