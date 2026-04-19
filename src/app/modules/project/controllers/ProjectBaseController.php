@@ -95,6 +95,27 @@ class ProjectBaseController extends Controller
     }
 
     /**
+     * Charge les elements du template associe au projet.
+     * Retourne un tableau vide si les tables templates/template_elements n'existent pas.
+     */
+    protected function loadProjectTemplateElements(array $project): array
+    {
+        $db = $this->f3->get('DB');
+        if (!$db->exists('templates') || !$db->exists('template_elements')) {
+            return [];
+        }
+        $templateId    = $project['template_id'] ?? null;
+        $templateModel = new ProjectTemplate();
+        if (!$templateId) {
+            $template = $templateModel->getDefault();
+        } else {
+            $template = $templateModel->findAndCast(['id=?', $templateId]);
+            $template = $template ? $template[0] : $templateModel->getDefault();
+        }
+        return $template ? $templateModel->getElements($template['id']) : [];
+    }
+
+    /**
      * Build CSS rules to order panels based on template configuration.
      */
     protected function buildPanelOrderCss(array $templateElements): string

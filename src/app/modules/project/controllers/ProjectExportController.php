@@ -80,22 +80,7 @@ class ProjectExportController extends ProjectBaseController
         $author = $this->currentUser()['username'] ?? 'Auteur inconnu';
 
         // TEMPLATE SYSTEM: Load template configuration
-        $templateElements = [];
-        $db = $this->f3->get('DB');
-        if ($db->exists('templates') && $db->exists('template_elements')) {
-            $templateId    = $project['template_id'] ?? null;
-            $templateModel = new ProjectTemplate();
-
-            if (!$templateId) {
-                $template   = $templateModel->getDefault();
-                $templateId = $template['id'] ?? null;
-            } else {
-                $template = $templateModel->findAndCast(['id=?', $templateId]);
-                $template = $template ? $template[0] : $templateModel->getDefault();
-            }
-
-            $templateElements = $template ? $templateModel->getElements($template['id']) : [];
-        }
+        $templateElements = $this->loadProjectTemplateElements($project);
 
         // Prepare Models
         $sectionModel = new Section();
@@ -690,19 +675,7 @@ class ProjectExportController extends ProjectBaseController
 
         $contentList = [];
 
-        $templateElements = [];
-        $db = $this->f3->get('DB');
-        if ($db->exists('templates') && $db->exists('template_elements')) {
-            $templateId    = $project['template_id'] ?? null;
-            $templateModel = new ProjectTemplate();
-            if (!$templateId) {
-                $template = $templateModel->getDefault();
-            } else {
-                $template = $templateModel->findAndCast(['id=?', $templateId]);
-                $template = $template ? $template[0] : $templateModel->getDefault();
-            }
-            $templateElements = $template ? $templateModel->getElements($template['id']) : [];
-        }
+        $templateElements = $this->loadProjectTemplateElements($project);
 
         $chaptersByAct       = [];
         $chaptersWithoutAct  = [];
