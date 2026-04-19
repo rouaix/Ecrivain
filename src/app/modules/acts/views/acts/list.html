@@ -1,32 +1,18 @@
 <div class="edit-page-layout">
 
-    <div class="edit-header">
-        <h2><i class="fas fa-layer-group" aria-hidden="true"></i> Actes — {{ @project.title | esc }}</h2>
-        <div class="header-actions">
-            <a href="{{ @base }}/project/{{ @project.id }}" class="button secondary" title="Retour au projet">
-                <i class="fas fa-arrow-left" aria-hidden="true"></i>
-            </a>
-            <check if="{{ @isOwner }}">
-                <a href="{{ @base }}/project/{{ @project.id }}/act/create" class="button" title="Nouvel acte">
-                    <i class="fas fa-plus" aria-hidden="true"></i>
-                </a>
-            </check>
-        </div>
-    </div>
+    <set pageIcon="layer-group" />
+    <set pageTitle="Actes — {{ @project.title | esc }}" />
+    <set backUrl="{{ @base }}/project/{{ @project.id }}" />
+    <set createUrl="{{ @base }}/project/{{ @project.id }}/act/create" />
+    <set createTitle="Nouvel acte" />
+    <include href="_page-header.html" />
 
     <check if="{{ count(@acts) == 0 }}">
-        <div class="edit-card mt-20">
-            <p class="text-muted-para empty-state-block">
-                <i class="fas fa-layer-group" aria-hidden="true"
-                    style="font-size:2rem;opacity:.3;display:block;margin-bottom:.5rem"></i>
-                Aucun acte créé pour ce projet.
-                <check if="{{ @isOwner }}">
-                    <a href="{{ @base }}/project/{{ @project.id }}/act/create" class="button mt-10">
-                        <i class="fas fa-plus" aria-hidden="true"></i> Créer le premier acte
-                    </a>
-                </check>
-            </p>
-        </div>
+        <set emptyIcon="layer-group" />
+        <set emptyMessage="Aucun acte créé pour ce projet." />
+        <set emptyCreateUrl="{{ @base }}/project/{{ @project.id }}/act/create" />
+        <set emptyCreateLabel="Créer le premier acte" />
+        <include href="_empty-state.html" />
     </check>
 
     <check if="{{ count(@acts) > 0 }}">

@@ -1,27 +1,16 @@
 <div class="edit-page-layout">
 
-    <div class="edit-header">
-        <h2><i class="fas fa-sticky-note" aria-hidden="true"></i> Notes — {{ @project.title | esc }}</h2>
-        <div class="header-actions">
-            <a href="{{ @base }}/project/{{ @project.id }}" class="button secondary" title="Retour au projet">
-                <i class="fas fa-arrow-left" aria-hidden="true"></i>
-            </a>
-            <check if="{{ @isOwner }}">
-                <a href="{{ @base }}/project/{{ @project.id }}/note/edit" class="button" title="Nouvelle note">
-                    <i class="fas fa-plus" aria-hidden="true"></i>
-                </a>
-            </check>
-        </div>
-    </div>
+    <set pageIcon="sticky-note" />
+    <set pageTitle="Notes — {{ @project.title | esc }}" />
+    <set backUrl="{{ @base }}/project/{{ @project.id }}" />
+    <set createUrl="{{ @base }}/project/{{ @project.id }}/note/edit" />
+    <set createTitle="Nouvelle note" />
+    <include href="_page-header.html" />
 
     <check if="{{ count(@notes) == 0 }}">
-        <div class="edit-card mt-20">
-            <p class="text-muted-para empty-state-block">
-                <i class="fas fa-sticky-note" aria-hidden="true"
-                    style="font-size:2rem;opacity:.3;display:block;margin-bottom:.5rem"></i>
-                Aucune note créée pour ce projet.
-            </p>
-        </div>
+        <set emptyIcon="sticky-note" />
+        <set emptyMessage="Aucune note créée pour ce projet." />
+        <include href="_empty-state.html" />
     </check>
 
     <check if="{{ count(@notes) > 0 }}">
