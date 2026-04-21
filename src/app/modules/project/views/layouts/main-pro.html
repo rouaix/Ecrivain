@@ -30,7 +30,7 @@
     <script nonce="{{ @nonce }}" src="{{ @base }}/public/js/pro-ui.js?v=3"></script>
 
     <!-- CSS : base + Pro -->
-    <link rel="stylesheet" href="{{ @base }}/public/style.css?v=58">
+    <link rel="stylesheet" href="{{ @base }}/public/style.css?v=59">
     <link rel="stylesheet" href="{{ @base }}/public/css/pro/pro.css?v=40">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 
@@ -444,86 +444,6 @@
     <!-- ════════════════════════════════════════════
          STYLES INLINE (search overlay + nav badge)
          ════════════════════════════════════════════ -->
-    <style>
-        /* Search overlay */
-        #searchOverlay {
-            display: none;
-            position: fixed;
-            inset: 0;
-            background: rgba(0, 0, 0, .55);
-            z-index: 9000;
-            align-items: flex-start;
-            justify-content: center;
-            padding-top: 15vh;
-        }
-
-        #searchOverlay.is-open {
-            display: flex;
-        }
-
-        #searchOverlayBox {
-            background: var(--card-bg, #fff);
-            border-radius: 12px;
-            box-shadow: 0 20px 60px rgba(0, 0, 0, .35);
-            width: min(640px, 92vw);
-            overflow: hidden;
-        }
-
-        .search-overlay-input-wrap {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            padding: 16px 20px;
-            border-bottom: 1px solid var(--border-color, #e0e0e0);
-        }
-
-        .search-overlay-icon {
-            font-size: 1.1rem;
-            color: var(--text-muted, #888);
-            flex-shrink: 0;
-        }
-
-        #searchOverlayInput {
-            flex: 1;
-            border: none;
-            outline: none;
-            background: transparent;
-            font-size: 1.15rem;
-            color: var(--text-main, #333);
-            font-family: inherit;
-        }
-
-        #searchOverlayInput::placeholder {
-            color: var(--text-muted, #aaa);
-        }
-
-        .search-overlay-esc {
-            font-size: .7rem;
-            padding: 2px 6px;
-            border-radius: 4px;
-            border: 1px solid var(--border-color, #ccc);
-            color: var(--text-muted, #888);
-            background: var(--table-header-bg, #f5f5f5);
-            font-family: inherit;
-            flex-shrink: 0;
-        }
-
-        .search-overlay-hint {
-            font-size: .78rem;
-            color: var(--text-muted, #999);
-            padding: 10px 20px;
-            margin: 0;
-        }
-
-        .search-overlay-hint kbd {
-            font-size: .75rem;
-            padding: 1px 5px;
-            border-radius: 3px;
-            border: 1px solid var(--border-color, #ccc);
-            background: var(--table-header-bg, #f5f5f5);
-            font-family: inherit;
-        }
-    </style>
 
     <!-- ════════════════════════════════════════════
          SCRIPTS

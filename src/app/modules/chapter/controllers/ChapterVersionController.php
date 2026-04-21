@@ -54,7 +54,7 @@ class ChapterVersionController extends Controller
             [$cid]
         ) ?: [];
 
-        $this->render('editor/versions.html', [
+        $this->render('chapter/versions.html', [
             'title'    => 'Historique — ' . $chapter->title,
             'chapter'  => $chapter->cast(),
             'versions' => $versions,

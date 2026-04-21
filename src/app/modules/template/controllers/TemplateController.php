@@ -35,7 +35,7 @@ class TemplateController extends Controller
             $template['can_delete'] = $template['can_edit'] && $template['usage_count'] == 0;
         }
 
-        $this->render('template/index.html', [
+        $this->render('template/list.html', [
             'title' => 'Templates de projet',
             'templates' => $templates
         ]);

@@ -10,6 +10,7 @@
 @import 'css/layout/header.css';
 @import 'css/layout/footer.css';
 @import 'css/layout/grid.css';
+@import 'css/layout/main.css';
 /* Components - Reusable UI elements */
 @import 'css/components/forms.css';
 @import 'css/components/buttons.css';
@@ -35,6 +36,12 @@
 @import 'css/modules/glossary.css';
 @import 'css/modules/activity-log.css';
 @import 'css/modules/synopsis.css';
+@import 'css/modules/collab.css';
+@import 'css/modules/elements.css';
+@import 'css/modules/scenariste.css';
+@import 'css/modules/search.css';
+@import 'css/modules/share.css';
+@import 'css/modules/stats.css';
 /* Editor - Quill editor customization */
 @import 'css/editor/quill-base.css';
 @import 'css/editor/quill-toolbar.css';
@@ -56,6 +63,8 @@
 @import 'css/features/export.css';
 @import 'css/features/mindmap.css';
 @import 'css/features/template-editor.css';
+@import 'css/features/relecture.css';
+@import 'css/features/share-public.css';
 /* Utilities - Helper classes */
 @import 'css/utilities/spacing.css';
 @import 'css/utilities/text.css';

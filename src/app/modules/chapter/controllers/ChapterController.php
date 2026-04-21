@@ -223,7 +223,7 @@ class ChapterController extends Controller
 
         $subChapterCount = $chapterModel->count(['parent_id=?', $cid]);
 
-        $this->render('editor/edit.html', [
+        $this->render('chapter/edit.html', [
             'title' => $chapterModel->title,
             'chapter' => $chapterData,
             'project' => $project,

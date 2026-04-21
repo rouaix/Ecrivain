@@ -441,3 +441,149 @@ body.fullscreen-mode .reading-toolbar:hover {
         font-size: 1.3rem;
     }
 }
+
+/* ++ Critical overrides for lecture/read.html ++ */
+body.reading-mode header,
+body.reading-mode footer,
+body.reading-mode nav:not(.reading-toolbar *) {
+    display: none !important;
+}
+
+body.reading-mode main.reading-content {
+    padding: 0 !important;
+    max-width: 100% !important;
+}
+
+body.reading-mode .container {
+    max-width: 100% !important;
+    width: 100% !important;
+    padding: 0 !important;
+}
+
+body.reading-mode .reading-container {
+    max-width: 100% !important;
+    width: 100vw !important;
+    margin: 0 !important;
+    padding: 0 !important;
+}
+
+/* FORCE toolbar to use theme variables, not global button styles */
+.reading-toolbar {
+    background: var(--header-bg) !important;
+    color: var(--header-text) !important;
+    display: flex !important;
+    flex-direction: row !important;
+    align-items: center !important;
+    padding: 12px 20px !important;
+    gap: 15px !important;
+    min-height: 50px !important;
+    max-height: 100px !important;
+    box-sizing: border-box !important;
+    flex-shrink: 0 !important;
+    position: sticky !important;
+    top: 0 !important;
+    left: 0 !important;
+    right: 0 !important;
+    width: 100% !important;
+    margin: 0 !important;
+    z-index: 100 !important;
+    transform: none !important;
+    visibility: visible !important;
+    opacity: 1 !important;
+}
+
+.reading-toolbar .toolbar-title {
+    color: var(--header-text) !important;
+    font-size: 1.2rem !important;
+    font-weight: 600 !important;
+    flex: 1 !important;
+}
+
+.reading-toolbar .toolbar-btn {
+    background: rgba(255, 255, 255, 0.1) !important;
+    color: var(--header-text) !important;
+    border: 1px solid rgba(255, 255, 255, 0.2) !important;
+    padding: 8px 12px !important;
+    border-radius: 4px !important;
+    font-size: 0.85rem !important;
+    font-family: inherit !important;
+    line-height: 1.2 !important;
+    height: 36px !important;
+    max-height: 36px !important;
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    gap: 4px !important;
+    text-decoration: none !important;
+    cursor: pointer !important;
+    box-sizing: border-box !important;
+    white-space: nowrap !important;
+    overflow: hidden !important;
+    flex-shrink: 1 !important;
+}
+
+@media (max-width: 768px) {
+    .reading-toolbar {
+        flex-wrap: nowrap !important;
+        padding: 8px 10px !important;
+        overflow-x: auto !important;
+        overflow-y: hidden !important;
+    }
+
+    .reading-toolbar .toolbar-title {
+        font-size: 0.9rem !important;
+        line-height: 1.2 !important;
+        white-space: nowrap !important;
+        overflow: hidden !important;
+        text-overflow: ellipsis !important;
+        flex-shrink: 2 !important;
+        max-width: 200px !important;
+    }
+
+    .reading-toolbar .toolbar-btn {
+        font-size: 0.75rem !important;
+        padding: 6px 10px !important;
+        height: 32px !important;
+        max-height: 32px !important;
+        flex-shrink: 0 !important;
+    }
+
+    .reading-toolbar .toolbar-btn i {
+        font-size: 0.85rem !important;
+    }
+}
+
+/* Glossary term highlights */
+.glossary-ref {
+    text-decoration: underline;
+    text-decoration-style: dotted;
+    text-decoration-color: var(--link-color, #3f51b5);
+    cursor: help;
+}
+
+#toggleGlossary.active {
+    background: var(--link-color, #3f51b5) !important;
+    color: #fff !important;
+}
+
+.glossary-tooltip {
+    position: fixed;
+    background: var(--card-bg, #fff);
+    color: var(--text-main, #333);
+    border: 1px solid var(--border, #ddd);
+    border-radius: 6px;
+    padding: 8px 12px;
+    font-size: .82rem;
+    max-width: 260px;
+    z-index: 9999;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, .15);
+    pointer-events: none;
+    line-height: 1.45;
+}
+
+.glossary-tooltip-term {
+    display: block;
+    font-weight: 600;
+    color: var(--link-color, #3f51b5);
+    margin-bottom: 3px;
+}

@@ -83,7 +83,7 @@ class ScenaristeController extends Controller
             [$pid]
         ) ?: [];
 
-        $this->render('scenariste/new.html', [
+        $this->render('scenariste/create.html', [
             'title'            => 'Nouveau scénario',
             'project'          => $project,
             'chapters'         => $chapters,

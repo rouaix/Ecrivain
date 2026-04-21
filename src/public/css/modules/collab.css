@@ -1,0 +1,154 @@
+/* Collab module styles */
+/* ==========================================
+   COLLAB
+   ========================================== */
+
+/* ++ Collaboration requests (shared) ++ */
+.collab-request-card {
+    background: var(--card-bg);
+    border: 1px solid var(--input-border);
+    border-radius: 8px;
+    padding: 1rem 1.25rem;
+    margin-bottom: 1rem;
+}
+
+.collab-request-card.approved {
+    border-left: 4px solid #22c55e;
+}
+
+.collab-request-card.rejected {
+    border-left: 4px solid #ef4444;
+}
+
+.collab-req-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: .75rem;
+    margin-bottom: .5rem;
+    flex-wrap: wrap;
+}
+
+.collab-req-meta {
+    font-size: .78rem;
+    color: var(--text-muted);
+    margin-bottom: .5rem;
+}
+
+.collab-req-type {
+    display: inline-block;
+    font-size: .72rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    padding: 2px 8px;
+    border-radius: 4px;
+    letter-spacing: .04em;
+}
+
+.collab-req-type-modify { background: #dbeafe; color: #1d4ed8; }
+.collab-req-type-correct { background: #fef9c3; color: #854d0e; }
+.collab-req-type-add { background: #dcfce7; color: #15803d; }
+.collab-req-type-delete { background: #fee2e2; color: #b91c1c; }
+
+.collab-req-content-type {
+    display: inline-block;
+    font-size: .72rem;
+    color: var(--text-muted);
+    font-style: italic;
+}
+
+.collab-req-status {
+    display: inline-block;
+    font-size: .72rem;
+    font-weight: 700;
+    padding: 2px 10px;
+    border-radius: 10px;
+}
+
+.collab-req-status-pending { background: #fef9c3; color: #854d0e; }
+.collab-req-status-approved { background: #dcfce7; color: #15803d; }
+.collab-req-status-rejected { background: #fee2e2; color: #b91c1c; }
+
+.collab-req-message {
+    font-size: .88rem;
+    margin-bottom: .5rem;
+    line-height: 1.5;
+}
+
+.collab-req-owner-note {
+    font-size: .82rem;
+    color: var(--text-muted);
+    font-style: italic;
+    border-top: 1px solid var(--input-border);
+    padding-top: .5rem;
+    margin-top: .5rem;
+}
+
+/* ++ Owner view additions ++ */
+.collab-req-diff {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: .75rem;
+    margin-bottom: .75rem;
+}
+
+.collab-diff-pane {
+    border: 1px solid var(--input-border);
+    border-radius: 6px;
+    overflow: hidden;
+    font-size: .84rem;
+}
+
+.collab-diff-before {
+    border-color: #fca5a5;
+}
+
+.collab-diff-after {
+    border-color: #86efac;
+}
+
+.collab-diff-label {
+    font-size: .72rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    padding: 4px 10px;
+    letter-spacing: .04em;
+}
+
+.collab-diff-before .collab-diff-label {
+    background: #fee2e2;
+    color: #b91c1c;
+}
+
+.collab-diff-after .collab-diff-label {
+    background: #dcfce7;
+    color: #15803d;
+}
+
+.collab-diff-content {
+    padding: .6rem .75rem;
+    max-height: 200px;
+    overflow-y: auto;
+    line-height: 1.5;
+}
+
+.collab-req-actions {
+    display: flex;
+    gap: .5rem;
+    flex-wrap: wrap;
+    align-items: flex-start;
+}
+
+.collab-reject-form {
+    display: flex;
+    flex-direction: column;
+    gap: .35rem;
+    flex: 1;
+    min-width: 220px;
+}
+
+@media (max-width: 700px) {
+    .collab-req-diff {
+        grid-template-columns: 1fr;
+    }
+}

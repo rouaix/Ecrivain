@@ -48,43 +48,7 @@
   </style>
 </check>
 
-<style nonce="{{ @nonce }}">
-  /* ── Mode collaborateur ──────────────────────────────────────────── */
-  /* Masquer tous les contrôles réservés au propriétaire */
-  .collab-mode .export-toggle,
-  .collab-mode .order-input,
-  .collab-mode .act-actions,
-  .collab-mode .panel-actions,
-  .collab-mode .section-group-heading a,
-  .collab-mode #addFileBtn,
-  .collab-mode #sortFilesBtn,
-  .collab-mode .ai-summary-btn,
-  .collab-mode .ai-act-summary-btn,
-  .collab-mode a:has(.fa-edit),
-  .collab-mode a:has(.fa-trash),
-  .collab-mode a:has(.fa-plus),
-  .collab-mode button:has(.fa-trash),
-  .collab-mode button:has(.fa-users-cog),
-  .collab-mode button:has(.fa-sort-alpha-down) {
-    display: none !important;
-  }
 
-  .collab-mode .propose-btn {
-    display: inline-flex !important;
-  }
-
-  /* Bandeau collaborateur - Adapté au thème */
-  .collab-banner {
-    padding: .6rem 1rem;
-    font-size: .85rem;
-    color: var(--text-main, #333333);
-    display: flex;
-    align-items: center;
-    gap: .6rem;
-    margin-bottom: 1rem;
-    transition: all 0.2s ease;
-  }
-</style>
 
 <check if="{{ @isCollaborator }}">
   <div class="collab-banner">

@@ -36,7 +36,7 @@ class GlossaryController extends Controller
             $grouped[$e['category']][] = $e;
         }
 
-        $this->render('glossary/index.html', [
+        $this->render('glossary/list.html', [
             'title'      => 'Lexique — ' . $project['title'],
             'project'    => $project,
             'grouped'    => $grouped,

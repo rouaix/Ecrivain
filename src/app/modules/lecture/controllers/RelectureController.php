@@ -1,6 +1,6 @@
 <?php
 
-class ReviewController extends Controller
+class RelectureController extends Controller
 {
     public function beforeRoute(Base $f3)
     {
@@ -245,9 +245,9 @@ class ReviewController extends Controller
     }
 
     /**
-     * Main review mode page.
+     * Page principale du mode relecture.
      */
-    public function review()
+    public function relecture()
     {
         $pid  = (int) $this->f3->get('PARAMS.id');
         $user = $this->currentUser();
@@ -292,7 +292,7 @@ class ReviewController extends Controller
             ) ?: [];
         }
 
-        $this->render('relecture/review.html', [
+        $this->render('relecture/relecture.html', [
             'title'           => 'Relecture : ' . $data['project']['title'],
             'project'         => $data['project'],
             'items'           => $data['items'],
@@ -481,9 +481,9 @@ class ReviewController extends Controller
     }
 
     /**
-     * Annotation report for a project.
+     * Rapport d'annotations d'un projet.
      */
-    public function report()
+    public function rapport()
     {
         $pid  = (int) $this->f3->get('PARAMS.id');
         $user = $this->currentUser();
@@ -549,7 +549,7 @@ class ReviewController extends Controller
             $grouped[$key]['annotations'][] = $row;
         }
 
-        $this->render('relecture/report.html', [
+        $this->render('relecture/rapport.html', [
             'title'           => 'Rapport de relecture : ' . $project['title'],
             'project'         => $project,
             'grouped'         => array_values($grouped),

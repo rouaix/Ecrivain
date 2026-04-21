@@ -516,7 +516,7 @@ class SharePublicController extends Controller
     }
 
     /**
-     * Build ordered content items for relecture (same logic as ReviewController, no user_id check).
+     * Build ordered content items for relecture (same logic as RelectureController, no user_id check).
      */
     private function buildReviewItems(int $pid): ?array
     {

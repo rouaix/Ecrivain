@@ -28,7 +28,7 @@ class CharacterController extends Controller
         $charModel = new Character();
         $characters = $charModel->getAllByProject($pid);
 
-        $this->render('characters/index.html', [
+        $this->render('characters/list.html', [
             'title'       => 'Personnages - ' . $project['title'],
             'project'     => $project,
             'characters'  => $characters,

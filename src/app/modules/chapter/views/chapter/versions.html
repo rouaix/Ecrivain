@@ -76,58 +76,6 @@
     </div>
 </div>
 
-<style nonce="{{ @nonce }}">
-    .versions-list {
-        display: flex;
-        flex-direction: column;
-        gap: 8px;
-    }
-
-    .version-item {
-        display: flex;
-        align-items: center;
-        justify-content: space-between;
-        padding: 12px 16px;
-        border: 1px solid var(--border-color, #e0e0e0);
-        border-radius: 8px;
-        background: var(--card-bg, #fff);
-    }
-
-    .version-meta {
-        display: flex;
-        align-items: center;
-        gap: 16px;
-        flex-wrap: wrap;
-    }
-
-    .version-num {
-        font-weight: 600;
-        color: var(--text-main, #333);
-        min-width: 70px;
-    }
-
-    .version-date {
-        color: var(--text-muted, #777);
-        font-size: .85rem;
-    }
-
-    .version-words {
-        color: var(--text-muted, #777);
-        font-size: .85rem;
-    }
-
-    .version-actions {
-        display: flex;
-        align-items: center;
-        gap: 8px;
-        flex-shrink: 0;
-    }
-
-    .version-actions form {
-        margin: 0;
-    }
-</style>
-
 <script nonce="{{ @nonce }}">
     (function () {
         var modal = document.getElementById('versionPreviewModal');
