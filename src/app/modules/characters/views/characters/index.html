@@ -184,12 +184,6 @@
 
 <script nonce="{{ @nonce }}">
     document.addEventListener('DOMContentLoaded', function () {
-        document.querySelectorAll('.js-confirm').forEach(function (el) {
-            el.addEventListener('click', function (e) {
-                if (!confirm(this.dataset.confirm || 'Confirmer ?')) e.preventDefault();
-            });
-        });
-
         var BASE = '{{ @base }}';
         document.querySelectorAll('.export-toggle-list').forEach(function (cb) {
             cb.addEventListener('change', function () {

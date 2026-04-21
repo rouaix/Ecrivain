@@ -147,9 +147,4 @@
         });
     });
 
-    document.querySelectorAll('.js-confirm').forEach(function (el) {
-        el.addEventListener('click', function (e) {
-            if (!confirm(this.dataset.confirm || 'Confirmer ?')) e.preventDefault();
-        });
-    });
 </script>

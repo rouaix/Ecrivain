@@ -287,13 +287,6 @@
             });
         }
 
-        /* ── Confirmation suppression ── */
-        document.querySelectorAll('.js-confirm').forEach(function (el) {
-            el.addEventListener('click', function (e) {
-                if (!confirm(this.dataset.confirm || 'Confirmer ?')) e.preventDefault();
-            });
-        });
-
         /* ── Fermeture Echap ── */
         document.addEventListener('keydown', function (e) {
             if (e.key === 'Escape') { closeUpload(); closePreviewFn(); }

@@ -26,6 +26,61 @@ class ImageUploadService
      * @return string|null      Chemin relatif du fichier créé (ex. "uploads/chars/char_42_abc.jpg"),
      *                          ou null en cas d'erreur.
      */
+    /**
+     * Validates an uploaded image file (extension, MIME type, magic bytes, size).
+     *
+     * @param array $file     $_FILES entry
+     * @param int   $maxSizeMB
+     * @return array ['success' => bool, 'error' => string|null, 'extension' => string|null]
+     */
+    public function validate(array $file, int $maxSizeMB = 5): array
+    {
+        if ($file['error'] !== UPLOAD_ERR_OK) {
+            return ['success' => false, 'error' => 'Erreur lors de l\'upload.', 'extension' => null];
+        }
+
+        $allowedExtensions = ['jpg', 'jpeg', 'png', 'webp', 'gif'];
+        $ext = strtolower(pathinfo($file['name'], PATHINFO_EXTENSION));
+        if (!in_array($ext, $allowedExtensions)) {
+            return ['success' => false, 'error' => 'Extension non autorisée. Formats acceptés : JPG, PNG, WEBP, GIF.', 'extension' => null];
+        }
+
+        $imageInfo = @getimagesize($file['tmp_name']);
+
+        $actualMimeType = null;
+        if (function_exists('finfo_open')) {
+            $finfo = finfo_open(FILEINFO_MIME_TYPE);
+            if ($finfo !== false) {
+                $actualMimeType = finfo_file($finfo, $file['tmp_name']);
+                finfo_close($finfo);
+            }
+        }
+        if (!$actualMimeType && function_exists('mime_content_type')) {
+            $actualMimeType = mime_content_type($file['tmp_name']);
+        }
+        if (!$actualMimeType && $imageInfo !== false) {
+            $actualMimeType = $imageInfo['mime'] ?? null;
+        }
+        if (!$actualMimeType) {
+            return ['success' => false, 'error' => 'Impossible de détecter le type MIME du fichier.', 'extension' => null];
+        }
+
+        $allowedMimeTypes = ['image/jpeg', 'image/png', 'image/webp', 'image/gif'];
+        if (!in_array($actualMimeType, $allowedMimeTypes)) {
+            return ['success' => false, 'error' => 'Type de fichier invalide (détecté : ' . $actualMimeType . ').', 'extension' => null];
+        }
+
+        if ($imageInfo === false) {
+            return ['success' => false, 'error' => 'Le fichier n\'est pas une image valide.', 'extension' => null];
+        }
+
+        if ($file['size'] > $maxSizeMB * 1024 * 1024) {
+            return ['success' => false, 'error' => 'Fichier trop volumineux (max ' . $maxSizeMB . ' Mo).', 'extension' => null];
+        }
+
+        return ['success' => true, 'error' => null, 'extension' => $ext];
+    }
+
     public function move(array $file, string $extension, string $dir, string $basename): ?string
     {
         if (!is_dir($dir)) {

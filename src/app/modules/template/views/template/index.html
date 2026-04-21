@@ -171,15 +171,6 @@
     document.addEventListener('DOMContentLoaded', function () {
         var modal = document.getElementById('promoteModal');
 
-        document.querySelectorAll('.js-confirm').forEach(function (link) {
-            link.addEventListener('click', function (e) {
-                var message = this.getAttribute('data-confirm') || 'Etes-vous sur ?';
-                if (!confirm(message)) {
-                    e.preventDefault();
-                }
-            });
-        });
-
         document.querySelectorAll('.js-promote').forEach(function (btn) {
             btn.addEventListener('click', function () {
                 var id = this.getAttribute('data-id');

@@ -1,24 +1,19 @@
 <div class="edit-page-layout">
 
-    <div class="edit-header">
-        <h2><i class="fas fa-book" aria-hidden="true"></i> Lexique &mdash; {{ @project.title }}</h2>
-        <div class="header-actions">
-            <a href="{{ @base }}/project/{{ @project.id }}/glossary/create" class="button" title="Nouveau terme"
-                title="Nouveau terme"><i class="fas fa-plus" aria-hidden="true"></i></a>
-            <a href="{{ @base }}/project/{{ @project.id }}" class="button secondary" title="Retour au projet"
-                title="Retour au projet"><i class="fas fa-arrow-left" aria-hidden="true"></i></a>
-        </div>
-    </div>
+    <set pageIcon="book" />
+    <set pageTitle="Lexique" />
+    <set backUrl="{{ @base.'/project/'.@project.id }}" />
+    <set createUrl="{{ @base.'/project/'.@project.id.'/glossary/create' }}" />
+    <set createTitle="Nouveau terme" />
+    <include href="_page-header.html" />
 
     <check if="{{ @count == 0 }}">
         <true>
-            <div class="edit-card" class="mt-20">
-                <p class="text-muted-para" class="empty-state-block">
-                    <i class="fas fa-book" aria-hidden="true" style="font-size:2rem;opacity:.3;display:block;margin-bottom:.5rem"></i>
-                    Aucun terme dans le lexique. <a href="{{ @base }}/project/{{ @project.id }}/glossary/create">Ajoutez
-                        votre premier terme.</a>
-                </p>
-            </div>
+            <set emptyIcon="book" />
+            <set emptyMessage="Aucun terme dans le lexique." />
+            <set emptyCreateUrl="{{ @base.'/project/'.@project.id.'/glossary/create' }}" />
+            <set emptyCreateLabel="Ajouter le premier terme" />
+            <include href="_empty-state.html" />
         </true>
         <false>
             <p class="glossary-meta" class="mt-20">{{ @count }} terme(s) au total</p>
@@ -66,15 +61,3 @@
     </check>
 
 </div>
-
-<script nonce="{{ @nonce }}">
-    document.addEventListener('DOMContentLoaded', function () {
-        document.querySelectorAll('.js-confirm').forEach(function (el) {
-            el.addEventListener('click', function (e) {
-                if (!confirm(this.dataset.confirm || 'Confirmer ?')) {
-                    e.preventDefault();
-                }
-            });
-        });
-    });
-</script>

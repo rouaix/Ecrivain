@@ -293,12 +293,12 @@ button#closeAiModal:hover {
 /* Typography styles for preview modal content */
 .modal-body.typography {
     font-size: 1.1rem;
-    line-height: 1.8;
+    /*line-height: 1.8;*/
     color: var(--text-main);
 }
 
 .modal-body.typography p {
-    margin-bottom: 1em;
+    margin-bottom: 0;
 }
 
 .modal-body.typography ul,

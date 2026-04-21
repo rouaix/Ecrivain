@@ -59,8 +59,6 @@
     function showBanner(data) {
         if (document.getElementById('notif-reminder-banner')) return;
 
-        injectBannerStyles();
-
         var banner = document.createElement('div');
         banner.id = 'notif-reminder-banner';
         banner.innerHTML =
@@ -86,33 +84,6 @@
     function hideBanner(banner) {
         banner.classList.remove('notif-banner--in');
         setTimeout(function () { if (banner.parentNode) banner.parentNode.removeChild(banner); }, 400);
-    }
-
-    function injectBannerStyles() {
-        if (document.getElementById('notif-banner-styles')) return;
-        var style = document.createElement('style');
-        style.id = 'notif-banner-styles';
-        style.textContent = [
-            '#notif-reminder-banner {',
-            '  position:fixed; bottom:20px; left:50%; transform:translateX(-50%) translateY(20px);',
-            '  background:var(--card-bg,#fff); border:1px solid var(--border-color,#ddd);',
-            '  border-left:4px solid #3f51b5; border-radius:8px; padding:12px 16px;',
-            '  box-shadow:0 4px 20px rgba(0,0,0,.15); z-index:9999;',
-            '  display:flex; align-items:center; gap:8px; font-size:.9rem;',
-            '  color:var(--text-main,#333); opacity:0; transition:opacity .35s,transform .35s;',
-            '  min-width:280px; max-width:90vw;',
-            '}',
-            '#notif-reminder-banner.notif-banner--in { opacity:1; transform:translateX(-50%) translateY(0); }',
-            '.notif-banner-link { color:var(--link-color,#3f51b5); font-weight:600; margin:0 8px; text-decoration:none; }',
-            '.notif-banner-link:hover { text-decoration:underline; }',
-            '.notif-banner-close {',
-            '  background:none; border:none; cursor:pointer; font-size:1.1rem;',
-            '  color:var(--text-muted,#888); padding:0 2px; margin-left:auto; line-height:1;',
-            '  border-radius:4px;',
-            '}',
-            '.notif-banner-close:hover { color:#ef4444; }'
-        ].join('\n');
-        document.head.appendChild(style);
     }
 
     // Delay check so it doesn't compete with page load

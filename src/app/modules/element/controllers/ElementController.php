@@ -65,6 +65,7 @@ class ElementController extends Controller
             'config'          => $config,
             'topLevel'        => $topLevel,
             'elementsJson'    => json_encode(array_values($topLevel), JSON_HEX_TAG | JSON_HEX_QUOT),
+            'isOwner'         => $this->isOwner($pid),
         ]);
     }
 

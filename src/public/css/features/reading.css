@@ -248,12 +248,12 @@ body.reading-mode .reading-container {
 
 .reading-section .typography {
     font-size: 1.1rem;
-    line-height: 1.8;
+    /*line-height: 1.8;*/
     color: var(--text-main);
 }
 
 .reading-section .typography p {
-    margin-bottom: 20px;
+    /*margin-bottom: 20px;*/
     text-align: justify;
 }
 

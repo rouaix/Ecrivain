@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="fr">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -9,299 +10,507 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="stylesheet" href="{{ @base }}/public/css/themes/theme-default.css">
     <style>
-        .share-toolbar { display: flex; align-items: center; gap: .75rem; padding: .75rem 1rem; background: var(--header-bg, #3f51b5); color: var(--header-text, #fff); flex-wrap: wrap; position: sticky; top: 0; z-index: 100; }
-        .share-toolbar-title { font-weight: 600; font-size: 1rem; flex: 1; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-        .share-toolbar a, .share-toolbar-badge { display: inline-flex; align-items: center; gap: .35rem; padding: .4rem .8rem; border-radius: 4px; font-size: .82rem; text-decoration: none; border: 1px solid rgba(255,255,255,.25); background: rgba(255,255,255,.1); color: #fff; }
-        .share-toolbar-badge { background: rgba(255,193,7,.2); border-color: rgba(255,193,7,.4); cursor: default; }
-        .share-readonly-notice { background: #fff8e1; border: 1px solid #ffe082; padding: .6rem 1rem; font-size: .85rem; color: #5d4037; text-align: center; }
-        .review-body { display: flex; gap: 1.5rem; padding: 1rem; max-width: 1400px; margin: 0 auto; }
-        .review-content { flex: 2; min-width: 0; }
-        .review-panel { flex: 1; min-width: 280px; max-width: 380px; position: sticky; top: 56px; align-self: flex-start; max-height: calc(100vh - 80px); overflow-y: auto; background: var(--card-bg, #fff); border-radius: 8px; box-shadow: 0 1px 4px rgba(0,0,0,.1); padding: 1rem; }
-        .review-panel-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: .75rem; }
-        .review-panel-title { font-weight: 600; display: flex; align-items: center; gap: .4rem; }
-        .review-panel-count { background: #3f51b5; color: #fff; border-radius: 12px; padding: .1rem .55rem; font-size: .8rem; }
-        .review-filters { display: flex; gap: .3rem; flex-wrap: wrap; }
-        .review-filter { border: none; border-radius: 4px; padding: .25rem .5rem; font-size: .8rem; cursor: pointer; background: #eee; }
-        .review-filter.active { background: #3f51b5; color: #fff; }
-        .ann-dot { display: inline-block; width: 10px; height: 10px; border-radius: 50%; }
-        .ann-to_rewrite { background: #e53935; }
-        .ann-inconsistency { background: #fdd835; }
-        .ann-to_check { background: #fb8c00; }
-        .ann-good { background: #43a047; }
-        .annotation-card { background: var(--input-bg, #f5f5f5); border-radius: 6px; padding: .65rem .85rem; margin-bottom: .6rem; border-left: 3px solid #ccc; font-size: .85rem; display: none; }
-        .annotation-card.visible { display: block; }
-        .annotation-card.cat-to_rewrite { border-color: #e53935; }
-        .annotation-card.cat-inconsistency { border-color: #fdd835; }
-        .annotation-card.cat-to_check { border-color: #fb8c00; }
-        .annotation-card.cat-good { border-color: #43a047; }
-        .ann-selected-text { font-style: italic; color: #555; border-bottom: 1px solid #ddd; padding-bottom: .35rem; margin-bottom: .35rem; }
-        .ann-comment { }
-        .ann-meta { font-size: .75rem; color: #888; margin-top: .3rem; }
-        .review-item { margin-bottom: 1.5rem; }
-        .review-act-title { font-size: 1.4rem; color: #EF6C00; border-bottom: 2px solid #EF6C00; padding-bottom: .3rem; }
-        .review-chapter-title { font-size: 1.1rem; }
-        .review-text { line-height: 1.7; }
+        .share-toolbar {
+            display: flex;
+            align-items: center;
+            gap: .75rem;
+            padding: .75rem 1rem;
+            background: var(--header-bg, #3f51b5);
+            color: var(--header-text, #fff);
+            flex-wrap: wrap;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .share-toolbar-title {
+            font-weight: 600;
+            font-size: 1rem;
+            flex: 1;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .share-toolbar a,
+        .share-toolbar-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: .35rem;
+            padding: .4rem .8rem;
+            border-radius: 4px;
+            font-size: .82rem;
+            text-decoration: none;
+            border: 1px solid rgba(255, 255, 255, .25);
+            background: rgba(255, 255, 255, .1);
+            color: #fff;
+        }
+
+        .share-toolbar-badge {
+            background: rgba(255, 193, 7, .2);
+            border-color: rgba(255, 193, 7, .4);
+            cursor: default;
+        }
+
+        .share-readonly-notice {
+            background: #fff8e1;
+            border: 1px solid #ffe082;
+            padding: .6rem 1rem;
+            font-size: .85rem;
+            color: #5d4037;
+            text-align: center;
+        }
+
+        .review-body {
+            display: flex;
+            gap: 1.5rem;
+            padding: 1rem;
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        .review-content {
+            flex: 2;
+            min-width: 0;
+        }
+
+        .review-panel {
+            flex: 1;
+            min-width: 280px;
+            max-width: 380px;
+            position: sticky;
+            top: 56px;
+            align-self: flex-start;
+            max-height: calc(100vh - 80px);
+            overflow-y: auto;
+            background: var(--card-bg, #fff);
+            border-radius: 8px;
+            box-shadow: 0 1px 4px rgba(0, 0, 0, .1);
+            padding: 1rem;
+        }
+
+        .review-panel-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: .75rem;
+        }
+
+        .review-panel-title {
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: .4rem;
+        }
+
+        .review-panel-count {
+            background: #3f51b5;
+            color: #fff;
+            border-radius: 12px;
+            padding: .1rem .55rem;
+            font-size: .8rem;
+        }
+
+        .review-filters {
+            display: flex;
+            gap: .3rem;
+            flex-wrap: wrap;
+        }
+
+        .review-filter {
+            border: none;
+            border-radius: 4px;
+            padding: .25rem .5rem;
+            font-size: .8rem;
+            cursor: pointer;
+            background: #eee;
+        }
+
+        .review-filter.active {
+            background: #3f51b5;
+            color: #fff;
+        }
+
+        .ann-dot {
+            display: inline-block;
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+        }
+
+        .ann-to_rewrite {
+            background: #e53935;
+        }
+
+        .ann-inconsistency {
+            background: #fdd835;
+        }
+
+        .ann-to_check {
+            background: #fb8c00;
+        }
+
+        .ann-good {
+            background: #43a047;
+        }
+
+        .annotation-card {
+            background: var(--input-bg, #f5f5f5);
+            border-radius: 6px;
+            padding: .65rem .85rem;
+            margin-bottom: .6rem;
+            border-left: 3px solid #ccc;
+            font-size: .85rem;
+            display: none;
+        }
+
+        .annotation-card.visible {
+            display: block;
+        }
+
+        .annotation-card.cat-to_rewrite {
+            border-color: #e53935;
+        }
+
+        .annotation-card.cat-inconsistency {
+            border-color: #fdd835;
+        }
+
+        .annotation-card.cat-to_check {
+            border-color: #fb8c00;
+        }
+
+        .annotation-card.cat-good {
+            border-color: #43a047;
+        }
+
+        .ann-selected-text {
+            font-style: italic;
+            color: #555;
+            border-bottom: 1px solid #ddd;
+            padding-bottom: .35rem;
+            margin-bottom: .35rem;
+        }
+
+        .ann-comment {}
+
+        .ann-meta {
+            font-size: .75rem;
+            color: #888;
+            margin-top: .3rem;
+        }
+
+        .review-item {
+            margin-bottom: 1.5rem;
+        }
+
+        .review-act-title {
+            font-size: 1.4rem;
+            color: #EF6C00;
+            border-bottom: 2px solid #EF6C00;
+            padding-bottom: .3rem;
+        }
+
+        .review-chapter-title {
+            font-size: 1.1rem;
+        }
+
+        .review-text {}
+
         /* Highlight annotations in text */
-        .ann-highlight { border-radius: 2px; cursor: pointer; }
-        .ann-highlight.cat-to_rewrite { background: rgba(229,57,53,.18); }
-        .ann-highlight.cat-inconsistency { background: rgba(253,216,53,.35); }
-        .ann-highlight.cat-to_check { background: rgba(251,140,0,.2); }
-        .ann-highlight.cat-good { background: rgba(67,160,71,.18); }
-        @media (max-width: 768px) { .review-body { flex-direction: column; } .review-panel { position: static; max-width: 100%; max-height: none; } }
-    </style>
-</head>
-<body class="theme-default">
+        .ann-highlight {
+            border-radius: 2px;
+            cursor: pointer;
+        }
 
-<div class="share-toolbar">
-    <div class="share-toolbar-title"><i class="fas fa-glasses" aria-hidden="true"></i> {{ @project.title | esc }}</div>
-    <span class="share-toolbar-badge"><i class="fas fa-lock" aria-hidden="true"></i> Lecture seule</span>
-    <a href="{{ @base }}/s/{{ @token }}/{{ @project.id }}/lecture" title="Mode lecture"><i class="fas fa-book-open" aria-hidden="true"></i></a>
-    <a href="{{ @base }}/s/{{ @token }}/{{ @project.id }}/mindmap" title="Carte mentale"><i class="fas fa-project-diagram" aria-hidden="true"></i></a>
-    <a href="{{ @base }}/s/{{ @token }}" title="Retour"><i class="fas fa-arrow-left" aria-hidden="true"></i></a>
-</div>
+        .ann-highlight.cat-to_rewrite {
+            background: rgba(229, 57, 53, .18);
+        }
 
-<div class="share-readonly-notice">
-    <i class="fas fa-info-circle" aria-hidden="true"></i>
-    Les annotations affichées appartiennent à l'auteur. Aucune modification n'est possible.
-</div>
+        .ann-highlight.cat-inconsistency {
+            background: rgba(253, 216, 53, .35);
+        }
 
-<div class="review-body">
-    <!-- Content column -->
-    <div class="review-content" id="reviewContent">
-        <repeat group="{{ @items }}" value="{{ @item }}">
-            <div class="review-item review-item-{{ @item.type }}">
-                <check if="{{ @item.title }}">
-                    <check if="{{ @item.type == 'act' }}">
-                        <h2 class="review-act-title">{{ @item.title | esc }}</h2>
-                    </check>
-                    <check if="{{ @item.type != 'act' }}">
-                        <h3 class="review-chapter-title">{{ @item.title | esc }}</h3>
-                    </check>
-                </check>
-                <div class="review-text ql-editor"
-                     data-content-id="{{ @item.id }}"
-                     data-content-type="{{ @item.type }}"
-                     id="content-{{ @item.type }}-{{ @item.id }}">
-                    {{ @item.content | raw }}
-                </div>
-            </div>
-        </repeat>
-    </div>
+        .ann-highlight.cat-to_check {
+            background: rgba(251, 140, 0, .2);
+        }
 
-    <!-- Annotations panel (read-only) -->
-    <div class="review-panel" id="reviewPanel">
-        <div class="review-panel-header">
-            <div class="review-panel-title">
-                <i class="fas fa-tags" aria-hidden="true"></i> Annotations
-                <span class="review-panel-count" id="annotationCount">0</span>
-            </div>
-            <div class="review-filters">
-                <button class="review-filter active" data-filter="all">Tout</button>
-                <button class="review-filter" data-filter="to_rewrite" title="À reformuler"><span class="ann-dot ann-to_rewrite"></span></button>
-                <button class="review-filter" data-filter="inconsistency" title="Incohérence"><span class="ann-dot ann-inconsistency"></span></button>
-                <button class="review-filter" data-filter="to_check" title="À vérifier"><span class="ann-dot ann-to_check"></span></button>
-                <button class="review-filter" data-filter="good" title="Bon passage"><span class="ann-dot ann-good"></span></button>
-            </div>
-        </div>
-        <div id="annotationsList"></div>
-    </div>
-</div>
+        .ann-highlight.cat-good {
+            background: rgba(67, 160, 71, .18);
+        }
 
-<script nonce="{{ @nonce }}">
-var annotations = {{ @annotationsJson | raw }};
-var currentFilter = 'all';
+        @media (max-width: 768px) {
+            .review-body {
+                flex-direction: column;
+            }
 
-function renderAnnotations() {
-    var list = document.getElementById('annotationsList');
-    list.innerHTML = '';
-    var visible = 0;
-    annotations.forEach(function(ann) {
-        var card = document.createElement('div');
-        card.className = 'annotation-card cat-' + ann.category;
-        card.dataset.category = ann.category;
-        card.dataset.contentType = ann.content_type;
-        card.dataset.contentId = ann.content_id;
-
-        var matches = (currentFilter === 'all' || ann.category === currentFilter);
-        if (matches) { card.classList.add('visible'); visible++; }
-
-        card.innerHTML =
-            '<div class="ann-selected-text">&ldquo;' + escHtml(ann.selected_text) + '&rdquo;</div>' +
-            '<div class="ann-comment">' + escHtml(ann.comment) + '</div>' +
-            '<div class="ann-meta">' +
-                '<span class="ann-dot ann-' + ann.category + '"></span> ' +
-                escHtml(labelFor(ann.category)) +
-            '</div>';
-
-        card.addEventListener('click', function() {
-            scrollToContent(ann.content_type, ann.content_id);
-        });
-
-        list.appendChild(card);
-    });
-    document.getElementById('annotationCount').textContent = visible;
-    highlightAnnotations();
-}
-
-function escHtml(str) {
-    return String(str || '').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
-}
-
-function labelFor(cat) {
-    var labels = {to_rewrite:'À reformuler', inconsistency:'Incohérence', to_check:'À vérifier', good:'Bon passage'};
-    return labels[cat] || cat;
-}
-
-function scrollToContent(type, id) {
-    var el = document.getElementById('content-' + type + '-' + id);
-    if (el) el.scrollIntoView({behavior:'smooth', block:'center'});
-}
-
-function highlightAnnotations() {
-    // Reset all highlights
-    document.querySelectorAll('.review-text').forEach(function(el) {
-        el.querySelectorAll('.ann-highlight').forEach(function(h) {
-            h.outerHTML = h.innerHTML;
-        });
-    });
-
-    annotations.forEach(function(ann) {
-        if (currentFilter !== 'all' && ann.category !== currentFilter) return;
-        var el = document.getElementById('content-' + ann.content_type + '-' + ann.content_id);
-        if (!el || !ann.selected_text) return;
-        highlightText(el, ann.selected_text, ann.category);
-    });
-}
-
-function normalizeWS(s) {
-    return s.replace(/[\s\u00a0]+/g, ' ');
-}
-
-function highlightText(container, text, category) {
-    if (!container || !text) return;
-
-    // Collect all text nodes
-    var textNodes = [];
-    var walker = document.createTreeWalker(container, NodeFilter.SHOW_TEXT, null, false);
-    var n;
-    while ((n = walker.nextNode())) { textNodes.push(n); }
-    if (!textNodes.length) return;
-
-    var rawValues = textNodes.map(function(nd) { return nd.nodeValue; });
-    var rawFull = rawValues.join('');
-
-    // ── 1. Exact match ──────────────────────────────────────────────────────
-    var idx = rawFull.indexOf(text);
-    var textLen = text.length;
-
-    // ── 2. Normalised whitespace match ──────────────────────────────────────
-    if (idx < 0) {
-        var normSearch = normalizeWS(text);
-        var normFull = '';
-        var normToRaw = [];
-        var prevIsSpace = false;
-        for (var r = 0; r < rawFull.length; r++) {
-            var ch = rawFull[r];
-            var isSpace = /[\s\u00a0]/.test(ch);
-            if (isSpace) {
-                if (!prevIsSpace) { normToRaw.push(r); normFull += ' '; }
-                prevIsSpace = true;
-            } else {
-                normToRaw.push(r); normFull += ch; prevIsSpace = false;
+            .review-panel {
+                position: static;
+                max-width: 100%;
+                max-height: none;
             }
         }
-        normToRaw.push(rawFull.length);
-        var normIdx = normFull.indexOf(normSearch);
-        if (normIdx >= 0) {
-            var normEnd = normIdx + normSearch.length;
-            idx = normToRaw[normIdx];
-            var rawEnd = normToRaw[normEnd] !== undefined ? normToRaw[normEnd] : rawFull.length;
-            text = rawFull.substring(idx, rawEnd);
-            textLen = text.length;
+    </style>
+</head>
+
+<body class="theme-default">
+
+    <div class="share-toolbar">
+        <div class="share-toolbar-title"><i class="fas fa-glasses" aria-hidden="true"></i> {{ @project.title | esc }}
+        </div>
+        <span class="share-toolbar-badge"><i class="fas fa-lock" aria-hidden="true"></i> Lecture seule</span>
+        <a href="{{ @base }}/s/{{ @token }}/{{ @project.id }}/lecture" title="Mode lecture"><i class="fas fa-book-open"
+                aria-hidden="true"></i></a>
+        <a href="{{ @base }}/s/{{ @token }}/{{ @project.id }}/mindmap" title="Carte mentale"><i
+                class="fas fa-project-diagram" aria-hidden="true"></i></a>
+        <a href="{{ @base }}/s/{{ @token }}" title="Retour"><i class="fas fa-arrow-left" aria-hidden="true"></i></a>
+    </div>
+
+    <div class="share-readonly-notice">
+        <i class="fas fa-info-circle" aria-hidden="true"></i>
+        Les annotations affichées appartiennent à l'auteur. Aucune modification n'est possible.
+    </div>
+
+    <div class="review-body">
+        <!-- Content column -->
+        <div class="review-content" id="reviewContent">
+            <repeat group="{{ @items }}" value="{{ @item }}">
+                <div class="review-item review-item-{{ @item.type }}">
+                    <check if="{{ @item.title }}">
+                        <check if="{{ @item.type == 'act' }}">
+                            <h2 class="review-act-title">{{ @item.title | esc }}</h2>
+                        </check>
+                        <check if="{{ @item.type != 'act' }}">
+                            <h3 class="review-chapter-title">{{ @item.title | esc }}</h3>
+                        </check>
+                    </check>
+                    <div class="review-text ql-editor" data-content-id="{{ @item.id }}"
+                        data-content-type="{{ @item.type }}" id="content-{{ @item.type }}-{{ @item.id }}">
+                        {{ @item.content | raw }}
+                    </div>
+                </div>
+            </repeat>
+        </div>
+
+        <!-- Annotations panel (read-only) -->
+        <div class="review-panel" id="reviewPanel">
+            <div class="review-panel-header">
+                <div class="review-panel-title">
+                    <i class="fas fa-tags" aria-hidden="true"></i> Annotations
+                    <span class="review-panel-count" id="annotationCount">0</span>
+                </div>
+                <div class="review-filters">
+                    <button class="review-filter active" data-filter="all">Tout</button>
+                    <button class="review-filter" data-filter="to_rewrite" title="À reformuler"><span
+                            class="ann-dot ann-to_rewrite"></span></button>
+                    <button class="review-filter" data-filter="inconsistency" title="Incohérence"><span
+                            class="ann-dot ann-inconsistency"></span></button>
+                    <button class="review-filter" data-filter="to_check" title="À vérifier"><span
+                            class="ann-dot ann-to_check"></span></button>
+                    <button class="review-filter" data-filter="good" title="Bon passage"><span
+                            class="ann-dot ann-good"></span></button>
+                </div>
+            </div>
+            <div id="annotationsList"></div>
+        </div>
+    </div>
+
+    <script nonce="{{ @nonce }}">
+        var annotations = {{ @annotationsJson | raw }};
+        var currentFilter = 'all';
+
+        function renderAnnotations() {
+            var list = document.getElementById('annotationsList');
+            list.innerHTML = '';
+            var visible = 0;
+            annotations.forEach(function (ann) {
+                var card = document.createElement('div');
+                card.className = 'annotation-card cat-' + ann.category;
+                card.dataset.category = ann.category;
+                card.dataset.contentType = ann.content_type;
+                card.dataset.contentId = ann.content_id;
+
+                var matches = (currentFilter === 'all' || ann.category === currentFilter);
+                if (matches) { card.classList.add('visible'); visible++; }
+
+                card.innerHTML =
+                    '<div class="ann-selected-text">&ldquo;' + escHtml(ann.selected_text) + '&rdquo;</div>' +
+                    '<div class="ann-comment">' + escHtml(ann.comment) + '</div>' +
+                    '<div class="ann-meta">' +
+                    '<span class="ann-dot ann-' + ann.category + '"></span> ' +
+                    escHtml(labelFor(ann.category)) +
+                    '</div>';
+
+                card.addEventListener('click', function () {
+                    scrollToContent(ann.content_type, ann.content_id);
+                });
+
+                list.appendChild(card);
+            });
+            document.getElementById('annotationCount').textContent = visible;
+            highlightAnnotations();
         }
-    }
 
-    // ── 3. Regex match: spaces may correspond to 0 chars at block boundaries ──
-    if (idx < 0) {
-        try {
-            var normForRx = normalizeWS(text)
-                .replace(/[.*+?^${}()|[\]\\]/g, '\\$&')
-                .replace(/ /g, '[\\s\\S]{0,4}');
-            var rx = new RegExp(normForRx);
-            var rxMatch = rx.exec(rawFull);
-            if (rxMatch) { idx = rxMatch.index; text = rxMatch[0]; textLen = text.length; }
-        } catch (rxErr) { /* skip */ }
-    }
-
-    if (idx < 0) return;
-
-    // Resolve start/end nodes and offsets
-    var startNode = null, startOffset = 0, endNode = null, endOffset = 0;
-    var cumulative = 0;
-    for (var i = 0; i < textNodes.length; i++) {
-        var nodeLen = rawValues[i].length;
-        if (!startNode && cumulative + nodeLen > idx) {
-            startNode = textNodes[i]; startOffset = idx - cumulative;
+        function escHtml(str) {
+            return String(str || '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
         }
-        if (startNode && cumulative + nodeLen >= idx + textLen) {
-            endNode = textNodes[i]; endOffset = idx + textLen - cumulative; break;
+
+        function labelFor(cat) {
+            var labels = { to_rewrite: 'À reformuler', inconsistency: 'Incohérence', to_check: 'À vérifier', good: 'Bon passage' };
+            return labels[cat] || cat;
         }
-        cumulative += nodeLen;
-    }
-    if (!startNode || !endNode) return;
 
-    // Same-node case
-    if (startNode === endNode) {
-        var span = document.createElement('span');
-        span.className = 'ann-highlight cat-' + category;
-        var after = startNode.splitText(startOffset);
-        after.nodeValue = after.nodeValue.substring(textLen);
-        span.textContent = text;
-        startNode.parentNode.insertBefore(span, after);
-        return;
-    }
-
-    // Cross-node: wrap each fragment individually
-    var markNodes = [];
-    var inRange = false;
-    var walker2 = document.createTreeWalker(container, NodeFilter.SHOW_TEXT, null, false);
-    var nd2;
-    while ((nd2 = walker2.nextNode())) {
-        if (nd2 === startNode) { inRange = true; }
-        if (inRange) { markNodes.push(nd2); }
-        if (nd2 === endNode) { break; }
-    }
-    for (var j = 0; j < markNodes.length; j++) {
-        var nd = markNodes[j];
-        if (!nd.parentNode) { continue; }
-        var spanN = document.createElement('span');
-        spanN.className = 'ann-highlight cat-' + category;
-        if (nd === startNode) {
-            var textAfter = nd.splitText(startOffset);
-            nd.parentNode.insertBefore(spanN, textAfter);
-            spanN.appendChild(textAfter);
-        } else if (nd === endNode) {
-            nd.splitText(endOffset);
-            nd.parentNode.insertBefore(spanN, nd);
-            spanN.appendChild(nd);
-        } else {
-            nd.parentNode.insertBefore(spanN, nd);
-            spanN.appendChild(nd);
+        function scrollToContent(type, id) {
+            var el = document.getElementById('content-' + type + '-' + id);
+            if (el) el.scrollIntoView({ behavior: 'smooth', block: 'center' });
         }
-    }
-}
 
-// Filter buttons
-document.querySelectorAll('.review-filter').forEach(function(btn) {
-    btn.addEventListener('click', function() {
-        document.querySelectorAll('.review-filter').forEach(function(b) { b.classList.remove('active'); });
-        this.classList.add('active');
-        currentFilter = this.dataset.filter;
+        function highlightAnnotations() {
+            // Reset all highlights
+            document.querySelectorAll('.review-text').forEach(function (el) {
+                el.querySelectorAll('.ann-highlight').forEach(function (h) {
+                    h.outerHTML = h.innerHTML;
+                });
+            });
+
+            annotations.forEach(function (ann) {
+                if (currentFilter !== 'all' && ann.category !== currentFilter) return;
+                var el = document.getElementById('content-' + ann.content_type + '-' + ann.content_id);
+                if (!el || !ann.selected_text) return;
+                highlightText(el, ann.selected_text, ann.category);
+            });
+        }
+
+        function normalizeWS(s) {
+            return s.replace(/[\s\u00a0]+/g, ' ');
+        }
+
+        function highlightText(container, text, category) {
+            if (!container || !text) return;
+
+            // Collect all text nodes
+            var textNodes = [];
+            var walker = document.createTreeWalker(container, NodeFilter.SHOW_TEXT, null, false);
+            var n;
+            while ((n = walker.nextNode())) { textNodes.push(n); }
+            if (!textNodes.length) return;
+
+            var rawValues = textNodes.map(function (nd) { return nd.nodeValue; });
+            var rawFull = rawValues.join('');
+
+            // ── 1. Exact match ──────────────────────────────────────────────────────
+            var idx = rawFull.indexOf(text);
+            var textLen = text.length;
+
+            // ── 2. Normalised whitespace match ──────────────────────────────────────
+            if (idx < 0) {
+                var normSearch = normalizeWS(text);
+                var normFull = '';
+                var normToRaw = [];
+                var prevIsSpace = false;
+                for (var r = 0; r < rawFull.length; r++) {
+                    var ch = rawFull[r];
+                    var isSpace = /[\s\u00a0]/.test(ch);
+                    if (isSpace) {
+                        if (!prevIsSpace) { normToRaw.push(r); normFull += ' '; }
+                        prevIsSpace = true;
+                    } else {
+                        normToRaw.push(r); normFull += ch; prevIsSpace = false;
+                    }
+                }
+                normToRaw.push(rawFull.length);
+                var normIdx = normFull.indexOf(normSearch);
+                if (normIdx >= 0) {
+                    var normEnd = normIdx + normSearch.length;
+                    idx = normToRaw[normIdx];
+                    var rawEnd = normToRaw[normEnd] !== undefined ? normToRaw[normEnd] : rawFull.length;
+                    text = rawFull.substring(idx, rawEnd);
+                    textLen = text.length;
+                }
+            }
+
+            // ── 3. Regex match: spaces may correspond to 0 chars at block boundaries ──
+            if (idx < 0) {
+                try {
+                    var normForRx = normalizeWS(text)
+                        .replace(/[.*+?^${}()|[\]\\]/g, '\\$&')
+                        .replace(/ /g, '[\\s\\S]{0,4}');
+                    var rx = new RegExp(normForRx);
+                    var rxMatch = rx.exec(rawFull);
+                    if (rxMatch) { idx = rxMatch.index; text = rxMatch[0]; textLen = text.length; }
+                } catch (rxErr) { /* skip */ }
+            }
+
+            if (idx < 0) return;
+
+            // Resolve start/end nodes and offsets
+            var startNode = null, startOffset = 0, endNode = null, endOffset = 0;
+            var cumulative = 0;
+            for (var i = 0; i < textNodes.length; i++) {
+                var nodeLen = rawValues[i].length;
+                if (!startNode && cumulative + nodeLen > idx) {
+                    startNode = textNodes[i]; startOffset = idx - cumulative;
+                }
+                if (startNode && cumulative + nodeLen >= idx + textLen) {
+                    endNode = textNodes[i]; endOffset = idx + textLen - cumulative; break;
+                }
+                cumulative += nodeLen;
+            }
+            if (!startNode || !endNode) return;
+
+            // Same-node case
+            if (startNode === endNode) {
+                var span = document.createElement('span');
+                span.className = 'ann-highlight cat-' + category;
+                var after = startNode.splitText(startOffset);
+                after.nodeValue = after.nodeValue.substring(textLen);
+                span.textContent = text;
+                startNode.parentNode.insertBefore(span, after);
+                return;
+            }
+
+            // Cross-node: wrap each fragment individually
+            var markNodes = [];
+            var inRange = false;
+            var walker2 = document.createTreeWalker(container, NodeFilter.SHOW_TEXT, null, false);
+            var nd2;
+            while ((nd2 = walker2.nextNode())) {
+                if (nd2 === startNode) { inRange = true; }
+                if (inRange) { markNodes.push(nd2); }
+                if (nd2 === endNode) { break; }
+            }
+            for (var j = 0; j < markNodes.length; j++) {
+                var nd = markNodes[j];
+                if (!nd.parentNode) { continue; }
+                var spanN = document.createElement('span');
+                spanN.className = 'ann-highlight cat-' + category;
+                if (nd === startNode) {
+                    var textAfter = nd.splitText(startOffset);
+                    nd.parentNode.insertBefore(spanN, textAfter);
+                    spanN.appendChild(textAfter);
+                } else if (nd === endNode) {
+                    nd.splitText(endOffset);
+                    nd.parentNode.insertBefore(spanN, nd);
+                    spanN.appendChild(nd);
+                } else {
+                    nd.parentNode.insertBefore(spanN, nd);
+                    spanN.appendChild(nd);
+                }
+            }
+        }
+
+        // Filter buttons
+        document.querySelectorAll('.review-filter').forEach(function (btn) {
+            btn.addEventListener('click', function () {
+                document.querySelectorAll('.review-filter').forEach(function (b) { b.classList.remove('active'); });
+                this.classList.add('active');
+                currentFilter = this.dataset.filter;
+                renderAnnotations();
+            });
+        });
+
         renderAnnotations();
-    });
-});
-
-renderAnnotations();
-</script>
+    </script>
 </body>
+
 </html>

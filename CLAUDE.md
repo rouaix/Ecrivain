@@ -46,6 +46,8 @@ modules/{name}/
 
 Modules: `acts`, `ai`, `api`, `auth`, `chapter`, `characters`, `collab`, `element`, `glossary`, `lecture`, `mcp`, `note`, `project`, `scenariste`, `search`, `section`, `share`, `stats`, `synopsis`, `template`
 
+The `ai` module is split into: `AiBaseController` (shared helpers), `AiGenerateController` (text generation), `AiConfigController` (provider/API key config), `AiAnalysisController` (analysis features), `AiSynopsisController` (synopsis generation).
+
 ### Routing & Autoloading
 
 All routes and autoload paths are declared in `src/app/config.ini`. F3 scans the declared `AUTOLOAD` paths automatically — no registration needed beyond naming the class correctly.
@@ -63,6 +65,8 @@ All routes and autoload paths are declared in `src/app/config.ini`. F3 scans the
 ### Database Migrations
 
 Migrations in `src/data/migrations/` run automatically on every app load (only unexecuted ones). Naming format: `NNN_description.sql` (alphabetical = execution order). Current highest: `029_`.
+
+> Always check `ls src/data/migrations/ | sort | tail -3` before creating a new migration to get the correct next number.
 
 Migration rules:
 - Always use `CREATE TABLE IF NOT EXISTS`
@@ -84,6 +88,12 @@ Migration rules:
 | `src/app/controllers/ApiBaseController.php` | Base for JSON endpoints — Bearer auth in `beforeRoute`, `jsonOut()`, `jsonError()`, `getBody()` |
 | `src/app/services/AiPricingService.php` | AI cost calculations |
 | `src/app/services/ProjectService.php` | Shared project business logic |
+| `src/app/services/ProjectShowService.php` | Loads all data for `project/show.html` (word counts, panel config, section groups) |
+| `src/app/services/ExportContentService.php` | Generates export content for all formats (delegated from `ProjectExportController`) |
+| `src/app/services/ImageUploadService.php` | `validate()` + `move()` + `deleteOld()` — used via `Controller::validateImageUpload()` |
+| `src/app/core/OrderableTrait.php` | `reorderItems()` + `getNextOrderBy()` — used by Act, Section models |
+| `src/app/modules/project/controllers/ProjectBaseController.php` | Shared helpers for all project sub-controllers: `supHtml()`, `getUserFullName()`, `loadProjectTemplateElements()`, `buildPanelOrderCss()` |
+| `src/app/shared/views/` | Reusable F3 partials: `_page-header.html`, `_empty-state.html` |
 | `src/public/js/quill-adapter.js` | Quill editor integration (singleton QuillTools) |
 | `src/public/js/offline-reader.js` | Offline reading support |
 | `src/app/modules/project/views/layouts/main.html` | Classic UI layout (JS/CSS versioned URLs) |
@@ -172,7 +182,7 @@ Fix CRLF files with Python if needed (see project memory notes).
 `src/public/style.css` is the single CSS entry point — it imports everything via `@import`. Never add `<link>` tags for internal CSS in views except for feature-specific overrides (e.g. `reading.css` in the lecture view).
 
 Subdirectory layout under `src/public/css/`:
-- `core/` — variables, reset, base, media queries
+- `core/` — variables, reset, base; `media-queries.css` (tablet/desktop ≥481px), `mq-mobile.css` (≤480px, ≤767px, ≤380px)
 - `layout/` — header, footer, grid
 - `components/` — buttons, forms, modals, tables, cards, panels…
 - `modules/` — feature styles (chapters, characters, notes…)
@@ -181,7 +191,7 @@ Subdirectory layout under `src/public/css/`:
 - `features/` — standalone features: `reading.css`, `reading-mode.css`, `export.css`, `mindmap.css`, `template-editor.css`, `dictation.css`
 - `utilities/` — atomic helpers: `helpers.css`, `spacing.css`, `text.css`, `visibility.css`
 - `themes/` — `theme-default.css`, `theme-dark.css`, `theme-blue.css`, `theme-forest.css`, `theme-moderne.css`
-- `pro/` — Pro UI styles: `pro.css` (aggregator), `pro-layout.css`, `pro-nav.css`, `pro-components.css`, `pro-overrides.css`, `pro-polish.css`
+- `pro/` — Pro UI styles: `pro.css` (aggregator importing all 7 files), `pro-layout.css`, `pro-nav.css`, `pro-components.css` (base components), `pro-pages.css` (dashboard + project page), `pro-features.css` (edit pages, AI, collab, etc.), `pro-overrides.css`, `pro-polish.css`
 
 **Modal visibility**: modals use `.is-visible` (adds `display: flex`) — never toggle `.is-hidden` on a `.modal-overlay`. Open: `modal.classList.add('is-visible')`, close: `modal.classList.remove('is-visible')`.
 
@@ -189,15 +199,49 @@ Subdirectory layout under `src/public/css/`:
 
 After modifying any JS or CSS file, increment the `?v=` parameter in **both** layouts (`main.html` and `main-pro.html`). The two layouts track separate CSS versions:
 ```html
-<!-- main.html: style.css?v=48 | main-pro.html: style.css?v=51, pro/pro.css?v=38 -->
-<link rel="stylesheet" href="{{ @base }}/public/style.css?v=48">
+<!-- main.html: style.css?v=56 | main-pro.html: style.css?v=57, pro/pro.css?v=40 -->
+<link rel="stylesheet" href="{{ @base }}/public/style.css?v=56">
 <script src="{{ @base }}/public/js/quill-adapter.js?v=26"></script>
-<script src="{{ @base }}/public/js/api-client.js?v=1"></script>
+<script src="{{ @base }}/public/js/api-client.js?v=3"></script>
 <script src="{{ @base }}/public/js/notifications.js?v=1"></script>
 <!-- Pro layout only: -->
-<link rel="stylesheet" href="{{ @base }}/public/css/pro/pro.css?v=38">
+<link rel="stylesheet" href="{{ @base }}/public/css/pro/pro.css?v=40">
 <script src="{{ @base }}/public/js/pro-ui.js?v=3"></script>
 ```
+
+### Shared View Partials
+
+`src/app/shared/views/` contains reusable F3 fragments. Set variables before `<include>`:
+
+```html
+<!-- Page header with optional create button -->
+<set pageIcon="book" />
+<set pageTitle="{{ @project.title }}" />
+<set backUrl="{{ @base.'/project/'.@project.id }}" />
+<set createUrl="{{ @base.'/project/'.@project.id.'/chapter/create' }}" />
+<set createTitle="Nouveau chapitre" />
+<include href="_page-header.html" />
+
+<!-- Empty state (wrap in <check if="...count == 0"> ) -->
+<set emptyIcon="book" />
+<set emptyMessage="Aucun chapitre pour l'instant." />
+<set emptyCreateUrl="{{ @createUrl }}" />
+<set emptyCreateLabel="Créer le premier" />
+<include href="_empty-state.html" />
+```
+
+Both partials guard the create button with `@isOwner` — controllers **must** pass `'isOwner' => $this->isOwner($pid)` in `render()`.
+
+### AppUI (JavaScript)
+
+`api-client.js` exports a global `AppUI` namespace:
+
+- `AppUI.confirm(message, title?)` → `Promise<boolean>` — styled modal replacing `window.confirm()`
+- `AppUI.notify(message, type?, duration?)` — toast notification
+- `AppUI.openModal(id)` / `AppUI.closeModal(id)` — open/close by element ID
+- `AppUI.initConfirmLinks()` — auto-binds all `.js-confirm` elements (called on `DOMContentLoaded`)
+
+**Do not add per-view `.js-confirm` handlers** — `initConfirmLinks()` already handles them globally. Adding your own creates double-binding (native confirm + modal both fire).
 
 ### Quill Instances
 

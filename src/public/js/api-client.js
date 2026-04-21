@@ -132,7 +132,7 @@ const AppUI = (() => {
                 overlay.id = 'appui-confirm-overlay';
                 overlay.className = 'modal-overlay';
                 overlay.innerHTML =
-                    '<div class="modal-box" role="dialog" aria-modal="true">' +
+                    '<div class="modal-content" role="dialog" aria-modal="true">' +
                         '<div class="modal-header"><h3 class="modal-title" id="appui-confirm-title"></h3></div>' +
                         '<div class="modal-body"><p id="appui-confirm-message"></p></div>' +
                         '<div class="modal-footer">' +
