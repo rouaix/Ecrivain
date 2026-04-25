@@ -81,7 +81,7 @@ body.ui-pro select:focus,
 body.ui-pro textarea:focus {
     outline: none;
     border-color: var(--button-primary-bg);
-    box-shadow: 0 0 0 3px rgba(63, 81, 181, 0.12);
+    box-shadow: 0 0 0 3px rgba(214, 81, 81, 0.12);
 }
 
 /* ── 5. Sidebar — animation mobile ── */

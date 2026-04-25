@@ -4,8 +4,8 @@
    ============================================================ */
 
 /* ── 1. Chrome classique — masqué en Pro ── */
-body.ui-pro > header:not(.pro-topbar),
-body.ui-pro > footer,
+body.ui-pro>header:not(.pro-topbar),
+body.ui-pro>footer,
 body.ui-pro .main-nav {
     display: none !important;
 }
@@ -55,6 +55,7 @@ body.ui-pro .pagination {
     font-size: 13px;
     gap: 4px;
 }
+
 body.ui-pro .pagination a,
 body.ui-pro .pagination span {
     padding: 4px 8px;
@@ -66,7 +67,7 @@ body.ui-pro .theme-selector-widget {
 }
 
 /* ── 10. Résidu de margin en haut de page ── */
-body.ui-pro .pro-content-inner > *:first-child {
+body.ui-pro .pro-content-inner>*:first-child {
     margin-top: 0;
 }
 
@@ -143,7 +144,7 @@ body.ui-pro.editor-mode #annotationsSection .grammar-header label {
 }
 
 /* Section grammaire — masquée par défaut, accessible via bouton du header */
-body.ui-pro.editor-mode .grammar-header + .grammar-results:empty ~ * {
+body.ui-pro.editor-mode .grammar-header+.grammar-results:empty~* {
     display: none;
 }
 
@@ -176,11 +177,13 @@ body.ui-pro .export-options-list {
     flex-direction: column;
     gap: 8px;
 }
+
 body.ui-pro .export-options-list li {
     display: flex;
     align-items: center;
     gap: 10px;
 }
+
 body.ui-pro .export-options-list .export-format-desc {
     font-size: 12px;
     color: var(--text-muted);
@@ -188,5 +191,61 @@ body.ui-pro .export-options-list .export-format-desc {
 
 /* ── 17. Bouton dictée — au-dessus de la status bar éditeur ── */
 body.ui-pro.editor-mode #dictation-btn {
-    bottom: 60px; /* 36px status bar + 24px espacement */
+    bottom: 60px;
+    /* 36px status bar + 24px espacement */
+}
+
+/* ── 18. Boutons icône IA — hover sombre cohérent avec les autres actions ── */
+body.ui-pro .ai-summary-btn:hover,
+body.ui-pro .ai-act-summary-btn:hover,
+body.ui-pro .ai-element-summary-btn:hover {
+    background: var(--button-hover-bg, #222222) !important;
+    border-color: var(--button-hover-bg, #222222) !important;
+    color: #ffffff !important;
+}
+
+/* ── 19. Liens dans le contenu Pro — neutralise le style agressif du thème ── */
+/* body.theme-default a applique padding:2px et fond sombre au hover sur TOUS les liens */
+body.ui-pro .pro-content-inner a:not(.button):not(.pro-nav-item):not(.overview-resource-link):not(.ms-chapter-link) {
+    padding: 0;
+}
+
+body.ui-pro .pro-content-inner a:not(.button):not(.pro-nav-item):not(.overview-resource-link):not(.ms-chapter-link):hover {
+    background: none;
+    color: var(--button-primary-bg);
+    text-decoration: underline;
+}
+
+/* ── 20. Bouton fermer modal — corrige la couleur invisible de pro-pages.css ── */
+body.ui-pro button.modal-close {
+    background: transparent !important;
+    border: none !important;
+    color: var(--button-primary-bg) font-size: 18px;
+    padding: 4px 8px;
+    line-height: 1;
+}
+
+body.ui-pro button.modal-close:hover {
+    color: var(--text-main) !important;
+    background: transparent !important;
+}
+
+/* ── 19. Tags de titre — cohérence typographique Pro ── */
+body.ui-pro .pro-content-inner h1 {
+    font-size: 20px;
+    font-weight: 700;
+    margin-bottom: 16px;
+}
+
+body.ui-pro .pro-content-inner h2 {
+    font-size: 17px;
+    font-weight: 700;
+    margin-bottom: 12px;
+}
+
+body.ui-pro .pro-content-inner h3 {
+    font-size: 14px;
+    font-weight: 600;
+    margin-bottom: 8px;
+    padding: 0;
 }

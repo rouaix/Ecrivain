@@ -519,16 +519,40 @@ body.ui-pro .pro-theme-swatch--moderne {
     /* Items centrés sur l'icône */
     body.ui-pro .pro-nav-item {
         font-size: 0;
-        /* cache les text nodes */
         justify-content: center;
         padding: 10px 0;
         gap: 0;
         border-left-width: 2px;
+        position: relative;
     }
 
     body.ui-pro .pro-nav-item i {
         font-size: 15px;
         width: auto;
+    }
+
+    /* Tooltip au survol en mode icônes */
+    body.ui-pro .pro-nav-item[title]::after {
+        content: attr(title);
+        position: absolute;
+        left: calc(100% + 10px);
+        top: 50%;
+        transform: translateY(-50%);
+        background: #111111;
+        color: #ffffff;
+        padding: 4px 9px;
+        font-size: 12px;
+        font-weight: 500;
+        border-radius: var(--radius-sm);
+        white-space: nowrap;
+        pointer-events: none;
+        opacity: 0;
+        transition: opacity 0.15s;
+        z-index: 999;
+    }
+
+    body.ui-pro .pro-nav-item[title]:hover::after {
+        opacity: 1;
     }
 
     /* Séparateur plus compact */

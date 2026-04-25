@@ -264,7 +264,7 @@ abstract class Controller
         }
 
         $this->f3->set('content', \Template::instance()->render($view));
-        $layout = (($_COOKIE['ui_mode'] ?? 'pro') === 'pro') ? 'layouts/main-pro.html' : 'layouts/main.html';
+        $layout = 'layouts/main-pro.html';
         echo \Template::instance()->render($layout);
     }
     /**

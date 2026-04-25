@@ -597,24 +597,8 @@ body.ui-pro .collab-banner {
 
 /* ============================================================
    PHASE 2 — TYPOGRAPHIE PRO GÉNÉRALE
+   (règles h1/h2/h3 dans pro-overrides.css)
    ============================================================ */
-
-body.ui-pro .pro-content-inner h1 {
-    font-size: 18px;
-    margin-bottom: 16px;
-}
-
-body.ui-pro .pro-content-inner h2 {
-    font-size: 16px;
-    margin-bottom: 12px;
-}
-
-body.ui-pro .pro-content-inner h3 {
-    font-size: 14px;
-    line-break: auto;
-    /*margin-bottom: 10px;*/
-    padding: 10px;
-}
 
 body.ui-pro .modal-header {
     margin-bottom: 0;

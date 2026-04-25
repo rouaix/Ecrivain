@@ -41,6 +41,7 @@
 .section-comment>span {
     font-weight: bold;
 }
+
 /* ++ Chapter create ++ */
 .chapter-create-tabs {
     display: flex;
@@ -203,8 +204,15 @@
 }
 
 @keyframes as-pulse {
-    0%, 100% { opacity: 1; }
-    50% { opacity: .6; }
+
+    0%,
+    100% {
+        opacity: 1;
+    }
+
+    50% {
+        opacity: .6;
+    }
 }
 
 .editor-top-bar {
@@ -262,7 +270,7 @@ body.focus-mode header,
 body.focus-mode footer,
 body.focus-mode .edit-header,
 body.focus-mode .editor-top-bar,
-body.focus-mode .edit-card > .edit-card-section:first-child,
+body.focus-mode .edit-card>.edit-card-section:first-child,
 body.focus-mode .edit-actions {
     display: none !important;
 }
@@ -567,7 +575,6 @@ body.ui-pro .chapters-preview-col {
 .chapter-list-sub-indent {
     width: 4px;
     align-self: stretch;
-    background: var(--input-border);
     flex-shrink: 0;
     margin-left: 2px;
 }

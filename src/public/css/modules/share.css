@@ -74,6 +74,11 @@
 
 .share-link-actions {
     display: flex;
+    align-items: center;
     gap: .5rem;
     flex-wrap: wrap;
+}
+
+.share-link-actions form {
+    display: contents;
 }

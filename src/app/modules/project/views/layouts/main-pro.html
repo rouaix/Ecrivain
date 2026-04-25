@@ -31,7 +31,7 @@
 
     <!-- CSS : base + Pro -->
     <link rel="stylesheet" href="{{ @base }}/public/style.css?v=59">
-    <link rel="stylesheet" href="{{ @base }}/public/css/pro/pro.css?v=40">
+    <link rel="stylesheet" href="{{ @base }}/public/css/pro/pro.css?v=46">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 
     <!-- Thème -->
@@ -122,6 +122,12 @@
                     </check>
                 </a>
 
+                <!-- Raccourcis clavier -->
+                <button type="button" id="shortcutsToggleBtn" class="pro-topbar-btn" title="Raccourcis clavier (?)"
+                    aria-label="Afficher les raccourcis clavier">
+                    <i class="fas fa-keyboard" aria-hidden="true"></i>
+                </button>
+
                 <!-- Menu utilisateur -->
                 <div class="pro-user-menu" id="proUserMenu">
                     <button id="proUserBtn" class="pro-user-btn" aria-haspopup="true" aria-expanded="false"
@@ -154,19 +160,10 @@
                             <div class="pro-theme-swatches">
                                 <button type="button"
                                     class="pro-theme-swatch pro-theme-swatch--default {{ @selectedTheme == 'default' ? 'is-active' : '' }}"
-                                    data-theme="default" title="Défaut"></button>
-                                <button type="button"
-                                    class="pro-theme-swatch pro-theme-swatch--blue {{ @selectedTheme == 'blue' ? 'is-active' : '' }}"
-                                    data-theme="blue" title="Bleu"></button>
+                                    data-theme="default" title="Clair"></button>
                                 <button type="button"
                                     class="pro-theme-swatch pro-theme-swatch--dark {{ @selectedTheme == 'dark' ? 'is-active' : '' }}"
                                     data-theme="dark" title="Sombre"></button>
-                                <button type="button"
-                                    class="pro-theme-swatch pro-theme-swatch--forest {{ @selectedTheme == 'forest' ? 'is-active' : '' }}"
-                                    data-theme="forest" title="Forêt"></button>
-                                <button type="button"
-                                    class="pro-theme-swatch pro-theme-swatch--moderne {{ @selectedTheme == 'moderne' ? 'is-active' : '' }}"
-                                    data-theme="moderne" title="Moderne"></button>
                             </div>
                             <!-- Formulaire caché pour poster le thème -->
                             <form id="proThemeForm" action="{{ @base }}/theme" method="POST" style="display:none">
@@ -174,18 +171,6 @@
                                 <input type="hidden" id="proThemeInput" name="theme" value="">
                             </form>
                         </div>
-
-                        <div class="pro-user-dropdown-sep"></div>
-
-                        <!-- Switch vers interface classique -->
-                        <form action="{{ @base }}/ui-mode" method="POST" style="display:contents">
-                            <input type="hidden" name="csrf_token" value="{{ @csrfToken }}">
-                            <input type="hidden" name="mode" value="classic">
-                            <button type="submit" class="pro-user-dropdown-item" role="menuitem"
-                                title="Revenir à l'interface classique">
-                                <i class="fas fa-desktop" aria-hidden="true"></i> Interface classique
-                            </button>
-                        </form>
 
                         <div class="pro-user-dropdown-sep"></div>
 
@@ -280,51 +265,6 @@
                             </check>
                         </a>
                     </repeat>
-                </check>
-
-                <div class="pro-nav-divider"></div>
-
-                <!-- Outils -->
-                <a href="{{ @base }}/project/{{ @project.id }}/mindmap" title="Carte mentale"
-                    class="pro-nav-item {{ @PATH == '/project/'.@project.id.'/mindmap' ? 'is-active' : '' }}">
-                    <i class="fas fa-sitemap" aria-hidden="true"></i>
-                    <span class="pro-nav-label">Carte mentale</span>
-                </a>
-
-                <a href="{{ @base }}/project/{{ @project.id }}/lecture" title="Mode lecture"
-                    class="pro-nav-item {{ substr(@PATH, 0, strlen('/project/'.@project.id.'/lecture')) == '/project/'.@project.id.'/lecture' ? 'is-active' : '' }}">
-                    <i class="fas fa-glasses" aria-hidden="true"></i>
-                    <span class="pro-nav-label">Mode lecture</span>
-                </a>
-
-                <a href="{{ @base }}/project/{{ @project.id }}/relecture" title="Mode relecture"
-                    class="pro-nav-item {{ substr(@PATH, 0, strlen('/project/'.@project.id.'/relecture')) == '/project/'.@project.id.'/relecture' ? 'is-active' : '' }}">
-                    <i class="fas fa-highlighter" aria-hidden="true"></i>
-                    <span class="pro-nav-label">Mode relecture</span>
-                </a>
-
-                <a href="#" id="proAiAssistantBtn" title="Assistant Narratif IA" class="pro-nav-item">
-                    <i class="fas fa-magic" aria-hidden="true"></i>
-                    <span class="pro-nav-label">Assistant IA</span>
-                </a>
-
-                <a href="#" id="proExportBtn" title="Exporter" class="pro-nav-item">
-                    <i class="fas fa-file-export" aria-hidden="true"></i>
-                    <span class="pro-nav-label">Exporter</span>
-                </a>
-
-                <check if="{{ isset(@isOwner) && @isOwner }}">
-                    <a href="{{ @base }}/project/{{ @project.id }}/collaborateurs" title="Collaborateurs"
-                        class="pro-nav-item {{ @PATH == '/project/'.@project.id.'/collaborateurs' ? 'is-active' : '' }}">
-                        <i class="fas fa-user-plus" aria-hidden="true"></i>
-                        <span class="pro-nav-label">Collaborateurs</span>
-                    </a>
-
-                    <a href="{{ @base }}/project/{{ @project.id }}/activity" title="Activité"
-                        class="pro-nav-item {{ @PATH == '/project/'.@project.id.'/activity' ? 'is-active' : '' }}">
-                        <i class="fas fa-history" aria-hidden="true"></i>
-                        <span class="pro-nav-label">Activité</span>
-                    </a>
                 </check>
 
             </check>
@@ -607,7 +547,7 @@
             <div class="modal-content modal-sm">
                 <div class="modal-header">
                     <h3><i class="fas fa-file-export" aria-hidden="true"></i> Exporter le projet</h3>
-                    <button class="modal-close button" id="proExportModalClose" title="Fermer">✕</button>
+                    <button type="button" class="modal-close" id="proExportModalClose" title="Fermer">&times;</button>
                 </div>
                 <div class="modal-body">
                     <ul class="export-options-list">
@@ -787,6 +727,97 @@
                         if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); ask(); }
                     });
                 }
+            })();
+        </script>
+    </check>
+
+    <!-- ════════════════════════════════════════════
+         MODALE RACCOURCIS CLAVIER
+         ════════════════════════════════════════════ -->
+    <check if="isset(@SESSION.user_id)">
+        <div id="shortcutsModal" class="modal-overlay" role="dialog" aria-modal="true" aria-label="Raccourcis clavier">
+            <div class="modal-content modal-sm">
+                <div class="modal-header">
+                    <h3><i class="fas fa-keyboard" aria-hidden="true"></i> Raccourcis clavier</h3>
+                    <button type="button" class="modal-close" id="closeShortcutsModal" title="Fermer">&times;</button>
+                </div>
+                <div class="modal-body">
+
+                    <p class="shortcuts-section-title">Navigation</p>
+                    <table class="shortcuts-table">
+                        <tr>
+                            <td>Recherche globale</td>
+                            <td><kbd>Ctrl</kbd> + <kbd>K</kbd></td>
+                        </tr>
+                        <tr>
+                            <td>Fermer / annuler</td>
+                            <td><kbd>Esc</kbd></td>
+                        </tr>
+                        <tr>
+                            <td>Raccourcis clavier</td>
+                            <td><kbd>?</kbd></td>
+                        </tr>
+                    </table>
+
+                    <p class="shortcuts-section-title">Éditeur de chapitre</p>
+                    <table class="shortcuts-table">
+                        <tr>
+                            <td>Sauvegarder</td>
+                            <td><kbd>Ctrl</kbd> + <kbd>S</kbd></td>
+                        </tr>
+                        <tr>
+                            <td>Gras</td>
+                            <td><kbd>Ctrl</kbd> + <kbd>B</kbd></td>
+                        </tr>
+                        <tr>
+                            <td>Italique</td>
+                            <td><kbd>Ctrl</kbd> + <kbd>I</kbd></td>
+                        </tr>
+                        <tr>
+                            <td>Annuler</td>
+                            <td><kbd>Ctrl</kbd> + <kbd>Z</kbd></td>
+                        </tr>
+                    </table>
+
+                    <p class="shortcuts-section-title">Assistant IA</p>
+                    <table class="shortcuts-table">
+                        <tr>
+                            <td>Envoyer le message</td>
+                            <td><kbd>Entrée</kbd></td>
+                        </tr>
+                        <tr>
+                            <td>Saut de ligne</td>
+                            <td><kbd>Shift</kbd> + <kbd>Entrée</kbd></td>
+                        </tr>
+                    </table>
+
+                </div>
+            </div>
+        </div>
+        <script nonce="{{ @nonce }}">
+            (function () {
+                var modal = document.getElementById('shortcutsModal');
+                var openBtn = document.getElementById('shortcutsToggleBtn');
+                var closeBtn = document.getElementById('closeShortcutsModal');
+                if (!modal) return;
+
+                function openModal() { modal.classList.add('is-visible'); }
+                function closeModal() { modal.classList.remove('is-visible'); }
+
+                if (openBtn) openBtn.addEventListener('click', openModal);
+                if (closeBtn) closeBtn.addEventListener('click', closeModal);
+                modal.addEventListener('click', function (e) { if (e.target === modal) closeModal(); });
+
+                document.addEventListener('keydown', function (e) {
+                    if (e.key === 'Escape' && modal.classList.contains('is-visible')) { closeModal(); return; }
+                    var tag = document.activeElement ? document.activeElement.tagName : '';
+                    var isEditing = tag === 'INPUT' || tag === 'TEXTAREA' || tag === 'SELECT'
+                        || document.activeElement.isContentEditable;
+                    if (e.key === '?' && !isEditing && !e.ctrlKey && !e.metaKey) {
+                        e.preventDefault();
+                        modal.classList.contains('is-visible') ? closeModal() : openModal();
+                    }
+                });
             })();
         </script>
     </check>

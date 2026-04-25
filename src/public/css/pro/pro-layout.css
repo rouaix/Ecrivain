@@ -25,6 +25,8 @@ body.ui-pro>main>.container {
 body.ui-pro {
     min-height: 100vh;
     background: var(--body-bg);
+    --body-bg: #f4f4f4;
+    --border-strong: #cccccc;
 }
 
 /* ── Topbar ── */

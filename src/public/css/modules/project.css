@@ -552,7 +552,6 @@ img.project-cover {
 .view-toggle {
     display: flex;
     gap: 0;
-    border: 1px solid var(--input-border);
     border-radius: 6px;
     overflow: hidden;
 }
@@ -598,11 +597,25 @@ img.project-cover {
     padding: 0 .2rem;
 }
 
-.kanban-col-dot--active { color: #22c55e; }
-.kanban-col-dot--paused { color: #f59e0b; }
-.kanban-col-dot--abandoned { color: #ef4444; }
-.kanban-col-dot--finished { color: #3f51b5; }
-.kanban-col-dot--default { color: #94a3b8; }
+.kanban-col-dot--active {
+    color: #22c55e;
+}
+
+.kanban-col-dot--paused {
+    color: #f59e0b;
+}
+
+.kanban-col-dot--abandoned {
+    color: #ef4444;
+}
+
+.kanban-col-dot--finished {
+    color: #3f51b5;
+}
+
+.kanban-col-dot--default {
+    color: #94a3b8;
+}
 
 .kanban-col-title {
     font-weight: 700;

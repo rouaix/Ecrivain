@@ -59,80 +59,88 @@ body.ui-pro .act-actions {
 
 
 
-/* ── Boutons — plus compacts en mode Pro ── */
+/* ── Système de boutons Pro — hiérarchie claire ── */
 
-body.theme-default.ui-pro input[type="submit"],
-body.theme-default.ui-pro button:not(.ql-toolbar button),
-body.theme-default.ui-pro .button:not(.ql-toolbar button),
-body.theme-default.ui-pro a,
-body.theme-default.ui-pro button,
-body.theme-default.ui-pro .button,
-body.theme-default.ui-pro .button.small,
-body.theme-default.ui-pro .button.small.primary,
-body.theme-default.ui-pro .button.small.secondary,
-body.theme-default.ui-pro .button.primary,
-body.theme-default.ui-pro .button.secondary {
-    cursor: pointer;
-    border: none;
-    padding: 2px;
-    color: var(--button-bg);
-    background-color: transparent;
-    margin: 0;
-}
-
-body.theme-default.ui-pro .delete,
-body.theme-default.ui-pro a.button.delete,
-body.theme-default.ui-pro a.button.delete.small,
-body.theme-default.ui-pro .button.delete,
-body.theme-default.ui-pro .button.delete.small {
-    color: var(--color-danger);
-    background-color: transparent;
-}
-
-body.theme-default.ui-pro .delete:hover,
-body.theme-default.ui-pro a.button.delete:hover,
-body.theme-default.ui-pro a.button.delete.small:hover,
-body.theme-default.ui-pro .button.delete:hover,
-body.theme-default.ui-pro .button.delete.small:hover {
-    color: var(--button-delete-hover-bg) !important;
-    background-color: transparent !important;
-}
-
-body.theme-default.ui-pro input[type="submit"]:hover,
-body.theme-default.ui-pro button:not(.ql-toolbar button):hover,
-body.theme-default.ui-pro .button:not(.ql-toolbar button):hover,
-body.theme-default.ui-pro a:hover,
-body.theme-default.ui-pro button:hover,
-body.theme-default.ui-pro .button:hover,
-body.theme-default.ui-pro .button.small:hover,
-body.theme-default.ui-pro .button.small.primary:hover,
-body.theme-default.ui-pro .button.small.secondary:hover,
-body.theme-default.ui-pro .button.primary:hover,
-body.theme-default.ui-pro .button.secondary:hover {
-    color: var(--button-hover-bg);
-    background-color: transparent;
-}
-
-body.theme-default.ui-pro #dictation-btn {
-    color: var(--button-bg);
-    background-color: transparent;
-}
-
-body.theme-default.ui-pro #dictation-btn:hover {
-    color: var(--button-hover-bg);
-    background-color: transparent;
-}
-
-body.ui-pro .button {
+body.ui-pro .button,
+body.ui-pro a.button,
+body.ui-pro input[type="submit"] {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
     padding: 7px 14px;
     font-size: 13px;
-    border-radius: var(--radius-sm);
     font-weight: 500;
+    font-family: inherit;
+    border-radius: var(--radius-sm);
+    border: 1px solid var(--input-border);
+    background: var(--card-bg);
+    color: var(--text-main);
+    text-decoration: none !important;
+    cursor: pointer;
+    white-space: nowrap;
     height: auto;
+    line-height: 1.4;
+    transition: background 0.12s, color 0.12s, border-color 0.12s;
+}
+
+body.ui-pro .button:hover,
+body.ui-pro a.button:hover,
+body.ui-pro input[type="submit"]:hover {
+    background: var(--table-row-hover-bg);
+    border-color: var(--border-color);
+    color: var(--text-main);
+    text-decoration: none !important;
+}
+
+body.ui-pro .button.primary,
+body.ui-pro a.button.primary,
+body.ui-pro input[type="submit"].primary {
+    background: var(--button-primary-bg);
+    border-color: var(--button-primary-bg);
+    color: #ffffff;
+}
+
+body.ui-pro .button.primary:hover,
+body.ui-pro a.button.primary:hover,
+body.ui-pro input[type="submit"].primary:hover {
+    background: var(--button-primary-hover-bg, #b83e3e);
+    border-color: var(--button-primary-hover-bg, #b83e3e);
+    color: #ffffff;
+}
+
+body.ui-pro .button.secondary,
+body.ui-pro a.button.secondary {
+    background: transparent;
+    border-color: var(--input-border);
+    color: var(--text-main);
+}
+
+body.ui-pro .button.secondary:hover,
+body.ui-pro a.button.secondary:hover {
+    background: var(--table-row-hover-bg);
+    color: var(--text-main);
+}
+
+body.ui-pro .button.preview-btn:hover {
+    color: #ffffff;
+}
+
+body.ui-pro .button.delete,
+body.ui-pro a.button.delete {
+    background: var(--card-bg);
+    border-color: var(--color-danger);
+    color: var(--color-danger);
+}
+
+body.ui-pro .button.delete:hover,
+body.ui-pro a.button.delete:hover {
+    background: var(--color-danger);
+    border-color: var(--color-danger);
+    color: #ffffff;
 }
 
 body.ui-pro .button.large {
-    padding: 9px 20px;
+    padding: 10px 22px;
     font-size: 14px;
 }
 
@@ -140,6 +148,13 @@ body.ui-pro .button.small,
 body.ui-pro .button.btn-sm {
     padding: 4px 10px;
     font-size: 12px;
+}
+
+body.ui-pro .button:disabled,
+body.ui-pro .button.disabled {
+    opacity: 0.4;
+    cursor: not-allowed;
+    pointer-events: none;
 }
 
 /* ── Carte Pro ── */
