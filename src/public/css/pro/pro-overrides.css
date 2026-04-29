@@ -206,9 +206,6 @@ body.ui-pro .ai-element-summary-btn:hover {
 
 /* ── 19. Liens dans le contenu Pro — neutralise le style agressif du thème ── */
 /* body.theme-default a applique padding:2px et fond sombre au hover sur TOUS les liens */
-body.ui-pro .pro-content-inner a:not(.button):not(.pro-nav-item):not(.overview-resource-link):not(.ms-chapter-link) {
-    padding: 0;
-}
 
 body.ui-pro .pro-content-inner a:not(.button):not(.pro-nav-item):not(.overview-resource-link):not(.ms-chapter-link):hover {
     background: none;

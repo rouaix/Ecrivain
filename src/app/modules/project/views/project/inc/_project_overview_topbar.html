@@ -1,0 +1,30 @@
+    <!-- ── Topbar manuscrit ── -->
+    <check if="{{ @panelConfig.content }}">
+      <div class="overview-topbar">
+        <h2 class="overview-section-title">
+          <check if="{{ @panelConfig.has_acts }}">
+            {{ @panelLabels.act.plural }} &amp; {{ @panelLabels.chapter.plural }}
+            <false>{{ @panelLabels.chapter.plural }}</false>
+          </check>
+        </h2>
+        <div class="overview-topbar-right">
+          <div class="overview-search-wrap">
+            <i class="fas fa-search" aria-hidden="true"></i>
+            <input type="text" id="globalSearchInput" placeholder="Filtrer..." autocomplete="off">
+            <button type="button" id="clearSearchBtn" title="Effacer"><i class="fas fa-times" aria-hidden="true"></i></button>
+          </div>
+          <check if="{{ @isOwner }}">
+            <check if="{{ @panelConfig.has_acts }}">
+              <a class="button small" href="{{ @base }}/project/{{ @project.id }}/act/create" title="Nouvel {{ @panelLabels.act.singular_lc }}">
+                <i class="fas fa-folder-plus" aria-hidden="true"></i>
+              </a>
+            </check>
+            <check if="{{ !@panelConfig.has_acts }}">
+              <a class="button primary small" href="{{ @base }}/project/{{ @project.id }}/chapter/create">
+                <i class="fas fa-plus" aria-hidden="true"></i> {{ @panelLabels.chapter.singular }}
+              </a>
+            </check>
+          </check>
+        </div>
+      </div>
+    </check>

@@ -1,0 +1,40 @@
+    <!-- ── Scénarios ── -->
+    <check if="{{ @panelConfig.scenario }}">
+      <details class="panel ms-panel" id="panel-scenarios" data-persist="true">
+        <summary>
+          <span class="ms-panel-arrow">›</span>
+          Scénarios
+          <span class="panel-count">{{ count(@scenarios) }}</span>
+          <check if="{{ @isOwner }}">
+            <div class="ms-panel-add">
+              <a class="button small" href="{{ @base }}/project/{{ @project.id }}/scenariste/new" title="Nouveau scénario"><i class="fas fa-plus" aria-hidden="true"></i></a>
+            </div>
+          </check>
+        </summary>
+        <check if="{{ !empty(@scenarios) }}">
+          <true>
+            <table class="ms-chapter-table">
+              <tbody>
+                <repeat group="{{ @scenarios }}" value="{{ @sc }}">
+                  <tr data-id="{{ @sc.id }}">
+                    <td class="ms-hidden-cell">
+                      <input type="checkbox" class="export-toggle" data-type="scenario" data-id="{{ @sc.id }}" {{ @sc.is_exported ? 'checked' : '' }}>
+                    </td>
+                    <td class="ms-status-cell"><span class="ms-status ms-status--writing"></span></td>
+                    <td class="ms-title-cell"><a href="{{ @base }}/scenariste/{{ @sc.id }}/edit" class="ms-chapter-link">{{ @sc.title }}</a></td>
+                    <td class="ms-words-cell"></td>
+                    <td class="ms-actions-cell">
+                      <button class="button small preview-btn" data-type="scenario" data-id="{{ @sc.id }}" title="Prévisualiser"><i class="fas fa-eye" aria-hidden="true"></i></button>
+                      <a class="button small" href="{{ @base }}/scenariste/{{ @sc.id }}/edit" title="Éditer"><i class="fas fa-edit" aria-hidden="true"></i></a>
+                      <a class="button small" href="{{ @base }}/scenariste/{{ @sc.id }}/download" title="Télécharger .md"><i class="fas fa-download" aria-hidden="true"></i></a>
+                      <a class="button small delete js-confirm" href="{{ @base }}/scenariste/{{ @sc.id }}/delete" data-confirm="Supprimer ce scénario ?" title="Supprimer"><i class="fas fa-trash" aria-hidden="true"></i></a>
+                    </td>
+                  </tr>
+                </repeat>
+              </tbody>
+            </table>
+          </true>
+          <false><p class="panel-empty">Aucun scénario généré.</p></false>
+        </check>
+      </details>
+    </check>

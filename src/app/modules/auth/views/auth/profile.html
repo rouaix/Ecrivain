@@ -202,6 +202,129 @@
 
 </div>
 
+<!-- ── Sélecteur d'apparence ──────────────────────────────────────── -->
+
+<div class="profile-container">
+
+    <div class="profile-card">
+
+        <div class="profile-card-header">
+
+            <h2><i class="fas fa-paint-brush" aria-hidden="true"></i> Apparence</h2>
+
+            <p>Choisissez l'interface de vos pages projet</p>
+
+        </div>
+
+        <form method="post" action="{{ @base }}/project-layout" id="layoutPickerForm">
+
+            <input type="hidden" name="csrf_token" value="{{ @csrfToken }}">
+            <input type="hidden" name="layout" id="layoutPickerInput" value="{{ @user.theme ?: 'manuscrit' }}">
+
+            <div class="layout-picker">
+
+                <button type="button"
+                    class="layout-picker-card {{ (@user.theme ?: 'manuscrit') == 'manuscrit' ? 'is-active' : '' }}"
+                    data-layout="manuscrit">
+                    <div class="layout-picker-preview layout-picker-preview--manuscrit">
+                        <div class="lpp-rail"></div>
+                        <div class="lpp-center">
+                            <div class="lpp-h1"></div>
+                            <div class="lpp-line"></div>
+                            <div class="lpp-line lpp-line--short"></div>
+                        </div>
+                        <div class="lpp-right"></div>
+                    </div>
+                    <div class="layout-picker-label">
+                        <span class="layout-picker-badge">A</span>
+                        <strong>Manuscrit</strong>
+                        <span>Papier crème, EB Garamond, ambiance bureau d'éditeur</span>
+                    </div>
+                </button>
+
+                <button type="button"
+                    class="layout-picker-card {{ @user.theme == 'bibliotheque' ? 'is-active' : '' }}"
+                    data-layout="bibliotheque">
+                    <div class="layout-picker-preview layout-picker-preview--bibliotheque">
+                        <div class="lpp-rail"></div>
+                        <div class="lpp-center">
+                            <div class="lpp-h1"></div>
+                            <div class="lpp-line"></div>
+                            <div class="lpp-line lpp-line--short"></div>
+                        </div>
+                        <div class="lpp-right"></div>
+                    </div>
+                    <div class="layout-picker-label">
+                        <span class="layout-picker-badge">B</span>
+                        <strong>Bibliothèque</strong>
+                        <span>Ivoire + encre profonde, Lora + Inter, outil pro littéraire</span>
+                    </div>
+                </button>
+
+                <button type="button"
+                    class="layout-picker-card {{ @user.theme == 'atelier' ? 'is-active' : '' }}"
+                    data-layout="atelier">
+                    <div class="layout-picker-preview layout-picker-preview--atelier">
+                        <div class="lpp-rail"></div>
+                        <div class="lpp-center">
+                            <div class="lpp-h1"></div>
+                            <div class="lpp-line"></div>
+                            <div class="lpp-line lpp-line--short"></div>
+                        </div>
+                        <div class="lpp-right"></div>
+                    </div>
+                    <div class="layout-picker-label">
+                        <span class="layout-picker-badge">C</span>
+                        <strong>Atelier</strong>
+                        <span>Crème chaud + terre cuite, Cormorant Garamond, couverture héro</span>
+                    </div>
+                </button>
+
+                <button type="button"
+                    class="layout-picker-card {{ @user.theme == 'studio-nuit' ? 'is-active' : '' }}"
+                    data-layout="studio-nuit">
+                    <div class="layout-picker-preview layout-picker-preview--studio-nuit">
+                        <div class="lpp-rail"></div>
+                        <div class="lpp-center">
+                            <div class="lpp-h1"></div>
+                            <div class="lpp-line"></div>
+                            <div class="lpp-line lpp-line--short"></div>
+                        </div>
+                        <div class="lpp-right"></div>
+                    </div>
+                    <div class="layout-picker-label">
+                        <span class="layout-picker-badge">D</span>
+                        <strong>Studio nuit</strong>
+                        <span>Slate sombre + ambre, Source Serif 4, sessions tardives</span>
+                    </div>
+                </button>
+
+            </div>
+
+            <div class="mt-20">
+                <button type="submit" class="button primary">Appliquer l'apparence</button>
+            </div>
+
+        </form>
+
+    </div>
+
+</div>
+
+<script nonce="{{ @nonce }}">
+    (function () {
+        var cards = document.querySelectorAll('.layout-picker-card');
+        var input = document.getElementById('layoutPickerInput');
+        cards.forEach(function (card) {
+            card.addEventListener('click', function () {
+                cards.forEach(function (c) { c.classList.remove('is-active'); });
+                card.classList.add('is-active');
+                input.value = card.getAttribute('data-layout');
+            });
+        });
+    }());
+</script>
+
 <!-- ── Section MCP ──────────────────────────────────────────────────────── -->
 
 <div class="profile-container" class="pt-0">

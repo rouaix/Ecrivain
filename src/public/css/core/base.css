@@ -1,1 +1,58 @@
-/* Base typography and elements */
+/* Base — Bibliothèque moderne */
+
+body {
+    background: var(--body-bg);
+    color: var(--text-main);
+    font-family: var(--font-sans, 'Inter', system-ui, sans-serif);
+    font-size: var(--font-size-base, 13.5px);
+    line-height: var(--line-height-base, 1.5);
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+}
+
+h1, h2, h3, h4, h5, h6 {
+    font-family: var(--font-serif, 'Lora', Georgia, serif);
+    font-weight: 600;
+    color: var(--text-primary);
+    margin-top: 0;
+    line-height: 1.2;
+}
+
+a {
+    color: var(--link-color);
+    text-decoration: none;
+}
+a:hover {
+    text-decoration: underline;
+}
+
+code, pre, kbd {
+    font-family: var(--font-mono, ui-monospace, monospace);
+    font-size: 0.88em;
+}
+
+kbd {
+    display: inline-block;
+    padding: 2px 5px;
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-sm);
+    background: var(--card-bg);
+    color: var(--text-muted);
+    font-size: 10px;
+    line-height: 1.4;
+}
+
+img {
+    max-width: 100%;
+    height: auto;
+}
+
+::selection {
+    background: rgba(30, 42, 74, 0.12);
+}
+
+/* Focus visible global */
+:focus-visible {
+    outline: 2px solid var(--accent, #1e2a4a);
+    outline-offset: 2px;
+}

@@ -244,6 +244,12 @@ abstract class Controller
             $view .= '.html';
         }
 
+        // Project layout / design theme (persisted in users.theme)
+        $projectLayout = ($currentUser && !empty($currentUser['theme']))
+            ? $currentUser['theme']
+            : 'bibliotheque';
+        $this->f3->set('projectLayout', $projectLayout);
+
         // Notification counts for the header badge
         $this->f3->set('pendingCollabCount', $this->pendingCollabCount());
 

@@ -1,0 +1,11 @@
+<check if="{{ @isCollaborator }}">
+<div class="collab-banner">
+  <i class="fas fa-users" aria-hidden="true"></i>
+  Vous consultez ce projet en tant que <strong>collaborateur</strong>
+  <div class="collab-banner-buttons">
+    <a href="{{ @base }}/project/{{ @project.id }}/collab/mes-demandes" class="button">
+      <i class="fas fa-inbox" aria-hidden="true"></i> Mes demandes
+    </a>
+  </div>
+</div>
+</check>

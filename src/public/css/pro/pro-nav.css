@@ -133,20 +133,6 @@ body.ui-pro .pro-sidebar-footer {
    TOPBAR
    ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
 
-/* ── Isolation thème : couleur des liens et boutons de la topbar ── */
-/* Spécificité (0,2,x) bat toutes les règles body.theme-* header a (0,1,x) */
-body.ui-pro .pro-topbar a,
-body.ui-pro .pro-topbar button {
-    color: rgba(255, 255, 255, 0.8);
-    text-decoration: none;
-}
-
-body.ui-pro .pro-topbar a:hover,
-body.ui-pro .pro-topbar button:hover {
-    color: #fff !important;
-    text-decoration: none;
-}
-
 /* ── Exception dropdown — fond clair, couleurs normales ── */
 body.ui-pro .pro-user-dropdown a,
 body.ui-pro .pro-user-dropdown button {
@@ -165,32 +151,24 @@ body.ui-pro .pro-topbar-logo {
     display: flex;
     align-items: center;
     gap: 8px;
-    color: rgba(255, 255, 255, 0.9);
+    color: var(--accent);
     text-decoration: none;
-    font-size: 15px;
-    font-weight: 700;
-    letter-spacing: -0.3px;
+    font-family: var(--font-serif);
+    font-style: italic;
+    font-size: 17px;
+    font-weight: 600;
+    letter-spacing: -0.01em;
     flex-shrink: 0;
     white-space: nowrap;
-    opacity: 1;
-    transition: opacity 0.15s, color 0.12s;
+    transition: opacity 0.15s;
 }
-
-body.ui-pro .pro-topbar-logo:hover {
-    opacity: 0.85;
-    text-decoration: none;
-    color: #fff;
-}
-
-body.ui-pro .pro-topbar-logo i {
-    font-size: 14px;
-}
+body.ui-pro .pro-topbar-logo i { display: none; }
 
 /* ── Séparateur topbar ── */
 body.ui-pro .pro-topbar-sep {
     width: 1px;
     height: 20px;
-    background: rgba(255, 255, 255, 0.2);
+    background: var(--border-color);
     flex-shrink: 0;
 }
 
@@ -200,36 +178,31 @@ body.ui-pro .pro-breadcrumb {
     align-items: center;
     gap: 5px;
     font-size: 13px;
-    color: rgba(255, 255, 255, 0.65);
+    color: var(--text-muted);
     overflow: hidden;
     min-width: 0;
     flex: 1;
 }
-
 body.ui-pro .pro-breadcrumb a {
-    color: rgba(255, 255, 255, 0.75);
+    color: var(--text-muted);
     text-decoration: none;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;
-    flex-shrink: 0;
-    transition: color 0.12s;
 }
-
 body.ui-pro .pro-breadcrumb a:hover {
-    color: #fff;
+    color: var(--text-main);
     text-decoration: none;
 }
 
 body.ui-pro .pro-breadcrumb-sep {
-    opacity: 0.45;
+    color: var(--text-faint);
     flex-shrink: 0;
     font-size: 12px;
 }
 
 body.ui-pro .pro-breadcrumb-current {
-    color: rgba(255, 255, 255, 0.9);
-    font-weight: 500;
+    color: var(--text-main);
+    font-family: var(--font-serif);
+    font-style: italic;
+    font-weight: 600;
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
@@ -258,7 +231,7 @@ body.ui-pro .pro-topbar-btn {
     border-radius: 6px;
     background: none;
     border: none;
-    color: rgba(255, 255, 255, 0.8);
+    color: var(--text-muted);
     cursor: pointer;
     transition: background 0.12s, color 0.12s;
     font-size: 14px;
@@ -268,8 +241,8 @@ body.ui-pro .pro-topbar-btn {
 }
 
 body.ui-pro .pro-topbar-btn:hover {
-    background: rgba(255, 255, 255, 0.15);
-    color: #fff;
+    background: var(--accent-bg);
+    color: var(--accent);
     text-decoration: none;
 }
 
@@ -294,32 +267,12 @@ body.ui-pro .pro-user-menu {
     position: relative;
 }
 
-body.ui-pro .pro-user-btn {
-    display: flex;
-    align-items: center;
-    gap: 7px;
-    padding: 0 10px;
-    height: 34px;
-    border-radius: 6px;
-    background: rgba(255, 255, 255, 0.1);
-    border: 1px solid rgba(255, 255, 255, 0.15);
-    color: rgba(255, 255, 255, 0.9);
-    cursor: pointer;
-    font-size: 13px;
-    font-family: inherit;
-    transition: background 0.12s, color 0.12s;
-}
-
-body.ui-pro .pro-user-btn:hover {
-    background: rgba(255, 255, 255, 0.2);
-    color: #fff;
-}
-
 body.ui-pro .pro-user-avatar {
     width: 22px;
     height: 22px;
     border-radius: 50%;
-    background: rgba(255, 255, 255, 0.25);
+    background: var(--accent);
+    color: var(--card-bg);
     display: flex;
     align-items: center;
     justify-content: center;
@@ -331,7 +284,7 @@ body.ui-pro .pro-user-avatar {
 
 body.ui-pro .pro-user-chevron {
     font-size: 9px;
-    opacity: 0.7;
+    color: var(--text-muted);
     transition: transform 0.15s;
 }
 
@@ -503,6 +456,37 @@ body.ui-pro .pro-theme-swatch--forest {
 body.ui-pro .pro-theme-swatch--moderne {
     background: linear-gradient(135deg, #f5f5f5 50%, #3f51b5 50%);
     border: 1px solid #3f51b5;
+}
+
+/* ── Layout picker dans la topbar ── */
+body.ui-pro .pro-layout-picker-bar {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    padding: 0 4px;
+    border-left: 1px solid var(--border-color);
+    margin-left: 4px;
+}
+
+/* Couleurs des swatches layout — valeurs neutres (override par theme CSS) */
+body.ui-pro .pro-theme-swatch--manuscrit {
+    background: #fbf7ee;
+    border: 2px solid #6b3f2a;
+}
+
+body.ui-pro .pro-theme-swatch--bibliotheque {
+    background: #f7f6f2;
+    border: 2px solid #1e2a4a;
+}
+
+body.ui-pro .pro-theme-swatch--atelier {
+    background: #f6efe2;
+    border: 2px solid #c4623c;
+}
+
+body.ui-pro .pro-theme-swatch--studio-nuit {
+    background: #161413;
+    border: 2px solid #d4a04a;
 }
 
 

@@ -1,0 +1,37 @@
+    <!-- ── Fichiers ── -->
+    <check if="{{ @panelConfig.file }}">
+      <details class="panel ms-panel" id="panel-files" data-persist="true">
+        <summary>
+          <span class="ms-panel-arrow">›</span>
+          {{ @panelLabels.file.plural }}
+          <span class="panel-count">{{ @stats.file_count ?? 0 }}</span>
+          <check if="{{ @isOwner }}">
+            <div class="ms-panel-add">
+              <button type="button" class="button small" id="addFileBtn" title="Ajouter un fichier"><i class="fas fa-plus" aria-hidden="true"></i></button>
+              <button type="button" class="button small" id="sortFilesBtn" title="Trier alphabétiquement"><i class="fas fa-sort-alpha-down" aria-hidden="true"></i></button>
+            </div>
+          </check>
+        </summary>
+        <check if="{{ !empty(@files) }}">
+          <true>
+            <table class="ms-chapter-table">
+              <tbody class="sortable-items" data-type="files">
+                <repeat group="{{ @files }}" value="{{ @file }}">
+                  <tr data-id="{{ @file.id }}">
+                    <td class="ms-status-cell"><i class="fas fa-file" style="font-size:11px;color:var(--text-muted)" aria-hidden="true"></i></td>
+                    <td class="ms-title-cell">{{ @file.filename }}</td>
+                    <td class="ms-words-cell">{{ @file.size_formatted }}</td>
+                    <td class="ms-actions-cell">
+                      <button class="button small preview-file-btn" data-id="{{ @file.id }}" data-filename="{{ @file.filename }}" data-type="{{ @file.filetype }}" title="Prévisualiser"><i class="fas fa-eye" aria-hidden="true"></i></button>
+                      <a class="button small" href="{{ @base }}/project/{{ @project.id }}/file/{{ @file.id }}/download" title="Télécharger" download><i class="fas fa-download" aria-hidden="true"></i></a>
+                      <a class="button small delete js-confirm" href="{{ @base }}/project/{{ @project.id }}/file/{{ @file.id }}/delete" data-confirm="Supprimer ce fichier ?" title="Supprimer"><i class="fas fa-trash" aria-hidden="true"></i></a>
+                    </td>
+                  </tr>
+                </repeat>
+              </tbody>
+            </table>
+          </true>
+          <false><p class="panel-empty">Aucun fichier ajouté.</p></false>
+        </check>
+      </details>
+    </check>

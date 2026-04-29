@@ -69,6 +69,7 @@ class ProjectShowService
             'file_count'       => count($files),
             'glossary_count'   => count($glossaryEntries),
             'has_content'      => (count($acts) > 0 || array_sum(array_map('count', $chaptersByAct)) + count($chaptersWithoutAct) > 0),
+            'chapter_count'    => array_sum(array_map('count', $chaptersByAct)) + count($chaptersWithoutAct),
         ];
 
         $sectionBeforeConfig = $panelConfig['_sectionBeforeConfig'] ?? null;

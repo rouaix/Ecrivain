@@ -530,6 +530,7 @@ img.project-cover {
 
 .tag-filter-btn.active {
     background: var(--link-color, #3f51b5);
+    filter: brightness(0.82);
     color: #fff;
     border-color: transparent;
 }

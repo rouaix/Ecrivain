@@ -325,20 +325,20 @@ body.ui-pro .char-classic-grid {
    PHASE 3 — STATISTIQUES PRO
    ============================================================ */
 
-/* KPI cards — aligner avec le style Pro metric */
 body.ui-pro .stats-kpi-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
-    gap: 12px;
-    margin-bottom: 20px;
+    grid-template-columns: repeat(5, 1fr);
+    gap: 10px;
+    margin-bottom: 1rem;
 }
 
 body.ui-pro .stats-kpi-card {
     background: var(--card-bg);
     border: 1px solid var(--input-border);
-    border-radius: var(--radius-sm);
-    padding: 14px 16px;
+    border-radius: var(--radius-md);
+    padding: 12px 10px;
     text-align: center;
+    box-shadow: none;
 }
 
 body.ui-pro .stats-kpi-card--streak {
@@ -347,14 +347,14 @@ body.ui-pro .stats-kpi-card--streak {
 }
 
 body.ui-pro .stats-kpi-icon {
-    font-size: 18px;
+    font-size: 1rem;
     color: var(--button-primary-bg);
-    margin-bottom: 6px;
+    margin-bottom: 4px;
     opacity: 0.8;
 }
 
 body.ui-pro .stats-kpi-value {
-    font-size: 22px;
+    font-size: 1.4rem;
     font-weight: 700;
     color: var(--text-main);
     line-height: 1.1;
@@ -369,9 +369,15 @@ body.ui-pro .stats-kpi-label {
     font-weight: 600;
 }
 
-/* Sélecteur de projet dans stats */
+body.ui-pro .stats-card {
+    border-radius: var(--radius-md);
+    padding: 14px 16px;
+    margin-bottom: 1rem;
+    box-shadow: none;
+}
+
 body.ui-pro .stats-scope-form {
-    margin-bottom: 16px;
+    margin-bottom: 1rem;
     display: flex;
     align-items: center;
     gap: 8px;
@@ -381,12 +387,28 @@ body.ui-pro .stats-scope-form select {
     max-width: 240px;
 }
 
+body.ui-pro .stats-scope-form .input-control {
+    font-size: .84rem;
+    padding: 4px 8px;
+    max-width: 220px !important;
+}
+
 /* ============================================================
    PHASE 3 — RESPONSIVE
    ============================================================ */
 @media (max-width: 860px) {
     body.ui-pro .editor-grid-row {
         grid-template-columns: 1fr 1fr;
+    }
+
+    body.ui-pro .stats-kpi-grid {
+        grid-template-columns: repeat(3, 1fr);
+    }
+}
+
+@media (max-width: 560px) {
+    body.ui-pro .stats-kpi-grid {
+        grid-template-columns: repeat(2, 1fr);
     }
 }
 
@@ -397,10 +419,6 @@ body.ui-pro .stats-scope-form select {
 
     body.ui-pro .synopsis-meta-grid {
         grid-template-columns: 1fr;
-    }
-
-    body.ui-pro .stats-kpi-grid {
-        grid-template-columns: 1fr 1fr;
     }
 
     body.ui-pro .synopsis-tabs {
@@ -1612,59 +1630,6 @@ body.ui-pro #providerFormGroup {
     display: none;
 }
 
-/* ============================================================
-   STATISTIQUES PRO — KPIs compacts en ligne
-   ============================================================ */
-
-body.ui-pro .stats-kpi-grid {
-    grid-template-columns: repeat(5, 1fr);
-    gap: 10px;
-    margin-bottom: 1rem;
-}
-
-body.ui-pro .stats-kpi-card {
-    padding: 12px 10px;
-    border-radius: var(--radius-md, 6px);
-    box-shadow: none;
-}
-
-body.ui-pro .stats-kpi-value {
-    font-size: 1.4rem;
-}
-
-body.ui-pro .stats-kpi-icon {
-    font-size: 1rem;
-    margin-bottom: 4px;
-}
-
-body.ui-pro .stats-card {
-    border-radius: var(--radius-md, 6px);
-    padding: 14px 16px;
-    margin-bottom: 1rem;
-    box-shadow: none;
-}
-
-body.ui-pro .stats-scope-form {
-    margin-bottom: 1rem;
-}
-
-body.ui-pro .stats-scope-form .input-control {
-    font-size: .84rem;
-    padding: 4px 8px;
-    max-width: 220px !important;
-}
-
-@media (max-width: 860px) {
-    body.ui-pro .stats-kpi-grid {
-        grid-template-columns: repeat(3, 1fr);
-    }
-}
-
-@media (max-width: 560px) {
-    body.ui-pro .stats-kpi-grid {
-        grid-template-columns: repeat(2, 1fr);
-    }
-}
 
 /* ============================================================
    VUE D'ENSEMBLE PROJET — Layout 2 colonnes
