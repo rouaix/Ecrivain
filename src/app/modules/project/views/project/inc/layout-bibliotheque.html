@@ -86,29 +86,17 @@
 
     <!-- Toolbar : onglets à gauche, outils à droite -->
     <div class="tb-toolbar-row">
-      <nav class="tb-tabs">
-        <span class="tb-tab is-active">Structure</span>
-        <a class="tb-tab" href="{{ @base }}/project/{{ @project.id }}/lecture">Manuscrit</a>
-        <check if="{{ @panelConfig.character }}">
-          <a class="tb-tab" href="{{ @base }}/project/{{ @project.id }}/characters">Personnages</a>
-        </check>
-        <check if="{{ @panelConfig.note }}">
-          <a class="tb-tab" href="{{ @base }}/project/{{ @project.id }}/notes">Notes</a>
-        </check>
-        <check if="{{ @isOwner }}">
-          <a class="tb-tab" href="{{ @base }}/project/{{ @project.id }}/activity">Historique</a>
-        </check>
-      </nav>
       <div class="tb-toolbar-right">
         <div class="tm-search-wrap">
           <input type="text" id="globalSearchInput" placeholder="Filtrer&hellip;" autocomplete="off">
         </div>
         <check if="{{ @isOwner }}">
           <check if="{{ @panelConfig.has_acts }}">
-            <a class="tm-btn" href="{{ @base }}/project/{{ @project.id }}/act/create"
-               title="Nouvel acte"><i class="fas fa-folder-plus"></i></a>
+            <a class="tm-btn" href="{{ @base }}/project/{{ @project.id }}/act/create">
+              + {{ @panelLabels.act.singular | esc }}
+            </a>
           </check>
-          <a class="tm-btn tm-btn-primary"
+          <a class="tm-btn"
              href="{{ @base }}/project/{{ @project.id }}/chapter/create">
             + {{ @panelLabels.chapter.singular | esc }}
           </a>

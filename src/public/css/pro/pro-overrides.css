@@ -11,10 +11,7 @@ body.ui-pro .main-nav {
 }
 
 /* ── 2. main classique — sans padding (Pro gère son propre padding) ── */
-/* Note : .pro-content est notre <main>, pas ciblé ici */
-body.ui-pro main:not(.pro-content) {
-    padding: 0;
-}
+
 
 /* ── 3. Toolbars classiques — masquées en Pro ── */
 body.ui-pro .navigation-toolbar,

@@ -263,7 +263,7 @@ body[data-layout="bibliotheque"] .tm-rail-sep {
   border-radius: 3px;
   flex-shrink: 0;
   object-fit: cover;
-  box-shadow: 1px 2px 6px rgba(0,0,0,.25), inset -2px 0 0 rgba(255,255,255,.08);
+  box-shadow: 1px 2px 6px rgba(0, 0, 0, .25), inset -2px 0 0 rgba(255, 255, 255, .08);
 }
 
 .tb-project-spine--placeholder {
@@ -378,7 +378,7 @@ body[data-layout="bibliotheque"] .tm-subtitle {
 /* ── Toolbar B : onglets + outils ────────────── */
 .tb-toolbar-row {
   display: flex;
-  justify-content: space-between;
+  justify-content: flex-end;
   align-items: center;
   gap: 12px;
   margin-bottom: 18px;
@@ -431,20 +431,23 @@ body[data-layout="bibliotheque"] .tm-search-wrap {
   align-items: center;
   gap: 6px;
   height: 30px;
-  padding: 0 10px;
-  background: var(--card-bg);
-  border: 1px solid var(--border-color);
-  border-radius: var(--radius-md);
+  padding: 0;
 }
 
 body[data-layout="bibliotheque"] .tm-search-wrap input {
   border: none;
   outline: none;
+  box-shadow: none;
   background: transparent;
   font-size: 13px;
   color: var(--text-main);
-  width: 220px;
+  flex: 1;
+  min-width: 0;
+  width: auto;
+  padding: 0;
   font-family: var(--font-sans);
+  -webkit-appearance: none;
+  appearance: none;
 }
 
 body[data-layout="bibliotheque"] .tm-search-wrap input::placeholder {
