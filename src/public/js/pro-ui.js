@@ -99,20 +99,6 @@
         });
     }
 
-    /* ── Sélecteur de thème ── */
-    function initThemeSwatches() {
-        var form  = document.getElementById('proThemeForm');
-        var input = document.getElementById('proThemeInput');
-        if (!form || !input) return;
-
-        document.querySelectorAll('.pro-theme-swatch').forEach(function (btn) {
-            btn.addEventListener('click', function () {
-                input.value = btn.getAttribute('data-theme');
-                form.submit();
-            });
-        });
-    }
-
     /* ── Barre de statut éditeur — miroir du compteur de mots ── */
     function initEditorStatusBar() {
         if (!document.body.classList.contains('editor-mode')) return;
@@ -152,7 +138,7 @@
         initUserMenu();
         initSidebarToggle();
         initSlidePanels();
-        initThemeSwatches();
+        /* initThemeSwatches — supprimé (thème unique : bibliothèque) */
         initScrolledTopbar();
         initEditorStatusBar();
     });

@@ -25,8 +25,6 @@ body.ui-pro>main>.container {
 body.ui-pro {
     min-height: 100vh;
     background: var(--body-bg);
-    --body-bg: #f4f4f4;
-    --border-strong: #cccccc;
 }
 
 /* ── Topbar ── */
@@ -36,15 +34,15 @@ body.ui-pro .pro-topbar {
     left: 0;
     right: 0;
     height: 48px;
-    background: var(--header-bg);
-    color: var(--header-text);
+    background: var(--card-bg);
+    color: var(--text-main);
     display: flex;
     align-items: center;
     padding: 0 16px;
     gap: 8px;
     z-index: 200;
-    border-bottom: 1px solid rgba(0, 0, 0, 0.12);
-    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.12);
+    border-bottom: 1px solid var(--border-color);
+    box-shadow: none;
 }
 
 /* ── Sidebar ── */

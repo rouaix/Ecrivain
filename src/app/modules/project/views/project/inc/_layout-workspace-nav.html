@@ -1,0 +1,18 @@
+<a href="{{ @base }}/dashboard" class="tm-rail-link {{ @PATH == '/dashboard' ? 'is-active' : '' }}">
+  <span class="tm-rail-dot"></span>Tableau de bord
+</a>
+<a href="{{ @base }}/stats" class="tm-rail-link {{ substr(@PATH,0,6)=='/stats' ? 'is-active' : '' }}">
+  <span class="tm-rail-dot"></span>Statistiques
+</a>
+<a href="{{ @base }}/share" class="tm-rail-link {{ @PATH=='/share' ? 'is-active' : '' }}">
+  <span class="tm-rail-dot"></span>Partages
+</a>
+<a href="{{ @base }}/templates" class="tm-rail-link {{ substr(@PATH,0,10)=='/templates' ? 'is-active' : '' }}">
+  <span class="tm-rail-dot"></span>Templates
+</a>
+<a href="{{ @base }}/collab/invitations" class="tm-rail-link {{ substr(@PATH,0,7)=='/collab' ? 'is-active' : '' }}">
+  <span class="tm-rail-dot"></span>Collaborations
+  <check if="{{ @pendingCollabCount > 0 }}">
+    <span class="tm-rail-count">{{ @pendingCollabCount }}</span>
+  </check>
+</a>

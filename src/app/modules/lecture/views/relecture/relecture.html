@@ -2,12 +2,18 @@
     <div class="edit-header">
         <h2><i class="fas fa-glasses" aria-hidden="true"></i> Relecture : {{ @project.title | esc }}</h2>
         <div class="header-actions">
-            <a href="{{ @base }}/project/{{ @project.id }}/relecture/rapport" class="button secondary"
+            <a href="{{ @base }}/project/{{ @project.id }}/relecture/rapport" class="button"
                 title="Rapport d'annotations">
                 <i class="fas fa-file-alt" aria-hidden="true"></i>
             </a>
             <a href="{{ @base }}/project/{{ @project.id }}/lecture" class="button" title="Mode lecture">
                 <i class="fas fa-book-open" aria-hidden="true"></i>
+            </a>
+            <a id="toggleGlossary" class="button" title="Lexique">
+                <i class="fas fa-book" aria-hidden="true"></i>
+            </a>
+            <a href="{{ @base }}/project/{{ @project.id }}" class="button" title="Retour au projet">
+                <i class="fas fa-arrow-left" aria-hidden="true"></i>
             </a>
         </div>
     </div>
@@ -146,14 +152,14 @@
                 <!-- Suggestion filters (shown only on suggestions tab) -->
                 <div class="review-filters" id="suggestionFilters" class="is-hidden">
                     <button class="sug-filter active" data-sfilter="all">Tout</button>
-                    <button class="sug-filter" data-sfilter="pending" title="En attente" title="En attente">
-                        <span class="ann-dot" class="relation-dot relation-dot--purple"></span>
+                    <button class="sug-filter" data-sfilter="pending" title="En attente">
+                        <span class="ann-dot ann-pending"></span>
                     </button>
-                    <button class="sug-filter" data-sfilter="accepted" title="Acceptée" title="Acceptée">
-                        <span class="ann-dot" class="relation-dot relation-dot--success"></span>
+                    <button class="sug-filter" data-sfilter="accepted" title="Acceptée">
+                        <span class="ann-dot ann-accepted"></span>
                     </button>
-                    <button class="sug-filter" data-sfilter="rejected" title="Rejetée" title="Rejetée">
-                        <span class="ann-dot" class="relation-dot relation-dot--danger"></span>
+                    <button class="sug-filter" data-sfilter="rejected" title="Rejetée">
+                        <span class="ann-dot ann-rejected"></span>
                     </button>
                 </div>
             </div>
@@ -165,7 +171,7 @@
 </div>
 
 <!-- Floating popup -->
-<div id="annotationPopup" class="annotation-popup" class="is-hidden" role="dialog" aria-label="Nouvelle annotation">
+<div id="annotationPopup" class="annotation-popup is-hidden" role="dialog" aria-label="Nouvelle annotation">
     <!-- Mode toggle -->
     <div class="popup-mode-toggle">
         <button class="popup-mode-btn active" id="modeAnnotation" title="Mode annotation" title="Mode annotation"><i
@@ -204,7 +210,7 @@
         <textarea id="suggestionComment" class="input-control" placeholder="Commentaire (optionnel)"
             rows="2"></textarea>
         <div class="annotation-popup-actions">
-            <button id="suggestionSubmit" class="button small sug-btn-primary" title="Envoyer la suggestion"
+            <button id="suggestionSubmit" class="button primary small" title="Envoyer la suggestion"
                 title="Envoyer la suggestion"><i class="fas fa-paper-plane" aria-hidden="true"
                     class="icon-mr"></i>Proposer</button>
             <button id="suggestionCancel" class="button small" title="Annuler la suggestion"
@@ -813,19 +819,6 @@
 
 <script nonce="{{ @nonce }}">
     (function () {
-        // ── Boutons injectés dans le <header> du site ──────────────────────────
-        var siteHeader = document.querySelector('header');
-        if (siteHeader) {
-            var actionsDiv = document.createElement('div');
-            actionsDiv.className = 'review-header-actions';
-            actionsDiv.innerHTML =
-                '<a href="{{ @base }}/project/{{ @project.id }}/relecture/rapport" class="review-header-btn" title="Rapport d\'annotations"><i class="fas fa-file-alt" aria-hidden="true"></i> Rapport</a>' +
-                '<button type="button" id="toggleGlossary" class="review-header-btn" title="Liens vers le lexique"><i class="fas fa-book" aria-hidden="true"></i> Lexique</button>' +
-                '<a href="{{ @base }}/project/{{ @project.id }}/lecture" class="review-header-btn" title="Mode lecture"><i class="fas fa-book-open" aria-hidden="true"></i></a>' +
-                '<a href="{{ @base }}/project/{{ @project.id }}" class="review-header-btn" title="Retour au projet"><i class="fas fa-arrow-left" aria-hidden="true"></i></a>';
-            siteHeader.appendChild(actionsDiv);
-        }
-
         // ── Glossary term highlighting ──────────────────────────────────────────
         var highlighted = false;
         var glossaryTerms = null;
@@ -834,7 +827,12 @@
         if (!btn) return;
 
         function escHtml(s) {
-            return String(s || '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+            return String(s || '')
+                .replace(/&/g, '&amp;')
+                .replace(/</g, '&lt;')
+                .replace(/>/g, '&gt;')
+                .replace(/"/g, '&quot;')
+                .replace(/'/g, '&#39;');
         }
 
         function escRe(s) {
@@ -872,10 +870,11 @@
                     '</span>' +
                     (def ? escHtml(def) : '<em>Aucune définition.</em>');
                 tip.classList.remove('is-hidden');
+                tip.classList.add('is-visible');
                 positionTooltip(e);
             });
             el.addEventListener('mousemove', positionTooltip);
-            el.addEventListener('mouseleave', function () { getTooltip().style.display = 'none'; });
+            el.addEventListener('mouseleave', function () { var t = getTooltip(); t.classList.add('is-hidden'); t.classList.remove('is-visible'); });
         }
 
         function highlightTerms(terms) {
@@ -931,7 +930,7 @@
         }
 
         function removeHighlights() {
-            getTooltip().style.display = 'none';
+            var t = getTooltip(); t.classList.add('is-hidden'); t.classList.remove('is-visible');
             document.querySelectorAll('span[data-glossary-wrapper]').forEach(function (span) {
                 span.parentNode.replaceChild(document.createTextNode(span.textContent), span);
             });

@@ -613,7 +613,6 @@
                 if (!tooltipEl) {
                     tooltipEl = document.createElement('div');
                     tooltipEl.className = 'glossary-tooltip';
-                    tooltipEl.classList.add('is-hidden');
                     document.body.appendChild(tooltipEl);
                 }
                 return tooltipEl;
@@ -639,11 +638,11 @@
                         (cat ? ' <em style="font-weight:normal;font-size:.85em;color:var(--text-muted,#666)">(' + escHtml(cat) + ')</em>' : '') +
                         '</span>' +
                         (def ? escHtml(def) : '<em>Aucune définition.</em>');
-                    tip.classList.remove('is-hidden');
+                    tip.classList.add('is-visible');
                     positionTooltip(e);
                 });
                 el.addEventListener('mousemove', positionTooltip);
-                el.addEventListener('mouseleave', function () { getTooltip().style.display = 'none'; });
+                el.addEventListener('mouseleave', function () { getTooltip().classList.remove('is-visible'); });
             }
 
             function highlightTerms(terms) {
@@ -703,7 +702,7 @@
             }
 
             function removeHighlights() {
-                getTooltip().style.display = 'none';
+                getTooltip().classList.remove('is-visible');
                 document.querySelectorAll('span[data-glossary-wrapper]').forEach(function (span) {
                     span.parentNode.replaceChild(document.createTextNode(span.textContent), span);
                 });

@@ -1,0 +1,50 @@
+    <!-- ── Sections APRÈS ── -->
+    <check if="{{ @panelConfig.section_after }}">
+      <details class="panel ms-panel" id="panel-after" data-persist="true">
+        <summary>
+          <span class="ms-panel-arrow">›</span>
+          {{ @panelLabels.section_after }}
+          <span class="panel-count">{{ @stats.after_count }}</span>
+        </summary>
+        <div class="sortable-groups" id="afterChaptersGroups">
+          <repeat group="{{ @afterGroups }}" value="{{ @group }}">
+            <div class="section-group-block" data-type="{{ @group.type }}">
+              <div class="section-group-heading">
+                <span>{{ @group.name }}</span>
+                <check if="{{ @group.show_create }}">
+                  <a class="button small" href="{{ @base }}/project/{{ @project.id }}/section/{{ @group.type }}" title="Créer"><i class="fas fa-plus" aria-hidden="true"></i></a>
+                </check>
+              </div>
+              <check if="{{ !empty(@group.items) }}">
+                <true>
+                  <table class="ms-chapter-table">
+                    <tbody class="sortable-items" data-type="{{ @group.type }}">
+                      <repeat group="{{ @group.items }}" value="{{ @section }}">
+                        <tr data-id="{{ @section.id }}">
+                          <td class="ms-hidden-cell">
+                            <input type="checkbox" class="export-toggle" data-type="section" data-id="{{ @section.id }}" {{ @section.is_exported_attr }}>
+                            <input type="number" class="order-input" data-type="section" data-id="{{ @section.id }}" value="{{ @section.order_index + 1 }}">
+                          </td>
+                          <td class="ms-status-cell"><span class="ms-status {{ @section.wc > 0 ? 'ms-status--done' : 'ms-status--empty' }}"></span></td>
+                          <td class="ms-title-cell">{{ @section.title ?: @group.name }}</td>
+                          <td class="ms-words-cell">{{ @section.wc > 0 ? @section.wc.' m' : '—' }}</td>
+                          <td class="ms-actions-cell">
+                            <button class="button small preview-btn" data-type="section" data-id="{{ @section.id }}" title="Prévisualiser"><i class="fas fa-eye" aria-hidden="true"></i></button>
+                            <check if="{{ !@isOwner }}">
+                              <button class="button small propose-btn" data-type="section" data-id="{{ @section.id }}" data-title="{{ @section.title | esc }}" title="Proposer"><i class="fas fa-paper-plane" aria-hidden="true"></i></button>
+                            </check>
+                            <a class="button small" href="{{ @base }}/project/{{ @project.id }}/section/{{ @group.type }}?id={{ @section.id }}" title="Modifier"><i class="fas fa-edit" aria-hidden="true"></i></a>
+                            <a class="button small delete js-confirm" href="{{ @base }}/section/{{ @section.id }}/delete" data-confirm="Supprimer cette section ?" title="Supprimer"><i class="fas fa-trash" aria-hidden="true"></i></a>
+                          </td>
+                        </tr>
+                      </repeat>
+                    </tbody>
+                  </table>
+                </true>
+                <false><p class="panel-empty">Aucun contenu.</p></false>
+              </check>
+            </div>
+          </repeat>
+        </div>
+      </details>
+    </check>

@@ -1,0 +1,133 @@
+<div class="tm-root">
+
+  <!-- ══════════════════════════════════════════
+       RAIL GAUCHE — B
+       ══════════════════════════════════════════ -->
+  <aside class="tm-left-rail">
+
+    <!-- Workspace switcher -->
+    <div class="tb-workspace-switch">
+      <div class="tb-workspace-mark">
+        {{ strtoupper(substr(@authorName ?: @currentUser.username, 0, 2)) | esc }}
+      </div>
+      <div class="tb-workspace-info">
+        <div class="tb-workspace-name">{{ @authorName ?: @currentUser.username | esc }}</div>
+        <div class="tb-workspace-meta">Espace personnel</div>
+      </div>
+      <span class="tb-workspace-chev">&#8964;</span>
+    </div>
+
+    <include href="project/inc/_layout-workspace-nav.html" />
+
+    <div class="tm-rail-sep"></div>
+
+    <!-- Chip projet -->
+    <div class="tm-rail-label">Manuscrit en cours</div>
+    <div class="tb-project-chip">
+      <check if="{{ isset(@project.cover_image) && @project.cover_image }}">
+        <img class="tb-project-spine" src="{{ @base }}/project/{{ @project.id }}/cover" alt="{{ @project.title | esc }}">
+        <false>
+          <div class="tb-project-spine tb-project-spine--placeholder"></div>
+        </false>
+      </check>
+      <div class="tb-project-chip-info">
+        <div class="tb-project-chip-name">{{ @project.title | esc }}</div>
+        <div class="tb-project-chip-meta">
+          Roman &middot; {{ number_format(@stats.total_words, 0, ',', ' ') }} mots
+        </div>
+      </div>
+    </div>
+
+    <div class="tm-rail-sep"></div>
+
+    <include href="project/inc/_layout-sections-nav.html" />
+
+  </aside>
+
+  <!-- ══════════════════════════════════════════
+       CENTRE — B
+       ══════════════════════════════════════════ -->
+  <main class="tm-center" id="main-content">
+
+    <!-- En-tête avec stats intégrées (design B) -->
+    <header class="tm-page-header">
+      <div class="tm-eyebrow">
+        {{ @project.title | esc }} &middot; Vue d&rsquo;ensemble
+      </div>
+      <h1 class="tm-h1">
+        <check if="{{ @panelConfig.has_acts }}">
+          Actes &amp; chapitres
+          <false>{{ @panelLabels.chapter.plural | esc }}</false>
+        </check>
+      </h1>
+
+      <!-- Bandeau stats en ligne (4 cellules) -->
+      <check if="{{ @stats.has_content }}">
+        <div class="tb-stat-row">
+          <div class="tb-stat-cell">
+            <div class="tb-stat-label">Mots</div>
+            <div class="tb-stat-value">{{ number_format(@stats.total_words, 0, ',', ' ') }}</div>
+          </div>
+          <div class="tb-stat-cell">
+            <div class="tb-stat-label">Pages</div>
+            <div class="tb-stat-value">{{ @stats.pages_current }}</div>
+          </div>
+          <div class="tb-stat-cell">
+            <div class="tb-stat-label">Chapitres</div>
+            <div class="tb-stat-value">{{ @stats.chapter_count }}</div>
+          </div>
+          <div class="tb-stat-cell">
+            <div class="tb-stat-label">Avancement</div>
+            <div class="tb-stat-value">{{ @stats.progress_percent }}&nbsp;%</div>
+          </div>
+        </div>
+      </check>
+    </header>
+
+    <!-- Toolbar : onglets à gauche, outils à droite -->
+    <div class="tb-toolbar-row">
+      <nav class="tb-tabs">
+        <span class="tb-tab is-active">Structure</span>
+        <a class="tb-tab" href="{{ @base }}/project/{{ @project.id }}/lecture">Manuscrit</a>
+        <check if="{{ @panelConfig.character }}">
+          <a class="tb-tab" href="{{ @base }}/project/{{ @project.id }}/characters">Personnages</a>
+        </check>
+        <check if="{{ @panelConfig.note }}">
+          <a class="tb-tab" href="{{ @base }}/project/{{ @project.id }}/notes">Notes</a>
+        </check>
+        <check if="{{ @isOwner }}">
+          <a class="tb-tab" href="{{ @base }}/project/{{ @project.id }}/activity">Historique</a>
+        </check>
+      </nav>
+      <div class="tb-toolbar-right">
+        <div class="tm-search-wrap">
+          <input type="text" id="globalSearchInput" placeholder="Filtrer&hellip;" autocomplete="off">
+        </div>
+        <check if="{{ @isOwner }}">
+          <check if="{{ @panelConfig.has_acts }}">
+            <a class="tm-btn" href="{{ @base }}/project/{{ @project.id }}/act/create"
+               title="Nouvel acte"><i class="fas fa-folder-plus"></i></a>
+          </check>
+          <a class="tm-btn tm-btn-primary"
+             href="{{ @base }}/project/{{ @project.id }}/chapter/create">
+            + {{ @panelLabels.chapter.singular | esc }}
+          </a>
+        </check>
+      </div>
+    </div>
+
+    <div id="saveStatus" class="save-status">Ordre enregistré !</div>
+    <include href="project/inc/new_body.html" />
+
+  </main>
+
+  <!-- ══════════════════════════════════════════
+       RAIL DROIT — B
+       ══════════════════════════════════════════ -->
+  <aside class="tm-right-rail">
+
+    <include href="project/inc/_layout-right-rail.html" />
+
+  </aside>
+
+</div>

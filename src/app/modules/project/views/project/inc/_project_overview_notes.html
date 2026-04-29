@@ -1,0 +1,43 @@
+    <!-- ── Notes ── -->
+    <check if="{{ @panelConfig.note }}">
+      <details class="panel ms-panel" id="panel-notes" data-persist="true">
+        <summary>
+          <span class="ms-panel-arrow">›</span>
+          {{ @panelLabels.note.plural }}
+          <span class="panel-count">{{ @stats.note_count }}</span>
+          <check if="{{ @isOwner }}">
+            <div class="ms-panel-add">
+              <a class="button small" href="{{ @base }}/project/{{ @project.id }}/note/edit" title="Nouvelle note"><i class="fas fa-plus" aria-hidden="true"></i></a>
+            </div>
+          </check>
+        </summary>
+        <check if="{{ !empty(@notes) }}">
+          <true>
+            <table class="ms-chapter-table notes">
+              <tbody class="sortable-items" data-type="notes">
+                <repeat group="{{ @notes }}" value="{{ @note }}">
+                  <tr data-id="{{ @note.id }}">
+                    <td class="ms-hidden-cell">
+                      <input type="checkbox" class="export-toggle" data-type="note" data-id="{{ @note.id }}" {{ @note.is_exported_attr }}>
+                      <input type="number" class="order-input" data-type="note" data-id="{{ @note.id }}" value="{{ @note.order_index + 1 }}">
+                    </td>
+                    <td class="ms-status-cell"><span class="ms-status {{ @note.wc > 0 ? 'ms-status--done' : 'ms-status--empty' }}"></span></td>
+                    <td class="ms-title-cell">{{ @note.title ?: 'Note sans titre' }}</td>
+                    <td class="ms-words-cell">{{ @note.wc > 0 ? @note.wc.' m' : '—' }}</td>
+                    <td class="ms-actions-cell">
+                      <button class="button small preview-btn" data-type="note" data-id="{{ @note.id }}" title="Prévisualiser"><i class="fas fa-eye" aria-hidden="true"></i></button>
+                      <check if="{{ !@isOwner }}">
+                        <button class="button small propose-btn" data-type="note" data-id="{{ @note.id }}" data-title="{{ @note.title | esc }}" title="Proposer"><i class="fas fa-paper-plane" aria-hidden="true"></i></button>
+                      </check>
+                      <a class="button small" href="{{ @base }}/project/{{ @project.id }}/note/edit?id={{ @note.id }}" title="Modifier"><i class="fas fa-edit" aria-hidden="true"></i></a>
+                      <a class="button small delete js-confirm" href="{{ @base }}/note/{{ @note.id }}/delete" data-confirm="Supprimer cette note ?" title="Supprimer"><i class="fas fa-trash" aria-hidden="true"></i></a>
+                    </td>
+                  </tr>
+                </repeat>
+              </tbody>
+            </table>
+          </true>
+          <false><p class="panel-empty">Aucune note créée.</p></false>
+        </check>
+      </details>
+    </check>

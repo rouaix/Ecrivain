@@ -257,17 +257,6 @@ body.ui-pro .pro-table.striped tbody tr:nth-child(even) td {
     background: var(--table-row-bg, rgba(0, 0, 0, .02));
 }
 
-/* ── 13. Boutons primaires — micro élévation au hover ── */
-body.ui-pro .button:not(.secondary):not(.delete):hover {
-    /* box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
-    transform: translateY(-1px);*/
-}
-
-body.ui-pro .button:not(.secondary):not(.delete):active {
-    transform: translateY(0);
-    box-shadow: none;
-}
-
 @media (prefers-reduced-motion: reduce) {
     body.ui-pro .button {
         transform: none !important;

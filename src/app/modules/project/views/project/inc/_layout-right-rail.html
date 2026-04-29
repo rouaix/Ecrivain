@@ -1,0 +1,57 @@
+<!-- Carte progression -->
+<div class="tm-card">
+  <div class="tm-card-title">Progression</div>
+  <div class="tm-progress-words">
+    {{ number_format(@stats.total_words, 0, ',', ' ') }}
+  </div>
+  <div class="tm-progress-words-label">mots écrits</div>
+  <div class="tm-progress-bar-wrap">
+    <div class="tm-progress-bar-fill"
+         style="width:{{ @stats.progress_percent }}%"></div>
+  </div>
+  <div class="tm-progress-pages">
+    {{ @stats.pages_current }} / {{ @stats.pages_target }} pages
+    &middot; {{ @stats.progress_percent }}&nbsp;%
+  </div>
+  <check if="{{ @stats.pages_current > @stats.pages_target && @stats.pages_target > 0 }}">
+    <div class="tm-progress-note">
+      {{ @stats.pages_current - @stats.pages_target }} pages au-delà de l'objectif
+    </div>
+  </check>
+</div>
+
+<!-- Carte outils -->
+<div class="tm-card">
+  <div class="tm-card-title">Outils</div>
+  <a class="tm-tool-link" href="{{ @base }}/project/{{ @project.id }}/mindmap">
+    <i class="fas fa-project-diagram"></i> Carte mentale
+  </a>
+  <a class="tm-tool-link" href="{{ @base }}/project/{{ @project.id }}/lecture">
+    <i class="fas fa-book-reader"></i> Mode lecture
+  </a>
+  <a class="tm-tool-link" href="{{ @base }}/project/{{ @project.id }}/relecture">
+    <i class="fas fa-spell-check"></i> Mode relecture
+  </a>
+  <a class="tm-tool-link" href="#" id="proAiAssistantBtn">
+    <i class="fas fa-magic"></i> Assistant IA
+  </a>
+  <a class="tm-tool-link" href="#" id="proExportBtn">
+    <i class="fas fa-file-export"></i> Exporter
+  </a>
+</div>
+
+<!-- Carte espace -->
+<check if="{{ @isOwner }}">
+  <div class="tm-card">
+    <div class="tm-card-title">Espace</div>
+    <a class="tm-tool-link" href="{{ @base }}/project/{{ @project.id }}/collaborateurs">
+      <i class="fas fa-users"></i> Collaborateurs
+    </a>
+    <a class="tm-tool-link" href="{{ @base }}/project/{{ @project.id }}/activity">
+      <i class="fas fa-history"></i> Activité
+    </a>
+    <a class="tm-tool-link" href="{{ @base }}/project/{{ @project.id }}/edit">
+      <i class="fas fa-cog"></i> Paramètres
+    </a>
+  </div>
+</check>

@@ -1,0 +1,36 @@
+<!-- ── Modales ── -->
+<div class="modal-overlay" id="fileUploadModal">
+  <div class="modal-content">
+    <div class="modal-header">
+      <h3>Ajouter un fichier</h3>
+      <button type="button" class="modal-close" id="closeFileModal">&times;</button>
+    </div>
+    <div class="modal-body">
+      <form id="fileUploadForm" enctype="multipart/form-data">
+        <input type="hidden" name="csrf_token" value="{{ @csrfToken }}">
+        <div class="form-group">
+          <label for="fileInput">Fichier</label>
+          <input type="file" id="fileInput" name="file" required class="input-control">
+          <small>Taille maximale : 10 MB</small>
+        </div>
+        <div class="form-group">
+          <label for="fileComment">Commentaire (optionnel)</label>
+          <textarea id="fileComment" name="comment" class="input-control" rows="3"></textarea>
+        </div>
+        <div class="form-actions-right">
+          <button type="submit" class="button primary">Envoyer</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+
+<div class="modal-overlay" id="previewModal">
+  <div class="modal-content">
+    <div class="modal-header">
+      <h3 id="modalTitle">Prévisualisation</h3>
+      <button type="button" class="modal-close" id="closePreviewModal">&times;</button>
+    </div>
+    <div class="modal-body typography" id="modalBody"></div>
+  </div>
+</div>
