@@ -42,6 +42,7 @@ class GlossaryController extends Controller
             'grouped'    => $grouped,
             'categories' => GlossaryEntry::$categories,
             'count'      => count($entries),
+            'isOwner'    => $this->isOwner($pid),
         ]);
     }
 
