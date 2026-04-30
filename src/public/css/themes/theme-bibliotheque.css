@@ -942,6 +942,7 @@ body[data-layout="bibliotheque"] .edit-header {
   background: #fff !important;
   border-bottom: 1px solid var(--border-color) !important;
   padding: 16px 24px !important;
+  margin-bottom: 16px !important;
 }
 
 body[data-layout="bibliotheque"] .edit-header h1 {
@@ -1209,7 +1210,7 @@ body[data-layout="bibliotheque"] .ql-editor {
 }
 
 body[data-layout="bibliotheque"] .ql-editor p {
-  margin-bottom: 0.7em !important;
+  margin-bottom: 0;
 }
 
 body[data-layout="bibliotheque"] .ql-toolbar .ql-stroke {

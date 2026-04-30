@@ -10,11 +10,13 @@
     color: var(--text-main) !important;
     font-family: inherit !important;
 }
+
 .edit-page-layout .edit-header .header-actions .button.secondary {
     background: transparent !important;
     border-color: var(--input-border) !important;
     color: var(--text-main) !important;
 }
+
 .edit-page-layout .edit-header .header-actions .button:hover {
     background: var(--table-row-hover-bg, #f0f0f0) !important;
     color: var(--text-main) !important;
@@ -82,10 +84,25 @@
     letter-spacing: .04em;
 }
 
-.report-cat-to_rewrite { background: #fee2e2; color: #b91c1c; }
-.report-cat-inconsistency { background: #fef9c3; color: #854d0e; }
-.report-cat-to_check { background: #ffedd5; color: #9a3412; }
-.report-cat-good { background: #dcfce7; color: #15803d; }
+.report-cat-to_rewrite {
+    background: #fee2e2;
+    color: #b91c1c;
+}
+
+.report-cat-inconsistency {
+    background: #fef9c3;
+    color: #854d0e;
+}
+
+.report-cat-to_check {
+    background: #ffedd5;
+    color: #9a3412;
+}
+
+.report-cat-good {
+    background: #dcfce7;
+    color: #15803d;
+}
 
 .report-selected-text {
     font-style: italic;
@@ -112,6 +129,7 @@
 }
 
 @media print {
+
     .edit-header,
     .edit-card .edit-card-section:first-child,
     .button,
@@ -157,8 +175,8 @@
 .review-panel {
     flex: 0 0 320px;
     width: 320px;
-    position: sticky;
-    top: 64px;
+    /* position: sticky;
+    top: 64px; */
     align-self: flex-start;
     max-height: calc(100vh - 80px);
     overflow-y: auto;
@@ -262,14 +280,33 @@
     border-radius: 50%;
 }
 
-.ann-to_rewrite  { background: #f97316; }
-.ann-inconsistency { background: #ef4444; }
-.ann-to_check    { background: #eab308; }
-.ann-good        { background: #22c55e; }
+.ann-to_rewrite {
+    background: #f97316;
+}
 
-.ann-pending     { background: #8b5cf6; }
-.ann-accepted    { background: #22c55e; }
-.ann-rejected    { background: #ef4444; }
+.ann-inconsistency {
+    background: #ef4444;
+}
+
+.ann-to_check {
+    background: #eab308;
+}
+
+.ann-good {
+    background: #22c55e;
+}
+
+.ann-pending {
+    background: #8b5cf6;
+}
+
+.ann-accepted {
+    background: #22c55e;
+}
+
+.ann-rejected {
+    background: #ef4444;
+}
 
 .review-annotations-list {
     display: flex;
@@ -381,7 +418,7 @@
 }
 
 .review-item {
-    margin-bottom: 1.5rem;
+    /* margin-bottom: 1.5rem; */
 }
 
 .review-act-title {
@@ -399,6 +436,10 @@
 
 .review-text {
     line-height: 1.7;
+}
+
+.review-text.ql-editor {
+    padding: 0;
 }
 
 .glossary-ref {
@@ -436,22 +477,62 @@ mark.annotation-mark {
     padding: 0 1px;
 }
 
-mark.ann-bg-to_rewrite { background: rgba(229, 57, 53, .22) !important; }
-mark.ann-bg-inconsistency { background: rgba(253, 216, 53, .40) !important; }
-mark.ann-bg-to_check { background: rgba(251, 140, 0, .25) !important; }
-mark.ann-bg-good { background: rgba(67, 160, 71, .22) !important; }
-mark.ann-bg-sug-pending { background: rgba(245, 158, 11, .28) !important; }
-mark.ann-bg-sug-accepted { background: rgba(34, 197, 94, .22) !important; }
-mark.ann-bg-sug-rejected { background: rgba(239, 68, 68, .18) !important; }
+mark.ann-bg-to_rewrite {
+    background: rgba(229, 57, 53, .22) !important;
+}
+
+mark.ann-bg-inconsistency {
+    background: rgba(253, 216, 53, .40) !important;
+}
+
+mark.ann-bg-to_check {
+    background: rgba(251, 140, 0, .25) !important;
+}
+
+mark.ann-bg-good {
+    background: rgba(67, 160, 71, .22) !important;
+}
+
+mark.ann-bg-sug-pending {
+    background: rgba(245, 158, 11, .28) !important;
+}
+
+mark.ann-bg-sug-accepted {
+    background: rgba(34, 197, 94, .22) !important;
+}
+
+mark.ann-bg-sug-rejected {
+    background: rgba(239, 68, 68, .18) !important;
+}
 
 /* Dark theme (studio-nuit) — higher opacity so marks are visible on dark backgrounds */
-body[data-layout="studio-nuit"] mark.ann-bg-to_rewrite { background: rgba(229, 57, 53, .50) !important; }
-body[data-layout="studio-nuit"] mark.ann-bg-inconsistency { background: rgba(253, 216, 53, .40) !important; }
-body[data-layout="studio-nuit"] mark.ann-bg-to_check { background: rgba(251, 140, 0, .48) !important; }
-body[data-layout="studio-nuit"] mark.ann-bg-good { background: rgba(67, 160, 71, .45) !important; }
-body[data-layout="studio-nuit"] mark.ann-bg-sug-pending { background: rgba(245, 158, 11, .50) !important; }
-body[data-layout="studio-nuit"] mark.ann-bg-sug-accepted { background: rgba(34, 197, 94, .42) !important; }
-body[data-layout="studio-nuit"] mark.ann-bg-sug-rejected { background: rgba(239, 68, 68, .40) !important; }
+body[data-layout="studio-nuit"] mark.ann-bg-to_rewrite {
+    background: rgba(229, 57, 53, .50) !important;
+}
+
+body[data-layout="studio-nuit"] mark.ann-bg-inconsistency {
+    background: rgba(253, 216, 53, .40) !important;
+}
+
+body[data-layout="studio-nuit"] mark.ann-bg-to_check {
+    background: rgba(251, 140, 0, .48) !important;
+}
+
+body[data-layout="studio-nuit"] mark.ann-bg-good {
+    background: rgba(67, 160, 71, .45) !important;
+}
+
+body[data-layout="studio-nuit"] mark.ann-bg-sug-pending {
+    background: rgba(245, 158, 11, .50) !important;
+}
+
+body[data-layout="studio-nuit"] mark.ann-bg-sug-accepted {
+    background: rgba(34, 197, 94, .42) !important;
+}
+
+body[data-layout="studio-nuit"] mark.ann-bg-sug-rejected {
+    background: rgba(239, 68, 68, .40) !important;
+}
 
 .annotation-popup {
     position: fixed;

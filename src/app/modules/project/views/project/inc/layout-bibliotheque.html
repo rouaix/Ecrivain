@@ -54,12 +54,14 @@
       <div class="tm-eyebrow">
         {{ @project.title | esc }} &middot; Vue d&rsquo;ensemble
       </div>
-      <h1 class="tm-h1">
-        <check if="{{ @panelConfig.has_acts }}">
-          Actes &amp; chapitres
-          <false>{{ @panelLabels.chapter.plural | esc }}</false>
-        </check>
-      </h1>
+      <check if="{{ @panelConfig.content }}">
+        <h1 class="tm-h1">
+          <check if="{{ @panelConfig.has_acts }}">
+            {{ @panelLabels.act.plural | esc }} &amp; {{ @panelLabels.chapter.plural | esc }}
+            <false>{{ @panelLabels.chapter.plural | esc }}</false>
+          </check>
+        </h1>
+      </check>
 
       <!-- Bandeau stats en ligne (4 cellules) -->
       <check if="{{ @stats.has_content }}">
@@ -96,10 +98,12 @@
               + {{ @panelLabels.act.singular | esc }}
             </a>
           </check>
-          <a class="tm-btn"
-             href="{{ @base }}/project/{{ @project.id }}/chapter/create">
-            + {{ @panelLabels.chapter.singular | esc }}
-          </a>
+          <check if="{{ @panelConfig.content && !@panelConfig.has_acts }}">
+            <a class="tm-btn"
+               href="{{ @base }}/project/{{ @project.id }}/chapter/create">
+              + {{ @panelLabels.chapter.singular | esc }}
+            </a>
+          </check>
         </check>
       </div>
     </div>

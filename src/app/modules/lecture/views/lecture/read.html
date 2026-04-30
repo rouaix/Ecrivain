@@ -18,19 +18,18 @@
     <!-- Toolbar -->
     <div class="reading-toolbar">
         <div class="toolbar-title">{{ @project.title | esc }}</div>
-        <button class="toolbar-btn" id="toggleToc" title="Afficher la table des matières"
-            title="Afficher la table des matières"><i class="fas fa-list" aria-hidden="true"></i> Table des matieres</button>
-        <button class="toolbar-btn" id="toggleFullscreen" title="Basculer en plein écran"
-            title="Basculer en plein écran"><i class="fas fa-expand" aria-hidden="true"></i> Plein ecran</button>
-        <button class="toolbar-btn" id="saveBookmark" title="Enregistrer la position" title="Enregistrer la position"><i
-                class="fas fa-bookmark"></i>
-            Marque-page</button>
-        <button class="toolbar-btn" id="offlineSaveBtn" title="Enregistrer pour lecture hors-ligne"
-            title="Enregistrer pour lecture hors-ligne"><i class="fas fa-download" aria-hidden="true"></i>
-            Hors-ligne</button>
-        <button class="toolbar-btn" id="toggleGlossary" title="Afficher les termes du lexique dans le texte"><i class="fas fa-book" aria-hidden="true"></i> Lexique</button>
-        <a href="{{ @base }}/project/{{ @project.id }}" class="toolbar-btn button" title="Retour au projet"
-            title="Retour au projet"><i class="fas fa-arrow-left" aria-hidden="true"></i></a>
+        <button class="toolbar-btn" id="toggleToc" title="Afficher la table des matières"><i class="fas fa-list"
+                aria-hidden="true"></i></button>
+        <button class="toolbar-btn" id="toggleFullscreen" title="Basculer en plein écran"><i class="fas fa-expand"
+                aria-hidden="true"></i></button>
+        <button class="toolbar-btn" id="saveBookmark" title="Enregistrer la position"><i
+                class="fas fa-bookmark"></i></button>
+        <button class="toolbar-btn" id="offlineSaveBtn" title="Enregistrer pour lecture hors-ligne"><i
+                class="fas fa-download" aria-hidden="true"></i></button>
+        <button class="toolbar-btn" id="toggleGlossary" title="Afficher les termes du lexique dans le texte"><i
+                class="fas fa-book" aria-hidden="true"></i></button>
+        <a href="{{ @base }}/project/{{ @project.id }}" class="toolbar-btn button" title="Retour au projet"><i
+                class="fas fa-arrow-left" aria-hidden="true"></i></a>
     </div>
 
     <div class="reading-container">
@@ -100,18 +99,59 @@
                                     <check if="{{ @section.pitch }}">
                                         <div class="synopsis-pitch-reading typography">{{ @section.pitch | raw }}</div>
                                     </check>
-                                    <check if="{{ @section.situation || @section.trigger_evt || @section.plot_point1 || @section.development || @section.midpoint || @section.crisis || @section.climax || @section.resolution }}">
+                                    <check
+                                        if="{{ @section.situation || @section.trigger_evt || @section.plot_point1 || @section.development || @section.midpoint || @section.crisis || @section.climax || @section.resolution }}">
                                         <details class="synopsis-beats-reading">
                                             <summary>Structure narrative ▸</summary>
                                             <dl>
-                                                <check if="{{ @section.situation }}"><true><dt>Situation</dt><dd>{{ @section.situation | esc }}</dd></true></check>
-                                                <check if="{{ @section.trigger_evt }}"><true><dt>Déclencheur</dt><dd>{{ @section.trigger_evt | esc }}</dd></true></check>
-                                                <check if="{{ @section.plot_point1 }}"><true><dt>1er tournant</dt><dd>{{ @section.plot_point1 | esc }}</dd></true></check>
-                                                <check if="{{ @section.development }}"><true><dt>Développement</dt><dd class="typography">{{ @section.development | raw }}</dd></true></check>
-                                                <check if="{{ @section.midpoint }}"><true><dt>Point médian</dt><dd>{{ @section.midpoint | esc }}</dd></true></check>
-                                                <check if="{{ @section.crisis }}"><true><dt>Crise</dt><dd>{{ @section.crisis | esc }}</dd></true></check>
-                                                <check if="{{ @section.climax }}"><true><dt>Climax</dt><dd class="typography">{{ @section.climax | raw }}</dd></true></check>
-                                                <check if="{{ @section.resolution }}"><true><dt>Résolution</dt><dd class="typography">{{ @section.resolution | raw }}</dd></true></check>
+                                                <check if="{{ @section.situation }}">
+                                                    <true>
+                                                        <dt>Situation</dt>
+                                                        <dd>{{ @section.situation | esc }}</dd>
+                                                    </true>
+                                                </check>
+                                                <check if="{{ @section.trigger_evt }}">
+                                                    <true>
+                                                        <dt>Déclencheur</dt>
+                                                        <dd>{{ @section.trigger_evt | esc }}</dd>
+                                                    </true>
+                                                </check>
+                                                <check if="{{ @section.plot_point1 }}">
+                                                    <true>
+                                                        <dt>1er tournant</dt>
+                                                        <dd>{{ @section.plot_point1 | esc }}</dd>
+                                                    </true>
+                                                </check>
+                                                <check if="{{ @section.development }}">
+                                                    <true>
+                                                        <dt>Développement</dt>
+                                                        <dd class="typography">{{ @section.development | raw }}</dd>
+                                                    </true>
+                                                </check>
+                                                <check if="{{ @section.midpoint }}">
+                                                    <true>
+                                                        <dt>Point médian</dt>
+                                                        <dd>{{ @section.midpoint | esc }}</dd>
+                                                    </true>
+                                                </check>
+                                                <check if="{{ @section.crisis }}">
+                                                    <true>
+                                                        <dt>Crise</dt>
+                                                        <dd>{{ @section.crisis | esc }}</dd>
+                                                    </true>
+                                                </check>
+                                                <check if="{{ @section.climax }}">
+                                                    <true>
+                                                        <dt>Climax</dt>
+                                                        <dd class="typography">{{ @section.climax | raw }}</dd>
+                                                    </true>
+                                                </check>
+                                                <check if="{{ @section.resolution }}">
+                                                    <true>
+                                                        <dt>Résolution</dt>
+                                                        <dd class="typography">{{ @section.resolution | raw }}</dd>
+                                                    </true>
+                                                </check>
                                             </dl>
                                         </details>
                                     </check>
@@ -136,8 +176,10 @@
 
             <!-- Selection Popup -->
             <div id="selectionPopup" class="selection-popup">
-                <button id="copyBtn" class="popup-btn"><i class="fas fa-copy" aria-hidden="true"></i> &nbsp;Copier</button>
-                <button id="commentBtn" class="popup-btn"><i class="fas fa-comment-dots" aria-hidden="true"></i> &nbsp;Ajouter une
+                <button id="copyBtn" class="popup-btn"><i class="fas fa-copy" aria-hidden="true"></i>
+                    &nbsp;Copier</button>
+                <button id="commentBtn" class="popup-btn"><i class="fas fa-comment-dots" aria-hidden="true"></i>
+                    &nbsp;Ajouter une
                     remarque</button>
             </div>
 
@@ -572,7 +614,7 @@
                 OfflineReader && OfflineReader.loadProject(projectId).then(function (cached) {
                     if (cached) {
                         offlineBtn.title = 'En cache — 1 clic pour actualiser, 2 clics pour ouvrir le lecteur';
-                        offlineBtn.innerHTML = '<i class="fas fa-check" aria-hidden="true"></i> Hors-ligne';
+                        offlineBtn.innerHTML = '<i class="fas fa-check" aria-hidden="true"></i>';
                         offlineBtn.dataset.saved = '1';
                     }
                     saveOffline(true);
@@ -726,20 +768,20 @@
                 fetch('{{ @base }}/project/{{ @project.id }}/glossary/terms', {
                     headers: { 'X-CSRF-Token': window.CSRF_TOKEN }
                 })
-                .then(function (r) { return r.json(); })
-                .then(function (data) {
-                    glossaryTerms = data;
-                    btn.disabled = false;
-                    btn.innerHTML = '<i class="fas fa-book" aria-hidden="true"></i> Lexique';
-                    if (!data.length) { alert('Aucun terme dans le lexique de ce projet.'); return; }
-                    highlightTerms(data);
-                    highlighted = true;
-                    btn.classList.add('active');
-                })
-                .catch(function () {
-                    btn.disabled = false;
-                    btn.innerHTML = '<i class="fas fa-book" aria-hidden="true"></i> Lexique';
-                });
+                    .then(function (r) { return r.json(); })
+                    .then(function (data) {
+                        glossaryTerms = data;
+                        btn.disabled = false;
+                        btn.innerHTML = '<i class="fas fa-book" aria-hidden="true"></i> Lexique';
+                        if (!data.length) { alert('Aucun terme dans le lexique de ce projet.'); return; }
+                        highlightTerms(data);
+                        highlighted = true;
+                        btn.classList.add('active');
+                    })
+                    .catch(function () {
+                        btn.disabled = false;
+                        btn.innerHTML = '<i class="fas fa-book" aria-hidden="true"></i> Lexique';
+                    });
             });
         }());
 

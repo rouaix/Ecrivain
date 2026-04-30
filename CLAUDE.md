@@ -64,7 +64,7 @@ All routes and autoload paths are declared in `src/app/config.ini`. F3 scans the
 
 ### Database Migrations
 
-Migrations in `src/data/migrations/` run automatically on every app load (only unexecuted ones). Naming format: `NNN_description.sql` (alphabetical = execution order). Current highest: `029_`.
+Migrations in `src/data/migrations/` run automatically on every app load (only unexecuted ones). Naming format: `NNN_description.sql` (alphabetical = execution order). Current highest: `030_`.
 
 > Always check `ls src/data/migrations/ | sort | tail -3` before creating a new migration to get the correct next number.
 
@@ -96,9 +96,9 @@ Migration rules:
 | `src/app/shared/views/` | Reusable F3 partials: `_page-header.html`, `_empty-state.html` |
 | `src/public/js/quill-adapter.js` | Quill editor integration (singleton QuillTools) |
 | `src/public/js/offline-reader.js` | Offline reading support |
-| `src/app/modules/project/views/layouts/main.html` | Classic UI layout (JS/CSS versioned URLs) |
-| `src/app/modules/project/views/layouts/main-pro.html` | Pro UI layout — includes `pro-ui.js` and `pro/pro.css` |
-| `src/app/controllers/UiModeController.php` | Handles `POST /ui-mode` to switch between `classic`/`pro` (cookie `ui_mode`, 1 year) |
+| `src/app/modules/project/views/layouts/main-pro.html` | Single unified layout — includes `pro-ui.js`, `pro/pro.css`, and `theme-bibliotheque.css` |
+| `src/app/controllers/UiModeController.php` | Handles `POST /ui-mode` — currently unused in routing, layout is always `main-pro.html` |
+| `src/app/modules/project/controllers/ProjectLayoutController.php` | Handles `POST /project-layout` — persists `data-layout` attribute on `<body>` (e.g. `bibliotheque`) |
 
 ### Base Controller Helpers
 
@@ -106,7 +106,7 @@ Available in all controllers (no import needed):
 
 | Method | Purpose |
 |--------|---------|
-| `$this->render($view, $data)` | Renders view inside `layouts/main.html` (classic) or `layouts/main-pro.html` (pro) depending on cookie `ui_mode`; auto-injects `@base`, `@csrfToken`, `@currentUser`, `@aiSystemPrompt`, `@aiUserPrompts`, `@pendingCollabCount` |
+| `$this->render($view, $data)` | Renders view inside `layouts/main-pro.html` (the single layout); auto-injects `@base`, `@csrfToken`, `@currentUser`, `@aiSystemPrompt`, `@aiUserPrompts`, `@pendingCollabCount` |
 | `$this->currentUser()` | Returns current user array or null |
 | `$this->isOwner(int $pid)` | True if current user owns the project |
 | `$this->isCollaborator(int $pid)` | True if current user is an accepted collaborator |
@@ -156,7 +156,7 @@ Valid `content_type` values: `chapter`, `act`, `section`, `note`, `element`, `ch
 
 ### Share Module (public routes)
 
-`SharePublicController` serves read-only project views at `/s/@token/...` with **no authentication required**. These routes must never call `$this->currentUser()` as a guard. The `share` module has its own standalone layout separate from `layouts/main.html`. Use `$this->renderPublic($view, $data)` instead of `$this->render()` — it skips auth injection and CSRF.
+`SharePublicController` serves read-only project views at `/s/@token/...` with **no authentication required**. These routes must never call `$this->currentUser()` as a guard. The `share` module has its own standalone layout. Use `$this->renderPublic($view, $data)` instead of `$this->render()` — it skips auth injection and CSRF.
 
 ### OAuth2 Authorization Server (auth module)
 
@@ -166,6 +166,22 @@ Valid `content_type` values: `chapter`, `act`, `section`, `note`, `element`, `ch
 - Token lifetimes: auth code 300s, access token 3600s, refresh token 2592000s
 - CORS enabled on token/register endpoints for cross-origin integrator use
 - This is separate from the JWT bearer tokens used by the REST API and MCP.
+
+### Project Overview Layout (Bibliothèque)
+
+The project overview page (`/project/{id}`) uses a three-column layout defined in `src/app/modules/project/views/project/inc/layout-bibliotheque.html`:
+- **Left rail** (`.tm-left-rail`): workspace switcher, navigation, project chip, sections nav
+- **Centre** (`.tm-center`): page header with stats, toolbar row (search + action buttons), content
+- **Right rail** (`.tm-right-rail`): metadata panels
+
+The centre content is assembled by `new_body.html`, which includes all `_project_overview_*.html` partials in order.
+
+**Panel visibility** is controlled by `@panelConfig` (built by `ProjectShowService`):
+- `@panelConfig.content` — show the acts/chapters panel (also gates the toolbar title and create buttons)
+- `@panelConfig.has_acts` — template has acts; show `+ Acte` button and use act-based chapter creation
+- `@panelConfig.note`, `.character`, `.file`, `.scenario`, `.synopsis` — show/hide respective panels
+
+The `data-layout` attribute on `<body>` is set from `$currentUser['theme']` (default: `bibliotheque`). `theme-bibliotheque.css` uses `body[data-layout="bibliotheque"]` selectors. Users change layout via `POST /project-layout`.
 
 ## Critical Rules
 
@@ -188,26 +204,29 @@ Subdirectory layout under `src/public/css/`:
 - `modules/` — feature styles (chapters, characters, notes…)
 - `editor/` — Quill overrides
 - `ai/`, `auth/` — section-specific styles
-- `features/` — standalone features: `reading.css`, `reading-mode.css`, `export.css`, `mindmap.css`, `template-editor.css`, `dictation.css`
+- `features/` — standalone features: `reading.css`, `reading-mode.css`, `relecture.css`, `export.css`, `mindmap.css`, `template-editor.css`, `dictation.css`
 - `utilities/` — atomic helpers: `helpers.css`, `spacing.css`, `text.css`, `visibility.css`
-- `themes/` — `theme-default.css`, `theme-dark.css`, `theme-blue.css`, `theme-forest.css`, `theme-moderne.css`
+- `themes/` — `theme-default.css`, `theme-dark.css`, `theme-blue.css`, `theme-forest.css`, `theme-moderne.css`, `theme-bibliotheque.css`
 - `pro/` — Pro UI styles: `pro.css` (aggregator importing all 7 files), `pro-layout.css`, `pro-nav.css`, `pro-components.css` (base components), `pro-pages.css` (dashboard + project page), `pro-features.css` (edit pages, AI, collab, etc.), `pro-overrides.css`, `pro-polish.css`
 
 **Modal visibility**: modals use `.is-visible` (adds `display: flex`) — never toggle `.is-hidden` on a `.modal-overlay`. Open: `modal.classList.add('is-visible')`, close: `modal.classList.remove('is-visible')`.
 
 ### JS/CSS Cache Busting
 
-After modifying any JS or CSS file, increment the `?v=` parameter in **both** layouts (`main.html` and `main-pro.html`). The two layouts track separate CSS versions:
+After modifying any JS or CSS file, increment the `?v=` parameter in `main-pro.html`. Current versions:
 ```html
-<!-- main.html: style.css?v=56 | main-pro.html: style.css?v=57, pro/pro.css?v=40 -->
-<link rel="stylesheet" href="{{ @base }}/public/style.css?v=56">
+<link rel="stylesheet" href="{{ @base }}/public/style.css?v=80">
+<link rel="stylesheet" href="{{ @base }}/public/css/pro/pro.css?v=50">
+<link rel="stylesheet" href="{{ @base }}/public/css/themes/theme-bibliotheque.css?v=25">
 <script src="{{ @base }}/public/js/quill-adapter.js?v=26"></script>
 <script src="{{ @base }}/public/js/api-client.js?v=3"></script>
 <script src="{{ @base }}/public/js/notifications.js?v=1"></script>
-<!-- Pro layout only: -->
-<link rel="stylesheet" href="{{ @base }}/public/css/pro/pro.css?v=40">
-<script src="{{ @base }}/public/js/pro-ui.js?v=3"></script>
+<script src="{{ @base }}/public/js/pro-ui.js?v=5"></script>
 ```
+
+Standalone layouts that embed their own `style.css` reference (update separately if modified):
+- `src/app/modules/lecture/views/lecture/read.html` — `style.css?v=58`
+- `src/app/modules/share/views/share/public/*.html` — `style.css?v=67`
 
 ### Shared View Partials
 

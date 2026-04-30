@@ -148,9 +148,9 @@
 
 /* Editor sticky header in classic mode */
 .edit-page-layout .edit-header {
-    position: sticky;
+    /* position: sticky;
     top: 0;
-    z-index: 50;
+    z-index: 50;*/
     background: var(--card-bg, #fff);
     border-bottom: 1px solid var(--border-color, #e0e0e0);
     margin: 0 0 20px;
