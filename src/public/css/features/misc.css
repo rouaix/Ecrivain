@@ -76,15 +76,37 @@
     margin-bottom: 20px;
 }
 
-.export-document .ql-align-left    { text-align: left; }
-.export-document .ql-align-center  { text-align: center; }
-.export-document .ql-align-right   { text-align: right; }
-.export-document .ql-align-justify { text-align: justify; }
+.export-document .ql-align-left {
+    text-align: left;
+}
 
-.export-document strong { font-weight: bold; }
-.export-document em     { font-style: italic; }
-.export-document u      { text-decoration: underline; }
-.export-document s      { text-decoration: line-through; }
+.export-document .ql-align-center {
+    text-align: center;
+}
+
+.export-document .ql-align-right {
+    text-align: right;
+}
+
+.export-document .ql-align-justify {
+    text-align: justify;
+}
+
+.export-document strong {
+    font-weight: bold;
+}
+
+.export-document em {
+    font-style: italic;
+}
+
+.export-document u {
+    text-decoration: underline;
+}
+
+.export-document s {
+    text-decoration: line-through;
+}
 
 .export-document .page-break {
     page-break-before: always;
@@ -183,8 +205,13 @@
     display: inline-block;
 }
 
-.mindmap-guide__title  { color: #202124; }
-.mindmap-guide__muted  { opacity: 0.7; }
+.mindmap-guide__title {
+    color: #202124;
+}
+
+.mindmap-guide__muted {
+    opacity: 0.7;
+}
 
 .mindmap-error {
     padding: 20px;
@@ -262,7 +289,6 @@
     width: 48px;
     height: 48px;
     border-radius: 50%;
-    color: #fff;
     border: none;
     cursor: pointer;
     display: flex;
@@ -274,8 +300,13 @@
 }
 
 #dictation-btn:hover {
-    background: var(--button-hover-bg, #357abd);
+    color: var(--button-hover-text);
+    background: var(--button-hover-bg);
     transform: scale(1.08);
+}
+
+#dictation-btn:hover svg {
+    fill: var(--button-hover-text);
 }
 
 #dictation-btn.is-recording {
@@ -284,9 +315,17 @@
 }
 
 @keyframes dictation-pulse {
-    0%   { box-shadow: 0 0 0 0 rgba(231, 76, 60, .55); }
-    70%  { box-shadow: 0 0 0 14px rgba(231, 76, 60, 0); }
-    100% { box-shadow: 0 0 0 0 rgba(231, 76, 60, 0); }
+    0% {
+        box-shadow: 0 0 0 0 rgba(231, 76, 60, .55);
+    }
+
+    70% {
+        box-shadow: 0 0 0 14px rgba(231, 76, 60, 0);
+    }
+
+    100% {
+        box-shadow: 0 0 0 0 rgba(231, 76, 60, 0);
+    }
 }
 
 #dictation-indicator {
@@ -295,7 +334,6 @@
     right: 24px;
     max-width: 300px;
     background: rgba(0, 0, 0, .72);
-    color: #fff;
     font-size: .82rem;
     line-height: 1.4;
     padding: 6px 12px;

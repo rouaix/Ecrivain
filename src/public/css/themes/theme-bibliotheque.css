@@ -497,9 +497,18 @@ body[data-layout="bibliotheque"] .tm-btn-primary:hover {
    CENTRE — Chapitres (surcharge ms-*)
    ════════════════════════════════════════════════ */
 
-/* Masquer les éléments utilitaires absents du design B */
-body[data-layout="bibliotheque"] .ms-hidden-cell {
-  display: none !important;
+/* Masquer la checkbox d'export, garder l'input d'ordre visible */
+body[data-layout="bibliotheque"] .ms-hidden-cell .export-toggle {
+  display: none;
+}
+body[data-layout="bibliotheque"] td.ms-hidden-cell {
+  width: 44px;
+  padding: 0 4px;
+  text-align: center;
+}
+body[data-layout="bibliotheque"] div.ms-hidden-cell {
+  display: inline-flex;
+  align-items: center;
 }
 
 body[data-layout="bibliotheque"] .ms-status-cell {

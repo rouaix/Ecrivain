@@ -48,9 +48,9 @@ class Section extends Mapper
     public function getBeforeChapters(int $projectId): array
     {
         $all = $this->getAllByProject($projectId);
-        return array_filter($all, function ($section) {
-            return self::SECTION_TYPES[$section['type']]['position'] === 'before';
-        });
+        return array_values(array_filter($all, function ($section) {
+            return (self::SECTION_TYPES[$section['type']]['position'] ?? null) === 'before';
+        }));
     }
 
     /**
@@ -59,9 +59,9 @@ class Section extends Mapper
     public function getAfterChapters(int $projectId): array
     {
         $all = $this->getAllByProject($projectId);
-        return array_filter($all, function ($section) {
-            return self::SECTION_TYPES[$section['type']]['position'] === 'after';
-        });
+        return array_values(array_filter($all, function ($section) {
+            return (self::SECTION_TYPES[$section['type']]['position'] ?? null) === 'after';
+        }));
     }
 
     /**

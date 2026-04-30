@@ -1825,8 +1825,17 @@ body.ui-pro .ms-chapter-table tr:hover {
     background: var(--table-row-hover-bg);
 }
 
-body.ui-pro .ms-hidden-cell {
+body.ui-pro .ms-hidden-cell .export-toggle {
     display: none;
+}
+body.ui-pro td.ms-hidden-cell {
+    width: 44px;
+    padding: 0 4px;
+    text-align: center;
+}
+body.ui-pro div.ms-hidden-cell {
+    display: inline-flex;
+    align-items: center;
 }
 
 body.ui-pro .ms-status-cell {

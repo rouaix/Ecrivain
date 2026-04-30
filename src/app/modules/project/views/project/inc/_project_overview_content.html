@@ -27,7 +27,7 @@
                 <details class="act-container ms-act" id="act-{{ @act.id }}" data-persist="true" open>
                   <summary>
                     <span class="ms-act-arrow">›</span>
-                    <div class="ms-hidden-cell" style="display:none">
+                    <div class="ms-hidden-cell">
                       <input type="checkbox" class="export-toggle js-stop-propagation" data-type="act" data-id="{{ @act.id }}" {{ @act.is_exported_attr }}>
                       <input type="number" class="order-input js-stop-propagation" data-type="act" data-id="{{ @act.id }}" value="{{ @act.order_index + 1 }}">
                     </div>
