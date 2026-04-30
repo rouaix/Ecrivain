@@ -12,9 +12,7 @@
       </div>
       <div class="tb-workspace-info">
         <div class="tb-workspace-name">{{ @authorName ?: @currentUser.username | esc }}</div>
-        <div class="tb-workspace-meta">Espace personnel</div>
       </div>
-      <span class="tb-workspace-chev">&#8964;</span>
     </div>
 
     <include href="project/inc/_layout-workspace-nav.html" />
@@ -25,7 +23,8 @@
     <div class="tm-rail-label">Manuscrit en cours</div>
     <div class="tb-project-chip">
       <check if="{{ isset(@project.cover_image) && @project.cover_image }}">
-        <img class="tb-project-spine" src="{{ @base }}/project/{{ @project.id }}/cover" alt="{{ @project.title | esc }}">
+        <img class="tb-project-spine" src="{{ @base }}/project/{{ @project.id }}/cover"
+          alt="{{ @project.title | esc }}">
         <false>
           <div class="tb-project-spine tb-project-spine--placeholder"></div>
         </false>
@@ -99,8 +98,7 @@
             </a>
           </check>
           <check if="{{ @panelConfig.content && !@panelConfig.has_acts }}">
-            <a class="tm-btn"
-               href="{{ @base }}/project/{{ @project.id }}/chapter/create">
+            <a class="tm-btn" href="{{ @base }}/project/{{ @project.id }}/chapter/create">
               + {{ @panelLabels.chapter.singular | esc }}
             </a>
           </check>

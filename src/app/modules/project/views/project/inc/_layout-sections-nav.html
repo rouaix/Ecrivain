@@ -1,13 +1,13 @@
 <a href="{{ @base }}/project/{{ @project.id }}"
    class="tm-rail-link {{ @PATH == '/project/'.@project.id ? 'is-active' : '' }}">
-  <span class="tm-rail-dot"></span>
+  <i class="fas fa-th-large tm-rail-icon" aria-hidden="true"></i>
   <span style="flex:1">Vue d'ensemble</span>
 </a>
 <check if="{{ isset(@sidebarModules) }}">
   <repeat group="{{ @sidebarModules }}" value="{{ @sm }}">
     <a href="{{ @base }}{{ @sm.path }}"
        class="tm-rail-link {{ @PATH == @sm.active_path ? 'is-active' : '' }}">
-      <span class="tm-rail-dot"></span>
+      <i class="fas fa-{{ @sm.icon }} tm-rail-icon" aria-hidden="true"></i>
       <span style="flex:1">{{ @sm.label | esc }}</span>
       <check if="{{ @sm.nb > 0 }}">
         <span class="tm-rail-count">{{ @sm.nb }}</span>

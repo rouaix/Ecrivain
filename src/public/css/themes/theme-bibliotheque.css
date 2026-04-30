@@ -176,6 +176,20 @@ body[data-layout="bibliotheque"] .tm-rail-dot {
   flex-shrink: 0;
 }
 
+body[data-layout="bibliotheque"] .tm-rail-icon {
+  width: 14px;
+  font-size: 12px;
+  text-align: center;
+  flex-shrink: 0;
+  opacity: 0.55;
+  transition: opacity 0.1s;
+}
+
+body[data-layout="bibliotheque"] .tm-rail-link:hover .tm-rail-icon,
+body[data-layout="bibliotheque"] .tm-rail-link.is-active .tm-rail-icon {
+  opacity: 1;
+}
+
 body[data-layout="bibliotheque"] .tm-rail-sep {
   height: 1px;
   background: var(--border-color);
@@ -194,12 +208,12 @@ body[data-layout="bibliotheque"] .tm-rail-sep {
   border: 1px solid var(--border-color);
   border-radius: 7px;
   margin-bottom: 10px;
-  cursor: pointer;
+  /*cursor: pointer;*/
   transition: background 0.1s;
 }
 
 .tb-workspace-switch:hover {
-  background: var(--border-light);
+  /*background: var(--border-light);*/
 }
 
 .tb-workspace-mark {
