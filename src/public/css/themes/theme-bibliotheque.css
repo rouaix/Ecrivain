@@ -526,7 +526,7 @@ body[data-layout="bibliotheque"] div.ms-hidden-cell {
 }
 
 body[data-layout="bibliotheque"] .ms-status-cell {
-  display: none !important;
+  display: table-cell;
 }
 
 /* ── Acte (group card) ───────────────────────── */

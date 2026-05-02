@@ -24,13 +24,14 @@
             <!-- Mode avec actes -->
             <check if="{{ @panelConfig.has_acts }}">
               <repeat group="{{ @acts }}" value="{{ @act }}">
-                <details class="act-container ms-act" id="act-{{ @act.id }}" data-persist="true" open>
+                <details class="act-container ms-act {{ @act.is_done ? 'ms-act--done' : '' }}" id="act-{{ @act.id }}" data-persist="true" open>
                   <summary>
                     <span class="ms-act-arrow">›</span>
                     <div class="ms-hidden-cell">
                       <input type="checkbox" class="export-toggle js-stop-propagation" data-type="act" data-id="{{ @act.id }}" {{ @act.is_exported_attr }}>
                       <input type="number" class="order-input js-stop-propagation" data-type="act" data-id="{{ @act.id }}" value="{{ @act.order_index + 1 }}">
                     </div>
+                    <button class="ms-act-done done-toggle js-stop-propagation {{ @act.is_done ? 'is-done' : '' }}" data-type="act" data-id="{{ @act.id }}" data-done="{{ @act.is_done ? '1' : '0' }}" title="{{ @act.is_done ? 'Terminé — cliquer pour marquer en cours' : 'Marquer comme terminé' }}"><i class="fas {{ @act.is_done ? 'fa-check-circle' : 'fa-circle' }}" aria-hidden="true"></i></button>
                     <span class="ms-act-title">{{ @act.title }}</span>
                     <span class="ms-act-meta">{{ @act.stats_chapters }} {{ @panelLabels.chapter.plural_lc }} · {{ @act.stats_pages }} p.</span>
                     <div class="ms-act-actions">
@@ -57,13 +58,13 @@
                         <table class="ms-chapter-table">
                           <tbody class="sortable-chapters">
                             <repeat group="{{ @chaptersByAct[@act.id] }}" value="{{ @ch }}">
-                              <tr data-id="{{ @ch.id }}">
+                              <tr data-id="{{ @ch.id }}" class="{{ @ch.is_done ? 'ms-row--done' : '' }}">
                                 <td class="ms-hidden-cell">
                                   <input type="checkbox" class="export-toggle" data-type="chapter" data-id="{{ @ch.id }}" {{ @ch.is_exported_attr }}>
                                   <input type="number" class="order-input" data-type="chapter" data-id="{{ @ch.id }}" value="{{ @ch.order_index + 1 }}">
                                 </td>
                                 <td class="ms-status-cell">
-                                  <span class="ms-status {{ @ch.total_wc == 0 ? 'ms-status--empty' : (!empty(@ch.resume) ? 'ms-status--done' : 'ms-status--writing') }}"></span>
+                                  <button class="ms-status done-toggle {{ @ch.is_done ? 'ms-status--done' : (@ch.total_wc == 0 ? 'ms-status--empty' : 'ms-status--writing') }}" data-type="chapter" data-id="{{ @ch.id }}" data-done="{{ @ch.is_done ? '1' : '0' }}" data-wc="{{ @ch.total_wc }}" title="{{ @ch.is_done ? 'Terminé — cliquer pour marquer en cours' : 'Marquer comme terminé' }}"></button>
                                 </td>
                                 <td class="ms-title-cell">
                                   <a href="{{ @base }}/chapter/{{ @ch.id }}" class="ms-chapter-link">{{ @ch.title }}</a>
@@ -86,13 +87,13 @@
                                 </td>
                               </tr>
                               <repeat group="{{ @ch.subs }}" value="{{ @sub }}">
-                                <tr data-id="{{ @sub.id }}" class="sub-chapter sub-of-{{ @ch.id }} ms-sub-row">
+                                <tr data-id="{{ @sub.id }}" class="sub-chapter sub-of-{{ @ch.id }} ms-sub-row {{ @sub.is_done ? 'ms-row--done' : '' }}">
                                   <td class="ms-hidden-cell">
                                     <input type="checkbox" class="export-toggle" data-type="chapter" data-id="{{ @sub.id }}" {{ @sub.is_exported_attr }}>
                                     <input type="number" class="order-input" data-type="chapter" data-id="{{ @sub.id }}" value="{{ @sub.order_index + 1 }}">
                                   </td>
                                   <td class="ms-status-cell ms-sub-indent">
-                                    <span class="ms-status {{ @sub.wc == 0 ? 'ms-status--empty' : 'ms-status--writing' }}"></span>
+                                    <button class="ms-status done-toggle {{ @sub.is_done ? 'ms-status--done' : (@sub.wc == 0 ? 'ms-status--empty' : 'ms-status--writing') }}" data-type="chapter" data-id="{{ @sub.id }}" data-done="{{ @sub.is_done ? '1' : '0' }}" data-wc="{{ @sub.wc }}" title="{{ @sub.is_done ? 'Terminé — cliquer pour marquer en cours' : 'Marquer comme terminé' }}"></button>
                                   </td>
                                   <td class="ms-title-cell ms-sub-indent">
                                     <a href="{{ @base }}/chapter/{{ @sub.id }}" class="ms-chapter-link ms-sub-link">{{ @sub.title }}</a>
@@ -134,13 +135,13 @@
                       <table class="ms-chapter-table">
                         <tbody class="sortable-chapters">
                           <repeat group="{{ @chaptersWithoutAct }}" value="{{ @ch }}">
-                            <tr data-id="{{ @ch.id }}">
+                            <tr data-id="{{ @ch.id }}" class="{{ @ch.is_done ? 'ms-row--done' : '' }}">
                               <td class="ms-hidden-cell">
                                 <input type="checkbox" class="export-toggle" data-type="chapter" data-id="{{ @ch.id }}" {{ @ch.is_exported_attr }}>
                                 <input type="number" class="order-input" data-type="chapter" data-id="{{ @ch.id }}" value="{{ @ch.order_index + 1 }}">
                               </td>
                               <td class="ms-status-cell">
-                                <span class="ms-status {{ @ch.total_wc == 0 ? 'ms-status--empty' : (!empty(@ch.resume) ? 'ms-status--done' : 'ms-status--writing') }}"></span>
+                                <button class="ms-status done-toggle {{ @ch.is_done ? 'ms-status--done' : (@ch.total_wc == 0 ? 'ms-status--empty' : 'ms-status--writing') }}" data-type="chapter" data-id="{{ @ch.id }}" data-done="{{ @ch.is_done ? '1' : '0' }}" data-wc="{{ @ch.total_wc }}" title="{{ @ch.is_done ? 'Terminé — cliquer pour marquer en cours' : 'Marquer comme terminé' }}"></button>
                               </td>
                               <td class="ms-title-cell">
                                 <a href="{{ @base }}/chapter/{{ @ch.id }}" class="ms-chapter-link">{{ @ch.title }}</a>
@@ -163,13 +164,13 @@
                               </td>
                             </tr>
                             <repeat group="{{ @ch.subs }}" value="{{ @sub }}">
-                              <tr data-id="{{ @sub.id }}" class="sub-chapter sub-of-{{ @ch.id }} ms-sub-row">
+                              <tr data-id="{{ @sub.id }}" class="sub-chapter sub-of-{{ @ch.id }} ms-sub-row {{ @sub.is_done ? 'ms-row--done' : '' }}">
                                 <td class="ms-hidden-cell">
                                   <input type="checkbox" class="export-toggle" data-type="chapter" data-id="{{ @sub.id }}" {{ @sub.is_exported_attr }}>
                                   <input type="number" class="order-input" data-type="chapter" data-id="{{ @sub.id }}" value="{{ @sub.order_index + 1 }}">
                                 </td>
                                 <td class="ms-status-cell ms-sub-indent">
-                                  <span class="ms-status {{ @sub.wc == 0 ? 'ms-status--empty' : 'ms-status--writing' }}"></span>
+                                  <button class="ms-status done-toggle {{ @sub.is_done ? 'ms-status--done' : (@sub.wc == 0 ? 'ms-status--empty' : 'ms-status--writing') }}" data-type="chapter" data-id="{{ @sub.id }}" data-done="{{ @sub.is_done ? '1' : '0' }}" data-wc="{{ @sub.wc }}" title="{{ @sub.is_done ? 'Terminé — cliquer pour marquer en cours' : 'Marquer comme terminé' }}"></button>
                                 </td>
                                 <td class="ms-title-cell ms-sub-indent">
                                   <a href="{{ @base }}/chapter/{{ @sub.id }}" class="ms-chapter-link ms-sub-link">{{ @sub.title }}</a>
@@ -198,13 +199,13 @@
                   <table class="ms-chapter-table" style="border:1px solid var(--input-border);border-radius:var(--radius-sm);overflow:hidden;background:var(--card-bg)">
                     <tbody class="sortable-chapters">
                       <repeat group="{{ @chaptersWithoutAct }}" value="{{ @ch }}">
-                        <tr data-id="{{ @ch.id }}">
+                        <tr data-id="{{ @ch.id }}" class="{{ @ch.is_done ? 'ms-row--done' : '' }}">
                           <td class="ms-hidden-cell">
                             <input type="checkbox" class="export-toggle" data-type="chapter" data-id="{{ @ch.id }}" {{ @ch.is_exported_attr }}>
                             <input type="number" class="order-input" data-type="chapter" data-id="{{ @ch.id }}" value="{{ @ch.order_index + 1 }}">
                           </td>
                           <td class="ms-status-cell">
-                            <span class="ms-status {{ @ch.total_wc == 0 ? 'ms-status--empty' : (!empty(@ch.resume) ? 'ms-status--done' : 'ms-status--writing') }}"></span>
+                            <button class="ms-status done-toggle {{ @ch.is_done ? 'ms-status--done' : (@ch.total_wc == 0 ? 'ms-status--empty' : 'ms-status--writing') }}" data-type="chapter" data-id="{{ @ch.id }}" data-done="{{ @ch.is_done ? '1' : '0' }}" data-wc="{{ @ch.total_wc }}" title="{{ @ch.is_done ? 'Terminé — cliquer pour marquer en cours' : 'Marquer comme terminé' }}"></button>
                           </td>
                           <td class="ms-title-cell">
                             <a href="{{ @base }}/chapter/{{ @ch.id }}" class="ms-chapter-link">{{ @ch.title }}</a>
@@ -227,13 +228,13 @@
                           </td>
                         </tr>
                         <repeat group="{{ @ch.subs }}" value="{{ @sub }}">
-                          <tr data-id="{{ @sub.id }}" class="sub-chapter sub-of-{{ @ch.id }} ms-sub-row">
+                          <tr data-id="{{ @sub.id }}" class="sub-chapter sub-of-{{ @ch.id }} ms-sub-row {{ @sub.is_done ? 'ms-row--done' : '' }}">
                             <td class="ms-hidden-cell">
                               <input type="checkbox" class="export-toggle" data-type="chapter" data-id="{{ @sub.id }}" {{ @sub.is_exported_attr }}>
                               <input type="number" class="order-input" data-type="chapter" data-id="{{ @sub.id }}" value="{{ @sub.order_index + 1 }}">
                             </td>
                             <td class="ms-status-cell ms-sub-indent">
-                              <span class="ms-status {{ @sub.wc == 0 ? 'ms-status--empty' : 'ms-status--writing' }}"></span>
+                              <button class="ms-status done-toggle {{ @sub.is_done ? 'ms-status--done' : (@sub.wc == 0 ? 'ms-status--empty' : 'ms-status--writing') }}" data-type="chapter" data-id="{{ @sub.id }}" data-done="{{ @sub.is_done ? '1' : '0' }}" data-wc="{{ @sub.wc }}" title="{{ @sub.is_done ? 'Terminé — cliquer pour marquer en cours' : 'Marquer comme terminé' }}"></button>
                             </td>
                             <td class="ms-title-cell ms-sub-indent">
                               <a href="{{ @base }}/chapter/{{ @sub.id }}" class="ms-chapter-link ms-sub-link">{{ @sub.title }}</a>

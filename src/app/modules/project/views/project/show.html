@@ -228,6 +228,224 @@
 
     });
 
+    // Done Toggle Logic
+
+    function applyActDoneUI(actBtn, newDone) {
+
+        const icon = actBtn.querySelector('i');
+
+        actBtn.dataset.done = newDone ? '1' : '0';
+
+        if (newDone) {
+
+            actBtn.classList.add('is-done');
+
+            if (icon) { icon.classList.remove('fa-circle'); icon.classList.add('fa-check-circle'); }
+
+            actBtn.title = 'Terminé — cliquer pour marquer en cours';
+
+        } else {
+
+            actBtn.classList.remove('is-done');
+
+            if (icon) { icon.classList.remove('fa-check-circle'); icon.classList.add('fa-circle'); }
+
+            actBtn.title = 'Marquer comme terminé';
+
+        }
+
+        const actEl = actBtn.closest('.act-container');
+
+        if (actEl) actEl.classList.toggle('ms-act--done', !!newDone);
+
+    }
+
+    function applyChapterDoneUI(parentBtn, parentRow, newDone) {
+
+        parentBtn.dataset.done = newDone ? '1' : '0';
+
+        parentBtn.classList.remove('ms-status--done', 'ms-status--empty', 'ms-status--writing');
+
+        if (newDone) {
+
+            parentBtn.classList.add('ms-status--done');
+
+            parentBtn.title = 'Terminé — cliquer pour marquer en cours';
+
+        } else {
+
+            const wc = parseInt(parentBtn.dataset.wc || '0', 10);
+
+            parentBtn.classList.add(wc > 0 ? 'ms-status--writing' : 'ms-status--empty');
+
+            parentBtn.title = 'Marquer comme terminé';
+
+        }
+
+        if (parentRow) parentRow.classList.toggle('ms-row--done', !!newDone);
+
+    }
+
+    function syncChapterFromSub(subBtn) {
+
+        const subRow = subBtn.closest('tr.sub-chapter');
+
+        if (!subRow) return;
+
+        const subOfClass = Array.from(subRow.classList).find(function (c) { return c.startsWith('sub-of-'); });
+
+        if (!subOfClass) return;
+
+        const parentId = subOfClass.replace('sub-of-', '');
+
+        const allSubBtns = Array.from(document.querySelectorAll('tr.sub-of-' + parentId + ' button.done-toggle[data-type="chapter"]'));
+
+        if (allSubBtns.length === 0) return;
+
+        const allDone = allSubBtns.every(function (b) { return b.dataset.done === '1'; });
+
+        const parentRow = document.querySelector('tr[data-id="' + parentId + '"]:not(.sub-chapter)');
+
+        if (!parentRow) return;
+
+        const parentBtn = parentRow.querySelector('button.done-toggle[data-type="chapter"]');
+
+        if (!parentBtn) return;
+
+        if ((parentBtn.dataset.done === '1') === allDone) return;
+
+        const newDone = allDone ? 1 : 0;
+
+        applyChapterDoneUI(parentBtn, parentRow, newDone);
+
+        fetch('{{ @base }}/project/{{ @project.id }}/done-toggle', {
+
+            method: 'POST',
+
+            headers: { 'Content-Type': 'application/json', 'X-CSRF-Token': window.CSRF_TOKEN },
+
+            body: JSON.stringify({ type: 'chapter', id: parentId, is_done: newDone })
+
+        });
+
+    }
+
+    function syncActFromChapter(actContainer) {
+
+        if (!actContainer) return;
+
+        const actBtn = actContainer.querySelector('button.ms-act-done[data-type="act"]');
+
+        if (!actBtn) return;
+
+        const allBtns = Array.from(actContainer.querySelectorAll('button.done-toggle[data-type="chapter"]'));
+
+        if (allBtns.length === 0) return;
+
+        const allDone = allBtns.every(function (b) { return b.dataset.done === '1'; });
+
+        const actCurrentDone = actBtn.dataset.done === '1';
+
+        if (allDone === actCurrentDone) return;
+
+        const newDone = allDone ? 1 : 0;
+
+        applyActDoneUI(actBtn, newDone);
+
+        fetch('{{ @base }}/project/{{ @project.id }}/done-toggle', {
+
+            method: 'POST',
+
+            headers: { 'Content-Type': 'application/json', 'X-CSRF-Token': window.CSRF_TOKEN },
+
+            body: JSON.stringify({ type: 'act', id: actBtn.dataset.id, is_done: newDone })
+
+        });
+
+    }
+
+    document.querySelectorAll('.done-toggle').forEach(function (btn) {
+
+        btn.addEventListener('click', function (e) {
+
+            e.preventDefault();
+
+            e.stopPropagation();
+
+            const type = this.dataset.type;
+
+            const id = this.dataset.id;
+
+            const currentDone = this.dataset.done === '1';
+
+            const newDone = currentDone ? 0 : 1;
+
+            const projectId = "{{ @project.id }}";
+
+            const self = this;
+
+            fetch('{{ @base }}/project/' + projectId + '/done-toggle', {
+
+                method: 'POST',
+
+                headers: {
+
+                    'Content-Type': 'application/json',
+
+                    'X-CSRF-Token': window.CSRF_TOKEN
+
+                },
+
+                body: JSON.stringify({ type: type, id: id, is_done: newDone })
+
+            })
+
+            .then(function (resp) {
+
+                if (!resp.ok) return;
+
+                self.dataset.done = newDone ? '1' : '0';
+
+                if (type === 'chapter') {
+
+                    self.classList.remove('ms-status--done', 'ms-status--empty', 'ms-status--writing');
+
+                    if (newDone) {
+
+                        self.classList.add('ms-status--done');
+
+                        self.title = 'Terminé — cliquer pour marquer en cours';
+
+                    } else {
+
+                        const wc = parseInt(self.dataset.wc || '0', 10);
+
+                        self.classList.add(wc > 0 ? 'ms-status--writing' : 'ms-status--empty');
+
+                        self.title = 'Marquer comme terminé';
+
+                    }
+
+                    const row = self.closest('tr');
+
+                    if (row) row.classList.toggle('ms-row--done', !!newDone);
+
+                    syncChapterFromSub(self);
+
+                    syncActFromChapter(self.closest('.act-container'));
+
+                } else if (type === 'act') {
+
+                    applyActDoneUI(self, newDone);
+
+                }
+
+            });
+
+        });
+
+    });
+
     // AI Summary Logic
 
     document.querySelectorAll('.ai-summary-btn').forEach(btn => {

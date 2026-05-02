@@ -231,6 +231,43 @@ class ProjectContentController extends ProjectBaseController
         echo json_encode(['status' => 'ok']);
     }
 
+    public function toggleDone()
+    {
+        $pid  = (int) $this->f3->get('PARAMS.pid');
+        $body = json_decode($this->f3->get('BODY'), true);
+        $id   = $body['id'] ?? null;
+        $type = $body['type'] ?? '';
+        $state = $body['is_done'] ?? 0;
+
+        if (!$id || !$type) {
+            echo json_encode(['status' => 'error']);
+            return;
+        }
+
+        $projectModel = new Project();
+        if (!$projectModel->count(['id=? AND user_id=?', $pid, $this->currentUser()['id']])) {
+            http_response_code(403);
+            return;
+        }
+
+        if ($type === 'chapter') {
+            $model = new Chapter();
+        } elseif ($type === 'act') {
+            $model = new Act();
+        } else {
+            echo json_encode(['status' => 'error', 'message' => 'Invalid type']);
+            return;
+        }
+
+        $model->load(['id=?', $id]);
+        if (!$model->dry() && $model->project_id == $pid) {
+            $model->is_done = $state ? 1 : 0;
+            $model->save();
+        }
+
+        echo json_encode(['status' => 'ok']);
+    }
+
     public function getPreview()
     {
         $pid  = (int) $this->f3->get('PARAMS.pid');

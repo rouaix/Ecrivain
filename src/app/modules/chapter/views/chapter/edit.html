@@ -753,7 +753,7 @@
                     chip.className = 'glossary-chip';
                     chip.title = t.definition || '';
                     chip.innerHTML =
-                        '<span class="glossary-chip-term">' + escHtml(t.term) + '</span>' +
+                        '<span class="glossary-chip-term">' + escHtml(t.term) + '</span>&nbsp;-&nbsp;' +
                         (t.definition ? '<span class="glossary-chip-def">' + escHtml(t.definition) + '</span>' : '');
                     foundList.appendChild(chip);
                 });
@@ -1114,8 +1114,8 @@
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ id: {{ @chapter.id }}, type: 'chapter', is_exported: this.checked ? 1 : 0 })
                 }).then(function (r) {
-                    if (!r.ok) { exportToggle.checked = !exportToggle.checked; }
-                });
+                        if (!r.ok) { exportToggle.checked = !exportToggle.checked; }
+                    });
             });
         }
 
