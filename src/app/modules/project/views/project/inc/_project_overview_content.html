@@ -72,7 +72,7 @@
                                     <span class="ms-sub-marker"><span class="collapse-toggle" data-target="{{ @ch.id }}">▼</span> {{ count(@ch.subs) }}</span>
                                   </check>
                                 </td>
-                                <td class="ms-words-cell">{{ @ch.total_wc > 0 ? number_format(@ch.total_wc, 0, ',', ' ').' m' : '—' }}</td>
+                                <td class="ms-words-cell">{{ @ch.total_wc > 0 ? number_format(@ch.total_wc, 0, ',', ' ').' m · '.@ch.total_pages.' p.' : '—' }}</td>
                                 <td class="ms-actions-cell">
                                   <a class="button small" href="{{ @base }}/project/{{ @project.id }}/chapter/create?parent_id={{ @ch.id }}&act_id={{ @ch.act_id }}" title="+ Sous-{{ @panelLabels.chapter.singular_lc }}"><i class="fas fa-plus" aria-hidden="true"></i></a>
                                   <button class="button small ai-summary-btn" data-id="{{ @ch.id }}" title="Résumé IA"><i class="fas fa-magic" aria-hidden="true"></i></button>
@@ -98,7 +98,7 @@
                                   <td class="ms-title-cell ms-sub-indent">
                                     <a href="{{ @base }}/chapter/{{ @sub.id }}" class="ms-chapter-link ms-sub-link">{{ @sub.title }}</a>
                                   </td>
-                                  <td class="ms-words-cell">{{ @sub.wc > 0 ? number_format(@sub.wc, 0, ',', ' ').' m' : '—' }}</td>
+                                  <td class="ms-words-cell">{{ @sub.wc > 0 ? number_format(@sub.wc, 0, ',', ' ').' m · '.@sub.pages.' p.' : '—' }}</td>
                                   <td class="ms-actions-cell">
                                     <button class="button small preview-btn" data-type="chapter" data-id="{{ @sub.id }}" title="Prévisualiser"><i class="fas fa-eye" aria-hidden="true"></i></button>
                                     <check if="{{ !@isOwner }}">
@@ -149,7 +149,7 @@
                                   <span class="ms-sub-marker"><span class="collapse-toggle" data-target="{{ @ch.id }}">▼</span> {{ count(@ch.subs) }}</span>
                                 </check>
                               </td>
-                              <td class="ms-words-cell">{{ @ch.total_wc > 0 ? number_format(@ch.total_wc, 0, ',', ' ').' m' : '—' }}</td>
+                              <td class="ms-words-cell">{{ @ch.total_wc > 0 ? number_format(@ch.total_wc, 0, ',', ' ').' m · '.@ch.total_pages.' p.' : '—' }}</td>
                               <td class="ms-actions-cell">
                                 <a class="button small" href="{{ @base }}/project/{{ @project.id }}/chapter/create?parent_id={{ @ch.id }}&act_id={{ @ch.act_id }}" title="+ Sous-{{ @panelLabels.chapter.singular_lc }}"><i class="fas fa-plus" aria-hidden="true"></i></a>
                                 <button class="button small ai-summary-btn" data-id="{{ @ch.id }}" title="Résumé IA"><i class="fas fa-magic" aria-hidden="true"></i></button>
@@ -175,7 +175,7 @@
                                 <td class="ms-title-cell ms-sub-indent">
                                   <a href="{{ @base }}/chapter/{{ @sub.id }}" class="ms-chapter-link ms-sub-link">{{ @sub.title }}</a>
                                 </td>
-                                <td class="ms-words-cell">{{ @sub.wc > 0 ? number_format(@sub.wc, 0, ',', ' ').' m' : '—' }}</td>
+                                <td class="ms-words-cell">{{ @sub.wc > 0 ? number_format(@sub.wc, 0, ',', ' ').' m · '.@sub.pages.' p.' : '—' }}</td>
                                 <td class="ms-actions-cell">
                                   <button class="button small preview-btn" data-type="chapter" data-id="{{ @sub.id }}" title="Prévisualiser"><i class="fas fa-eye" aria-hidden="true"></i></button>
                                   <check if="{{ !@isOwner }}">
@@ -213,7 +213,7 @@
                               <span class="ms-sub-marker"><span class="collapse-toggle" data-target="{{ @ch.id }}">▼</span> {{ count(@ch.subs) }}</span>
                             </check>
                           </td>
-                          <td class="ms-words-cell">{{ @ch.total_wc > 0 ? number_format(@ch.total_wc, 0, ',', ' ').' m' : '—' }}</td>
+                          <td class="ms-words-cell">{{ @ch.total_wc > 0 ? number_format(@ch.total_wc, 0, ',', ' ').' m · '.@ch.total_pages.' p.' : '—' }}</td>
                           <td class="ms-actions-cell">
                             <a class="button small" href="{{ @base }}/project/{{ @project.id }}/chapter/create?parent_id={{ @ch.id }}" title="+ Sous-{{ @panelLabels.chapter.singular_lc }}"><i class="fas fa-plus" aria-hidden="true"></i></a>
                             <button class="button small ai-summary-btn" data-id="{{ @ch.id }}" title="Résumé IA"><i class="fas fa-magic" aria-hidden="true"></i></button>
@@ -239,7 +239,7 @@
                             <td class="ms-title-cell ms-sub-indent">
                               <a href="{{ @base }}/chapter/{{ @sub.id }}" class="ms-chapter-link ms-sub-link">{{ @sub.title }}</a>
                             </td>
-                            <td class="ms-words-cell">{{ @sub.wc > 0 ? number_format(@sub.wc, 0, ',', ' ').' m' : '—' }}</td>
+                            <td class="ms-words-cell">{{ @sub.wc > 0 ? number_format(@sub.wc, 0, ',', ' ').' m · '.@sub.pages.' p.' : '—' }}</td>
                             <td class="ms-actions-cell">
                               <button class="button small preview-btn" data-type="chapter" data-id="{{ @sub.id }}" title="Prévisualiser"><i class="fas fa-eye" aria-hidden="true"></i></button>
                               <check if="{{ !@isOwner }}">
