@@ -11,8 +11,9 @@ www/entry_log.txt
 tmp/
 cache/
 
-# User data
+# User data (per-user dirs only — migrations tracked separately)
 data/*/
+!data/migrations/
 
 # IDE
 .idea/
