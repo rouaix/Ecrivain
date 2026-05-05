@@ -174,6 +174,29 @@ class SearchController extends Controller
             error_log('Search elements error: ' . $e->getMessage());
         }
 
+        // --- Glossary ---
+        try {
+            if ($this->db->exists('glossary_entries')) {
+                $rows = $this->db->exec(
+                    "SELECT t.id, t.project_id, t.term AS title, t.definition AS content
+                     FROM glossary_entries t JOIN projects p ON p.id = t.project_id
+                     WHERE (t.term LIKE ? OR t.definition LIKE ?) $projectClause LIMIT 20",
+                    [$term, $term, $projectParam]
+                );
+                foreach ((array) $rows as $row) {
+                    $results[] = [
+                        'type'    => 'Glossaire',
+                        'icon'    => 'fa-book',
+                        'title'   => htmlspecialchars($row['title'], ENT_QUOTES, 'UTF-8'),
+                        'excerpt' => $highlight($row['content'] ?? '', $q),
+                        'url'     => '/project/' . $row['project_id'] . '/glossary/' . $row['id'] . '/edit',
+                    ];
+                }
+            }
+        } catch (Exception $e) {
+            error_log('Search glossary error: ' . $e->getMessage());
+        }
+
         return $results;
     }
 }

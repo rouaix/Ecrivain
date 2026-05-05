@@ -326,6 +326,9 @@
         <div id="searchOverlay" role="dialog" aria-modal="true" aria-label="Recherche globale">
             <div id="searchOverlayBox">
                 <form method="get" action="{{ @base }}/search" id="searchOverlayForm">
+                    <check if="{{ !empty(@project.id) }}">
+                        <input type="hidden" name="project_id" value="{{ @project.id }}">
+                    </check>
                     <div class="search-overlay-input-wrap">
                         <i class="fas fa-search search-overlay-icon" aria-hidden="true"></i>
                         <input type="text" name="q" id="searchOverlayInput" placeholder="Rechercher dans vos textes…"

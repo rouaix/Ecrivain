@@ -11,7 +11,7 @@
                 <select name="project_id" class="input-control search-scope">
                     <option value="">Tous les projets</option>
                     <repeat group="{{ @projects }}" value="{{ @proj }}">
-                        <option value="{{ @proj.id }}" {{ (@projectId==@proj.id) ? 'selected' : '' }}>
+                        <option value="{{ @proj.id }}" {{ ((int)@projectId==(int)@proj.id && @projectId>0) ? 'selected' : '' }}>
                             {{ @proj.title | esc }}
                         </option>
                     </repeat>
