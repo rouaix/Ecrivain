@@ -18,13 +18,7 @@ class ScenaristeController extends Controller
         $pid  = (int) $this->f3->get('PARAMS.pid');
         $user = $this->currentUser();
 
-        $projectModel = new Project();
-        $projects = $projectModel->findAndCast(['id=? AND user_id=?', $pid, $user['id']]);
-        if (!$projects) {
-            $this->f3->error(404);
-            return;
-        }
-        $project = $projects[0];
+        $project = $this->requireOwnedProject($pid);
 
         $scenarioModel = new Scenario();
         $scenarios = $scenarioModel->getAllByProject($pid);
@@ -51,13 +45,7 @@ class ScenaristeController extends Controller
         $pid  = (int) $this->f3->get('PARAMS.pid');
         $user = $this->currentUser();
 
-        $projectModel = new Project();
-        $projects = $projectModel->findAndCast(['id=? AND user_id=?', $pid, $user['id']]);
-        if (!$projects) {
-            $this->f3->error(404);
-            return;
-        }
-        $project = $projects[0];
+        $project = $this->requireOwnedProject($pid);
 
         // Chapters ordered by act then position
         $chapters = $this->db->exec(
@@ -103,8 +91,7 @@ class ScenaristeController extends Controller
         $pid  = (int) $this->f3->get('PARAMS.pid');
         $user = $this->currentUser();
 
-        $projectModel = new Project();
-        if (!$projectModel->count(['id=? AND user_id=?', $pid, $user['id']])) {
+        if (!$this->isOwner($pid)) {
             http_response_code(403);
             echo json_encode(['success' => false, 'error' => 'Accès refusé']);
             return;
@@ -376,13 +363,7 @@ class ScenaristeController extends Controller
         }
         $scenario = $scenarios[0];
 
-        $projectModel = new Project();
-        $projects = $projectModel->findAndCast(['id=? AND user_id=?', $scenario['project_id'], $user['id']]);
-        if (!$projects) {
-            $this->f3->error(403);
-            return;
-        }
-        $project = $projects[0];
+        $project = $this->requireOwnedProject((int) $scenario['project_id']);
 
         // Build meta array for template backward-compat (@meta.saison, @meta.episode, @meta.genre)
         $meta = [
@@ -415,11 +396,7 @@ class ScenaristeController extends Controller
             return;
         }
 
-        $projectModel = new Project();
-        if (!$projectModel->count(['id=? AND user_id=?', $scenarioModel->project_id, $user['id']])) {
-            $this->f3->error(403);
-            return;
-        }
+        $this->requireOwnedProject((int) $scenarioModel->project_id);
 
         $scenarioModel->title   = trim($_POST['title'] ?? '') ?: $scenarioModel->title;
         $scenarioModel->content = $_POST['content'] ?? '';
@@ -449,10 +426,8 @@ class ScenaristeController extends Controller
         }
 
         $pid = (int) $scenarioModel->project_id;
-        $projectModel = new Project();
-        if ($projectModel->count(['id=? AND user_id=?', $pid, $user['id']])) {
-            $scenarioModel->erase();
-        }
+        $this->requireOwnedProject($pid);
+        $scenarioModel->erase();
 
         $this->f3->reroute('/project/' . $pid);
     }
@@ -474,11 +449,7 @@ class ScenaristeController extends Controller
         }
         $scenario = $scenarios[0];
 
-        $projectModel = new Project();
-        if (!$projectModel->count(['id=? AND user_id=?', $scenario['project_id'], $user['id']])) {
-            $this->f3->error(403);
-            return;
-        }
+        $this->requireOwnedProject((int) $scenario['project_id']);
 
         $saison  = str_pad($scenario['saison']  ?? '01', 2, '0', STR_PAD_LEFT);
         $episode = str_pad($scenario['episode'] ?? '01', 2, '0', STR_PAD_LEFT);
@@ -508,8 +479,7 @@ class ScenaristeController extends Controller
         $pid  = (int) $this->f3->get('PARAMS.pid');
         $user = $this->currentUser();
 
-        $projectModel = new Project();
-        if (!$projectModel->count(['id=? AND user_id=?', $pid, $user['id']])) {
+        if (!$this->isOwner($pid)) {
             http_response_code(403);
             echo json_encode(['success' => false, 'error' => 'Accès refusé']);
             return;

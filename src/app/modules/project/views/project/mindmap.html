@@ -496,11 +496,10 @@
 
         // Popup logic - show for content-heavy types (only on leaf nodes without children)
         var hasContent = d.data.content && d.data.content.trim() !== '';
-        var popupTypes = ['character', 'note', 'section', 'element', 'scenario', 'synopsis_beat'];
-        var isSubItem = d.data.is_subchapter || d.data.is_subelement;
+        var popupTypes = ['character', 'note', 'section', 'element', 'scenario', 'synopsis_beat', 'chapter', 'act'];
         var hasChildren = d.children || d._children;
 
-        if ((popupTypes.includes(d.data.type) || (d.data.type === 'chapter' && isSubItem)) && hasContent && !hasChildren) {
+        if (popupTypes.includes(d.data.type) && hasContent && !hasChildren) {
             showPopup(d.data);
             return;
         }

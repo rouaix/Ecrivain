@@ -7,6 +7,8 @@ class CharacterController extends Controller
         '#e3f2fd', '#f3e5f5', '#e0f7fa', '#fef9c3',
     ];
 
+    private ?CharacterMentionService $mentionService = null;
+
     public function beforeRoute(Base $f3)
     {
         parent::beforeRoute($f3);
@@ -15,15 +17,18 @@ class CharacterController extends Controller
         }
     }
 
+    private function getMentionService(): CharacterMentionService
+    {
+        if ($this->mentionService === null) {
+            $this->mentionService = new CharacterMentionService($this->f3->get('DB'));
+        }
+        return $this->mentionService;
+    }
+
     public function index()
     {
         $pid = (int) $this->f3->get('PARAMS.pid');
-        $projectModel = new Project();
-        if (!$projectModel->count(['id=? AND user_id=?', $pid, $this->currentUser()['id']])) {
-            $this->f3->error(404);
-            return;
-        }
-        $project = $projectModel->findAndCast(['id=?', $pid])[0];
+        $project = $this->requireOwnedProject($pid);
 
         $charModel = new Character();
         $characters = $charModel->getAllByProject($pid);
@@ -39,12 +44,7 @@ class CharacterController extends Controller
     public function create()
     {
         $pid = (int) $this->f3->get('PARAMS.pid');
-        $projectModel = new Project();
-        if (!$projectModel->count(['id=? AND user_id=?', $pid, $this->currentUser()['id']])) {
-            $this->f3->error(404);
-            return;
-        }
-        $project = $projectModel->findAndCast(['id=?', $pid])[0];
+        $project = $this->requireOwnedProject($pid);
 
         $this->render('characters/edit.html', [
             'title'     => 'Nouveau personnage',
@@ -61,11 +61,7 @@ class CharacterController extends Controller
     public function store()
     {
         $pid = (int) $this->f3->get('PARAMS.pid');
-        $projectModel = new Project();
-        if (!$projectModel->count(['id=? AND user_id=?', $pid, $this->currentUser()['id']])) {
-            $this->f3->error(404);
-            return;
-        }
+        $project = $this->requireOwnedProject($pid);
 
         $name        = trim($_POST['name'] ?? '');
         $description = trim($_POST['description'] ?? '');
@@ -80,7 +76,7 @@ class CharacterController extends Controller
         if (!$name) {
             $this->render('characters/edit.html', [
                 'title'     => 'Nouveau personnage',
-                'project'   => $projectModel->findAndCast(['id=?', $pid])[0],
+                'project'   => $project,
                 'character' => compact('name', 'description', 'comment', 'age', 'traits', 'motivations', 'arc', 'flaws', 'group_name') + ['id' => null, 'avatar' => ''],
                 'errors'    => ['Le nom est obligatoire'],
             ]);
@@ -121,70 +117,31 @@ class CharacterController extends Controller
             return;
         }
 
-        $projectModel = new Project();
-        if (!$projectModel->count(['id=? AND user_id=?', $charModel->project_id, $this->currentUser()['id']])) {
-            $this->f3->error(403);
-            return;
+        $project = $this->requireOwnedProject((int) $charModel->project_id);
+
+        // Get mentions and timeline data using service
+        $mentionData = $this->getMentionService()->getMentionsAndTimeline(
+            (int) $charModel->id,
+            (int) $charModel->project_id,
+            $charModel->name
+        );
+        $mentions     = $mentionData['mentions'];
+        $timeline     = $mentionData['timeline'];
+        $mentionCount = $mentionData['mentionCount'];
+        $allChapters  = [];
+        foreach ($timeline as $actData) {
+            $allChapters = array_merge($allChapters, $actData['chapters']);
         }
-        $project = $projectModel->findAndCast(['id=?', $charModel->project_id])[0];
-
-        // All chapters of the project (for timeline)
-        $allChapters = $this->db->exec(
-            'SELECT c.id, c.title, c.order_index, c.act_id,
-                    a.title AS act_title, a.order_index AS act_order
-             FROM chapters c
-             LEFT JOIN acts a ON a.id = c.act_id
-             WHERE c.project_id = ?
-             ORDER BY COALESCE(a.order_index, 0) ASC, c.order_index ASC, c.id ASC',
-            [$charModel->project_id]
-        ) ?: [];
-
-        // Chapters where the character name is mentioned
-        $mentionedIds = [];
-        $mentions     = [];
-        if ($charModel->name && $allChapters) {
-            $rows = $this->db->exec(
-                'SELECT c.id, c.title, c.order_index, c.act_id,
-                        a.title AS act_title, a.order_index AS act_order
-                 FROM chapters c
-                 LEFT JOIN acts a ON a.id = c.act_id
-                 WHERE c.project_id = ?
-                   AND (c.content LIKE ? OR c.resume LIKE ?)
-                 ORDER BY COALESCE(a.order_index, 0) ASC, c.order_index ASC, c.id ASC',
-                [$charModel->project_id, '%' . $charModel->name . '%', '%' . $charModel->name . '%']
-            ) ?: [];
-
-            foreach ($rows as $row) {
-                $mentionedIds[$row['id']] = true;
-                $actKey   = $row['act_id'] ?? 0;
-                $actLabel = $row['act_title'] ?: 'Sans acte';
-                if (!isset($mentions[$actKey])) {
-                    $mentions[$actKey] = ['label' => $actLabel, 'chapters' => []];
-                }
-                $mentions[$actKey]['chapters'][] = $row;
-            }
-        }
-
-        // Build timeline: all chapters grouped by act, with presence flag
-        $timeline = [];
-        foreach ($allChapters as $ch) {
-            $actKey   = $ch['act_id'] ?? 0;
-            $actLabel = $ch['act_title'] ?: 'Sans acte';
-            if (!isset($timeline[$actKey])) {
-                $timeline[$actKey] = ['label' => $actLabel, 'chapters' => []];
-            }
-            $ch['mentioned'] = isset($mentionedIds[$ch['id']]) ? 1 : 0;
-            $timeline[$actKey]['chapters'][] = $ch;
-        }
+        $totalChapters = count($allChapters);
 
         $this->render('characters/edit.html', [
             'title'         => 'Modifier personnage',
             'project'       => $project,
             'character'     => $charModel->cast(),
             'mentions'      => $mentions,
-            'timeline'      => array_values($timeline),
-            'totalChapters' => count($allChapters),
-            'mentionCount'  => count($mentionedIds),
+            'timeline'      => $timeline,
+            'totalChapters' => $totalChapters,
+            'mentionCount'  => $mentionCount,
             'errors'        => [],
         ]);
     }
@@ -199,11 +156,7 @@ class CharacterController extends Controller
             return;
         }
 
-        $projectModel = new Project();
-        if (!$projectModel->count(['id=? AND user_id=?', $charModel->project_id, $this->currentUser()['id']])) {
-            $this->f3->error(403);
-            return;
-        }
+        $project = $this->requireOwnedProject((int) $charModel->project_id);
 
         $name        = trim($_POST['name'] ?? '');
         $description = trim($_POST['description'] ?? '');
@@ -218,7 +171,7 @@ class CharacterController extends Controller
         if (!$name) {
             $this->render('characters/edit.html', [
                 'title'     => 'Modifier personnage',
-                'project'   => $projectModel->findAndCast(['id=?', $charModel->project_id])[0],
+                'project'   => $project,
                 'character' => ['id' => $id, 'name' => $name, 'description' => $description, 'comment' => $comment,
                                 'age' => $age, 'traits' => $traits, 'motivations' => $motivations,
                                 'arc' => $arc, 'flaws' => $flaws, 'group_name' => $group_name,
@@ -256,15 +209,13 @@ class CharacterController extends Controller
         $charModel = new Character();
         $charModel->load(['id=?', $id]);
         if (!$charModel->dry()) {
-            $projectModel = new Project();
-            if ($projectModel->count(['id=? AND user_id=?', $charModel->project_id, $this->currentUser()['id']])) {
-                $pid   = $charModel->project_id;
-                $label = $charModel->name;
-                $charModel->erase();
-                $this->logActivity($pid, 'delete', 'character', $id, $label);
-                $this->f3->reroute('/project/' . $pid . '/characters');
-                return;
-            }
+            $this->requireOwnedProject((int) $charModel->project_id);
+            $pid   = $charModel->project_id;
+            $label = $charModel->name;
+            $charModel->erase();
+            $this->logActivity($pid, 'delete', 'character', $id, $label);
+            $this->f3->reroute('/project/' . $pid . '/characters');
+            return;
         }
         $this->f3->error(404);
     }

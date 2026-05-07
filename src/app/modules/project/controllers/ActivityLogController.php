@@ -18,13 +18,7 @@ class ActivityLogController extends Controller
         $pid  = (int) $this->f3->get('PARAMS.pid');
         $user = $this->currentUser();
 
-        $projectModel = new Project();
-        $project = $projectModel->findAndCast(['id=? AND user_id=?', $pid, $user['id']]);
-        if (!$project) {
-            $this->f3->error(403);
-            return;
-        }
-        $project = $project[0];
+        $project = $this->requireOwnedProject($pid);
 
         $logs = $this->db->exec(
             'SELECT l.*, u.username, u.email

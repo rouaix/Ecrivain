@@ -70,14 +70,27 @@ class SearchController extends Controller
         // --- Chapters ---
         try {
             $rows = $this->db->exec(
-                "SELECT t.id, t.project_id, t.title, t.content
+                "SELECT t.id, t.project_id, t.title, t.content, t.parent_id,
+                        parent.title AS parent_title
                  FROM chapters t JOIN projects p ON p.id = t.project_id
+                 LEFT JOIN chapters parent ON parent.id = t.parent_id
                  WHERE (t.title LIKE ? OR t.content LIKE ?) $projectClause LIMIT 20",
                 [$term, $term, $projectParam]
             );
             foreach ((array) $rows as $row) {
+                $isSubChapter = (bool) $row['parent_id'];
+
+                if ($isSubChapter) {
+                    $type    = 'Sous-chapitre';
+                    $context = htmlspecialchars($row['parent_title'] ?? '', ENT_QUOTES, 'UTF-8');
+                } else {
+                    $type    = 'Chapitre';
+                    $context = null;
+                }
+
                 $results[] = [
-                    'type'    => 'Chapitre',
+                    'type'    => $type,
+                    'context' => $context ?? null,
                     'icon'    => 'fa-book-open',
                     'title'   => htmlspecialchars($row['title'], ENT_QUOTES, 'UTF-8'),
                     'excerpt' => $highlight($row['content'] ?? '', $q),

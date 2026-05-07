@@ -14,8 +14,11 @@ class TimelineController extends Controller
 
     private function getProject(int $pid): ?array
     {
+        if (!$this->isOwner($pid)) {
+            return null;
+        }
         $pm   = new Project();
-        $rows = $pm->findAndCast(['id=? AND user_id=?', $pid, $this->currentUser()['id']]);
+        $rows = $pm->findAndCast(['id=?', $pid]);
         return $rows ? $rows[0] : null;
     }
 

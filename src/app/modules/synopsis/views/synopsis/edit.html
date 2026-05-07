@@ -451,8 +451,6 @@
         var PROJECT_ID = '{{ @project.id }}';
         var IS_OWNER = {{ @isOwner ?'true' : 'false'
     }};
-    var CSRF_TOKEN = '{{ @csrfToken }}';
-
     // ── Quill instances ───────────────────────────────────────────────────
     var quillPitch = new Quill('#quill-pitch', { theme: 'snow', modules: { toolbar: QuillTools.getToolbarOptions() } });
     var quillDev = new Quill('#quill-development', { theme: 'snow', modules: { toolbar: QuillTools.getToolbarOptions() } });
@@ -580,13 +578,10 @@
     var exportToggle = document.getElementById('synopsisExportToggle');
     if (exportToggle) {
         exportToggle.addEventListener('change', function () {
-            fetch(BASE + '/project/' + PROJECT_ID + '/synopsis/toggle-export', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json', 'X-CSRF-Token': CSRF_TOKEN },
-                body: JSON.stringify({ is_exported: this.checked ? 1 : 0 })
-            }).then(function (r) {
-                if (!r.ok) { exportToggle.checked = !exportToggle.checked; }
-            });
+            ApiClient.post(BASE + '/project/' + PROJECT_ID + '/synopsis/toggle-export', { is_exported: this.checked ? 1 : 0 })
+                .then(function (data) {
+                    if (data && data.status === 'error') { exportToggle.checked = !exportToggle.checked; }
+                });
         });
     }
 
@@ -638,13 +633,11 @@
         var orig = btnEl ? btnEl.textContent : '';
         if (btnEl) { btnEl.disabled = true; btnEl.textContent = loadingText || 'Génération…'; }
         showAiToast(loadingText || 'Génération en cours…');
-        return fetch(BASE + url, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json', 'X-CSRF-Token': CSRF_TOKEN },
-            body: JSON.stringify(payload)
-        }).then(function (r) {
-            if (!r.ok) return r.text().then(function (t) { throw new Error('HTTP ' + r.status + (t ? ' — ' + t.substring(0, 200) : '')); });
-            return r.json();
+        return ApiClient.post(BASE + url, payload).then(function (data) {
+            if (data && data.status === 'error') {
+                throw new Error(data.message || 'Erreur serveur');
+            }
+            return data;
         }).finally(function () {
             if (btnEl) { btnEl.disabled = false; btnEl.textContent = orig; }
             hideAiToast();

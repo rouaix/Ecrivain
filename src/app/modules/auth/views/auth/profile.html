@@ -444,8 +444,7 @@
         async function loadAutoLoginTokens() {
             const listDiv = document.getElementById('token-list');
             try {
-                const response = await fetch(BASE_AL + '/auth/tokens');
-                const data = await response.json();
+                const data = await ApiClient.get(BASE_AL + '/auth/tokens');
 
                 if (!data.tokens || data.tokens.length === 0) {
                     listDiv.innerHTML = '<p class="text-muted text-sm">Aucun lien actif.</p>';
@@ -497,11 +496,7 @@
             btn.innerHTML = '<i class="fas fa-spinner fa-spin" aria-hidden="true"></i> Génération…';
 
             try {
-                const response = await fetch(BASE_AL + '/auth/token/generate', {
-                    method: 'POST',
-                    headers: { 'X-CSRF-TOKEN': CSRF_AL }
-                });
-                if (!response.ok) throw new Error('Erreur');
+                await ApiClient.post(BASE_AL + '/auth/token/generate', {});
                 await loadAutoLoginTokens();
             } catch (e) {
                 alert('Erreur : ' + e.message);
@@ -514,15 +509,7 @@
         async function revokeAutoLoginToken(tokenId) {
             if (!confirm('Supprimer ce lien ?')) return;
             try {
-                const response = await fetch(BASE_AL + '/auth/token/revoke', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'X-CSRF-TOKEN': CSRF_AL
-                    },
-                    body: JSON.stringify({ token_id: tokenId })
-                });
-                if (!response.ok) throw new Error('Erreur');
+                await ApiClient.post(BASE_AL + '/auth/token/revoke', { token_id: tokenId });
                 await loadAutoLoginTokens();
             } catch (e) {
                 alert('Impossible de supprimer : ' + e.message);
@@ -556,8 +543,7 @@
         // ── Charger les tokens existants ────────────────────────────────────────
 
         function loadTokens() {
-            fetch(BASE + '/auth/tokens', { headers: { 'Accept': 'application/json' } })
-                .then(r => r.json())
+            ApiClient.get(BASE + '/auth/tokens')
                 .then(data => renderTokens(data.tokens || []))
                 .catch(() => {
                     document.getElementById('mcp-tokens-list').innerHTML =
@@ -716,14 +702,7 @@ mcpServers:
             this.disabled = true;
             this.innerHTML = '<i class="fas fa-spinner fa-spin" aria-hidden="true"></i> Génération…';
 
-            fetch(BASE + '/auth/token/generate', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'X-CSRF-TOKEN': CSRF_TOKEN,
-                },
-            })
-                .then(r => r.json())
+            ApiClient.post(BASE + '/auth/token/generate', {})
                 .then(() => {
                     this.innerHTML = '<i class="fas fa-key" aria-hidden="true"></i> Générer un token';
                     this.disabled = false;
@@ -741,15 +720,7 @@ mcpServers:
         function revokeToken(tokenId, tokenRaw) {
             if (!confirm('Révoquer ce token ? Les IA qui l\'utilisent perdront leur accès immédiatement.')) return;
 
-            fetch(BASE + '/auth/token/revoke', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'X-CSRF-TOKEN': CSRF_TOKEN,
-                },
-                body: JSON.stringify({ token_id: tokenId, token: tokenRaw }),
-            })
-                .then(r => r.json())
+            ApiClient.post(BASE + '/auth/token/revoke', { token_id: tokenId, token: tokenRaw })
                 .then(() => loadTokens())
                 .catch(() => alert('Erreur lors de la révocation.'));
         }

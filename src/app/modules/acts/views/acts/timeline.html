@@ -106,8 +106,6 @@
         var BASE = '{{ @base }}';
         var PID = {{ @project.id
     }};
-    var CSRF = document.querySelector('meta[name="csrf-token"]')?.content || '';
-
     // ── Utilities ──────────────────────────────────────────────────────────
     function toast(msg, ok) {
         var el = document.getElementById('timelineToast');
@@ -118,11 +116,7 @@
     }
 
     function postJson(url, body) {
-        return fetch(url, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json', 'X-CSRF-Token': CSRF },
-            body: JSON.stringify(body)
-        }).then(function (r) { return r.json(); });
+        return ApiClient.post(url, body);
     }
 
     // ── Chapter drag-and-drop ──────────────────────────────────────────────

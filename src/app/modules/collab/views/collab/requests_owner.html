@@ -101,16 +101,13 @@
 <script nonce="{{ @nonce }}">
     (function () {
         var BASE = '{{ @base }}';
-        var CSRF = '{{ @csrfToken }}';
 
         function sendAction(url, extraData, cardId, successFn) {
             var fd = new FormData();
-            fd.append('csrf_token', CSRF);
             if (extraData) {
                 Object.keys(extraData).forEach(function (k) { fd.append(k, extraData[k]); });
             }
-            fetch(url, { method: 'POST', body: fd })
-                .then(function (r) { return r.json(); })
+            ApiClient.postForm(url, fd)
                 .then(function (res) {
                     if (res.status === 'ok') {
                         successFn(cardId);

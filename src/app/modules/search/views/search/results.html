@@ -44,6 +44,9 @@
                                 {{ @res.type }}
                             </div>
                             <div class="search-result-body">
+                                <check if="{{ !empty(@res.context) }}">
+                                    <div class="search-result-context">{{ @res.context | esc }}</div>
+                                </check>
                                 <div class="search-result-title">{{ @res.title | raw }}</div>
                                 <check if="{{ !empty(@res.excerpt) }}">
                                     <div class="search-result-excerpt">{{ @res.excerpt | raw }}</div>

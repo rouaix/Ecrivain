@@ -30,13 +30,7 @@ class AiAnalysisController extends AiBaseController
             return;
         }
 
-        $projectModel = new \Project($db);
-        $projectModel->load(['id=? AND user_id=?', $chapter->project_id, $this->currentUser()['id']]);
-        if ($projectModel->dry()) {
-            http_response_code(403);
-            echo json_encode(['success' => false, 'error' => 'Accès non autorisé']);
-            return;
-        }
+        $this->requireProjectAccessForApi((int)$chapter->project_id);
 
         if (!$this->checkRateLimit('ai_gen', 10, 60)) {
             http_response_code(429);
@@ -146,13 +140,7 @@ class AiAnalysisController extends AiBaseController
             return;
         }
 
-        $projectModel = new \Project($db);
-        $projectModel->load(['id=? AND user_id=?', $chapter->project_id, $this->currentUser()['id']]);
-        if ($projectModel->dry()) {
-            http_response_code(403);
-            echo json_encode(['success' => false, 'error' => 'Accès non autorisé']);
-            return;
-        }
+        $this->requireProjectAccessForApi((int)$chapter->project_id);
 
         if (!$this->checkRateLimit('ai_gen', 10, 60)) {
             http_response_code(429);
@@ -267,14 +255,9 @@ class AiAnalysisController extends AiBaseController
             return;
         }
 
-        $db      = $this->f3->get('DB');
-        $project = $db->exec('SELECT id, title FROM projects WHERE id = ? AND user_id = ?', [$pid, $user['id']]);
-        if (empty($project)) {
-            http_response_code(403);
-            echo json_encode(['success' => false, 'error' => 'Accès refusé']);
-            return;
-        }
+        $this->requireProjectAccessForApi($pid);
 
+        $db = $this->f3->get('DB');
         $characters = $db->exec('SELECT id, name, description, group_name FROM characters WHERE project_id = ? ORDER BY name ASC', [$pid]) ?: [];
         if (count($characters) < 2) {
             echo json_encode(['success' => false, 'error' => 'Il faut au moins 2 personnages pour suggérer des relations.']);

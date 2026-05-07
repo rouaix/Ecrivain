@@ -28,25 +28,6 @@ class LectureController extends Controller
         }
         $project = $project[0];
 
-        // TEMPLATE SYSTEM: Load template configuration
-        $templateElements = [];
-        $db = $this->f3->get('DB');
-        if ($db->exists('templates') && $db->exists('template_elements')) {
-            $templateId = $project['template_id'] ?? null;
-            $templateModel = new ProjectTemplate();
-
-            if (!$templateId) {
-                $template = $templateModel->getDefault();
-                $templateId = $template['id'] ?? null;
-            } else {
-                $template = $templateModel->findAndCast(['id=?', $templateId]);
-                $template = $template ? $template[0] : $templateModel->getDefault();
-            }
-
-            // Load template elements configuration
-            $templateElements = $template ? $templateModel->getElements($template['id']) : [];
-        }
-
         // Get project settings
         $settings = json_decode($project['settings'] ?? '{}', true);
         $authorName = $settings['author'] ?? $this->getUserFullName($this->currentUser());
@@ -58,515 +39,33 @@ class LectureController extends Controller
             $coverImage = $this->f3->get('BASE') . '/project/' . $pid . '/cover';
         }
 
-        // Fetch all content
-        $chapterModel = new Chapter();
-        $allChapters = $chapterModel->getAllByProject($pid);
+        // Use ReadingContentService to build reading content
+        $readingService = new ReadingContentService($this->f3->get('DB'), $this);
+        
+        // Load template elements
+        $templateElements = $readingService->loadTemplateElements($project);
+        
+        // Load and organize reading data
+        $readingData = $readingService->loadReadingData($pid, $lpp);
+        
+        // Build reading content and TOC
+        $buildResult = $readingService->buildReadingContent($readingData, $templateElements);
+        
+        $readingContent = $buildResult['readingContent'];
+        $tocItems = $buildResult['tocItems'];
+        $totalPages = $buildResult['totalPages'];
 
-        $actModel = new Act();
-        $acts = $actModel->getAllByProject($pid);
-
-        $sectionModel = new Section();
-        $sectionsBeforeChapters = $sectionModel->getBeforeChapters($pid);
-        $sectionsAfterChapters = $sectionModel->getAfterChapters($pid);
-
-        $noteModel = new Note();
-        $notes = array_values(array_filter(
-            $noteModel->getAllByProject($pid),
-            fn($n) => ($n['type'] ?? 'note') !== 'scenario'
-        ));
-
-        $scenarioModel = new Scenario();
-        $scenarios = $scenarioModel->getAllByProject($pid);
-
-        // Build reading content in order
-        $readingContent = [];
-        $tocItems = [];
-        $currentPage = 1;
-
-        // Helper to prepare content for display
-        $prepareContent = function ($content) {
-            $decoded = html_entity_decode($content ?? '');
-            return $this->cleanQuillHtml($decoded);
-        };
-
-        // Helper to prepare scenario content: unwrap <pre><code> blocks from code-fence converted markdown
-        $prepareScenario = function ($content) {
-            $html = html_entity_decode($content ?? '');
-            $html = preg_replace_callback(
-                '/<pre[^>]*>(?:<code[^>]*>)?([\s\S]*?)(?:<\/code>)?<\/pre>/i',
-                function ($m) {
-                    $text = html_entity_decode($m[1], ENT_QUOTES, 'UTF-8');
-                    $lines = preg_split('/\r?\n/', trim($text));
-                    $result = '';
-                    foreach ($lines as $line) {
-                        if (trim($line) !== '') {
-                            $result .= '<p>' . htmlspecialchars($line, ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8') . '</p>';
-                        }
-                    }
-                    return $result ?: '';
-                },
-                $html
+        // FALLBACK: If template produced no chapters/acts but the project has chapters, render them directly
+        if (!$readingService->hasRenderedChapters($readingContent) && !empty($readingData['allChapters'])) {
+            $fallbackCurrentPage = $totalPages + 1;
+            $readingService->buildFallbackContent(
+                $readingData,
+                $readingContent,
+                $tocItems,
+                $fallbackCurrentPage
             );
-            return $this->cleanQuillHtml($html);
-        };
-        // Helper to calculate pages
-        $calculatePages = function ($content) use ($lpp) {
-            $cleanContent = strip_tags(html_entity_decode($content ?? ''));
-            $lines = 0;
-            if ($cleanContent !== '') {
-                $lines = ceil(strlen($cleanContent) / 80);
-            }
-            return max(1, ceil($lines / $lpp));
-        };
-
-        // TEMPLATE SYSTEM: Organize chapters by hierarchy
-        $chaptersByAct = [];
-        $chaptersWithoutAct = [];
-        $subChaptersByParent = [];
-
-        foreach ($allChapters as $ch) {
-            if ($ch['parent_id']) {
-                $subChaptersByParent[$ch['parent_id']][] = $ch;
-            }
+            $totalPages = $fallbackCurrentPage - 1;
         }
-
-        foreach ($allChapters as $ch) {
-            if (!$ch['parent_id']) {
-                if ($ch['act_id']) {
-                    $chaptersByAct[$ch['act_id']][] = $ch;
-                } else {
-                    $chaptersWithoutAct[] = $ch;
-                }
-            }
-        }
-
-        // Load custom elements (only if table exists)
-        $customElementsByType = [];
-        $customSubElementsByParent = [];
-        if ($db->exists('elements')) {
-            $elementModel = new Element();
-            $customElements = $elementModel->getAllByProject($pid);
-        } else {
-            $customElements = [];
-        }
-
-        foreach ($customElements as $elem) {
-            $tid = $elem['template_element_id'];
-            if (!isset($customElementsByType[$tid])) {
-                $customElementsByType[$tid] = [];
-            }
-
-            if ($elem['parent_id']) {
-                $customSubElementsByParent[$elem['parent_id']][] = $elem;
-            } else {
-                $customElementsByType[$tid][] = $elem;
-            }
-        }
-
-        // Synopsis (prepended before template content if exported)
-        if ($db->exists('synopsis')) {
-            $synopsisModel = new Synopsis();
-            $synopsisData  = $synopsisModel->getByProject($pid);
-            if ($synopsisData && ($synopsisData['is_exported'] ?? 1)) {
-                $readingContent[] = [
-                    'type'        => 'synopsis',
-                    'id'          => $synopsisData['id'] ?? null,
-                    'title'       => 'Synopsis',
-                    'logline'     => $synopsisData['logline'] ?? '',
-                    'pitch'       => $prepareContent($synopsisData['pitch'] ?? ''),
-                    'situation'   => $synopsisData['situation'] ?? '',
-                    'trigger_evt' => $synopsisData['trigger_evt'] ?? '',
-                    'plot_point1' => $synopsisData['plot_point1'] ?? '',
-                    'development' => $prepareContent($synopsisData['development'] ?? ''),
-                    'midpoint'    => $synopsisData['midpoint'] ?? '',
-                    'crisis'      => $synopsisData['crisis'] ?? '',
-                    'climax'      => $prepareContent($synopsisData['climax'] ?? ''),
-                    'resolution'  => $prepareContent($synopsisData['resolution'] ?? ''),
-                    'page_start'  => $currentPage,
-                    'page_end'    => $currentPage,
-                ];
-            }
-        }
-
-        // LOOP THROUGH TEMPLATE ELEMENTS
-        foreach ($templateElements as $elem) {
-            if (!$elem['is_enabled']) continue;
-
-            switch ($elem['element_type']) {
-                case 'section':
-                    // Process sections (before or after)
-                    $sections = ($elem['section_placement'] === 'before') ? $sectionsBeforeChapters : $sectionsAfterChapters;
-                    foreach ($sections as $sec) {
-                        if ($sec['type'] !== $elem['element_subtype']) continue;
-                        if (!($sec['is_exported'] ?? 1)) continue;
-
-                        $pages = $calculatePages($sec['content']);
-                        $typeName = Section::getTypeName($sec['type']);
-
-                        $readingContent[] = [
-                            'type' => 'section',
-                            'id' => $sec['id'],
-                            'title' => $sec['title'] ?: $typeName,
-                            'content' => $prepareContent($sec['content']),
-                            'page_start' => $currentPage,
-                            'page_end' => $currentPage + $pages - 1
-                        ];
-
-                        $tocItems[] = [
-                            'title' => $sec['title'] ?: $typeName,
-                            'page' => $currentPage,
-                            'level' => 0
-                        ];
-
-                        $currentPage += $pages;
-                    }
-                    break;
-
-                case 'act':
-                    // Process acts with their chapters
-                    foreach ($acts as $act) {
-                        $actChapters = $chaptersByAct[$act['id']] ?? [];
-                        $hasExportedChapters = false;
-                        foreach ($actChapters as $ch) {
-                            if ($ch['is_exported'] ?? 1) {
-                                $hasExportedChapters = true;
-                                break;
-                            }
-                        }
-
-                        $actHasContent = !empty($act['content']) && ($act['is_exported'] ?? 1);
-                        if (!$actHasContent && !$hasExportedChapters) {
-                            continue;
-                        }
-
-                        $tocItems[] = [
-                            'title' => $act['title'],
-                            'page' => $currentPage,
-                            'level' => 0
-                        ];
-
-                        if ($actHasContent) {
-                            $pages = $calculatePages($act['content']);
-                            $readingContent[] = [
-                                'type' => 'act',
-                                'id' => $act['id'],
-                                'title' => $act['title'],
-                                'content' => $prepareContent($act['content']),
-                                'page_start' => $currentPage,
-                                'page_end' => $currentPage + $pages - 1
-                            ];
-                            $currentPage += $pages;
-                        }
-
-                        foreach ($actChapters as $ch) {
-                            if (!($ch['is_exported'] ?? 1)) continue;
-
-                            $pages = $calculatePages($ch['content']);
-                            $readingContent[] = [
-                                'type' => 'chapter',
-                                'id' => $ch['id'],
-                                'title' => $ch['title'],
-                                'content' => $prepareContent($ch['content']),
-                                'page_start' => $currentPage,
-                                'page_end' => $currentPage + $pages - 1
-                            ];
-
-                            $tocItems[] = [
-                                'title' => $ch['title'],
-                                'page' => $currentPage,
-                                'level' => 1
-                            ];
-
-                            $currentPage += $pages;
-
-                            // Sub-chapters
-                            $subs = $subChaptersByParent[$ch['id']] ?? [];
-                            foreach ($subs as $sub) {
-                                if (!($sub['is_exported'] ?? 1)) continue;
-
-                                $subPages = $calculatePages($sub['content']);
-                                $readingContent[] = [
-                                    'type' => 'subchapter',
-                                    'id' => $sub['id'],
-                                    'title' => $sub['title'],
-                                    'content' => $prepareContent($sub['content']),
-                                    'page_start' => $currentPage,
-                                    'page_end' => $currentPage + $subPages - 1
-                                ];
-
-                                $tocItems[] = [
-                                    'title' => $sub['title'],
-                                    'page' => $currentPage,
-                                    'level' => 2
-                                ];
-
-                                $currentPage += $subPages;
-                            }
-                        }
-                    }
-                    break;
-
-                case 'chapter':
-                    // Process orphan chapters (without act)
-                    foreach ($chaptersWithoutAct as $ch) {
-                        if (!($ch['is_exported'] ?? 1)) continue;
-
-                        $pages = $calculatePages($ch['content']);
-                        $readingContent[] = [
-                            'type' => 'chapter',
-                            'id' => $ch['id'],
-                            'title' => $ch['title'],
-                            'content' => $prepareContent($ch['content']),
-                            'page_start' => $currentPage,
-                            'page_end' => $currentPage + $pages - 1
-                        ];
-
-                        $tocItems[] = [
-                            'title' => $ch['title'],
-                            'page' => $currentPage,
-                            'level' => 0
-                        ];
-
-                        $currentPage += $pages;
-
-                        // Sub-chapters
-                        $subs = $subChaptersByParent[$ch['id']] ?? [];
-                        foreach ($subs as $sub) {
-                            if (!($sub['is_exported'] ?? 1)) continue;
-
-                            $subPages = $calculatePages($sub['content']);
-                            $readingContent[] = [
-                                'type' => 'subchapter',
-                                'id' => $sub['id'],
-                                'title' => $sub['title'],
-                                'content' => $prepareContent($sub['content']),
-                                'page_start' => $currentPage,
-                                'page_end' => $currentPage + $subPages - 1
-                            ];
-
-                            $tocItems[] = [
-                                'title' => $sub['title'],
-                                'page' => $currentPage,
-                                'level' => 1
-                            ];
-
-                            $currentPage += $subPages;
-                        }
-                    }
-                    break;
-
-                case 'note':
-                    // Process notes
-                    foreach ($notes as $note) {
-                        if (!($note['is_exported'] ?? 1)) continue;
-
-                        $pages = $calculatePages($note['content']);
-                        $readingContent[] = [
-                            'type' => 'note',
-                            'id' => $note['id'],
-                            'title' => $note['title'],
-                            'content' => $prepareContent($note['content']),
-                            'page_start' => $currentPage,
-                            'page_end' => $currentPage + $pages - 1
-                        ];
-
-                        $tocItems[] = [
-                            'title' => $note['title'],
-                            'page' => $currentPage,
-                            'level' => 0
-                        ];
-
-                        $currentPage += $pages;
-                    }
-                    break;
-
-                case 'element':
-                    // Process custom elements
-                    $elements = $customElementsByType[$elem['id']] ?? [];
-                    foreach ($elements as $e) {
-                        if (!($e['is_exported'] ?? 1)) continue;
-
-                        $pages = $calculatePages($e['content']);
-                        $readingContent[] = [
-                            'type' => 'element',
-                            'id' => $e['id'],
-                            'title' => $e['title'],
-                            'content' => $prepareContent($e['content']),
-                            'page_start' => $currentPage,
-                            'page_end' => $currentPage + $pages - 1
-                        ];
-
-                        $tocItems[] = [
-                            'title' => $e['title'],
-                            'page' => $currentPage,
-                            'level' => $e['parent_id'] ? 1 : 0
-                        ];
-
-                        $currentPage += $pages;
-
-                        // Sub-elements
-                        $subs = $customSubElementsByParent[$e['id']] ?? [];
-                        foreach ($subs as $sub) {
-                            if (!($sub['is_exported'] ?? 1)) continue;
-
-                            $subPages = $calculatePages($sub['content']);
-                            $readingContent[] = [
-                                'type' => 'subelement',
-                                'id' => $sub['id'],
-                                'title' => $sub['title'],
-                                'content' => $prepareContent($sub['content']),
-                                'page_start' => $currentPage,
-                                'page_end' => $currentPage + $subPages - 1
-                            ];
-
-                            $tocItems[] = [
-                                'title' => $sub['title'],
-                                'page' => $currentPage,
-                                'level' => 2
-                            ];
-
-                            $currentPage += $subPages;
-                        }
-                    }
-                    break;
-
-                case 'scenario':
-                    foreach ($scenarios as $sc) {
-                        if (!($sc['is_exported'] ?? 1)) continue;
-
-                        $pages = $calculatePages($sc['content']);
-                        $readingContent[] = [
-                            'type'       => 'scenario',
-                            'id'         => $sc['id'],
-                            'title'      => $sc['title'],
-                            'content'    => $prepareScenario($sc['content']),
-                            'page_start' => $currentPage,
-                            'page_end'   => $currentPage + $pages - 1
-                        ];
-
-                        $tocItems[] = [
-                            'title' => $sc['title'],
-                            'page'  => $currentPage,
-                            'level' => 0
-                        ];
-
-                        $currentPage += $pages;
-                    }
-                    break;
-
-                case 'character':
-                case 'file':
-                    // Characters and files are not typically displayed in reading mode
-                    break;
-            }
-        }
-
-        // FALLBACK: If template produced no chapters/acts but the project has chapters, render them directly.
-        // This handles the case where the custom template is misconfigured (e.g. chapter element was deleted).
-        $hasRenderedChapters = false;
-        foreach ($readingContent as $rc) {
-            if (in_array($rc['type'], ['chapter', 'subchapter', 'act'])) {
-                $hasRenderedChapters = true;
-                break;
-            }
-        }
-
-        if (!$hasRenderedChapters && !empty($allChapters)) {
-            // Chapters without act
-            foreach ($chaptersWithoutAct as $ch) {
-                if (!($ch['is_exported'] ?? 1)) continue;
-
-                $pages = $calculatePages($ch['content']);
-                $readingContent[] = [
-                    'type'       => 'chapter',
-                    'id'         => $ch['id'],
-                    'title'      => $ch['title'],
-                    'content'    => $prepareContent($ch['content']),
-                    'page_start' => $currentPage,
-                    'page_end'   => $currentPage + $pages - 1
-                ];
-                $tocItems[] = ['title' => $ch['title'], 'page' => $currentPage, 'level' => 0];
-                $currentPage += $pages;
-
-                $subs = $subChaptersByParent[$ch['id']] ?? [];
-                foreach ($subs as $sub) {
-                    if (!($sub['is_exported'] ?? 1)) continue;
-                    $subPages = $calculatePages($sub['content']);
-                    $readingContent[] = [
-                        'type'       => 'subchapter',
-                        'id'         => $sub['id'],
-                        'title'      => $sub['title'],
-                        'content'    => $prepareContent($sub['content']),
-                        'page_start' => $currentPage,
-                        'page_end'   => $currentPage + $subPages - 1
-                    ];
-                    $tocItems[] = ['title' => $sub['title'], 'page' => $currentPage, 'level' => 1];
-                    $currentPage += $subPages;
-                }
-            }
-
-            // Acts with their chapters
-            foreach ($acts as $act) {
-                $actChapters = $chaptersByAct[$act['id']] ?? [];
-                $actHasContent = !empty($act['content']) && ($act['is_exported'] ?? 1);
-                $hasExportedChapters = false;
-                foreach ($actChapters as $ch) {
-                    if ($ch['is_exported'] ?? 1) {
-                        $hasExportedChapters = true;
-                        break;
-                    }
-                }
-                if (!$actHasContent && !$hasExportedChapters) continue;
-
-                $tocItems[] = ['title' => $act['title'], 'page' => $currentPage, 'level' => 0];
-
-                if ($actHasContent) {
-                    $pages = $calculatePages($act['content']);
-                    $readingContent[] = [
-                        'type'       => 'act',
-                        'id'         => $act['id'],
-                        'title'      => $act['title'],
-                        'content'    => $prepareContent($act['content']),
-                        'page_start' => $currentPage,
-                        'page_end'   => $currentPage + $pages - 1
-                    ];
-                    $currentPage += $pages;
-                }
-
-                foreach ($actChapters as $ch) {
-                    if (!($ch['is_exported'] ?? 1)) continue;
-                    $pages = $calculatePages($ch['content']);
-                    $readingContent[] = [
-                        'type'       => 'chapter',
-                        'id'         => $ch['id'],
-                        'title'      => $ch['title'],
-                        'content'    => $prepareContent($ch['content']),
-                        'page_start' => $currentPage,
-                        'page_end'   => $currentPage + $pages - 1
-                    ];
-                    $tocItems[] = ['title' => $ch['title'], 'page' => $currentPage, 'level' => 1];
-                    $currentPage += $pages;
-
-                    $subs = $subChaptersByParent[$ch['id']] ?? [];
-                    foreach ($subs as $sub) {
-                        if (!($sub['is_exported'] ?? 1)) continue;
-                        $subPages = $calculatePages($sub['content']);
-                        $readingContent[] = [
-                            'type'       => 'subchapter',
-                            'id'         => $sub['id'],
-                            'title'      => $sub['title'],
-                            'content'    => $prepareContent($sub['content']),
-                            'page_start' => $currentPage,
-                            'page_end'   => $currentPage + $subPages - 1
-                        ];
-                        $tocItems[] = ['title' => $sub['title'], 'page' => $currentPage, 'level' => 2];
-                        $currentPage += $subPages;
-                    }
-                }
-            }
-        }
-
-        $totalPages = $currentPage - 1;
 
         // Render without layout for immersive reading mode
         $this->f3->mset([
@@ -587,6 +86,7 @@ class LectureController extends Controller
 
     public function addComment()
     {
+        header('Content-Type: application/json');
         $body = json_decode($this->f3->get('BODY'), true);
         $type = $body['type'] ?? '';
         $id = (int) ($body['id'] ?? 0);
@@ -646,6 +146,7 @@ class LectureController extends Controller
 
     public function saveBookmark()
     {
+        header('Content-Type: application/json');
         $body = json_decode($this->f3->get('BODY'), true);
         $projectId = (int) ($body['project_id'] ?? 0);
         $scrollPosition = (int) ($body['scroll_position'] ?? 0);
@@ -699,6 +200,7 @@ class LectureController extends Controller
 
     public function getBookmark()
     {
+        header('Content-Type: application/json');
         $projectId = (int) $this->f3->get('GET.project_id');
 
         if (!$projectId) {

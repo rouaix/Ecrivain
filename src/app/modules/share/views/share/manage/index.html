@@ -89,21 +89,15 @@
     document.querySelectorAll('.btn-toggle').forEach(btn => {
         btn.addEventListener('click', function () {
             const id = this.dataset.id;
-            fetch('{{ @base }}/share/' + id + '/toggle', {
-                method: 'POST',
-                headers: {
-                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content,
-                    'Content-Type': 'application/json'
-                }
-            })
-                .then(r => r.json())
+            const self = this;
+            ApiClient.post('{{ @base }}/share/' + id + '/toggle', {})
                 .then(data => {
                     const active = data.is_active;
                     const badge = document.getElementById('badge-' + id);
                     badge.textContent = active ? 'Actif' : 'Inactif';
                     badge.className = 'share-badge ' + (active ? 'badge-active' : 'badge-inactive');
-                    this.dataset.active = active;
-                    this.innerHTML = active
+                    self.dataset.active = active;
+                    self.innerHTML = active
                         ? '<i class="fas fa-toggle-on" aria-hidden="true"></i>&nbsp;Désactiver'
                         : '<i class="fas fa-toggle-off" aria-hidden="true"></i>&nbsp;Activer';
                 });

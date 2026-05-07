@@ -171,8 +171,7 @@
       var fd = new FormData();
       fd.append('file', file);
       fd.append('csrf_token', csrfToken);
-      fetch(base + '/project/' + pid + '/scenariste/upload-source', { method: 'POST', body: fd })
-        .then(function (r) { return r.json(); })
+      ApiClient.postForm(base + '/project/' + pid + '/scenariste/upload-source', fd)
         .then(function (data) {
           if (data.success) {
             uploadedContent.value = data.content;
@@ -242,8 +241,7 @@
 
       var fd = new FormData(form);
 
-      fetch(base + '/project/' + pid + '/scenariste/generate', { method: 'POST', body: fd })
-        .then(function (r) { return r.json(); })
+      ApiClient.postForm(base + '/project/' + pid + '/scenariste/generate', fd)
         .then(function (data) {
           stopSteps();
           if (data.success) {

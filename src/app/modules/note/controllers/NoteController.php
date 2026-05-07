@@ -24,19 +24,19 @@ class NoteController extends Controller
         }
 
         $projectModel = new Project();
-        $projects = $projectModel->findAndCast(['id=?', $pid]);
-        if (!$projects) {
+        $rows = $projectModel->findAndCast(['id=?', $pid]);
+        if (!$rows) {
             $this->f3->error(404);
             return;
         }
-        $project = $projects[0];
+        $project = $rows[0];
 
         $noteModel = new Note();
         $notes = $noteModel->getAllByProject($pid);
 
         // Assign cycling color index + compute word count from content
         $notes = array_map(function ($n, $idx) {
-            $n['title']      = html_entity_decode(strip_tags($n['title'] ?? ''), ENT_QUOTES | ENT_HTML5, 'UTF-8');
+            $n['title']      = $this->sanitizeText($n['title'] ?? '');
             $n['colorIndex'] = ($idx % 6) + 1;
             if (!isset($n['wc'])) {
                 $text = strip_tags($n['content'] ?? '');
@@ -73,15 +73,7 @@ class NoteController extends Controller
         $pid = (int) $this->f3->get('PARAMS.pid');
         $noteId = isset($_GET['id']) ? (int) $_GET['id'] : null;
 
-        // Verify project ownership
-        $projectModel = new Project();
-        $project = $projectModel->findAndCast(['id=? AND user_id=?', $pid, $this->currentUser()['id']]);
-
-        if (!$project) {
-            $this->f3->error(404, 'Projet introuvable.');
-            return;
-        }
-        $project = $project[0];
+        $project = $this->requireOwnedProject($pid);
 
         // Load note if editing
         $note = null;
@@ -110,17 +102,9 @@ class NoteController extends Controller
         $pid = (int) $this->f3->get('PARAMS.pid');
         $noteId = isset($_GET['id']) ? (int) $_GET['id'] : null;
 
-        // Verify project ownership
-        $projectModel = new Project();
-        $project = $projectModel->findAndCast(['id=? AND user_id=?', $pid, $this->currentUser()['id']]);
+        $project = $this->requireOwnedProject($pid);
 
-        if (!$project) {
-            $this->f3->error(404, 'Projet introuvable.');
-            return;
-        }
-        $project = $project[0];
-
-        $title = html_entity_decode(strip_tags(trim($_POST['title'] ?? '')), ENT_QUOTES | ENT_HTML5, 'UTF-8');
+        $title = $this->sanitizeText(trim($_POST['title'] ?? ''));
         $content = $_POST['content'] ?? '';
         $content = $this->cleanQuillHtml($content);
         $comment = $_POST['comment'] ?? '';
@@ -168,16 +152,13 @@ class NoteController extends Controller
         $noteModel->load(['id=?', $nid]);
 
         if (!$noteModel->dry()) {
-            // Verify project ownership
-            $projectModel = new Project();
-            if ($projectModel->count(['id=? AND user_id=?', $noteModel->project_id, $this->currentUser()['id']])) {
-                $pid   = $noteModel->project_id;
-                $label = $noteModel->title;
-                $noteModel->erase();
-                $this->logActivity($pid, 'delete', 'note', $nid, $label);
-                $this->f3->reroute('/project/' . $pid);
-                return;
-            }
+            $this->requireOwnedProject((int) $noteModel->project_id);
+            $pid   = $noteModel->project_id;
+            $label = $noteModel->title;
+            $noteModel->erase();
+            $this->logActivity($pid, 'delete', 'note', $nid, $label);
+            $this->f3->reroute('/project/' . $pid);
+            return;
         }
 
         $this->f3->reroute('/dashboard');

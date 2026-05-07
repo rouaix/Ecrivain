@@ -14,17 +14,19 @@ body.ui-pro .edit-page-layout {
 }
 
 /* En-tête d'édition — compact, collé au topbar */
+/*
 body.ui-pro .edit-header {
     display: flex;
     align-items: center;
     justify-content: space-between;
     gap: 12px;
     padding: 15px 0;
-    /*border-bottom: 1px solid var(--input-border);*/
+    border-bottom: 1px solid var(--input-border);
     border: none;
     margin-bottom: 0;
     flex-wrap: wrap;
 }
+*/
 
 body.ui-pro .edit-header h1,
 body.ui-pro .edit-header h2 {
@@ -1734,7 +1736,7 @@ body.ui-pro .ms-act {
     overflow: hidden;
 }
 
-body.ui-pro .ms-act > summary {
+body.ui-pro .ms-act>summary {
     display: flex;
     align-items: center;
     gap: 8px;
@@ -1746,10 +1748,15 @@ body.ui-pro .ms-act > summary {
     min-height: 40px;
 }
 
-body.ui-pro .ms-act > summary::-webkit-details-marker { display: none; }
-body.ui-pro .ms-act > summary::marker { display: none; }
+body.ui-pro .ms-act>summary::-webkit-details-marker {
+    display: none;
+}
 
-body.ui-pro .ms-act > summary:hover {
+body.ui-pro .ms-act>summary::marker {
+    display: none;
+}
+
+body.ui-pro .ms-act>summary:hover {
     background: var(--table-row-hover-bg);
 }
 
@@ -1762,7 +1769,7 @@ body.ui-pro .ms-act-arrow {
     line-height: 1;
 }
 
-body.ui-pro .ms-act[open] > summary .ms-act-arrow {
+body.ui-pro .ms-act[open]>summary .ms-act-arrow {
     transform: rotate(90deg);
 }
 
@@ -1792,7 +1799,7 @@ body.ui-pro .ms-act-actions {
     transition: opacity 0.12s;
 }
 
-body.ui-pro .ms-act > summary:hover .ms-act-actions {
+body.ui-pro .ms-act>summary:hover .ms-act-actions {
     opacity: 1;
 }
 
@@ -1828,11 +1835,13 @@ body.ui-pro .ms-chapter-table tr:hover {
 body.ui-pro .ms-hidden-cell .export-toggle {
     display: none;
 }
+
 body.ui-pro td.ms-hidden-cell {
     width: 44px;
     padding: 0 4px;
     text-align: center;
 }
+
 body.ui-pro div.ms-hidden-cell {
     display: inline-flex;
     align-items: center;
@@ -1957,18 +1966,18 @@ body.ui-pro .ms-act-done.is-done:hover {
     color: #16a34a;
 }
 
-body.ui-pro .ms-act--done > summary .ms-act-title {
+body.ui-pro .ms-act--done>summary .ms-act-title {
     color: var(--text-muted);
     text-decoration: line-through;
     opacity: 0.65;
 }
 
 /* Sous-chapitres */
-body.ui-pro .ms-sub-row > td {
+body.ui-pro .ms-sub-row>td {
     background: var(--body-bg);
 }
 
-body.ui-pro .ms-sub-row:hover > td {
+body.ui-pro .ms-sub-row:hover>td {
     background: var(--table-row-hover-bg);
 }
 
@@ -2011,7 +2020,7 @@ body.ui-pro .ms-panel {
     overflow: hidden;
 }
 
-body.ui-pro .ms-panel > summary {
+body.ui-pro .ms-panel>summary {
     display: flex;
     align-items: center;
     gap: 8px;
@@ -2025,12 +2034,20 @@ body.ui-pro .ms-panel > summary {
     user-select: none;
 }
 
-body.ui-pro .ms-panel > summary::-webkit-details-marker { display: none; }
-body.ui-pro .ms-panel > summary::marker { display: none; }
-/* Annule le › injecté par pro-pages.css sur .panel > summary::before */
-body.ui-pro .ms-panel > summary::before { content: none; }
+body.ui-pro .ms-panel>summary::-webkit-details-marker {
+    display: none;
+}
 
-body.ui-pro .ms-panel > summary:hover {
+body.ui-pro .ms-panel>summary::marker {
+    display: none;
+}
+
+/* Annule le › injecté par pro-pages.css sur .panel > summary::before */
+body.ui-pro .ms-panel>summary::before {
+    content: none;
+}
+
+body.ui-pro .ms-panel>summary:hover {
     background: var(--table-row-hover-bg);
 }
 
@@ -2043,7 +2060,7 @@ body.ui-pro .ms-panel-arrow {
     line-height: 1;
 }
 
-body.ui-pro .ms-panel[open] > summary .ms-panel-arrow {
+body.ui-pro .ms-panel[open]>summary .ms-panel-arrow {
     transform: rotate(90deg);
 }
 
@@ -2153,7 +2170,7 @@ body.ui-pro .overview-resource-link:hover {
     text-decoration: none;
 }
 
-body.ui-pro .overview-resource-link > i:first-child {
+body.ui-pro .overview-resource-link>i:first-child {
     width: 16px;
     text-align: center;
     color: var(--text-muted);
@@ -2194,7 +2211,7 @@ body.ui-pro .collab-banner {
     flex-wrap: wrap;
 }
 
-body.ui-pro .collab-banner > i {
+body.ui-pro .collab-banner>i {
     color: #f59e0b;
     flex-shrink: 0;
 }

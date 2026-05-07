@@ -1,9 +1,65 @@
 <?php
 
+require_once __DIR__ . '/../../../core/TokenService.php';
+require_once __DIR__ . '/../../../services/auth/AuthService.php';
+require_once __DIR__ . '/../../../services/auth/PasswordResetService.php';
+require_once __DIR__ . '/../../../services/auth/RegistrationService.php';
+require_once __DIR__ . '/../../../services/auth/WeeklyStatsService.php';
+require_once __DIR__ . '/../../../services/auth/JwtTokenService.php';
+
 class AuthController extends Controller
 {
 
     private const PASSWORD_RESET_TTL = 3600;
+    private ?AuthService $authService = null;
+    private ?RegistrationService $registrationService = null;
+    private ?PasswordResetService $passwordResetService = null;
+    private ?WeeklyStatsService $weeklyStatsService = null;
+    private ?JwtTokenService $jwtTokenService = null;
+
+    private function getAuthService(): AuthService
+    {
+        if ($this->authService === null) {
+            $this->authService = new AuthService($this->f3->get('DB'), $this->f3);
+        }
+        return $this->authService;
+    }
+
+    private function getRegistrationService(): RegistrationService
+    {
+        if ($this->registrationService === null) {
+            $this->registrationService = new RegistrationService($this->f3->get('DB'), $this->f3);
+        }
+        return $this->registrationService;
+    }
+
+    private function getPasswordResetService(): PasswordResetService
+    {
+        if ($this->passwordResetService === null) {
+            $resetDir = 'tmp/password-resets';
+            if (!is_dir($resetDir)) {
+                mkdir($resetDir, 0755, true);
+            }
+            $this->passwordResetService = new PasswordResetService($this->f3->get('DB'), $this->f3, $resetDir);
+        }
+        return $this->passwordResetService;
+    }
+
+    private function getWeeklyStatsService(): WeeklyStatsService
+    {
+        if ($this->weeklyStatsService === null) {
+            $this->weeklyStatsService = new WeeklyStatsService($this->f3->get('DB'));
+        }
+        return $this->weeklyStatsService;
+    }
+
+    private function getJwtTokenService(): JwtTokenService
+    {
+        if ($this->jwtTokenService === null) {
+            $this->jwtTokenService = new JwtTokenService($this->tokenService());
+        }
+        return $this->jwtTokenService;
+    }
 
     public function beforeRoute(Base $f3)
     {
@@ -73,72 +129,33 @@ class AuthController extends Controller
 
     public function authenticate()
     {
-
-        // $this->log("Authenticate called.");
-
-
-
         $username = trim($_POST['username'] ?? '');
-
         $password = $_POST['password'] ?? '';
-
-        // $this->log("Username: " . $username);
 
         $errors = [];
 
         // Rate Limiting Check
-
         $ip = $this->f3->get('IP');
-
-        if ($this->isRateLimited($ip)) {
-
-            $this->log("Rate limit exceeded for IP: " . $ip);
-
+        if ($this->getAuthService()->isRateLimited($ip)) {
             $errors[] = 'Trop de tentatives de connexion. Veuillez réessayer dans 15 minutes.';
 
             $this->render('auth/login.html', [
-
                 'title' => 'Connexion',
-
                 'errors' => $errors,
-
                 'success' => '',
-
                 'old' => ['username' => htmlspecialchars($username)],
-
             ]);
-
             return;
-
         }
 
-        $userModel = new User();
-
-        $user = $userModel->authenticate($username, $password);
+        $user = $this->getAuthService()->authenticateUser($username, $password);
 
         if ($user) {
-
-            $this->log("User authenticated. Old SessionID: " . session_id());
-
-            if (headers_sent($file, $line)) {
-
-                $this->log("WARNING: Headers already sent at $file:$line");
-
-            }
-
-            // Regenerate session ID to prevent session fixation attacks
-
-            // False = keep old session data temporarily to avoid race conditions/cookie failure
-
-            session_regenerate_id(false);
-
-            $_SESSION['user_id'] = $user['id'];
-
-            $this->log("New SessionID: " . session_id() . " | Set UserID: " . $_SESSION['user_id']);
+            $this->getAuthService()->initializeUserSession($user);
 
             // Send weekly stats email if enabled and due (non-blocking)
             try {
-                $this->sendWeeklyStatsIfDue(['id' => $user['id'], 'email' => $user['email']]);
+                $this->getWeeklyStatsService()->sendIfDue($user['id'], $user['email'], $user['username']);
             } catch (\Throwable $e) {
                 error_log('AuthController: weekly stats notification failed — ' . $e->getMessage());
             }
@@ -146,18 +163,10 @@ class AuthController extends Controller
             $redirectAfterLogin = $_SESSION['post_login_redirect'] ?? '';
             unset($_SESSION['post_login_redirect']);
 
-            session_write_close();
-
             $this->f3->reroute($redirectAfterLogin ?: '/dashboard');
-
         } else {
-
-            $this->log("Authentication failed for user: " . $username);
-
-            $this->incrementFailedLogin($ip);
-
+            $this->getAuthService()->incrementFailedLogin($ip);
             $errors[] = 'Identifiants invalides.';
-
         }
 
         $this->render('auth/login.html', [
@@ -193,175 +202,108 @@ class AuthController extends Controller
 
     public function requestPasswordReset()
     {
-
         $identifier = trim($_POST['username'] ?? '');
-
         $errors = [];
-
         $success = '';
-
-        $userModel = new User();
-
         $user = null;
 
         if ($identifier === '') {
-
             $errors[] = 'Merci de saisir votre nom d\'utilisateur ou votre adresse e-mail.';
-
         } else {
-
-            // If identifier looks like email, validate it
-
             if (strpos($identifier, '@') !== false) {
-
                 $validatedEmail = filter_var($identifier, FILTER_VALIDATE_EMAIL);
-
                 if (!$validatedEmail) {
-
                     $errors[] = 'Adresse e-mail invalide.';
-
                 } else {
-
                     $identifier = $validatedEmail;
-
                 }
-
             }
 
             if (empty($errors)) {
-
+                $userModel = new User();
                 $user = $userModel->findByUsernameOrEmail($identifier);
-
                 if (!$user || empty($user['email'])) {
-
                     $errors[] = 'Aucun compte ne correspond à cet identifiant.';
-
                 }
-
             }
-
         }
 
         if (empty($errors) && $user) {
-
-            $token = $this->createPasswordResetToken($user);
-
-            $this->sendPasswordResetEmail($user['email'], $token);
-
+            $token = $this->getPasswordResetService()->createResetToken($user);
+            $resetUrl = $this->getPasswordResetService()->buildResetUrl($token);
+            $this->getPasswordResetService()->sendResetEmail($user['email'], $resetUrl);
             $success = 'Un e-mail contenant les instructions de réinitialisation a été envoyé.';
-
         }
 
         $this->render('auth/forgot-password.html', [
-
             'title' => 'Mot de passe perdu',
-
             'errors' => $errors,
-
             'success' => $success,
-
             'old' => ['identifier' => htmlspecialchars($identifier)],
-
         ]);
-
     }
 
     public function showPasswordResetForm()
     {
-
         $token = $this->f3->get('PARAMS.token');
-
-        $reset = $this->loadPasswordResetToken($token);
+        $reset = $this->getPasswordResetService()->loadResetToken($token);
 
         $this->render('auth/reset-password.html', [
-
             'title' => 'Réinitialiser le mot de passe',
-
             'errors' => $reset ? [] : ['Le lien de réinitialisation est invalide ou a expiré.'],
-
             'success' => '',
-
             'token' => $token,
-
             'invalidToken' => !$reset,
-
         ]);
-
     }
 
     public function performPasswordReset()
     {
 
         $token = $this->f3->get('PARAMS.token');
-
-        $reset = $this->loadPasswordResetToken($token);
+        $reset = $this->getPasswordResetService()->loadResetToken($token);
 
         $password = $_POST['password'] ?? '';
-
         $confirm = $_POST['password_confirmation'] ?? '';
 
         $errors = [];
 
         if (!$reset) {
-
             $errors[] = 'Le lien de réinitialisation est invalide ou a expiré.';
-
         }
 
         if ($password === '' || $confirm === '') {
-
             $errors[] = 'Merci de saisir votre nouveau mot de passe deux fois.';
-
         } elseif ($password !== $confirm) {
-
             $errors[] = 'Les mots de passe ne correspondent pas.';
-
-        } elseif (strlen($password) < 8) {
-
-            $errors[] = 'Le mot de passe doit contenir au moins 8 caractères.';
-
+        } else {
+            $validation = $this->getPasswordResetService()->validatePasswordStrength($password);
+            if (!$validation['valid']) {
+                $errors = array_merge($errors, $validation['errors']);
+            }
         }
 
         if (empty($errors) && $reset) {
-
-            $userModel = new User();
-
-            if ($userModel->resetPassword((int) $reset['user_id'], $password)) {
-
-                $this->removePasswordResetToken($token);
+            if ($this->getPasswordResetService()->resetPassword((int)$reset['user_id'], $password)) {
+                $this->getPasswordResetService()->removeResetToken($token);
 
                 $this->render('auth/login.html', [
-
                     'title' => 'Connexion',
-
                     'errors' => [],
-
                     'success' => 'Votre mot de passe a été mis à jour. Connectez-vous.',
-
                     'old' => ['username' => htmlspecialchars($reset['email'])],
-
                 ]);
-
                 return;
-
             }
-
             $errors[] = 'Impossible de mettre à jour le mot de passe pour ce compte.';
-
         }
 
         $this->render('auth/reset-password.html', [
-
             'title' => 'Réinitialiser le mot de passe',
-
             'errors' => $errors,
-
             'success' => '',
-
             'token' => $token,
-
             'invalidToken' => !$reset,
-
         ]);
 
     }
@@ -385,503 +327,99 @@ class AuthController extends Controller
 
     public function store()
     {
-
-        $username = trim($_POST['username'] ?? '');
-
-        $password = $_POST['password'] ?? '';
-
-        $email = trim($_POST['email'] ?? '');
-
-        $errors = [];
-
-        $userModel = new User();
-
-        if ($username === '' || $password === '') {
-
-            $errors[] = 'Merci de remplir tous les champs obligatoires.';
-
-        }
-
-        if (strlen($password) < 8) {
-
-            $errors[] = 'Le mot de passe doit contenir au moins 8 caractères.';
-
-        }
-
-        if ($userModel->count(['username=?', $username])) {
-
-            $errors[] = 'Ce nom d\'utilisateur est déjà utilisé.';
-
-        }
-
-        // Validate email format with filter_var (security hardening)
-
-        if ($email !== '') {
-
-            $validatedEmail = filter_var($email, FILTER_VALIDATE_EMAIL);
-
-            if (!$validatedEmail) {
-
-                $errors[] = 'Adresse e-mail invalide.';
-
-            } else {
-
-                $email = $validatedEmail; // Use filtered value
-
-                if ($userModel->count(['email=?', $email])) {
-
-                    $errors[] = 'Cette adresse e-mail est déjà utilisée.';
-
-                }
-
-            }
-
-        }
-
-        if (empty($errors)) {
-
-            if ($userModel->register($username, $password, $email)) {
-
-                session_regenerate_id(true);
-
-                $_SESSION['user_id'] = $userModel->id;
-
-                $this->f3->reroute('/dashboard');
-
-            } else {
-
-                $errors[] = 'Une erreur est survenue lors de l’inscription.';
-
-            }
-
-        }
-
-        $this->render('auth/register.html', [
-
-            'title' => 'Inscription',
-
-            'errors' => $errors,
-
-            'old' => ['username' => htmlspecialchars($username), 'email' => htmlspecialchars($email)],
-
-        ]);
-
-    }
-
-    private function getPasswordResetDir(): string
-    {
-
-        $dir = 'tmp/password-resets';
-
-        if (!is_dir($dir)) {
-
-            mkdir($dir, 0755, true);
-
-        }
-
-        return $dir;
-
-    }
-
-    private function createPasswordResetToken(array $user): string
-    {
-
-        $token = bin2hex(random_bytes(32));
-
-        $payload = [
-
-            'token' => $token,
-
-            'user_id' => (int) $user['id'],
-
-            'email' => $user['email'] ?? '',
-
-            'expires_at' => date('c', time() + self::PASSWORD_RESET_TTL),
-
+        $data = [
+            'username' => trim($_POST['username'] ?? ''),
+            'password' => $_POST['password'] ?? '',
+            'password_confirmation' => $_POST['password'] ?? '', // Same as password for now
+            'email' => trim($_POST['email'] ?? ''),
         ];
 
-        file_put_contents($this->getPasswordResetDir() . '/' . $token . '.json', json_encode($payload, JSON_PRETTY_PRINT));
+        $validation = $this->getRegistrationService()->validateRegistration($data);
 
-        return $token;
-
-    }
-
-    private function loadPasswordResetToken(string $token): ?array
-    {
-
-        if (!preg_match('/^[0-9a-f]{64}$/', $token)) {
-
-            return null;
-
+        if (!$validation['valid']) {
+            $errors = array_values($validation['errors']);
+            $this->render('auth/register.html', [
+                'title' => 'Inscription',
+                'errors' => $errors,
+                'old' => ['username' => htmlspecialchars($data['username']), 'email' => htmlspecialchars($data['email'])],
+            ]);
+            return;
         }
 
-        $file = $this->getPasswordResetDir() . '/' . $token . '.json';
+        $user = $this->getRegistrationService()->createUser($validation['data']);
 
-        if (!file_exists($file)) {
-
-            return null;
-
-        }
-
-        $content = json_decode(file_get_contents($file), true);
-
-        if (!is_array($content)) {
-
-            return null;
-
-        }
-
-        if (empty($content['expires_at']) || strtotime($content['expires_at']) < time()) {
-
-            @unlink($file);
-
-            return null;
-
-        }
-
-        return $content;
-
-    }
-
-    private function removePasswordResetToken(string $token): void
-    {
-
-        $file = $this->getPasswordResetDir() . '/' . $token . '.json';
-
-        if (file_exists($file)) {
-
-            @unlink($file);
-
-        }
-
-    }
-
-    private function sendPasswordResetEmail(string $email, string $token): void
-    {
-
-        $resetUrl = $this->buildAbsoluteUrl('/password/reset/' . $token);
-
-        $host = $_SERVER['HTTP_HOST'] ?? 'localhost';
-        $subject = 'Réinitialisation de votre mot de passe sur ' . $host;
-
-        $message = "Bonjour,\n\n";
-
-        $message .= "Nous avons reçu une demande de réinitialisation de mot de passe pour votre compte.\n\n";
-
-        $message .= "Cliquez sur ce lien pour choisir un nouveau mot de passe :\n\n";
-
-        $message .= "$resetUrl\n\n";
-
-        $message .= "Ce lien expire dans une heure. Si vous n'avez pas demandé la réinitialisation, ignorez ce message.\n\n";
-
-        $message .= $host . "\n";
-
-        $headers = implode("\r\n", [
-
-            'From: "Écrivain" <noreply@' . $host . '>',
-
-            'Content-Type: text/plain; charset=UTF-8',
-
-            'X-Mailer: PHP/' . phpversion()
-
-        ]) . "\r\n";
-
-        if (function_exists('mail')) {
-
-            if (!@mail($email, $subject, $message, $headers)) {
-
-                error_log('AuthController: impossible d’envoyer l’e-mail de réinitialisation à ' . $email);
-
-            }
-
+        if ($user) {
+            $this->getAuthService()->initializeUserSession($user);
+            $this->f3->reroute('/dashboard');
         } else {
-
-            error_log('AuthController: mail() indisponible pour envoyer l’e-mail de réinitialisation à ' . $email);
-
+            $this->render('auth/register.html', [
+                'title' => 'Inscription',
+                'errors' => ['Une erreur est survenue lors de l’inscription.'],
+                'old' => ['username' => htmlspecialchars($data['username']), 'email' => htmlspecialchars($data['email'])],
+            ]);
         }
-
     }
 
-    private function buildAbsoluteUrl(string $path): string
-    {
-
-        $host = $_SERVER['HTTP_HOST'] ?? $this->f3->get('HOST') ?? 'localhost';
-
-        $scheme = (!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off')
-
-            || (!empty($_SERVER['HTTP_X_FORWARDED_PROTO']) && $_SERVER['HTTP_X_FORWARDED_PROTO'] === 'https')
-
-            ? 'https'
-
-            : 'http';
-
-        $base = rtrim($this->f3->get('BASE') ?? '', '/');
-
-        $cleanPath = '/' . ltrim($path, '/');
-
-        return $scheme . '://' . $host . $base . $cleanPath;
-
-    }
 
     public function logout()
     {
-
-        session_destroy();
-
+        $this->getAuthService()->destroySession();
         $this->f3->reroute('/');
-
     }
 
     public function generateToken()
     {
-
         $currentUser = $this->currentUser();
 
         if (!$currentUser) {
-
             $this->f3->error(403, 'Action non autorisée');
-
             return;
-
         }
 
         $email = $currentUser['email'];
 
         if (empty($email)) {
-
             $this->f3->error(400, 'Utilisateur sans email');
-
             return;
-
         }
 
-        // Get JWT secret from environment
-
-        $jwtSecret = getenv('JWT_SECRET') ?: $_ENV['JWT_SECRET'] ?? null;
-
-        if (!$jwtSecret) {
-
-            error_log('JWT_SECRET not configured');
-
-            $this->f3->error(500, 'Configuration error');
-
-            return;
-
-        }
-
-        // Generate unique token ID (jti claim)
-
-        $tokenId = bin2hex(random_bytes(16));
-
-        $iat = time();
-
-        // Sign JWT with HMAC SHA256 (fixes vulnerability #3)
-
-        $jwt = $this->encodeAutoLoginToken($tokenId, $currentUser['id'], $iat);
-
-        // Store token metadata (for revocation)
-
-        $userDir = $this->getUserDataDir($email);
-
-        $jsonFile = $userDir . '/tokens.json';
-
-        if (!is_dir($userDir)) {
-
-            mkdir($userDir, 0755, true);
-
-        }
-
-        $svc = $this->tokenService();
-        $data = $svc->readTokenFile($jsonFile);
-        $tokens = $data['tokens'] ?? [];
-
-        $tokens[$tokenId] = [
-            'user_id' => $currentUser['id'],
-            'created_at' => date('Y-m-d H:i:s'),
-            'iat' => $iat,
-        ];
-
-        $svc->writeTokenFile($jsonFile, ['tokens' => $tokens]);
-
-        echo json_encode(['token' => $jwt]);
-
+        $result = $this->getJwtTokenService()->generateToken((int)$currentUser['id'], $email);
+        echo json_encode($result);
     }
 
     public function listTokens()
     {
-
         $currentUser = $this->currentUser();
 
         if (!$currentUser) {
-
             $this->f3->error(403);
-
             return;
-
         }
 
-        $email = $currentUser['email'];
-
-        $userId = $currentUser['id'];
-
-        $jsonFile = $this->getUserDataDir($email) . '/tokens.json';
-
-        $userTokens = [];
-
-        $data = $this->tokenService()->readTokenFile($jsonFile);
-
-        if ($data && isset($data['tokens'])) {
-
-            foreach ($data['tokens'] as $tokenId => $info) {
-
-                if (isset($info['user_id']) && $info['user_id'] == $userId) {
-
-                    $createdAt = $info['created_at'] ?? null;
-
-                    $iat = $info['iat'] ?? ($createdAt ? strtotime($createdAt) : time());
-
-                    $tokenValue = null;
-
-                    try {
-
-                        $tokenValue = $this->encodeAutoLoginToken($tokenId, $userId, $iat);
-
-                    } catch (Exception $e) {
-
-                        // If encoding fails, keep token hidden but continue listing metadata
-
-                        $tokenValue = null;
-
-                    }
-
-                    $userTokens[] = [
-
-                        'token_id' => $tokenId,
-
-                        'created_at' => $createdAt,
-
-                        'token' => $tokenValue
-
-                    ];
-
-                }
-
-            }
-
-        }
-
-
-        // Sort by date desc
-
-        usort($userTokens, function ($a, $b) {
-
-            $bTime = strtotime($b['created_at'] ?? '') ?: 0;
-
-            $aTime = strtotime($a['created_at'] ?? '') ?: 0;
-
-            return $bTime - $aTime;
-
-        });
-
-        echo json_encode(['tokens' => $userTokens]);
-
+        $result = $this->getJwtTokenService()->listTokens((int)$currentUser['id'], $currentUser['email']);
+        echo json_encode($result);
     }
 
     public function revokeTokens()
     {
-
         $currentUser = $this->currentUser();
 
         if (!$currentUser) {
-
             $this->f3->error(403, 'Action non autorisée');
-
             return;
-
         }
-
-        $email = $currentUser['email'];
-
-        $userId = $currentUser['id'];
-
-        $jsonFile = $this->getUserDataDir($email) . '/tokens.json';
-
-        // Get specific token ID from body if exists
 
         $body = json_decode($this->f3->get('BODY'), true);
-
         $targetTokenId = $body['token_id'] ?? null;
-
         $targetTokenRaw = $body['token'] ?? null;
 
-        if (!file_exists($jsonFile)) {
-
-            echo json_encode(['count' => 0]);
-
-            return;
-
-        }
-
-        $svc = $this->tokenService();
-        $data = $svc->readTokenFile($jsonFile);
-
-        if (!$data || !isset($data['tokens'])) {
-
-            echo json_encode(['count' => 0]);
-
-            return;
-
-        }
-
-        $tokens = $data['tokens'];
-
-        $count = 0;
-
-        if ($targetTokenId && isset($tokens[$targetTokenId])) {
-
-            unset($tokens[$targetTokenId]);
-
-            $count++;
-
-        } elseif ($targetTokenRaw) {
-
-            $resolvedId = $this->resolveTokenIdFromJwt($targetTokenRaw);
-
-            if ($resolvedId && isset($tokens[$resolvedId])) {
-
-                unset($tokens[$resolvedId]);
-
-                $count++;
-
-            }
-
-        } else {
-
-            // Remove all tokens for this user
-
-            $count = count($tokens);
-
-            $tokens = [];
-
-        }
-
-        $svc->writeTokenFile($jsonFile, ['tokens' => $tokens]);
-
-        echo json_encode(['count' => $count]);
-
-    }
-
-    /** Build and sign an auto-login JWT. Delegates to TokenService. */
-    private function encodeAutoLoginToken(string $tokenId, int $userId, int $iat): string
-    {
-        return $this->tokenService()->encodeAuthJwt($tokenId, $userId, $iat);
-    }
-
-    /** Extract the JTI claim from a JWT, returning null on failure. */
-    private function resolveTokenIdFromJwt(string $token): ?string
-    {
-        $decoded = $this->tokenService()->decodeJwt($token);
-        return $decoded ? ($decoded->jti ?? null) : null;
+        $result = $this->getJwtTokenService()->revokeTokens(
+            (int)$currentUser['id'],
+            $currentUser['email'],
+            $targetTokenId,
+            $targetTokenRaw
+        );
+        echo json_encode($result);
     }
 
     /* Rate Limiting Implementation (File-based) */

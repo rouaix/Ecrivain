@@ -20,15 +20,7 @@ class SectionController extends Controller
         $type = $this->f3->get('PARAMS.type');
         $sectionId = isset($_GET['id']) ? (int) $_GET['id'] : null;
 
-        // Verify project ownership
-        $projectModel = new Project();
-        $project = $projectModel->findAndCast(['id=? AND user_id=?', $pid, $this->currentUser()['id']]);
-
-        if (!$project) {
-            $this->f3->error(404, 'Projet introuvable.');
-            return;
-        }
-        $project = $project[0];
+        $project = $this->requireOwnedProject($pid);
 
         // Load section: by id if provided, otherwise by project+type
         $section = null;
@@ -68,15 +60,7 @@ class SectionController extends Controller
         $type = $this->f3->get('PARAMS.type');
         $sectionId = isset($_GET['id']) ? (int) $_GET['id'] : null;
 
-        // Verify project ownership
-        $projectModel = new Project();
-        $project = $projectModel->findAndCast(['id=? AND user_id=?', $pid, $this->currentUser()['id']]);
-
-        if (!$project) {
-            $this->f3->error(404, 'Projet introuvable.');
-            return;
-        }
-        $project = $project[0];
+        $project = $this->requireOwnedProject($pid);
 
         $title = trim($_POST['title'] ?? '');
         $content = $_POST['content'] ?? '';
@@ -167,12 +151,7 @@ class SectionController extends Controller
         $type = $this->f3->get('PARAMS.type');
         $user = $this->currentUser();
 
-        // Verify project ownership
-        $projectModel = new Project();
-        if (!$projectModel->count(['id=? AND user_id=?', $pid, $user['id']])) {
-            $this->f3->error(403);
-            return;
-        }
+        $this->requireOwnedProject($pid);
 
         // Delete physical file
         $dir = 'data/' . $user['email'] . '/projects/' . $pid . '/sections/';
@@ -255,25 +234,21 @@ class SectionController extends Controller
         $sectionModel->load(['id=?', $sid]);
 
         if (!$sectionModel->dry()) {
-            // Verify project ownership
-            $projectModel = new Project();
+            $this->requireOwnedProject((int) $sectionModel->project_id);
             $user = $this->currentUser();
-            if ($projectModel->count(['id=? AND user_id=?', $sectionModel->project_id, $user['id']])) {
-                $pid = $sectionModel->project_id;
-                $type = $sectionModel->type;
+            $pid  = $sectionModel->project_id;
+            $type = $sectionModel->type;
 
-                // Delete associated image file if any
-                if (!empty($sectionModel->image_path)) {
-                    $dir = 'data/' . $user['email'] . '/projects/' . $pid . '/sections/';
-                    foreach (glob($dir . $type . '.*') as $f) {
-                        unlink($f);
-                    }
+            if (!empty($sectionModel->image_path)) {
+                $dir = 'data/' . $user['email'] . '/projects/' . $pid . '/sections/';
+                foreach (glob($dir . $type . '.*') as $f) {
+                    unlink($f);
                 }
-
-                $sectionModel->erase();
-                $this->f3->reroute('/project/' . $pid);
-                return;
             }
+
+            $sectionModel->erase();
+            $this->f3->reroute('/project/' . $pid);
+            return;
         }
 
         $this->f3->reroute('/dashboard');

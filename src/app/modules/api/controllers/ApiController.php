@@ -8,8 +8,119 @@
  * No session       : user context resolved from token on every request.
  * No CSRF          : token-based authentication replaces CSRF protection.
  */
+require_once __DIR__ . '/../../../services/api/ApiFetchService.php';
+require_once __DIR__ . '/../../../services/api/ProjectApiService.php';
+require_once __DIR__ . '/../../../services/api/ActApiService.php';
+require_once __DIR__ . '/../../../services/api/ChapterApiService.php';
+require_once __DIR__ . '/../../../services/api/SectionApiService.php';
+require_once __DIR__ . '/../../../services/api/NoteApiService.php';
+require_once __DIR__ . '/../../../services/api/CharacterApiService.php';
+require_once __DIR__ . '/../../../services/api/ElementApiService.php';
+require_once __DIR__ . '/../../../services/api/ImageApiService.php';
+require_once __DIR__ . '/../../../services/api/ExportApiService.php';
+require_once __DIR__ . '/../../../services/api/SearchApiService.php';
+
 class ApiController extends ApiBaseController
 {
+    private ?ApiFetchService $fetchService = null;
+    private ?ProjectApiService $projectApiService = null;
+    private ?ActApiService $actApiService = null;
+    private ?ChapterApiService $chapterApiService = null;
+    private ?SectionApiService $sectionApiService = null;
+    private ?NoteApiService $noteApiService = null;
+    private ?CharacterApiService $characterApiService = null;
+    private ?ElementApiService $elementApiService = null;
+    private ?ImageApiService $imageApiService = null;
+    private ?ExportApiService $exportApiService = null;
+    private ?SearchApiService $searchApiService = null;
+
+    private function getFetchService(): ApiFetchService
+    {
+        if ($this->fetchService === null) {
+            $this->fetchService = new ApiFetchService($this->f3->get('DB'), $this->f3);
+        }
+        return $this->fetchService;
+    }
+
+    private function getProjectApiService(): ProjectApiService
+    {
+        if ($this->projectApiService === null) {
+            $this->projectApiService = new ProjectApiService($this->f3->get('DB'), $this->getFetchService());
+        }
+        return $this->projectApiService;
+    }
+
+    private function getActApiService(): ActApiService
+    {
+        if ($this->actApiService === null) {
+            $this->actApiService = new ActApiService($this->f3->get('DB'), $this->getFetchService());
+        }
+        return $this->actApiService;
+    }
+
+    private function getChapterApiService(): ChapterApiService
+    {
+        if ($this->chapterApiService === null) {
+            $this->chapterApiService = new ChapterApiService($this->f3->get('DB'), $this->getFetchService());
+        }
+        return $this->chapterApiService;
+    }
+
+    private function getSectionApiService(): SectionApiService
+    {
+        if ($this->sectionApiService === null) {
+            $this->sectionApiService = new SectionApiService($this->f3->get('DB'), $this->getFetchService());
+        }
+        return $this->sectionApiService;
+    }
+
+    private function getNoteApiService(): NoteApiService
+    {
+        if ($this->noteApiService === null) {
+            $this->noteApiService = new NoteApiService($this->f3->get('DB'), $this->getFetchService());
+        }
+        return $this->noteApiService;
+    }
+
+    private function getCharacterApiService(): CharacterApiService
+    {
+        if ($this->characterApiService === null) {
+            $this->characterApiService = new CharacterApiService($this->f3->get('DB'), $this->getFetchService());
+        }
+        return $this->characterApiService;
+    }
+
+    private function getElementApiService(): ElementApiService
+    {
+        if ($this->elementApiService === null) {
+            $this->elementApiService = new ElementApiService($this->f3->get('DB'), $this->getFetchService());
+        }
+        return $this->elementApiService;
+    }
+
+    private function getImageApiService(): ImageApiService
+    {
+        if ($this->imageApiService === null) {
+            $this->imageApiService = new ImageApiService($this->f3->get('DB'), $this->getFetchService(), $this->f3);
+        }
+        return $this->imageApiService;
+    }
+
+    private function getExportApiService(): ExportApiService
+    {
+        if ($this->exportApiService === null) {
+            $this->exportApiService = new ExportApiService($this->f3->get('DB'), $this->getFetchService());
+        }
+        return $this->exportApiService;
+    }
+
+    private function getSearchApiService(): SearchApiService
+    {
+        if ($this->searchApiService === null) {
+            $this->searchApiService = new SearchApiService($this->f3->get('DB'), $this->getFetchService());
+        }
+        return $this->searchApiService;
+    }
 
     // ──────────────────────────────────────────────────────────────
     // PROJECTS
@@ -19,15 +130,7 @@ class ApiController extends ApiBaseController
     {
         $user = $this->currentUser();
         [$offset, $limit] = $this->getPaginationParams();
-        $total = (int)$this->db->exec(
-            'SELECT COUNT(*) AS n FROM projects WHERE user_id = ?',
-            [$user['id']]
-        )[0]['n'];
-        $rows = $this->db->exec(
-            'SELECT id, title, description, created_at, updated_at
-             FROM projects WHERE user_id = ? ORDER BY updated_at DESC LIMIT ? OFFSET ?',
-            [$user['id'], $limit, $offset]
-        );
+        [$rows, $total] = $this->getProjectApiService()->listProjects($user['id'], $offset, $limit);
         $this->paginatedOut($rows, $total, $offset, $limit);
     }
 
@@ -35,71 +138,48 @@ class ApiController extends ApiBaseController
     {
         $user = $this->currentUser();
         $body = $this->getBody();
-        $title = trim($body['title'] ?? '');
-        if ($title === '') {
-            $this->jsonError('Le titre est obligatoire.', 422, 'INVALID_INPUT');
+        try {
+            $project = $this->getProjectApiService()->createProject($user['id'], $body);
+            $this->jsonOut($project, 201);
+        } catch (\InvalidArgumentException $e) {
+            $this->jsonError($e->getMessage(), 422, 'INVALID_INPUT');
         }
-        $description = trim($body['description'] ?? '');
-
-        // Use default template
-        $tpl = $this->db->exec('SELECT id FROM templates WHERE is_default = 1 LIMIT 1');
-        $templateId = $tpl ? (int)$tpl[0]['id'] : null;
-
-        $this->db->exec(
-            'INSERT INTO projects (user_id, title, description, template_id) VALUES (?, ?, ?, ?)',
-            [$user['id'], $title, $description ?: null, $templateId]
-        );
-        $id = (int)$this->db->lastInsertId('projects');
-        $this->jsonOut($this->fetchProject($id), 201);
     }
 
     public function getProject()
     {
+        $user = $this->currentUser();
         $id = (int)$this->f3->get('PARAMS.id');
-        if (!$this->hasProjectAccess($id)) {
-            $this->jsonError('Accès refusé.', 403, 'FORBIDDEN');
-        }
-        $project = $this->fetchProject($id);
+        $project = $this->getProjectApiService()->getProject($id, $user['id']);
         if (!$project) {
-            $this->jsonError('Projet introuvable.', 404, 'NOT_FOUND');
+            $this->jsonError('Projet introuvable ou accès refusé.', 404, 'NOT_FOUND');
         }
         $this->jsonOut($project);
     }
 
     public function updateProject()
     {
+        $user = $this->currentUser();
         $id = (int)$this->f3->get('PARAMS.id');
-        if (!$this->isOwner($id)) {
-            $this->jsonError('Accès refusé.', 403, 'FORBIDDEN');
-        }
         $body = $this->getBody();
-        $fields = [];
-        $params = [];
-        if (isset($body['title'])) {
-            $title = trim($body['title']);
-            if ($title === '') $this->jsonError('Le titre ne peut pas être vide.', 422, 'INVALID_INPUT');
-            $fields[] = 'title = ?'; $params[] = $title;
+        try {
+            $project = $this->getProjectApiService()->updateProject($id, $user['id'], $body);
+            if (!$project) {
+                $this->jsonError('Projet introuvable ou accès refusé.', 404, 'NOT_FOUND');
+            }
+            $this->jsonOut($project);
+        } catch (\InvalidArgumentException $e) {
+            $this->jsonError($e->getMessage(), 422, 'INVALID_INPUT');
         }
-        if (array_key_exists('description', $body)) {
-            $fields[] = 'description = ?'; $params[] = trim($body['description']) ?: null;
-        }
-        if (empty($fields)) {
-            $this->jsonError('Aucun champ à mettre à jour.', 422, 'INVALID_INPUT');
-        }
-        $params[] = $id;
-        $this->db->exec('UPDATE projects SET ' . implode(', ', $fields) . ' WHERE id = ?', $params);
-        $this->jsonOut($this->fetchProject($id));
     }
 
     public function deleteProject()
     {
+        $user = $this->currentUser();
         $id = (int)$this->f3->get('PARAMS.id');
-        if (!$this->isOwner($id)) {
-            $this->jsonError('Accès refusé.', 403, 'FORBIDDEN');
+        if (!$this->getProjectApiService()->deleteProject($id, $user['id'])) {
+            $this->jsonError('Projet introuvable ou accès refusé.', 404, 'NOT_FOUND');
         }
-        $rows = $this->db->exec('SELECT id FROM projects WHERE id = ?', [$id]);
-        if (!$rows) $this->jsonError('Projet introuvable.', 404, 'NOT_FOUND');
-        $this->db->exec('DELETE FROM projects WHERE id = ?', [$id]);
         $this->jsonOut(['status' => 'ok', 'deleted_id' => $id]);
     }
 
@@ -109,84 +189,65 @@ class ApiController extends ApiBaseController
 
     public function listActs()
     {
+        $user = $this->currentUser();
         $pid = (int)$this->f3->get('PARAMS.pid');
-        if (!$this->hasProjectAccess($pid)) $this->jsonError('Accès refusé.', 403, 'FORBIDDEN');
+        if (!$this->getActApiService()->hasProjectAccess($pid, $user['id'])) {
+            $this->jsonError('Accès refusé.', 403, 'FORBIDDEN');
+        }
         [$offset, $limit] = $this->getPaginationParams();
-        $total = (int)$this->db->exec(
-            'SELECT COUNT(*) AS n FROM acts WHERE project_id = ?', [$pid]
-        )[0]['n'];
-        $rows = $this->db->exec(
-            'SELECT a.id, a.title, a.description, a.resume, a.order_index,
-                    COUNT(c.id) AS chapters_count
-             FROM acts a
-             LEFT JOIN chapters c ON c.act_id = a.id
-             WHERE a.project_id = ?
-             GROUP BY a.id
-             ORDER BY a.order_index ASC, a.id ASC
-             LIMIT ? OFFSET ?',
-            [$pid, $limit, $offset]
-        );
+        [$rows, $total] = $this->getActApiService()->listActs($pid, $offset, $limit);
         $this->paginatedOut($rows, $total, $offset, $limit);
     }
 
     public function createAct()
     {
+        $user = $this->currentUser();
         $pid = (int)$this->f3->get('PARAMS.pid');
-        if (!$this->isOwner($pid)) $this->jsonError('Accès refusé.', 403, 'FORBIDDEN');
         $body = $this->getBody();
-        $title = trim($body['title'] ?? '');
-        if ($title === '') $this->jsonError('Le titre est obligatoire.', 422, 'INVALID_INPUT');
-
-        $res = $this->db->exec('SELECT COALESCE(MAX(order_index),0)+1 AS nxt FROM acts WHERE project_id = ?', [$pid]);
-        $order = (int)$res[0]['nxt'];
-
-        $this->db->exec(
-            'INSERT INTO acts (project_id, title, description, order_index) VALUES (?, ?, ?, ?)',
-            [$pid, $title, trim($body['description'] ?? '') ?: null, $order]
-        );
-        $id = (int)$this->db->lastInsertId('acts');
-        $this->jsonOut($this->fetchAct($id), 201);
+        try {
+            $act = $this->getActApiService()->createAct($pid, $user['id'], $body);
+            $this->jsonOut($act, 201);
+        } catch (\RuntimeException $e) {
+            $this->jsonError($e->getMessage(), 403, 'FORBIDDEN');
+        } catch (\InvalidArgumentException $e) {
+            $this->jsonError($e->getMessage(), 422, 'INVALID_INPUT');
+        }
     }
 
     public function getAct()
     {
+        $user = $this->currentUser();
         $id = (int)$this->f3->get('PARAMS.id');
-        $act = $this->fetchAct($id);
-        if (!$act) $this->jsonError('Acte introuvable.', 404, 'NOT_FOUND');
-        if (!$this->hasProjectAccess((int)$act['project_id'])) $this->jsonError('Accès refusé.', 403, 'FORBIDDEN');
+        $act = $this->getActApiService()->getAct($id, $user['id']);
+        if (!$act) {
+            $this->jsonError('Acte introuvable ou accès refusé.', 404, 'NOT_FOUND');
+        }
         $this->jsonOut($act);
     }
 
     public function updateAct()
     {
+        $user = $this->currentUser();
         $id = (int)$this->f3->get('PARAMS.id');
-        $act = $this->db->exec('SELECT project_id FROM acts WHERE id = ?', [$id]);
-        if (!$act) $this->jsonError('Acte introuvable.', 404, 'NOT_FOUND');
-        if (!$this->isOwner((int)$act[0]['project_id'])) $this->jsonError('Accès refusé.', 403, 'FORBIDDEN');
-
         $body = $this->getBody();
-        $fields = []; $params = [];
-        if (isset($body['title'])) {
-            $t = trim($body['title']);
-            if ($t === '') $this->jsonError('Le titre ne peut pas être vide.', 422, 'INVALID_INPUT');
-            $fields[] = 'title = ?'; $params[] = $t;
+        try {
+            $act = $this->getActApiService()->updateAct($id, $user['id'], $body);
+            if (!$act) {
+                $this->jsonError('Acte introuvable ou accès refusé.', 404, 'NOT_FOUND');
+            }
+            $this->jsonOut($act);
+        } catch (\InvalidArgumentException $e) {
+            $this->jsonError($e->getMessage(), 422, 'INVALID_INPUT');
         }
-        if (array_key_exists('description', $body)) { $fields[] = 'description = ?'; $params[] = trim($body['description']) ?: null; }
-        if (array_key_exists('resume', $body))      { $fields[] = 'resume = ?';      $params[] = trim($body['resume']) ?: null; }
-        if (empty($fields)) $this->jsonError('Aucun champ à mettre à jour.', 422, 'INVALID_INPUT');
-
-        $params[] = $id;
-        $this->db->exec('UPDATE acts SET ' . implode(', ', $fields) . ' WHERE id = ?', $params);
-        $this->jsonOut($this->fetchAct($id));
     }
 
     public function deleteAct()
     {
+        $user = $this->currentUser();
         $id = (int)$this->f3->get('PARAMS.id');
-        $act = $this->db->exec('SELECT project_id FROM acts WHERE id = ?', [$id]);
-        if (!$act) $this->jsonError('Acte introuvable.', 404, 'NOT_FOUND');
-        if (!$this->isOwner((int)$act[0]['project_id'])) $this->jsonError('Accès refusé.', 403, 'FORBIDDEN');
-        $this->db->exec('DELETE FROM acts WHERE id = ?', [$id]);
+        if (!$this->getActApiService()->deleteAct($id, $user['id'])) {
+            $this->jsonError('Acte introuvable ou accès refusé.', 404, 'NOT_FOUND');
+        }
         $this->jsonOut(['status' => 'ok', 'deleted_id' => $id]);
     }
 
@@ -196,21 +257,22 @@ class ApiController extends ApiBaseController
 
     public function getChapter()
     {
+        $user = $this->currentUser();
         $id = (int)$this->f3->get('PARAMS.id');
-        $ch = $this->db->exec('SELECT * FROM chapters WHERE id = ?', [$id]);
-        if (!$ch) $this->jsonError('Chapitre introuvable.', 404, 'NOT_FOUND');
-        $ch = $ch[0];
-        if (!$this->hasProjectAccess((int)$ch['project_id'])) $this->jsonError('Accès refusé.', 403, 'FORBIDDEN');
+        $chapter = $this->getChapterApiService()->getChapter($id, $user['id']);
+        if (!$chapter) {
+            $this->jsonError('Chapitre introuvable ou accès refusé.', 404, 'NOT_FOUND');
+        }
         $subChapters = $this->db->exec(
             'SELECT id, title, content, resume, word_count, order_index, updated_at FROM chapters WHERE parent_id=? ORDER BY order_index ASC, id ASC',
-            [(int)$ch['id']]
+            [(int)$chapter['id']]
         );
         $subs = array_map(function ($s) {
             return [
                 'id'           => (int)$s['id'],
                 'title'        => $s['title'],
                 'content_html' => $s['content'] ?? '',
-                'content_text' => $this->htmlToText($s['content'] ?? ''),
+                'content_text' => $this->getFetchService()->htmlToText($s['content'] ?? ''),
                 'resume'       => $s['resume'] ?? '',
                 'word_count'   => (int)$s['word_count'],
                 'order_index'  => (int)$s['order_index'],
@@ -218,113 +280,47 @@ class ApiController extends ApiBaseController
             ];
         }, $subChapters ?: []);
 
-        $this->jsonOut([
-            'id'           => (int)$ch['id'],
-            'project_id'   => (int)$ch['project_id'],
-            'act_id'       => $ch['act_id'] ? (int)$ch['act_id'] : null,
-            'parent_id'    => $ch['parent_id'] ? (int)$ch['parent_id'] : null,
-            'title'        => $ch['title'],
-            'content_html' => $ch['content'] ?? '',
-            'content_text' => $this->htmlToText($ch['content'] ?? ''),
-            'resume'       => $ch['resume'] ?? '',
-            'word_count'   => (int)$ch['word_count'],
-            'is_exported'  => (bool)$ch['is_exported'],
-            'order_index'  => (int)$ch['order_index'],
-            'created_at'   => $ch['created_at'],
-            'updated_at'   => $ch['updated_at'],
-            'sub_chapters' => $subs,
-        ]);
+        $chapter['sub_chapters'] = $subs;
+        $this->jsonOut($chapter);
     }
 
     public function createChapter()
     {
-        $pid = (int)$this->f3->get('PARAMS.pid');
-        if (!$this->isOwner($pid)) $this->jsonError('Accès refusé.', 403, 'FORBIDDEN');
+        $user = $this->currentUser();
         $body = $this->getBody();
-        $title = trim($body['title'] ?? '');
-        if ($title === '') $this->jsonError('Le titre est obligatoire.', 422, 'INVALID_INPUT');
-
-        $actId    = isset($body['act_id']) ? (int)$body['act_id'] : null;
-        $content  = $body['content'] ?? '';
-        $resume   = trim($body['resume'] ?? '');
-        $wc       = $this->countWords($content);
-
-        $res = $this->db->exec(
-            'SELECT COALESCE(MAX(order_index),0)+1 AS nxt FROM chapters WHERE project_id = ? AND act_id ' . ($actId ? '= ?' : 'IS NULL'),
-            $actId ? [$pid, $actId] : [$pid]
-        );
-        $order = (int)$res[0]['nxt'];
-
-        $this->db->exec(
-            'INSERT INTO chapters (project_id, act_id, title, content, resume, word_count, order_index) VALUES (?, ?, ?, ?, ?, ?, ?)',
-            [$pid, $actId, $title, $content, $resume ?: null, $wc, $order]
-        );
-        $id = (int)$this->db->lastInsertId('chapters');
-
-        $ch = $this->db->exec('SELECT * FROM chapters WHERE id = ?', [$id]);
-        $ch = $ch[0];
-        $this->jsonOut([
-            'id'           => (int)$ch['id'],
-            'project_id'   => (int)$ch['project_id'],
-            'act_id'       => $ch['act_id'] ? (int)$ch['act_id'] : null,
-            'title'        => $ch['title'],
-            'content_html' => $ch['content'] ?? '',
-            'content_text' => $this->htmlToText($ch['content'] ?? ''),
-            'resume'       => $ch['resume'] ?? '',
-            'word_count'   => (int)$ch['word_count'],
-            'created_at'   => $ch['created_at'],
-            'updated_at'   => $ch['updated_at'],
-        ], 201);
+        try {
+            $chapter = $this->getChapterApiService()->createChapter($user['id'], $body);
+            $this->jsonOut($chapter, 201);
+        } catch (\RuntimeException $e) {
+            $this->jsonError($e->getMessage(), 403, 'FORBIDDEN');
+        } catch (\InvalidArgumentException $e) {
+            $this->jsonError($e->getMessage(), 422, 'INVALID_INPUT');
+        }
     }
 
     public function updateChapter()
     {
+        $user = $this->currentUser();
         $id = (int)$this->f3->get('PARAMS.id');
-        $ch = $this->db->exec('SELECT * FROM chapters WHERE id = ?', [$id]);
-        if (!$ch) $this->jsonError('Chapitre introuvable.', 404, 'NOT_FOUND');
-        $ch = $ch[0];
-        if (!$this->isOwner((int)$ch['project_id'])) $this->jsonError('Accès refusé.', 403, 'FORBIDDEN');
-
         $body = $this->getBody();
-        $fields = []; $params = [];
-
-        if (isset($body['title'])) {
-            $t = trim($body['title']);
-            if ($t === '') $this->jsonError('Le titre ne peut pas être vide.', 422, 'INVALID_INPUT');
-            $fields[] = 'title = ?'; $params[] = $t;
+        try {
+            $chapter = $this->getChapterApiService()->updateChapter($id, $user['id'], $body);
+            if (!$chapter) {
+                $this->jsonError('Chapitre introuvable ou accès refusé.', 404, 'NOT_FOUND');
+            }
+            $this->jsonOut($chapter);
+        } catch (\InvalidArgumentException $e) {
+            $this->jsonError($e->getMessage(), 422, 'INVALID_INPUT');
         }
-        if (array_key_exists('content', $body)) {
-            // Save version before overwriting
-            $this->saveChapterVersion((int)$id, $ch['content'], (int)$ch['word_count']);
-            $wc = $this->countWords($body['content']);
-            $fields[] = 'content = ?';    $params[] = $body['content'];
-            $fields[] = 'word_count = ?'; $params[] = $wc;
-        }
-        if (array_key_exists('resume', $body)) { $fields[] = 'resume = ?'; $params[] = trim($body['resume']) ?: null; }
-
-        if (empty($fields)) $this->jsonError('Aucun champ à mettre à jour.', 422, 'INVALID_INPUT');
-        $params[] = $id;
-        $this->db->exec('UPDATE chapters SET ' . implode(', ', $fields) . ' WHERE id = ?', $params);
-
-        $ch = $this->db->exec('SELECT * FROM chapters WHERE id = ?', [$id])[0];
-        $this->jsonOut([
-            'id'           => (int)$ch['id'],
-            'title'        => $ch['title'],
-            'content_html' => $ch['content'] ?? '',
-            'content_text' => $this->htmlToText($ch['content'] ?? ''),
-            'resume'       => $ch['resume'] ?? '',
-            'word_count'   => (int)$ch['word_count'],
-            'updated_at'   => $ch['updated_at'],
-        ]);
     }
 
     public function deleteChapter()
     {
+        $user = $this->currentUser();
         $id = (int)$this->f3->get('PARAMS.id');
-        $ch = $this->db->exec('SELECT project_id FROM chapters WHERE id = ?', [$id]);
-        if (!$ch) $this->jsonError('Chapitre introuvable.', 404, 'NOT_FOUND');
-        if (!$this->isOwner((int)$ch[0]['project_id'])) $this->jsonError('Accès refusé.', 403, 'FORBIDDEN');
-        $this->db->exec('DELETE FROM chapters WHERE id = ?', [$id]);
+        if (!$this->getChapterApiService()->deleteChapter($id, $user['id'])) {
+            $this->jsonError('Chapitre introuvable ou accès refusé.', 404, 'NOT_FOUND');
+        }
         $this->jsonOut(['status' => 'ok', 'deleted_id' => $id]);
     }
 
@@ -334,18 +330,13 @@ class ApiController extends ApiBaseController
 
     public function listSections()
     {
+        $user = $this->currentUser();
         $pid = (int)$this->f3->get('PARAMS.pid');
-        if (!$this->hasProjectAccess($pid)) $this->jsonError('Accès refusé.', 403, 'FORBIDDEN');
+        if (!$this->getSectionApiService()->hasProjectAccess($pid, $user['id'])) {
+            $this->jsonError('Accès refusé.', 403, 'FORBIDDEN');
+        }
         [$offset, $limit] = $this->getPaginationParams();
-        $total = (int)$this->db->exec(
-            'SELECT COUNT(*) AS n FROM sections WHERE project_id = ?', [$pid]
-        )[0]['n'];
-        $rows = $this->db->exec(
-            'SELECT id, type, title, comment, image_path, order_index, updated_at
-             FROM sections WHERE project_id = ? ORDER BY order_index ASC, id ASC
-             LIMIT ? OFFSET ?',
-            [$pid, $limit, $offset]
-        );
+        [$rows, $total] = $this->getSectionApiService()->listSections($pid, $offset, $limit);
         $typeLabels = [
             'cover'        => 'Couverture',
             'preface'      => 'Préface',
@@ -365,57 +356,53 @@ class ApiController extends ApiBaseController
 
     public function createSection()
     {
+        $user = $this->currentUser();
         $pid = (int)$this->f3->get('PARAMS.pid');
-        if (!$this->isOwner($pid)) $this->jsonError('Accès refusé.', 403, 'FORBIDDEN');
         $body = $this->getBody();
-        $type = trim($body['type'] ?? '');
-        $validTypes = ['cover','preface','introduction','prologue','postface','appendices','back_cover'];
-        if (!in_array($type, $validTypes)) $this->jsonError('Type de section invalide.', 422, 'INVALID_INPUT');
-
-        $this->db->exec(
-            'INSERT INTO sections (project_id, type, title, content, comment) VALUES (?, ?, ?, ?, ?)',
-            [$pid, $type, trim($body['title'] ?? '') ?: null,
-             $body['content'] ?? null, trim($body['comment'] ?? '') ?: null]
-        );
-        $id = (int)$this->db->lastInsertId('sections');
-        $this->jsonOut($this->fetchSection($id), 201);
+        try {
+            $section = $this->getSectionApiService()->createSection($user['id'], $body);
+            $this->jsonOut($section, 201);
+        } catch (\RuntimeException $e) {
+            $this->jsonError($e->getMessage(), 403, 'FORBIDDEN');
+        } catch (\InvalidArgumentException $e) {
+            $this->jsonError($e->getMessage(), 422, 'INVALID_INPUT');
+        }
     }
 
     public function getSection()
     {
+        $user = $this->currentUser();
         $id = (int)$this->f3->get('PARAMS.id');
-        $sec = $this->fetchSection($id);
-        if (!$sec) $this->jsonError('Section introuvable.', 404, 'NOT_FOUND');
-        if (!$this->hasProjectAccess((int)$sec['project_id'])) $this->jsonError('Accès refusé.', 403, 'FORBIDDEN');
-        $this->jsonOut($sec);
+        $section = $this->getSectionApiService()->getSection($id, $user['id']);
+        if (!$section) {
+            $this->jsonError('Section introuvable ou accès refusé.', 404, 'NOT_FOUND');
+        }
+        $this->jsonOut($section);
     }
 
     public function updateSection()
     {
-        $id  = (int)$this->f3->get('PARAMS.id');
-        $row = $this->db->exec('SELECT project_id FROM sections WHERE id = ?', [$id]);
-        if (!$row) $this->jsonError('Section introuvable.', 404, 'NOT_FOUND');
-        if (!$this->isOwner((int)$row[0]['project_id'])) $this->jsonError('Accès refusé.', 403, 'FORBIDDEN');
-
+        $user = $this->currentUser();
+        $id = (int)$this->f3->get('PARAMS.id');
         $body = $this->getBody();
-        $fields = []; $params = [];
-        if (array_key_exists('title',   $body)) { $fields[] = 'title = ?';   $params[] = trim($body['title']) ?: null; }
-        if (array_key_exists('content', $body)) { $fields[] = 'content = ?'; $params[] = $body['content']; }
-        if (array_key_exists('comment', $body)) { $fields[] = 'comment = ?'; $params[] = trim($body['comment']) ?: null; }
-        if (empty($fields)) $this->jsonError('Aucun champ à mettre à jour.', 422, 'INVALID_INPUT');
-
-        $params[] = $id;
-        $this->db->exec('UPDATE sections SET ' . implode(', ', $fields) . ' WHERE id = ?', $params);
-        $this->jsonOut($this->fetchSection($id));
+        try {
+            $section = $this->getSectionApiService()->updateSection($id, $user['id'], $body);
+            if (!$section) {
+                $this->jsonError('Section introuvable ou accès refusé.', 404, 'NOT_FOUND');
+            }
+            $this->jsonOut($section);
+        } catch (\InvalidArgumentException $e) {
+            $this->jsonError($e->getMessage(), 422, 'INVALID_INPUT');
+        }
     }
 
     public function deleteSection()
     {
-        $id  = (int)$this->f3->get('PARAMS.id');
-        $row = $this->db->exec('SELECT project_id FROM sections WHERE id = ?', [$id]);
-        if (!$row) $this->jsonError('Section introuvable.', 404, 'NOT_FOUND');
-        if (!$this->isOwner((int)$row[0]['project_id'])) $this->jsonError('Accès refusé.', 403, 'FORBIDDEN');
-        $this->db->exec('DELETE FROM sections WHERE id = ?', [$id]);
+        $user = $this->currentUser();
+        $id = (int)$this->f3->get('PARAMS.id');
+        if (!$this->getSectionApiService()->deleteSection($id, $user['id'])) {
+            $this->jsonError('Section introuvable ou accès refusé.', 404, 'NOT_FOUND');
+        }
         $this->jsonOut(['status' => 'ok', 'deleted_id' => $id]);
     }
 
@@ -425,74 +412,64 @@ class ApiController extends ApiBaseController
 
     public function listNotes()
     {
+        $user = $this->currentUser();
         $pid = (int)$this->f3->get('PARAMS.pid');
-        if (!$this->hasProjectAccess($pid)) $this->jsonError('Accès refusé.', 403, 'FORBIDDEN');
+        if (!$this->getNoteApiService()->hasProjectAccess($pid, $user['id'])) {
+            $this->jsonError('Accès refusé.', 403, 'FORBIDDEN');
+        }
         [$offset, $limit] = $this->getPaginationParams();
-        $total = (int)$this->db->exec(
-            'SELECT COUNT(*) AS n FROM notes WHERE project_id = ?', [$pid]
-        )[0]['n'];
-        $rows = $this->db->exec(
-            'SELECT id, title, comment, order_index, updated_at
-             FROM notes WHERE project_id = ? ORDER BY order_index ASC, id ASC
-             LIMIT ? OFFSET ?',
-            [$pid, $limit, $offset]
-        );
+        [$rows, $total] = $this->getNoteApiService()->listNotes($pid, $offset, $limit);
         $this->paginatedOut($rows, $total, $offset, $limit);
     }
 
     public function createNote()
     {
-        $pid = (int)$this->f3->get('PARAMS.pid');
-        if (!$this->isOwner($pid)) $this->jsonError('Accès refusé.', 403, 'FORBIDDEN');
+        $user = $this->currentUser();
         $body = $this->getBody();
-        $title = trim($body['title'] ?? '');
-
-        $res = $this->db->exec('SELECT COALESCE(MAX(order_index),0)+1 AS nxt FROM notes WHERE project_id = ?', [$pid]);
-        $order = (int)$res[0]['nxt'];
-
-        $this->db->exec(
-            'INSERT INTO notes (project_id, title, content, comment, order_index) VALUES (?, ?, ?, ?, ?)',
-            [$pid, $title ?: null, $body['content'] ?? null, trim($body['comment'] ?? '') ?: null, $order]
-        );
-        $id = (int)$this->db->lastInsertId('notes');
-        $this->jsonOut($this->fetchNote($id), 201);
+        try {
+            $note = $this->getNoteApiService()->createNote($user['id'], $body);
+            $this->jsonOut($note, 201);
+        } catch (\RuntimeException $e) {
+            $this->jsonError($e->getMessage(), 403, 'FORBIDDEN');
+        } catch (\InvalidArgumentException $e) {
+            $this->jsonError($e->getMessage(), 422, 'INVALID_INPUT');
+        }
     }
 
     public function getNote()
     {
+        $user = $this->currentUser();
         $id = (int)$this->f3->get('PARAMS.id');
-        $note = $this->fetchNote($id);
-        if (!$note) $this->jsonError('Note introuvable.', 404, 'NOT_FOUND');
-        if (!$this->hasProjectAccess((int)$note['project_id'])) $this->jsonError('Accès refusé.', 403, 'FORBIDDEN');
+        $note = $this->getNoteApiService()->getNote($id, $user['id']);
+        if (!$note) {
+            $this->jsonError('Note introuvable ou accès refusé.', 404, 'NOT_FOUND');
+        }
         $this->jsonOut($note);
     }
 
     public function updateNote()
     {
-        $id  = (int)$this->f3->get('PARAMS.id');
-        $row = $this->db->exec('SELECT project_id FROM notes WHERE id = ?', [$id]);
-        if (!$row) $this->jsonError('Note introuvable.', 404, 'NOT_FOUND');
-        if (!$this->isOwner((int)$row[0]['project_id'])) $this->jsonError('Accès refusé.', 403, 'FORBIDDEN');
-
+        $user = $this->currentUser();
+        $id = (int)$this->f3->get('PARAMS.id');
         $body = $this->getBody();
-        $fields = []; $params = [];
-        if (array_key_exists('title',   $body)) { $fields[] = 'title = ?';   $params[] = trim($body['title']) ?: null; }
-        if (array_key_exists('content', $body)) { $fields[] = 'content = ?'; $params[] = $body['content']; }
-        if (array_key_exists('comment', $body)) { $fields[] = 'comment = ?'; $params[] = trim($body['comment']) ?: null; }
-        if (empty($fields)) $this->jsonError('Aucun champ à mettre à jour.', 422, 'INVALID_INPUT');
-
-        $params[] = $id;
-        $this->db->exec('UPDATE notes SET ' . implode(', ', $fields) . ' WHERE id = ?', $params);
-        $this->jsonOut($this->fetchNote($id));
+        try {
+            $note = $this->getNoteApiService()->updateNote($id, $user['id'], $body);
+            if (!$note) {
+                $this->jsonError('Note introuvable ou accès refusé.', 404, 'NOT_FOUND');
+            }
+            $this->jsonOut($note);
+        } catch (\InvalidArgumentException $e) {
+            $this->jsonError($e->getMessage(), 422, 'INVALID_INPUT');
+        }
     }
 
     public function deleteNote()
     {
-        $id  = (int)$this->f3->get('PARAMS.id');
-        $row = $this->db->exec('SELECT project_id FROM notes WHERE id = ?', [$id]);
-        if (!$row) $this->jsonError('Note introuvable.', 404, 'NOT_FOUND');
-        if (!$this->isOwner((int)$row[0]['project_id'])) $this->jsonError('Accès refusé.', 403, 'FORBIDDEN');
-        $this->db->exec('DELETE FROM notes WHERE id = ?', [$id]);
+        $user = $this->currentUser();
+        $id = (int)$this->f3->get('PARAMS.id');
+        if (!$this->getNoteApiService()->deleteNote($id, $user['id'])) {
+            $this->jsonError('Note introuvable ou accès refusé.', 404, 'NOT_FOUND');
+        }
         $this->jsonOut(['status' => 'ok', 'deleted_id' => $id]);
     }
 
@@ -502,76 +479,64 @@ class ApiController extends ApiBaseController
 
     public function listCharacters()
     {
+        $user = $this->currentUser();
         $pid = (int)$this->f3->get('PARAMS.pid');
-        if (!$this->hasProjectAccess($pid)) $this->jsonError('Accès refusé.', 403, 'FORBIDDEN');
+        if (!$this->getCharacterApiService()->hasProjectAccess($pid, $user['id'])) {
+            $this->jsonError('Accès refusé.', 403, 'FORBIDDEN');
+        }
         [$offset, $limit] = $this->getPaginationParams();
-        $total = (int)$this->db->exec(
-            'SELECT COUNT(*) AS n FROM characters WHERE project_id = ?', [$pid]
-        )[0]['n'];
-        $rows = $this->db->exec(
-            'SELECT id, name, description, comment, created_at, updated_at
-             FROM characters WHERE project_id = ? ORDER BY name ASC
-             LIMIT ? OFFSET ?',
-            [$pid, $limit, $offset]
-        );
+        [$rows, $total] = $this->getCharacterApiService()->listCharacters($pid, $offset, $limit);
         $this->paginatedOut($rows, $total, $offset, $limit);
     }
 
     public function createCharacter()
     {
-        $pid = (int)$this->f3->get('PARAMS.pid');
-        if (!$this->isOwner($pid)) $this->jsonError('Accès refusé.', 403, 'FORBIDDEN');
+        $user = $this->currentUser();
         $body = $this->getBody();
-        $name = trim($body['name'] ?? '');
-        if ($name === '') $this->jsonError('Le nom est obligatoire.', 422, 'INVALID_INPUT');
-
-        $this->db->exec(
-            'INSERT INTO characters (project_id, name, description, comment) VALUES (?, ?, ?, ?)',
-            [$pid, $name, trim($body['description'] ?? '') ?: null, trim($body['comment'] ?? '') ?: null]
-        );
-        $id = (int)$this->db->lastInsertId('characters');
-        $this->jsonOut($this->fetchCharacter($id), 201);
+        try {
+            $character = $this->getCharacterApiService()->createCharacter($user['id'], $body);
+            $this->jsonOut($character, 201);
+        } catch (\RuntimeException $e) {
+            $this->jsonError($e->getMessage(), 403, 'FORBIDDEN');
+        } catch (\InvalidArgumentException $e) {
+            $this->jsonError($e->getMessage(), 422, 'INVALID_INPUT');
+        }
     }
 
     public function getCharacter()
     {
-        $id  = (int)$this->f3->get('PARAMS.id');
-        $chr = $this->fetchCharacter($id);
-        if (!$chr) $this->jsonError('Personnage introuvable.', 404, 'NOT_FOUND');
-        if (!$this->hasProjectAccess((int)$chr['project_id'])) $this->jsonError('Accès refusé.', 403, 'FORBIDDEN');
-        $this->jsonOut($chr);
+        $user = $this->currentUser();
+        $id = (int)$this->f3->get('PARAMS.id');
+        $character = $this->getCharacterApiService()->getCharacter($id, $user['id']);
+        if (!$character) {
+            $this->jsonError('Personnage introuvable ou accès refusé.', 404, 'NOT_FOUND');
+        }
+        $this->jsonOut($character);
     }
 
     public function updateCharacter()
     {
-        $id  = (int)$this->f3->get('PARAMS.id');
-        $row = $this->db->exec('SELECT project_id FROM characters WHERE id = ?', [$id]);
-        if (!$row) $this->jsonError('Personnage introuvable.', 404, 'NOT_FOUND');
-        if (!$this->isOwner((int)$row[0]['project_id'])) $this->jsonError('Accès refusé.', 403, 'FORBIDDEN');
-
+        $user = $this->currentUser();
+        $id = (int)$this->f3->get('PARAMS.id');
         $body = $this->getBody();
-        $fields = []; $params = [];
-        if (isset($body['name'])) {
-            $n = trim($body['name']);
-            if ($n === '') $this->jsonError('Le nom ne peut pas être vide.', 422, 'INVALID_INPUT');
-            $fields[] = 'name = ?'; $params[] = $n;
+        try {
+            $character = $this->getCharacterApiService()->updateCharacter($id, $user['id'], $body);
+            if (!$character) {
+                $this->jsonError('Personnage introuvable ou accès refusé.', 404, 'NOT_FOUND');
+            }
+            $this->jsonOut($character);
+        } catch (\InvalidArgumentException $e) {
+            $this->jsonError($e->getMessage(), 422, 'INVALID_INPUT');
         }
-        if (array_key_exists('description', $body)) { $fields[] = 'description = ?'; $params[] = trim($body['description']) ?: null; }
-        if (array_key_exists('comment',     $body)) { $fields[] = 'comment = ?';     $params[] = trim($body['comment']) ?: null; }
-        if (empty($fields)) $this->jsonError('Aucun champ à mettre à jour.', 422, 'INVALID_INPUT');
-
-        $params[] = $id;
-        $this->db->exec('UPDATE characters SET ' . implode(', ', $fields) . ' WHERE id = ?', $params);
-        $this->jsonOut($this->fetchCharacter($id));
     }
 
     public function deleteCharacter()
     {
-        $id  = (int)$this->f3->get('PARAMS.id');
-        $row = $this->db->exec('SELECT project_id FROM characters WHERE id = ?', [$id]);
-        if (!$row) $this->jsonError('Personnage introuvable.', 404, 'NOT_FOUND');
-        if (!$this->isOwner((int)$row[0]['project_id'])) $this->jsonError('Accès refusé.', 403, 'FORBIDDEN');
-        $this->db->exec('DELETE FROM characters WHERE id = ?', [$id]);
+        $user = $this->currentUser();
+        $id = (int)$this->f3->get('PARAMS.id');
+        if (!$this->getCharacterApiService()->deleteCharacter($id, $user['id'])) {
+            $this->jsonError('Personnage introuvable ou accès refusé.', 404, 'NOT_FOUND');
+        }
         $this->jsonOut(['status' => 'ok', 'deleted_id' => $id]);
     }
 
@@ -581,123 +546,75 @@ class ApiController extends ApiBaseController
 
     public function listElementTypes()
     {
+        $user = $this->currentUser();
         $pid = (int)$this->f3->get('PARAMS.pid');
-        if (!$this->hasProjectAccess($pid)) $this->jsonError('Accès refusé.', 403, 'FORBIDDEN');
-        $rows = $this->db->exec(
-            'SELECT te.id, te.element_type, te.config_json, te.display_order
-             FROM template_elements te
-             JOIN projects p ON p.template_id = te.template_id
-             WHERE p.id = ? AND te.is_enabled = 1
-             ORDER BY te.display_order ASC',
-            [$pid]
-        );
-        $types = [];
-        foreach ($rows as $r) {
-            $cfg = $r['config_json'] ? json_decode($r['config_json'], true) : [];
-            $types[] = [
-                'id'           => (int)$r['id'],
-                'element_type' => $r['element_type'],
-                'label'        => $cfg['label_plural'] ?? $cfg['label'] ?? $r['element_type'],
-                'label_singular' => $cfg['label_singular'] ?? $cfg['label'] ?? $r['element_type'],
-                'display_order' => (int)$r['display_order'],
-            ];
+        if (!$this->getElementApiService()->hasProjectAccess($pid, $user['id'])) {
+            $this->jsonError('Accès refusé.', 403, 'FORBIDDEN');
         }
-        $this->jsonOut(['types' => $types]);
+        $result = $this->getElementApiService()->listElementTypes($pid);
+        $this->jsonOut($result);
     }
 
     public function listElements()
     {
+        $user = $this->currentUser();
         $pid = (int)$this->f3->get('PARAMS.pid');
-        if (!$this->hasProjectAccess($pid)) $this->jsonError('Accès refusé.', 403, 'FORBIDDEN');
-        [$offset, $limit] = $this->getPaginationParams();
-        $total = (int)$this->db->exec(
-            'SELECT COUNT(*) AS n FROM elements WHERE project_id = ?', [$pid]
-        )[0]['n'];
-        $rows = $this->db->exec(
-            'SELECT e.id, e.title, e.parent_id, e.order_index, e.template_element_id,
-                    te.element_type, te.config_json
-             FROM elements e
-             LEFT JOIN template_elements te ON te.id = e.template_element_id
-             WHERE e.project_id = ?
-             ORDER BY te.display_order ASC, e.order_index ASC, e.id ASC
-             LIMIT ? OFFSET ?',
-            [$pid, $limit, $offset]
-        );
-        foreach ($rows as &$r) {
-            $cfg = json_decode($r['config_json'] ?? '{}', true);
-            $r['type_label'] = $cfg['label_singular'] ?? $cfg['label'] ?? $r['element_type'];
-            unset($r['config_json']);
+        if (!$this->getElementApiService()->hasProjectAccess($pid, $user['id'])) {
+            $this->jsonError('Accès refusé.', 403, 'FORBIDDEN');
         }
+        [$offset, $limit] = $this->getPaginationParams();
+        [$rows, $total] = $this->getElementApiService()->listElements($pid, $offset, $limit);
         $this->paginatedOut($rows, $total, $offset, $limit);
     }
 
     public function createElement()
     {
-        $pid = (int)$this->f3->get('PARAMS.pid');
-        if (!$this->isOwner($pid)) $this->jsonError('Accès refusé.', 403, 'FORBIDDEN');
+        $user = $this->currentUser();
         $body = $this->getBody();
-        $title = trim($body['title'] ?? '');
-        if ($title === '') $this->jsonError('Le titre est obligatoire.', 422, 'INVALID_INPUT');
-        $teid = (int)($body['template_element_id'] ?? 0);
-        if (!$teid) $this->jsonError('template_element_id est obligatoire.', 422, 'INVALID_INPUT');
-
-        $check = $this->db->exec('SELECT id FROM template_elements WHERE id = ?', [$teid]);
-        if (!$check) $this->jsonError('template_element_id invalide.', 422, 'INVALID_INPUT');
-
-        $parentId = isset($body['parent_id']) ? (int)$body['parent_id'] : null;
-        $res = $this->db->exec(
-            'SELECT COALESCE(MAX(order_index),0)+1 AS nxt FROM elements WHERE project_id = ? AND template_element_id = ? AND parent_id IS NULL',
-            [$pid, $teid]
-        );
-        $order = (int)$res[0]['nxt'];
-
-        $this->db->exec(
-            'INSERT INTO elements (project_id, template_element_id, title, parent_id, order_index) VALUES (?, ?, ?, ?, ?)',
-            [$pid, $teid, $title, $parentId, $order]
-        );
-        $id = (int)$this->db->lastInsertId('elements');
-        $this->jsonOut($this->fetchElement($id), 201);
+        try {
+            $element = $this->getElementApiService()->createElement($user['id'], $body);
+            $this->jsonOut($element, 201);
+        } catch (\RuntimeException $e) {
+            $this->jsonError($e->getMessage(), 403, 'FORBIDDEN');
+        } catch (\InvalidArgumentException $e) {
+            $this->jsonError($e->getMessage(), 422, 'INVALID_INPUT');
+        }
     }
 
     public function getElement()
     {
-        $id  = (int)$this->f3->get('PARAMS.id');
-        $el  = $this->fetchElement($id);
-        if (!$el) $this->jsonError('Élément introuvable.', 404, 'NOT_FOUND');
-        if (!$this->hasProjectAccess((int)$el['project_id'])) $this->jsonError('Accès refusé.', 403, 'FORBIDDEN');
-        $this->jsonOut($el);
+        $user = $this->currentUser();
+        $id = (int)$this->f3->get('PARAMS.id');
+        $element = $this->getElementApiService()->getElement($id, $user['id']);
+        if (!$element) {
+            $this->jsonError('Élément introuvable ou accès refusé.', 404, 'NOT_FOUND');
+        }
+        $this->jsonOut($element);
     }
 
     public function updateElement()
     {
-        $id  = (int)$this->f3->get('PARAMS.id');
-        $row = $this->db->exec('SELECT project_id FROM elements WHERE id = ?', [$id]);
-        if (!$row) $this->jsonError('Élément introuvable.', 404, 'NOT_FOUND');
-        if (!$this->isOwner((int)$row[0]['project_id'])) $this->jsonError('Accès refusé.', 403, 'FORBIDDEN');
-
+        $user = $this->currentUser();
+        $id = (int)$this->f3->get('PARAMS.id');
         $body = $this->getBody();
-        $fields = []; $params = [];
-        if (isset($body['title'])) {
-            $t = trim($body['title']);
-            if ($t === '') $this->jsonError('Le titre ne peut pas être vide.', 422, 'INVALID_INPUT');
-            $fields[] = 'title = ?'; $params[] = $t;
+        try {
+            $element = $this->getElementApiService()->updateElement($id, $user['id'], $body);
+            if (!$element) {
+                $this->jsonError('Élément introuvable ou accès refusé.', 404, 'NOT_FOUND');
+            }
+            $this->jsonOut($element);
+        } catch (\InvalidArgumentException $e) {
+            $this->jsonError($e->getMessage(), 422, 'INVALID_INPUT');
         }
-        if (array_key_exists('content', $body)) { $fields[] = 'content = ?'; $params[] = $body['content']; }
-        if (array_key_exists('resume',  $body)) { $fields[] = 'resume = ?';  $params[] = trim($body['resume']) ?: null; }
-        if (empty($fields)) $this->jsonError('Aucun champ à mettre à jour.', 422, 'INVALID_INPUT');
-
-        $params[] = $id;
-        $this->db->exec('UPDATE elements SET ' . implode(', ', $fields) . ' WHERE id = ?', $params);
-        $this->jsonOut($this->fetchElement($id));
     }
 
     public function deleteElement()
     {
-        $id  = (int)$this->f3->get('PARAMS.id');
-        $row = $this->db->exec('SELECT project_id FROM elements WHERE id = ?', [$id]);
-        if (!$row) $this->jsonError('Élément introuvable.', 404, 'NOT_FOUND');
-        if (!$this->isOwner((int)$row[0]['project_id'])) $this->jsonError('Accès refusé.', 403, 'FORBIDDEN');
-        $this->db->exec('DELETE FROM elements WHERE id = ?', [$id]);
+        $user = $this->currentUser();
+        $id = (int)$this->f3->get('PARAMS.id');
+        if (!$this->getElementApiService()->deleteElement($id, $user['id'])) {
+            $this->jsonError('Élément introuvable ou accès refusé.', 404, 'NOT_FOUND');
+        }
         $this->jsonOut(['status' => 'ok', 'deleted_id' => $id]);
     }
 
@@ -707,31 +624,29 @@ class ApiController extends ApiBaseController
 
     public function listImages()
     {
+        $user = $this->currentUser();
         $pid = (int)$this->f3->get('PARAMS.pid');
-        if (!$this->hasProjectAccess($pid)) $this->jsonError('Accès refusé.', 403, 'FORBIDDEN');
-        $rows = $this->db->exec(
-            'SELECT id, filename, filepath, filetype, filesize, uploaded_at
-             FROM project_files WHERE project_id = ? ORDER BY uploaded_at DESC',
-            [$pid]
-        );
-        $base = $this->f3->get('BASE');
-        foreach ($rows as &$r) {
-            $r['url']      = $base . '/' . ltrim(str_replace('\\', '/', $r['filepath']), '/');
-            $r['size_kb']  = round($r['filesize'] / 1024, 1);
+        if (!$this->getImageApiService()->hasProjectAccess($pid, $user['id'])) {
+            $this->jsonError('Accès refusé.', 403, 'FORBIDDEN');
         }
-        $this->jsonOut(['images' => $rows]);
+        $base = $this->f3->get('BASE');
+        $result = $this->getImageApiService()->listImages($pid, $base);
+        $this->jsonOut($result);
     }
 
     public function uploadImage()
     {
+        $user = $this->currentUser();
         $pid = (int)$this->f3->get('PARAMS.pid');
-        if (!$this->isOwner($pid)) $this->jsonError('Accès refusé.', 403, 'FORBIDDEN');
+        if (!$this->getImageApiService()->hasProjectAccess($pid, $user['id'])) {
+            $this->jsonError('Accès refusé.', 403, 'FORBIDDEN');
+        }
         if (empty($_FILES['file'])) $this->jsonError('Aucun fichier reçu (champ: file).', 422, 'INVALID_INPUT');
 
-        $validation = $this->validateImageUpload($_FILES['file'], 5);
+        $validation = $this->getImageApiService()->validateImageUpload($_FILES['file'], 5);
         if (!$validation['success']) $this->jsonError($validation['error'], 422, 'INVALID_INPUT');
 
-        $ownerEmail = $this->getProjectOwnerEmail($pid);
+        $ownerEmail = $this->getImageApiService()->getProjectOwnerEmail($pid);
         $uploadDir  = $this->f3->get('BASEPATH') . 'public/uploads/' . $pid . '/';
         $safeName   = bin2hex(random_bytes(8));
         $dest       = (new ImageUploadService())->move($_FILES['file'], $validation['extension'], $uploadDir, $safeName);
@@ -741,15 +656,13 @@ class ApiController extends ApiBaseController
         }
 
         $relPath = 'public/uploads/' . $pid . '/' . basename($dest);
-        $this->db->exec(
-            'INSERT INTO project_files (project_id, filename, filepath, filetype, filesize) VALUES (?, ?, ?, ?, ?)',
-            [$pid, $_FILES['file']['name'], $relPath, $_FILES['file']['type'], $_FILES['file']['size']]
+        $image = $this->getImageApiService()->createImage(
+            $pid, $_FILES['file']['name'], $relPath, $_FILES['file']['type'], (int)$_FILES['file']['size']
         );
-        $fid  = (int)$this->db->lastInsertId('project_files');
         $base = $this->f3->get('BASE');
         $this->jsonOut([
-            'id'       => $fid,
-            'filename' => $_FILES['file']['name'],
+            'id'       => $image['id'],
+            'filename' => $image['filename'],
             'url'      => $base . '/' . $relPath,
             'size_kb'  => round($_FILES['file']['size'] / 1024, 1),
         ], 201);
@@ -757,17 +670,12 @@ class ApiController extends ApiBaseController
 
     public function deleteImage()
     {
+        $user = $this->currentUser();
         $pid = (int)$this->f3->get('PARAMS.pid');
         $fid = (int)$this->f3->get('PARAMS.fid');
-        if (!$this->isOwner($pid)) $this->jsonError('Accès refusé.', 403, 'FORBIDDEN');
-
-        $row = $this->db->exec('SELECT filepath FROM project_files WHERE id = ? AND project_id = ?', [$fid, $pid]);
-        if (!$row) $this->jsonError('Fichier introuvable.', 404, 'NOT_FOUND');
-
-        $fullPath = $this->f3->get('BASEPATH') . $row[0]['filepath'];
-        if (file_exists($fullPath)) @unlink($fullPath);
-
-        $this->db->exec('DELETE FROM project_files WHERE id = ?', [$fid]);
+        if (!$this->getImageApiService()->deleteImage($pid, $fid, $user['id'])) {
+            $this->jsonError('Fichier introuvable ou accès refusé.', 404, 'NOT_FOUND');
+        }
         $this->jsonOut(['status' => 'ok', 'deleted_id' => $fid]);
     }
 
@@ -777,12 +685,16 @@ class ApiController extends ApiBaseController
 
     public function exportMarkdown()
     {
+        $user = $this->currentUser();
         $id = (int)$this->f3->get('PARAMS.id');
-        if (!$this->hasProjectAccess($id)) $this->jsonError('Accès refusé.', 403, 'FORBIDDEN');
+        if (!$this->getExportApiService()->hasProjectAccess($id, $user['id'])) {
+            $this->jsonError('Accès refusé.', 403, 'FORBIDDEN');
+        }
 
-        $exporter = new ProjectExportController();
-        $content  = $exporter->generateExportContent($id, 'markdown');
-        if ($content === null) $this->jsonError('Projet introuvable.', 404, 'NOT_FOUND');
+        $content = $this->getExportApiService()->generateMarkdownExport($id);
+        if ($content === null) {
+            $this->jsonError('Projet introuvable.', 404, 'NOT_FOUND');
+        }
 
         header('Content-Type: text/markdown; charset=utf-8');
         echo $content;
@@ -795,261 +707,21 @@ class ApiController extends ApiBaseController
 
     public function search()
     {
-        $q   = trim($this->f3->get('GET.q') ?? '');
+        $user = $this->currentUser();
+        $q = trim($this->f3->get('GET.q') ?? '');
         $pid = $this->f3->get('GET.pid') ? (int)$this->f3->get('GET.pid') : null;
 
-        if ($q === '') $this->jsonError('Paramètre q obligatoire.', 422, 'INVALID_INPUT');
-        if (strlen($q) < 2) $this->jsonError('La recherche doit contenir au moins 2 caractères.', 422, 'INVALID_INPUT');
-
-        $user    = $this->currentUser();
-        $results = [];
-        $like    = '%' . $q . '%';
-
-        // Build project scope: only projects accessible to the user
-        if ($pid) {
-            if (!$this->hasProjectAccess($pid)) $this->jsonError('Accès refusé.', 403, 'FORBIDDEN');
-            $projectIds = [$pid];
-        } else {
-            $ownedRows = $this->db->exec('SELECT id FROM projects WHERE user_id = ?', [$user['id']]);
-            $collabRows = $this->db->exec(
-                'SELECT project_id AS id FROM project_collaborators WHERE user_id = ? AND status = "accepted"',
-                [$user['id']]
-            );
-            $projectIds = array_column(array_merge($ownedRows, $collabRows), 'id');
+        try {
+            $result = $this->getSearchApiService()->search($user['id'], $q, $pid);
+            $this->jsonOut($result);
+        } catch (\RuntimeException $e) {
+            $this->jsonError($e->getMessage(), 403, 'FORBIDDEN');
+        } catch (\InvalidArgumentException $e) {
+            $this->jsonError($e->getMessage(), 422, 'INVALID_INPUT');
         }
-        if (empty($projectIds)) { $this->jsonOut(['query' => $q, 'results' => []]); }
-
-        $inList = implode(',', array_map('intval', $projectIds));
-
-        // Chapters
-        $rows = $this->db->exec(
-            "SELECT 'chapter' AS type, id, project_id, title,
-                    SUBSTRING(content, GREATEST(1, LOCATE(?, content)-60), 120) AS excerpt
-             FROM chapters WHERE project_id IN ($inList) AND (title LIKE ? OR content LIKE ?)",
-            [$q, $like, $like]
-        );
-        foreach ($rows as $r) {
-            $results[] = ['type' => 'chapter', 'id' => (int)$r['id'], 'project_id' => (int)$r['project_id'],
-                          'title' => $r['title'], 'excerpt' => strip_tags($r['excerpt'])];
-        }
-
-        // Characters
-        $rows = $this->db->exec(
-            "SELECT id, project_id, name AS title, description AS excerpt
-             FROM characters WHERE project_id IN ($inList) AND (name LIKE ? OR description LIKE ?)",
-            [$like, $like]
-        );
-        foreach ($rows as $r) {
-            $results[] = ['type' => 'character', 'id' => (int)$r['id'], 'project_id' => (int)$r['project_id'],
-                          'title' => $r['title'], 'excerpt' => substr(strip_tags($r['excerpt'] ?? ''), 0, 120)];
-        }
-
-        // Notes
-        $rows = $this->db->exec(
-            "SELECT id, project_id, title,
-                    SUBSTRING(content, GREATEST(1, LOCATE(?, content)-60), 120) AS excerpt
-             FROM notes WHERE project_id IN ($inList) AND (title LIKE ? OR content LIKE ?)",
-            [$q, $like, $like]
-        );
-        foreach ($rows as $r) {
-            $results[] = ['type' => 'note', 'id' => (int)$r['id'], 'project_id' => (int)$r['project_id'],
-                          'title' => $r['title'] ?? '(sans titre)', 'excerpt' => strip_tags($r['excerpt'])];
-        }
-
-        // Elements
-        $rows = $this->db->exec(
-            "SELECT e.id, e.project_id, e.title,
-                    SUBSTRING(e.content, GREATEST(1, LOCATE(?, e.content)-60), 120) AS excerpt,
-                    te.element_type
-             FROM elements e
-             LEFT JOIN template_elements te ON te.id = e.template_element_id
-             WHERE e.project_id IN ($inList) AND (e.title LIKE ? OR e.content LIKE ?)",
-            [$q, $like, $like]
-        );
-        foreach ($rows as $r) {
-            $results[] = ['type' => 'element', 'element_type' => $r['element_type'],
-                          'id' => (int)$r['id'], 'project_id' => (int)$r['project_id'],
-                          'title' => $r['title'], 'excerpt' => strip_tags($r['excerpt'])];
-        }
-
-        $this->jsonOut(['query' => $q, 'results' => $results]);
     }
 
-    // ──────────────────────────────────────────────────────────────
-    // Private fetch helpers
-    // ──────────────────────────────────────────────────────────────
 
-    private function fetchProject(int $id): ?array
-    {
-        $rows = $this->db->exec('SELECT * FROM projects WHERE id = ?', [$id]);
-        if (!$rows) return null;
-        $p = $rows[0];
-
-        $acts = $this->db->exec(
-            'SELECT a.id, a.title, a.description, a.resume, a.order_index FROM acts a
-             WHERE a.project_id = ? ORDER BY a.order_index ASC, a.id ASC',
-            [$id]
-        ) ?: [];
-        foreach ($acts as &$a) {
-            $a['chapters'] = $this->db->exec(
-                'SELECT id, title, resume, word_count, order_index FROM chapters
-                 WHERE project_id = ? AND act_id = ? ORDER BY order_index ASC, id ASC',
-                [$id, $a['id']]
-            ) ?: [];
-        }
-        // Chapters without act
-        $freeChapters = $this->db->exec(
-            'SELECT id, title, resume, word_count, order_index FROM chapters
-             WHERE project_id = ? AND act_id IS NULL ORDER BY order_index ASC, id ASC',
-            [$id]
-        ) ?: [];
-
-        $sections = $this->db->exec(
-            'SELECT id, type, title, order_index FROM sections WHERE project_id = ? ORDER BY order_index ASC', [$id]
-        );
-        $typeLabels = ['cover'=>'Couverture','preface'=>'Préface','introduction'=>'Introduction',
-                       'prologue'=>'Prologue','postface'=>'Postface','appendices'=>'Annexes','back_cover'=>'Quatrième de couverture'];
-        foreach ($sections as &$s) { $s['type_label'] = $typeLabels[$s['type']] ?? $s['type']; }
-
-        $counts = $this->db->exec(
-            'SELECT
-               (SELECT COUNT(*) FROM characters WHERE project_id = ?) AS characters_count,
-               (SELECT COUNT(*) FROM notes      WHERE project_id = ?) AS notes_count,
-               (SELECT COUNT(*) FROM elements   WHERE project_id = ?) AS elements_count',
-            [$id, $id, $id]
-        )[0];
-
-        return [
-            'id'               => (int)$p['id'],
-            'title'            => $p['title'],
-            'description'      => $p['description'],
-            'template_id'      => $p['template_id'] ? (int)$p['template_id'] : null,
-            'created_at'       => $p['created_at'],
-            'updated_at'       => $p['updated_at'],
-            'acts'             => $acts,
-            'chapters_without_act' => $freeChapters,
-            'sections'         => $sections,
-            'characters_count' => (int)$counts['characters_count'],
-            'notes_count'      => (int)$counts['notes_count'],
-            'elements_count'   => (int)$counts['elements_count'],
-        ];
-    }
-
-    private function fetchAct(int $id): ?array
-    {
-        $rows = $this->db->exec('SELECT * FROM acts WHERE id = ?', [$id]);
-        if (!$rows) return null;
-        $a = $rows[0];
-        $chapters = $this->db->exec(
-            'SELECT id, title, resume, word_count, order_index FROM chapters
-             WHERE act_id = ? ORDER BY order_index ASC, id ASC', [$id]
-        ) ?: [];
-        return [
-            'id'          => (int)$a['id'],
-            'project_id'  => (int)$a['project_id'],
-            'title'       => $a['title'],
-            'description' => $a['description'],
-            'resume'      => $a['resume'],
-            'order_index' => (int)$a['order_index'],
-            'chapters'    => $chapters,
-        ];
-    }
-
-    private function fetchSection(int $id): ?array
-    {
-        $rows = $this->db->exec('SELECT * FROM sections WHERE id = ?', [$id]);
-        if (!$rows) return null;
-        $s = $rows[0];
-        $typeLabels = ['cover'=>'Couverture','preface'=>'Préface','introduction'=>'Introduction',
-                       'prologue'=>'Prologue','postface'=>'Postface','appendices'=>'Annexes','back_cover'=>'Quatrième de couverture'];
-        return [
-            'id'           => (int)$s['id'],
-            'project_id'   => (int)$s['project_id'],
-            'type'         => $s['type'],
-            'type_label'   => $typeLabels[$s['type']] ?? $s['type'],
-            'title'        => $s['title'],
-            'content_html' => $s['content'] ?? '',
-            'content_text' => $this->htmlToText($s['content'] ?? ''),
-            'comment'      => $s['comment'],
-            'image_url'    => $s['image_path'] ? $this->f3->get('BASE') . '/' . ltrim($s['image_path'], '/') : null,
-            'updated_at'   => $s['updated_at'],
-        ];
-    }
-
-    private function fetchNote(int $id): ?array
-    {
-        $rows = $this->db->exec('SELECT * FROM notes WHERE id = ?', [$id]);
-        if (!$rows) return null;
-        $n = $rows[0];
-        return [
-            'id'           => (int)$n['id'],
-            'project_id'   => (int)$n['project_id'],
-            'title'        => $n['title'],
-            'content_html' => $n['content'] ?? '',
-            'content_text' => $this->htmlToText($n['content'] ?? ''),
-            'comment'      => $n['comment'],
-            'updated_at'   => $n['updated_at'],
-        ];
-    }
-
-    private function fetchCharacter(int $id): ?array
-    {
-        $rows = $this->db->exec('SELECT * FROM characters WHERE id = ?', [$id]);
-        if (!$rows) return null;
-        $c = $rows[0];
-        return [
-            'id'          => (int)$c['id'],
-            'project_id'  => (int)$c['project_id'],
-            'name'        => $c['name'],
-            'description' => $c['description'],
-            'comment'     => $c['comment'],
-            'created_at'  => $c['created_at'],
-            'updated_at'  => $c['updated_at'],
-        ];
-    }
-
-    private function fetchElement(int $id): ?array
-    {
-        $rows = $this->db->exec(
-            'SELECT e.*, te.element_type, te.config_json
-             FROM elements e
-             LEFT JOIN template_elements te ON te.id = e.template_element_id
-             WHERE e.id = ?',
-            [$id]
-        );
-        if (!$rows) return null;
-        $e = $rows[0];
-        $cfg = json_decode($e['config_json'] ?? '{}', true);
-        $subRows = $this->db->exec(
-            'SELECT id, title, content, resume, order_index, updated_at FROM elements WHERE parent_id = ? ORDER BY order_index ASC', [$id]
-        );
-        $subElements = array_map(function ($s) {
-            return [
-                'id'           => (int)$s['id'],
-                'title'        => $s['title'],
-                'content_html' => $s['content'] ?? '',
-                'content_text' => $this->htmlToText($s['content'] ?? ''),
-                'resume'       => $s['resume'] ?? '',
-                'order_index'  => (int)$s['order_index'],
-                'updated_at'   => $s['updated_at'],
-            ];
-        }, $subRows ?: []);
-        return [
-            'id'                  => (int)$e['id'],
-            'project_id'          => (int)$e['project_id'],
-            'template_element_id' => (int)$e['template_element_id'],
-            'element_type'        => $e['element_type'],
-            'type_label'          => $cfg['label_singular'] ?? $cfg['label'] ?? $e['element_type'],
-            'title'               => $e['title'],
-            'content_html'        => $e['content'] ?? '',
-            'content_text'        => $this->htmlToText($e['content'] ?? ''),
-            'resume'              => $e['resume'],
-            'parent_id'           => $e['parent_id'] ? (int)$e['parent_id'] : null,
-            'order_index'         => (int)$e['order_index'],
-            'sub_elements'        => $subElements,
-            'updated_at'          => $e['updated_at'],
-        ];
-    }
 
     // ──────────────────────────────────────────────────────────────
     // SYNOPSIS
@@ -1057,107 +729,29 @@ class ApiController extends ApiBaseController
 
     public function getSynopsis()
     {
+        $user = $this->currentUser();
         $pid = (int)$this->f3->get('PARAMS.pid');
-        if (!$this->hasProjectAccess($pid)) {
-            $this->jsonError('Accès refusé.', 403, 'FORBIDDEN');
+        try {
+            $synopsis = $this->getChapterApiService()->fetchOrCreateSynopsis($pid, $user['id']);
+            $this->jsonOut($synopsis);
+        } catch (\RuntimeException $e) {
+            $this->jsonError($e->getMessage(), 403, 'FORBIDDEN');
         }
-        $synopsis = $this->fetchOrCreateSynopsis($pid);
-        $this->jsonOut($synopsis);
     }
 
     public function updateSynopsis()
     {
+        $user = $this->currentUser();
         $pid = (int)$this->f3->get('PARAMS.pid');
-        if (!$this->isOwner($pid)) {
-            $this->jsonError('Accès refusé.', 403, 'FORBIDDEN');
-        }
         $body = $this->getBody();
-        $allowed = [
-            'genre', 'subgenre', 'audience', 'tone', 'themes', 'comps',
-            'status', 'structure_method',
-            'logline', 'pitch', 'situation', 'trigger_evt', 'plot_point1',
-            'development', 'midpoint', 'crisis', 'climax', 'resolution',
-            'is_exported',
-        ];
-        $fields = array_intersect_key($body, array_flip($allowed));
-        if (empty($fields)) {
-            $this->jsonError('Aucun champ valide fourni.', 422, 'INVALID_INPUT');
+        try {
+            $synopsis = $this->getChapterApiService()->updateSynopsis($pid, $user['id'], $body);
+            $this->jsonOut($synopsis);
+        } catch (\RuntimeException $e) {
+            $this->jsonError($e->getMessage(), 403, 'FORBIDDEN');
+        } catch (\InvalidArgumentException $e) {
+            $this->jsonError($e->getMessage(), 422, 'INVALID_INPUT');
         }
-
-        // Auto-create if missing
-        $this->fetchOrCreateSynopsis($pid);
-
-        $synopsisModel = new Synopsis();
-        $synopsisModel->updateFields($pid, $fields);
-
-        $this->jsonOut($this->fetchOrCreateSynopsis($pid));
     }
 
-    private function fetchOrCreateSynopsis(int $pid): array
-    {
-        $rows = $this->db->exec('SELECT * FROM synopsis WHERE project_id = ?', [$pid]);
-        if (!$rows) {
-            $this->db->exec('INSERT INTO synopsis (project_id) VALUES (?)', [$pid]);
-            $rows = $this->db->exec('SELECT * FROM synopsis WHERE project_id = ?', [$pid]);
-        }
-        $s = $rows[0];
-        $htmlFields = ['pitch', 'development', 'climax', 'resolution'];
-        $result = [
-            'id'               => (int)$s['id'],
-            'project_id'       => (int)$s['project_id'],
-            'genre'            => $s['genre'],
-            'subgenre'         => $s['subgenre'],
-            'audience'         => $s['audience'],
-            'tone'             => $s['tone'],
-            'themes'           => $s['themes'],
-            'comps'            => $s['comps'],
-            'status'           => $s['status'],
-            'structure_method' => $s['structure_method'],
-            'is_exported'      => (bool)$s['is_exported'],
-            'logline'          => $s['logline'],
-            'situation'        => $s['situation'],
-            'trigger_evt'      => $s['trigger_evt'],
-            'plot_point1'      => $s['plot_point1'],
-            'midpoint'         => $s['midpoint'],
-            'crisis'           => $s['crisis'],
-            'updated_at'       => $s['updated_at'],
-        ];
-        foreach ($htmlFields as $f) {
-            $result[$f . '_html'] = $s[$f] ?? '';
-            $result[$f . '_text'] = $this->htmlToText($s[$f] ?? '');
-        }
-        return $result;
-    }
-
-    // ──────────────────────────────────────────────────────────────
-    // Utility helpers
-    // ──────────────────────────────────────────────────────────────
-
-    private function htmlToText(string $html): string
-    {
-        return ContentTransformer::htmlToText($html);
-    }
-
-    private function countWords(string $html): int
-    {
-        return ContentTransformer::countWords($html);
-    }
-
-    private function saveChapterVersion(int $chapterId, ?string $content, int $wordCount): void
-    {
-        if (empty($content)) return;
-        $this->db->exec(
-            'INSERT INTO chapter_versions (chapter_id, content, word_count) VALUES (?, ?, ?)',
-            [$chapterId, $content, $wordCount]
-        );
-        // Keep max 10 versions per chapter
-        $this->db->exec(
-            'DELETE FROM chapter_versions WHERE chapter_id = ?
-             AND id NOT IN (SELECT id FROM (
-                 SELECT id FROM chapter_versions WHERE chapter_id = ?
-                 ORDER BY created_at DESC LIMIT 10
-             ) AS keep)',
-            [$chapterId, $chapterId]
-        );
-    }
 }

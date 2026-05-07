@@ -343,13 +343,8 @@
         var exportToggle = document.getElementById('exportToggle');
         if (exportToggle) {
             exportToggle.addEventListener('change', function () {
-                fetch('{{ @base }}/project/{{ @project.id }}/export-toggle', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ id: {{ @act.id }}, type: 'act', is_exported: this.checked ? 1 : 0 })
-                }).then(function (r) {
-                    if (!r.ok) { exportToggle.checked = !exportToggle.checked; }
-                });
+                ApiClient.post('{{ @base }}/project/{{ @project.id }}/export-toggle', { id: {{ @act.id }}, type: 'act', is_exported: this.checked ? 1 : 0 })
+                    .catch(function () { exportToggle.checked = !exportToggle.checked; });
             });
         }
 

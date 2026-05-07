@@ -57,8 +57,7 @@ class ProjectFileController extends ProjectBaseController
         $pid  = (int) $this->f3->get('PARAMS.pid');
         $user = $this->currentUser();
 
-        $projectModel = new Project();
-        if (!$projectModel->count(['id=? AND user_id=?', $pid, $user['id']])) {
+        if (!$this->isOwner($pid)) {
             header('Content-Type: application/json');
             echo json_encode(['success' => false, 'error' => 'Projet non trouvé']);
             return;
@@ -117,8 +116,7 @@ class ProjectFileController extends ProjectBaseController
         $fid  = (int) $this->f3->get('PARAMS.fid');
         $user = $this->currentUser();
 
-        $projectModel = new Project();
-        if (!$projectModel->count(['id=? AND user_id=?', $pid, $user['id']])) {
+        if (!$this->isOwner($pid)) {
             $this->f3->error(403);
             return;
         }
@@ -151,8 +149,7 @@ class ProjectFileController extends ProjectBaseController
         $fid  = (int) $this->f3->get('PARAMS.fid');
         $user = $this->currentUser();
 
-        $projectModel = new Project();
-        if (!$projectModel->count(['id=? AND user_id=?', $pid, $user['id']])) {
+        if (!$this->isOwner($pid)) {
             $this->f3->error(403);
             return;
         }

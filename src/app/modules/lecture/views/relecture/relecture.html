@@ -538,8 +538,8 @@
             popupMode = mode;
             document.getElementById('modeAnnotation').classList.toggle('active', mode === 'annotation');
             document.getElementById('modeSuggestion').classList.toggle('active', mode === 'suggestion');
-            document.getElementById('annotationFields').style.display = mode === 'annotation' ? '' : 'none';
-            document.getElementById('suggestionFields').style.display = mode === 'suggestion' ? '' : 'none';
+            document.getElementById('annotationFields').classList.toggle('is-hidden', mode !== 'annotation');
+            document.getElementById('suggestionFields').classList.toggle('is-hidden', mode !== 'suggestion');
         }
 
         document.getElementById('modeAnnotation').addEventListener('click', function () { setPopupMode('annotation'); });
@@ -638,22 +638,19 @@
         // ── Submit annotation ─────────────────────────────────────────────────────
 
         document.getElementById('annotationSubmit').addEventListener('click', function () {
-            if (!pendingSelection) return;
+            if (!pendingSelection) { alert('Veuillez d\'abord sélectionner un texte à annoter.'); return; }
             var category = document.getElementById('annotationCategory').value;
             var comment = document.getElementById('annotationComment').value.trim();
 
-            var data = new FormData();
-            data.append('project_id', projectData.id);
-            data.append('content_type', pendingSelection.contentType);
-            data.append('content_id', pendingSelection.contentId);
-            data.append('selected_text', pendingSelection.text);
-            data.append('comment', comment);
-            data.append('category', category);
-            data.append('csrf_token', CSRF_TOKEN);
-
             this.disabled = true;
-            fetch(BASE_PATH + '/relecture/annotation/add', { method: 'POST', body: data })
-                .then(function (r) { if (!r.ok) throw new Error('HTTP ' + r.status); return r.json(); })
+            ApiClient.post(BASE_PATH + '/relecture/annotation/add', {
+                project_id: projectData.id,
+                content_type: pendingSelection.contentType,
+                content_id: pendingSelection.contentId,
+                selected_text: pendingSelection.text,
+                comment: comment,
+                category: category
+            })
                 .then(function (res) {
                     if (res.status === 'ok') {
                         var newAnn = {
@@ -681,23 +678,20 @@
         // ── Submit suggestion ─────────────────────────────────────────────────────
 
         document.getElementById('suggestionSubmit').addEventListener('click', function () {
-            if (!pendingSelection) return;
+            if (!pendingSelection) { alert('Veuillez d\'abord sélectionner un texte à corriger.'); return; }
             var sugText = document.getElementById('suggestionText').value.trim();
             if (!sugText) { alert('Veuillez saisir un texte de remplacement.'); return; }
             var comment = document.getElementById('suggestionComment').value.trim();
 
-            var data = new FormData();
-            data.append('project_id', projectData.id);
-            data.append('content_type', pendingSelection.contentType);
-            data.append('content_id', pendingSelection.contentId);
-            data.append('original_text', pendingSelection.text);
-            data.append('suggested_text', sugText);
-            data.append('comment', comment);
-            data.append('csrf_token', CSRF_TOKEN);
-
             this.disabled = true;
-            fetch(BASE_PATH + '/relecture/suggestion/add', { method: 'POST', body: data })
-                .then(function (r) { if (!r.ok) throw new Error('HTTP ' + r.status); return r.json(); })
+            ApiClient.post(BASE_PATH + '/relecture/suggestion/add', {
+                project_id: projectData.id,
+                content_type: pendingSelection.contentType,
+                content_id: pendingSelection.contentId,
+                original_text: pendingSelection.text,
+                suggested_text: sugText,
+                comment: comment
+            })
                 .then(function (res) {
                     if (res.status === 'ok') {
                         var newSug = {
@@ -729,10 +723,7 @@
 
         function deleteAnnotation(annotId) {
             if (!confirm('Supprimer cette annotation ?')) return;
-            var fd = new FormData();
-            fd.append('csrf_token', CSRF_TOKEN);
-            fetch(BASE_PATH + '/relecture/annotation/' + annotId + '/delete', { method: 'POST', body: fd })
-                .then(function (r) { if (!r.ok) throw new Error('HTTP ' + r.status); return r.json(); })
+            ApiClient.post(BASE_PATH + '/relecture/annotation/' + annotId + '/delete', {})
                 .then(function (res) {
                     if (res.status === 'ok') {
                         annotations = annotations.filter(function (a) { return a.id !== annotId; });
@@ -747,10 +738,7 @@
 
         function deleteSuggestion(sugId) {
             if (!confirm('Supprimer cette suggestion ?')) return;
-            var fd = new FormData();
-            fd.append('csrf_token', CSRF_TOKEN);
-            fetch(BASE_PATH + '/relecture/suggestion/' + sugId + '/delete', { method: 'POST', body: fd })
-                .then(function (r) { if (!r.ok) throw new Error('HTTP ' + r.status); return r.json(); })
+            ApiClient.post(BASE_PATH + '/relecture/suggestion/' + sugId + '/delete', {})
                 .then(function (res) {
                     if (res.status === 'ok') {
                         suggestions = suggestions.filter(function (s) { return s.id !== sugId; });
@@ -766,10 +754,7 @@
         function updateSuggestion(sugId, action) {
             var label = action === 'accept' ? 'Accepter' : 'Rejeter';
             if (!confirm(label + ' cette suggestion ?')) return;
-            var fd = new FormData();
-            fd.append('csrf_token', CSRF_TOKEN);
-            fetch(BASE_PATH + '/relecture/suggestion/' + sugId + '/' + action, { method: 'POST', body: fd })
-                .then(function (r) { if (!r.ok) throw new Error('HTTP ' + r.status); return r.json(); })
+            ApiClient.post(BASE_PATH + '/relecture/suggestion/' + sugId + '/' + action, {})
                 .then(function (res) {
                     if (res.status === 'ok') {
                         suggestions = suggestions.map(function (s) {
@@ -951,10 +936,7 @@
             }
             btn.disabled = true;
             btn.innerHTML = '<i class="fas fa-spinner fa-spin" aria-hidden="true"></i>';
-            fetch('{{ @base }}/project/{{ @project.id }}/glossary/terms', {
-                headers: { 'X-CSRF-Token': '{{ @csrfToken }}' }
-            })
-                .then(function (r) { return r.json(); })
+            ApiClient.get('{{ @base }}/project/{{ @project.id }}/glossary/terms')
                 .then(function (data) {
                     glossaryTerms = data;
                     btn.disabled = false;

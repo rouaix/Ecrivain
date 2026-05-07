@@ -13,13 +13,7 @@ class ProjectContentController extends ProjectBaseController
     public function reorderItem()
     {
         $pid          = (int) $this->f3->get('PARAMS.id');
-        $projectModel = new Project();
-        $projectModel->load(['id=? AND user_id=?', $pid, $this->currentUser()['id']]);
-
-        if ($projectModel->dry()) {
-            $this->f3->error(404);
-            return;
-        }
+        $this->requireOwnedProject($pid);
 
         $data     = json_decode($this->f3->get('BODY'), true);
         $type     = $data['type'] ?? '';

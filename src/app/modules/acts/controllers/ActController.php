@@ -17,10 +17,7 @@ class ActController extends Controller
     public function listAll()
     {
         $pid = (int) $this->f3->get('PARAMS.pid');
-        $projectModel = new Project();
-        $project = $projectModel->findAndCast(['id=? AND user_id=?', $pid, $this->currentUser()['id']]);
-        if (!$project) { $this->f3->error(403); return; }
-        $project = $project[0];
+        $project = $this->requireOwnedProject($pid);
 
         $actModel = new Act();
         $acts = $actModel->getAllByProject($pid);
@@ -65,17 +62,11 @@ class ActController extends Controller
     public function create()
     {
         $pid = (int) $this->f3->get('PARAMS.pid');
-        $projectModel = new Project();
-        $project = $projectModel->findAndCast(['id=? AND user_id=?', $pid, $this->currentUser()['id']]);
-
-        if (!$project) {
-            $this->f3->error(404);
-            return;
-        }
+        $project = $this->requireOwnedProject($pid);
 
         $this->render('acts/create.html', [
             'title' => 'Nouvel acte',
-            'project' => $project[0],
+            'project' => $project,
             'errors' => [],
             'old' => ['title' => '', 'content' => '', 'resume' => '']
         ]);
@@ -88,13 +79,7 @@ class ActController extends Controller
     public function store()
     {
         $pid = (int) $this->f3->get('PARAMS.pid');
-        $projectModel = new Project();
-        $project = $projectModel->findAndCast(['id=? AND user_id=?', $pid, $this->currentUser()['id']]);
-
-        if (!$project) {
-            $this->f3->error(404);
-            return;
-        }
+        $project = $this->requireOwnedProject($pid);
 
         $title = trim($_POST['title'] ?? '');
         $content = $_POST['content'] ?? '';
@@ -132,7 +117,7 @@ class ActController extends Controller
 
         $this->render('acts/create.html', [
             'title' => 'Nouvel acte',
-            'project' => $project[0],
+            'project' => $project,
             'errors' => $errors,
             'old' => [
                 'title' => htmlspecialchars($title),
@@ -158,20 +143,14 @@ class ActController extends Controller
         }
         $act = $act[0];
 
-        // Check project ownership
-        $projectModel = new Project();
-        $project = $projectModel->findAndCast(['id=? AND user_id=?', $act['project_id'], $this->currentUser()['id']]);
-        if (!$project) {
-            $this->f3->error(403);
-            return;
-        }
+        $project = $this->requireOwnedProject((int) $act['project_id']);
 
         $chapterModel = new Chapter();
         $chapterCount = $chapterModel->count(['act_id=?', $aid]);
 
         $this->render('acts/edit.html', [
             'title' => 'Modifier l\'acte',
-            'project' => $project[0],
+            'project' => $project,
             'act' => $act,
             'chapterCount' => $chapterCount,
             'errors' => []
@@ -192,12 +171,7 @@ class ActController extends Controller
             return;
         }
 
-        // Ownership check
-        $projectModel = new Project();
-        if (!$projectModel->count(['id=? AND user_id=?', $actModel->project_id, $this->currentUser()['id']])) {
-            $this->f3->error(403);
-            return;
-        }
+        $this->requireOwnedProject((int) $actModel->project_id);
 
         $title = trim($_POST['title'] ?? '');
         $content = $_POST['content'] ?? '';
@@ -245,15 +219,13 @@ class ActController extends Controller
         $actModel = new Act();
         $actModel->load(['id=?', $aid]);
         if (!$actModel->dry()) {
-            $projectModel = new Project();
-            if ($projectModel->count(['id=? AND user_id=?', $actModel->project_id, $this->currentUser()['id']])) {
-                $pid   = $actModel->project_id;
-                $label = $actModel->title;
-                $actModel->erase();
-                $this->logActivity($pid, 'delete', 'act', $aid, $label);
-                $this->f3->reroute('/project/' . $pid);
-                return;
-            }
+            $this->requireOwnedProject((int) $actModel->project_id);
+            $pid   = $actModel->project_id;
+            $label = $actModel->title;
+            $actModel->erase();
+            $this->logActivity($pid, 'delete', 'act', $aid, $label);
+            $this->f3->reroute('/project/' . $pid);
+            return;
         }
         $this->f3->reroute('/dashboard');
     }

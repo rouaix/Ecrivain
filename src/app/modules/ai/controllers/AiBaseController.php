@@ -189,4 +189,28 @@ class AiBaseController extends Controller
         $model    = $config['providers'][$provider]['model'] ?? ($this->f3->get('OPENAI_MODEL') ?: 'gpt-4o');
         return [$provider, $apiKey, $model];
     }
+
+    /**
+     * Vérifie l'accès à un projet pour les endpoints API (retourne JSON 403).
+     */
+    protected function requireProjectAccessForApi(int $projectId): void
+    {
+        if (!$this->hasProjectAccess($projectId)) {
+            http_response_code(403);
+            echo json_encode(['success' => false, 'error' => 'Accès non autorisé']);
+            exit;
+        }
+    }
+
+    /**
+     * Vérifie la propriété d'un projet pour les endpoints API (retourne JSON 403).
+     */
+    protected function requireOwnerForApi(int $projectId): void
+    {
+        if (!$this->isOwner($projectId)) {
+            http_response_code(403);
+            echo json_encode(['success' => false, 'error' => 'Accès non autorisé']);
+            exit;
+        }
+    }
 }

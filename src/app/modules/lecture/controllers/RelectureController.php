@@ -314,20 +314,39 @@ class RelectureController extends Controller
         header('Content-Type: application/json');
         $user = $this->currentUser();
 
-        $pid          = (int) ($_POST['project_id'] ?? 0);
-        $contentType  = trim($_POST['content_type'] ?? '');
-        $contentId    = (int) ($_POST['content_id'] ?? 0);
-        $selectedText = trim($_POST['selected_text'] ?? '');
-        $comment      = trim($_POST['comment'] ?? '');
-        $category     = trim($_POST['category'] ?? 'to_check');
+        $json = json_decode(file_get_contents('php://input'), true) ?: [];
+        $pid          = (int) ($json['project_id'] ?? 0);
+        $contentType  = trim($json['content_type'] ?? '');
+        $contentId    = (int) ($json['content_id'] ?? 0);
+        $selectedText = trim($json['selected_text'] ?? '');
+        $comment      = trim($json['comment'] ?? '');
+        $category     = trim($json['category'] ?? 'to_check');
 
         $validCategories = ['to_rewrite', 'inconsistency', 'to_check', 'good'];
-        $validTypes      = ['chapter', 'act', 'section', 'note', 'element'];
+        $validTypes      = ['chapter', 'act', 'section', 'note', 'element', 'synopsis', 'scenario'];
 
-        if (!$pid || !$contentType || !$contentId || $selectedText === ''
-            || !in_array($category, $validCategories)
-            || !in_array($contentType, $validTypes)) {
-            echo json_encode(['status' => 'error', 'message' => 'Données invalides.']);
+        if (!$pid) {
+            echo json_encode(['status' => 'error', 'message' => 'project_id manquant.']);
+            return;
+        }
+        if (!$contentType) {
+            echo json_encode(['status' => 'error', 'message' => 'content_type manquant.']);
+            return;
+        }
+        if (!$contentId) {
+            echo json_encode(['status' => 'error', 'message' => 'content_id manquant.']);
+            return;
+        }
+        if ($selectedText === '') {
+            echo json_encode(['status' => 'error', 'message' => 'selected_text vide.']);
+            return;
+        }
+        if (!in_array($category, $validCategories)) {
+            echo json_encode(['status' => 'error', 'message' => 'Catégorie invalide: ' . $category]);
+            return;
+        }
+        if (!in_array($contentType, $validTypes)) {
+            echo json_encode(['status' => 'error', 'message' => 'Type invalide: ' . $contentType]);
             return;
         }
 
@@ -389,18 +408,38 @@ class RelectureController extends Controller
         header('Content-Type: application/json');
         $user = $this->currentUser();
 
-        $pid           = (int) ($_POST['project_id'] ?? 0);
-        $contentType   = trim($_POST['content_type'] ?? '');
-        $contentId     = (int) ($_POST['content_id'] ?? 0);
-        $originalText  = trim($_POST['original_text'] ?? '');
-        $suggestedText = trim($_POST['suggested_text'] ?? '');
-        $comment       = trim($_POST['comment'] ?? '');
+        $json = json_decode(file_get_contents('php://input'), true) ?: [];
+        $pid           = (int) ($json['project_id'] ?? 0);
+        $contentType   = trim($json['content_type'] ?? '');
+        $contentId     = (int) ($json['content_id'] ?? 0);
+        $originalText  = trim($json['original_text'] ?? '');
+        $suggestedText = trim($json['suggested_text'] ?? '');
+        $comment       = trim($json['comment'] ?? '');
 
-        $validTypes = ['chapter', 'act', 'section', 'note', 'element'];
+        $validTypes = ['chapter', 'act', 'section', 'note', 'element', 'synopsis', 'scenario'];
 
-        if (!$pid || !$contentType || !$contentId || $originalText === '' || $suggestedText === ''
-            || !in_array($contentType, $validTypes)) {
-            echo json_encode(['status' => 'error', 'message' => 'Données invalides.']);
+        if (!$pid) {
+            echo json_encode(['status' => 'error', 'message' => 'project_id manquant.']);
+            return;
+        }
+        if (!$contentType) {
+            echo json_encode(['status' => 'error', 'message' => 'content_type manquant.']);
+            return;
+        }
+        if (!$contentId) {
+            echo json_encode(['status' => 'error', 'message' => 'content_id manquant.']);
+            return;
+        }
+        if ($originalText === '') {
+            echo json_encode(['status' => 'error', 'message' => 'original_text vide.']);
+            return;
+        }
+        if ($suggestedText === '') {
+            echo json_encode(['status' => 'error', 'message' => 'suggested_text vide.']);
+            return;
+        }
+        if (!in_array($contentType, $validTypes)) {
+            echo json_encode(['status' => 'error', 'message' => 'Type invalide: ' . $contentType]);
             return;
         }
 

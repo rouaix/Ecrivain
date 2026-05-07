@@ -13,10 +13,7 @@ class ChapterController extends Controller
     public function listAll()
     {
         $pid = (int) $this->f3->get('PARAMS.pid');
-        $projectModel = new Project();
-        $project = $projectModel->findAndCast(['id=? AND user_id=?', $pid, $this->currentUser()['id']]);
-        if (!$project) { $this->f3->error(403); return; }
-        $project = $project[0];
+        $project = $this->requireOwnedProject($pid);
 
         $chapterModel = new Chapter();
         $chapters = $chapterModel->getAllByProject($pid);
@@ -63,12 +60,7 @@ class ChapterController extends Controller
     public function create()
     {
         $pid = (int) $this->f3->get('PARAMS.pid');
-        $projectModel = new Project();
-        if (!$projectModel->count(['id=? AND user_id=?', $pid, $this->currentUser()['id']])) {
-            $this->f3->error(404);
-            return;
-        }
-        $project = $projectModel->findAndCast(['id=?', $pid])[0];
+        $project = $this->requireOwnedProject($pid);
 
         $actModel = new Act();
         $acts = $actModel->getAllByProject($pid);
@@ -93,11 +85,7 @@ class ChapterController extends Controller
     public function store()
     {
         $pid = (int) $this->f3->get('PARAMS.pid');
-        $projectModel = new Project();
-        if (!$projectModel->count(['id=? AND user_id=?', $pid, $this->currentUser()['id']])) {
-            $this->f3->error(404);
-            return;
-        }
+        $project = $this->requireOwnedProject($pid);
 
         $title = trim($_POST['title'] ?? '');
         $actId = !empty($_POST['act_id']) ? (int) $_POST['act_id'] : null;
@@ -129,8 +117,6 @@ class ChapterController extends Controller
             }
         }
 
-        // Need to reload data for view
-        $project = $projectModel->findAndCast(['id=?', $pid])[0];
         $actModel = new Act();
         $acts = $actModel->getAllByProject($pid);
         $chapterModel = new Chapter();
@@ -157,15 +143,7 @@ class ChapterController extends Controller
             return;
         }
 
-        $user = $this->currentUser();
-        // Ownership check & Get Project
-        $projectModel = new Project();
-        $project = $projectModel->findAndCast(['id=? AND user_id=?', $chapterModel->project_id, $user['id']]);
-        if (!$project) {
-            $this->f3->error(403);
-            return;
-        }
-        $project = $project[0];
+        $project = $this->requireOwnedProject((int) $chapterModel->project_id);
 
         // Additional data for the view
         $actModel = new Act();
@@ -252,12 +230,7 @@ class ChapterController extends Controller
             return;
         }
 
-        // Verify ownership
-        $projectModel = new Project();
-        if (!$projectModel->count(['id=? AND user_id=?', $chapterModel->project_id, $this->currentUser()['id']])) {
-            $this->f3->error(403);
-            return;
-        }
+        $this->requireOwnedProject((int) $chapterModel->project_id);
 
         $title = trim($_POST['title'] ?? '');
         $content = $_POST['content'] ?? '';
@@ -392,12 +365,7 @@ class ChapterController extends Controller
             return;
         }
 
-        // Verify ownership
-        $projectModel = new Project();
-        if (!$projectModel->count(['id=? AND user_id=?', $chapterModel->project_id, $this->currentUser()['id']])) {
-            $this->f3->error(403);
-            return;
-        }
+        $this->requireOwnedProject((int) $chapterModel->project_id);
 
         $pid   = $chapterModel->project_id;
         $label = $chapterModel->title;
@@ -411,11 +379,7 @@ class ChapterController extends Controller
     public function import()
     {
         $pid = (int) $this->f3->get('PARAMS.pid');
-        $projectModel = new Project();
-        if (!$projectModel->count(['id=? AND user_id=?', $pid, $this->currentUser()['id']])) {
-            $this->f3->error(404);
-            return;
-        }
+        $project = $this->requireOwnedProject($pid);
 
         $actId    = !empty($_POST['act_id'])    ? (int) $_POST['act_id']    : null;
         $parentId = !empty($_POST['parent_id']) ? (int) $_POST['parent_id'] : null;
@@ -483,7 +447,6 @@ class ChapterController extends Controller
             }
         }
 
-        $project = $projectModel->findAndCast(['id=?', $pid])[0];
         $actModel = new Act();
         $acts = $actModel->getAllByProject($pid);
         $chapterModel = new Chapter();

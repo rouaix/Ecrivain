@@ -29,8 +29,7 @@ class ChapterVersionController extends Controller
             return null;
         }
 
-        $projectModel = new Project();
-        if (!$projectModel->count(['id=? AND user_id=?', $chapter->project_id, $this->currentUser()['id']])) {
+        if (!$this->isOwner((int) $chapter->project_id)) {
             if ($jsonError) {
                 http_response_code(403);
                 echo json_encode(['error' => 'Acces refuse']);

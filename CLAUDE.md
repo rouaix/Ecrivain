@@ -108,10 +108,14 @@ Available in all controllers (no import needed):
 |--------|---------|
 | `$this->render($view, $data)` | Renders view inside `layouts/main-pro.html` (the single layout); auto-injects `@base`, `@csrfToken`, `@currentUser`, `@aiSystemPrompt`, `@aiUserPrompts`, `@pendingCollabCount` |
 | `$this->currentUser()` | Returns current user array or null |
+| `$this->requireAuth()` | Redirect to `/login` if not authenticated |
+| `$this->requireOwner(int $pid)` | Abort 403 if current user is not the project owner |
+| `$this->requireProjectAccess(int $pid)` | Abort 403 if not owner and not accepted collaborator |
 | `$this->isOwner(int $pid)` | True if current user owns the project |
 | `$this->isCollaborator(int $pid)` | True if current user is an accepted collaborator |
 | `$this->hasProjectAccess(int $pid)` | `isOwner()` OR `isCollaborator()` — use this for read/export guards |
 | `$this->pendingCollabCount()` | Count of pending collaboration requests across all owned projects |
+| `$this->logActivity($action, $contentType, $contentId, $details)` | Writes to `project_activity_logs` (non-blocking, inside try-catch) |
 | `$this->cleanQuillHtml($html)` | Strips spurious empty `<p>` tags from Quill output |
 | `$this->checkRateLimit($key, $max, $secs)` | Session-based sliding-window rate limiter |
 | `$this->validateImageUpload($file, $maxMB)` | MIME + extension + magic-bytes validation |
@@ -215,9 +219,9 @@ Subdirectory layout under `src/public/css/`:
 
 After modifying any JS or CSS file, increment the `?v=` parameter in `main-pro.html`. Current versions:
 ```html
-<link rel="stylesheet" href="{{ @base }}/public/style.css?v=80">
-<link rel="stylesheet" href="{{ @base }}/public/css/pro/pro.css?v=50">
-<link rel="stylesheet" href="{{ @base }}/public/css/themes/theme-bibliotheque.css?v=25">
+<link rel="stylesheet" href="{{ @base }}/public/style.css?v=81">
+<link rel="stylesheet" href="{{ @base }}/public/css/pro/pro.css?v=52">
+<link rel="stylesheet" href="{{ @base }}/public/css/themes/theme-bibliotheque.css?v=29">
 <script src="{{ @base }}/public/js/quill-adapter.js?v=26"></script>
 <script src="{{ @base }}/public/js/api-client.js?v=3"></script>
 <script src="{{ @base }}/public/js/notifications.js?v=1"></script>
@@ -250,6 +254,15 @@ Standalone layouts that embed their own `style.css` reference (update separately
 ```
 
 Both partials guard the create button with `@isOwner` — controllers **must** pass `'isOwner' => $this->isOwner($pid)` in `render()`.
+
+### ApiClient (JavaScript)
+
+`api-client.js` exports a global `ApiClient` namespace for all fetch operations. Auto-injects the CSRF token from `<meta name="csrf-token">` into every request header.
+
+- `ApiClient.get(url, params?)` → `Promise<data>`
+- `ApiClient.post(url, data)` / `ApiClient.put(url, data)` / `ApiClient.delete(url)` → `Promise<data>`
+- `ApiClient.postForm(url, formElement)` → `Promise<data>` — serializes a form automatically
+- Returns `{ status, message }` shape on HTTP errors; always returns a Promise.
 
 ### AppUI (JavaScript)
 

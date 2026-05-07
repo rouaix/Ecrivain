@@ -31,7 +31,7 @@
 
     <!-- CSS : base + Pro -->
     <link rel="stylesheet" href="{{ @base }}/public/style.css?v=80">
-    <link rel="stylesheet" href="{{ @base }}/public/css/pro/pro.css?v=52">
+    <link rel="stylesheet" href="{{ @base }}/public/css/pro/pro.css?v=53">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 
     <!-- Polices — Lora (titres) + Inter (UI) -->
@@ -126,7 +126,7 @@
                 </a>
 
                 <!-- Collaborations -->
-                <a href="{{ @base }}/collab/invitations" class="pro-topbar-btn" title="Invitations et collaborations">
+                <a href="{{ @base }}/collab/invitations" class="pro-topbar-btn {{ substr(@PATH, 0, 7) == '/collab' ? 'is-active' : '' }}" title="Invitations et collaborations">
                     <i class="fas fa-users" aria-hidden="true"></i>
                     <check if="{{ @pendingCollabCount > 0 }}">
                         <span class="pro-topbar-badge" aria-label="{{ @pendingCollabCount }} en attente">{{

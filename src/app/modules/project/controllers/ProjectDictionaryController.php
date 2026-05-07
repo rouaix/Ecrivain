@@ -15,8 +15,7 @@ class ProjectDictionaryController extends ProjectBaseController
         $pid  = (int) $this->f3->get('PARAMS.pid');
         $user = $this->currentUser();
 
-        $projectModel = new Project();
-        if (!$projectModel->count(['id=? AND user_id=?', $pid, $user['id']])) {
+        if (!$this->isOwner($pid)) {
             http_response_code(403);
             echo json_encode(['error' => 'Accès refusé']);
             return;
@@ -45,8 +44,7 @@ class ProjectDictionaryController extends ProjectBaseController
         $pid  = (int) $this->f3->get('PARAMS.pid');
         $user = $this->currentUser();
 
-        $projectModel = new Project();
-        if (!$projectModel->count(['id=? AND user_id=?', $pid, $user['id']])) {
+        if (!$this->isOwner($pid)) {
             http_response_code(403);
             echo json_encode(['error' => 'Accès refusé']);
             return;

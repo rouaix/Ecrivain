@@ -4,6 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="csrf-token" content="{{ @csrfToken }}">
     <title>{{ @title | esc }}</title>
     <!-- Use specific reading mode styles instead of global style.css to avoid header/footer bleed -->
     <link rel="stylesheet" href="{{ @base }}/public/style.css?v=58">
@@ -11,6 +12,7 @@
     <set selectedTheme="{{ isset(@COOKIE.theme) ? @COOKIE.theme : 'default' }}" />
     <link rel="stylesheet" href="{{ @base }}/public/css/themes/theme-{{ @selectedTheme }}.css?v=2">
     <link rel="stylesheet" href="{{ @base }}/public/css/features/reading.css?v=11">
+    <script src="{{ @base }}/public/js/api-client.js?v=3" nonce="{{ @nonce }}"></script>
     <script src="{{ @base }}/public/js/offline-reader.js?v=1" nonce="{{ @nonce }}"></script>
 </head>
 
@@ -199,8 +201,6 @@
     </div>
 
     <script nonce="{{ @nonce }}">
-        window.CSRF_TOKEN = '{{ @csrfToken }}';
-
         // DIAGNOSTIC - Log toolbar state
         console.log('=== TOOLBAR DIAGNOSTIC ===');
         console.log('Window width:', window.innerWidth);
@@ -402,20 +402,13 @@
 
                 const remarkText = `[${new Date().toLocaleString('fr-FR')}] "${selectedText}"\n${comment}\n\n`;
 
-                fetch('{{ @base }}/lecture/add-comment', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'X-CSRF-Token': window.CSRF_TOKEN
-                    },
-                    body: JSON.stringify({
-                        type: currentContentType,
-                        id: currentContentId,
-                        comment: remarkText
-                    })
+                ApiClient.post('{{ @base }}/lecture/add-comment', {
+                    type: currentContentType,
+                    id: currentContentId,
+                    comment: remarkText
                 })
-                    .then(function (resp) {
-                        if (resp.ok) {
+                    .then(function (data) {
+                        if (data && data.status !== 'error') {
                             alert('Remarque ajoutee avec succes !');
                             commentFormPopup.classList.add('is-hidden');
                         } else {
@@ -469,23 +462,16 @@
                     });
                 }
 
-                fetch('{{ @base }}/lecture/save-bookmark', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'X-CSRF-Token': window.CSRF_TOKEN
-                    },
-                    body: JSON.stringify({
-                        project_id: projectId,
-                        scroll_position: scrollPosition,
-                        current_page: currentPageNum,
-                        content_id: currentId,
-                        content_type: currentType,
-                        section_offset: currentOffset
-                    })
+                ApiClient.post('{{ @base }}/lecture/save-bookmark', {
+                    project_id: projectId,
+                    scroll_position: scrollPosition,
+                    current_page: currentPageNum,
+                    content_id: currentId,
+                    content_type: currentType,
+                    section_offset: currentOffset
                 })
-                    .then(function (resp) {
-                        if (resp.ok) {
+                    .then(function (data) {
+                        if (data && data.status !== 'error') {
                             if (!silent) {
                                 saveBookmarkBtn.innerHTML = '<i class="fas fa-check" aria-hidden="true"></i> Sauvegarde';
                                 setTimeout(function () {
@@ -513,12 +499,9 @@
 
             // Load bookmark on page load
             const loadBookmark = () => {
-                fetch('{{ @base }}/lecture/get-bookmark?project_id=' + projectId)
-                    .then(function (resp) {
-                        return resp.ok ? resp.json() : null;
-                    })
+                ApiClient.get('{{ @base }}/lecture/get-bookmark', { project_id: projectId })
                     .then(function (data) {
-                        if (!data) return;
+                        if (!data || data.status === 'error') return;
 
                         if (!scrollableDiv) return;
 
@@ -765,10 +748,7 @@
                 }
                 btn.disabled = true;
                 btn.innerHTML = '<i class="fas fa-spinner fa-spin" aria-hidden="true"></i>';
-                fetch('{{ @base }}/project/{{ @project.id }}/glossary/terms', {
-                    headers: { 'X-CSRF-Token': window.CSRF_TOKEN }
-                })
-                    .then(function (r) { return r.json(); })
+                ApiClient.get('{{ @base }}/project/{{ @project.id }}/glossary/terms')
                     .then(function (data) {
                         glossaryTerms = data;
                         btn.disabled = false;

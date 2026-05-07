@@ -69,6 +69,7 @@ body.ui-pro .pro-content-inner>*:first-child {
 }
 
 /* ── 11. Mode éditeur — header collant sous la topbar ── */
+/*
 body.ui-pro.editor-mode .edit-header {
     position: sticky;
     top: 48px;
@@ -78,6 +79,7 @@ body.ui-pro.editor-mode .edit-header {
     margin: 0 -20px 20px;
     padding: 8px 20px;
 }
+*/
 
 /* ── 14. Transitions fluides sidebar/content ── */
 body.ui-pro .pro-sidebar,

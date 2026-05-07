@@ -840,6 +840,13 @@ body.ui-pro .notes-preview-col {
     text-overflow: ellipsis;
 }
 
+.search-result-context {
+    font-size: .75rem;
+    color: var(--text-muted, #666);
+    margin-bottom: 2px;
+    opacity: .8;
+}
+
 .search-result-excerpt {
     font-size: .875rem;
     color: var(--text-muted, #666);

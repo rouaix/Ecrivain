@@ -234,15 +234,7 @@ class ProjectController extends ProjectBaseController
     public function edit()
     {
         $pid          = (int) $this->f3->get('PARAMS.id');
-        $projectModel = new Project();
-        $project      = $projectModel->findAndCast(['id=? AND user_id=?', $pid, $this->currentUser()['id']]);
-
-        if (!$project) {
-            $this->f3->error(404);
-            return;
-        }
-
-        $projectData                    = $project[0];
+        $projectData = $this->requireOwnedProject($pid);
         $projectData['lines_per_page']  = $projectData['lines_per_page'] ?? 38;
 
         $settings                = json_decode($projectData['settings'] ?? '{}', true);

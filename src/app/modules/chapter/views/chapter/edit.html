@@ -516,15 +516,7 @@
                 btnSummarizeAI.innerHTML = '<i class="fas fa-spinner fa-spin" aria-hidden="true"></i> Génération…';
                 statusEl.classList.add('is-hidden');
 
-                fetch('{{ @base }}/ai/summarize-chapter', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'X-CSRF-Token': window.CSRF_TOKEN
-                    },
-                    body: JSON.stringify({ chapter_id: parseInt(chapterId) })
-                })
-                    .then(function (r) { return r.json(); })
+                ApiClient.post('{{ @base }}/ai/summarize-chapter', { chapter_id: parseInt(chapterId) })
                     .then(function (data) {
                         if (data.success && resumeQuill) {
                             resumeQuill.clipboard.dangerouslyPasteHTML(data.summary);
@@ -575,12 +567,7 @@
                 loading.classList.remove('is-hidden');
                 openModal();
 
-                fetch('{{ @base }}/ai/suggest-continuity', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json', 'X-CSRF-Token': window.CSRF_TOKEN },
-                    body: JSON.stringify({ chapter_id: parseInt(chapterId) })
-                })
-                    .then(function (r) { return r.json(); })
+                ApiClient.post('{{ @base }}/ai/suggest-continuity', { chapter_id: parseInt(chapterId) })
                     .then(function (data) {
                         loading.classList.add('is-hidden');
                         if (!data.success) {
@@ -650,12 +637,7 @@
                     result.classList.add('is-hidden');
                     loading.classList.remove('is-hidden');
 
-                    fetch('{{ @base }}/ai/detect-inconsistencies', {
-                        method: 'POST',
-                        headers: { 'Content-Type': 'application/json', 'X-CSRF-Token': window.CSRF_TOKEN },
-                        body: JSON.stringify({ chapter_id: parseInt(chapterId) })
-                    })
-                        .then(function (r) { return r.json(); })
+                    ApiClient.post('{{ @base }}/ai/detect-inconsistencies', { chapter_id: parseInt(chapterId) })
                         .then(function (data) {
                             loading.classList.add('is-hidden');
                             result.classList.remove('is-hidden');
@@ -760,10 +742,7 @@
             }
 
             // Load terms on page load (silently, no loading indicator)
-            fetch('{{ @base }}/project/{{ @project.id }}/glossary/terms', {
-                headers: { 'X-CSRF-Token': window.CSRF_TOKEN }
-            })
-                .then(function (r) { return r.json(); })
+            ApiClient.get('{{ @base }}/project/{{ @project.id }}/glossary/terms')
                 .then(function (data) {
                     terms = data;
                     scanGlossaryTerms();
@@ -788,10 +767,7 @@
                     loading.classList.remove('is-hidden');
                     listEl.innerHTML = '';
                     emptyEl.classList.add('is-hidden');
-                    fetch('{{ @base }}/project/{{ @project.id }}/glossary/terms', {
-                        headers: { 'X-CSRF-Token': window.CSRF_TOKEN }
-                    })
-                        .then(function (r) { return r.json(); })
+                    ApiClient.get('{{ @base }}/project/{{ @project.id }}/glossary/terms')
                         .then(function (data) {
                             loading.classList.add('is-hidden');
                             terms = data;
@@ -883,19 +859,14 @@
             listDiv.querySelectorAll('.annotation-delete').forEach(function (btn) {
                 btn.addEventListener('click', function () {
                     var aid = this.dataset.id;
-                    fetch('{{ @base }}/chapter/comment/' + aid + '/delete', {
-                        method: 'POST',
-                        headers: { 'X-CSRF-Token': window.CSRF_TOKEN }
-                    })
-                        .then(function (resp) { return resp.json(); })
+                    ApiClient.post('{{ @base }}/chapter/comment/' + aid + '/delete', {})
                         .then(renderAnnotations);
                 });
             });
         }
 
         function loadAnnotations() {
-            fetch('{{ @base }}/chapter/' + chapterId + '/comments')
-                .then(function (resp) { return resp.json(); })
+            ApiClient.get('{{ @base }}/chapter/' + chapterId + '/comments')
                 .then(renderAnnotations)
                 .catch(function () { });
         }
@@ -919,16 +890,9 @@
                 var start = range.index;
                 var end = range.index + range.length;
 
-                fetch('{{ @base }}/chapter/' + chapterId + '/comment', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'X-CSRF-Token': window.CSRF_TOKEN
-                    },
-                    body: JSON.stringify({ start: start, end: end, content: userContent })
-                })
-                    .then(function (resp) { return resp.json().catch(function () { return null; }); })
-                    .then(function () { loadAnnotations(); });
+                ApiClient.post('{{ @base }}/chapter/' + chapterId + '/comment', { start: start, end: end, content: userContent })
+                    .then(function () { loadAnnotations(); })
+                    .catch(function () { loadAnnotations(); });
             });
         }
 
@@ -1023,19 +987,10 @@
             const loadingDiv = addMessage('Analyse du manuscrit en cours<span class="loading-dots"></span>', 'ai loading');
 
             try {
-                const response = await fetch('{{ @base }}/ai/ask', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'X-CSRF-Token': '{{ @csrfToken }}'
-                    },
-                    body: JSON.stringify({
-                        project_id: projectId,
-                        prompt: prompt
-                    })
+                const data = await ApiClient.post('{{ @base }}/ai/ask', {
+                    project_id: projectId,
+                    prompt: prompt
                 });
-
-                const data = await response.json();
 
                 // Remove loading
                 loadingDiv.remove();
@@ -1191,14 +1146,11 @@
             grammarResults.querySelectorAll('.grammar-dict-btn').forEach(function (btn) {
                 btn.addEventListener('click', function () {
                     var word = btn.dataset.word;
-                    fetch(baseUrl + '/project/' + projectId + '/dictionary/add', {
-                        method: 'POST',
-                        headers: { 'Content-Type': 'application/json', 'X-CSRF-Token': window.CSRF_TOKEN },
-                        body: JSON.stringify({ word: word })
-                    }).then(function (r) { return r.json(); }).then(function (data) {
-                        if (data.words) ignoredWords = data.words;
-                        btn.closest('.grammar-item').remove();
-                    });
+                    ApiClient.post(baseUrl + '/project/' + projectId + '/dictionary/add', { word: word })
+                        .then(function (data) {
+                            if (data.words) ignoredWords = data.words;
+                            btn.closest('.grammar-item').remove();
+                        });
                 });
             });
         }

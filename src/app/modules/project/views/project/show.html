@@ -160,9 +160,7 @@
 
                 modal.classList.add('is-visible');
 
-                fetch(`{{ @base }}/project/${projectId}/preview/${type}/${id}`)
-
-                    .then(response => response.json())
+                ApiClient.get(`{{ @base }}/project/${projectId}/preview/${type}/${id}`)
 
                     .then(data => {
 
@@ -1261,8 +1259,7 @@
                 setRequestType('modify');
                 proposeModal.classList.add('is-visible');
 
-                fetch(BASE + '/project/' + PROJECT_ID + '/preview/' + type + '/' + id)
-                    .then(function (r) { return r.json(); })
+                ApiClient.get(BASE + '/project/' + PROJECT_ID + '/preview/' + type + '/' + id)
                     .then(function (data) {
                         currentSnapshot = data.content || '';
                         document.getElementById('proposeCurrentContent').innerHTML = currentSnapshot;

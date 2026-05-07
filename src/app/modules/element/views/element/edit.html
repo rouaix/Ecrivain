@@ -225,24 +225,22 @@
         var exportToggle = document.getElementById('exportToggle');
         if (exportToggle) {
             exportToggle.addEventListener('change', function () {
-                fetch('{{ @base }}/project/{{ @project.id }}/export-toggle', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ id: {{ @element.id }}, type: 'element', is_exported: this.checked ? 1 : 0 })
-                }).then(function (r) {
-                    if (!r.ok) { exportToggle.checked = !exportToggle.checked; }
-                });
+                ApiClient.post('{{ @base }}/project/{{ @project.id }}/export-toggle', { id: {{ @element.id }}, type: 'element', is_exported: this.checked ? 1 : 0 })
+                    .catch(function () { exportToggle.checked = !exportToggle.checked; });
             });
         }
 
         // Auto-save disabled
 
         // AI Modal integration (reuse from main layout)
-        document.getElementById('openAiModal').addEventListener('click', function () {
-            var aiModal = document.getElementById('aiRequestModal');
-            if (aiModal) {
-                aiModal.classList.add('is-visible');
-            }
-        });
+        var openAiModalBtn = document.getElementById('openAiModal');
+        if (openAiModalBtn) {
+            openAiModalBtn.addEventListener('click', function () {
+                var aiModal = document.getElementById('aiRequestModal');
+                if (aiModal) {
+                    aiModal.classList.add('is-visible');
+                }
+            });
+        }
     });
 </script>

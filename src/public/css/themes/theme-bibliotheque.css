@@ -515,11 +515,13 @@ body[data-layout="bibliotheque"] .tm-btn-primary:hover {
 body[data-layout="bibliotheque"] .ms-hidden-cell .export-toggle {
   display: none;
 }
+
 body[data-layout="bibliotheque"] td.ms-hidden-cell {
   width: 44px;
   padding: 0 4px;
   text-align: center;
 }
+
 body[data-layout="bibliotheque"] div.ms-hidden-cell {
   display: inline-flex;
   align-items: center;
@@ -962,10 +964,15 @@ body[data-layout="bibliotheque"] .pro-content-inner h3 {
    ════════════════════════════════════════════════ */
 
 body[data-layout="bibliotheque"] .edit-header {
-  background: #fff !important;
-  border-bottom: 1px solid var(--border-color) !important;
-  padding: 16px 24px !important;
-  margin-bottom: 16px !important;
+  /*
+  background: #fff;
+  border-bottom: 1px solid var(--border-color);
+  padding: 16px 24px;
+  */
+  margin-bottom: 16px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
 }
 
 body[data-layout="bibliotheque"] .edit-header h1 {

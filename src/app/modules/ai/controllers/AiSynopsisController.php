@@ -32,12 +32,7 @@ class AiSynopsisController extends AiBaseController
             return;
         }
 
-        $projectModel = new \Project($this->f3->get('DB'));
-        if (!$projectModel->count(['id=? AND user_id=?', $pid, $this->currentUser()['id']])) {
-            http_response_code(403);
-            echo json_encode(['success' => false, 'error' => 'Accès non autorisé']);
-            return;
-        }
+        $this->requireProjectAccessForApi($pid);
 
         $defaults     = $this->getDefaultPrompts();
         [$provider, $apiKey, $model] = $this->resolveAiProvider();
@@ -103,12 +98,7 @@ class AiSynopsisController extends AiBaseController
         }
 
         $db           = $this->f3->get('DB');
-        $projectModel = new \Project($db);
-        if (!$projectModel->count(['id=? AND user_id=?', $pid, $this->currentUser()['id']])) {
-            http_response_code(403);
-            echo json_encode(['success' => false, 'error' => 'Accès non autorisé']);
-            return;
-        }
+        $this->requireProjectAccessForApi($pid);
 
         $project = $db->exec('SELECT title, description FROM projects WHERE id=?', [$pid]);
         $project = $project[0] ?? [];
@@ -212,12 +202,7 @@ class AiSynopsisController extends AiBaseController
             return;
         }
 
-        $projectModel = new \Project($this->f3->get('DB'));
-        if (!$projectModel->count(['id=? AND user_id=?', $pid, $this->currentUser()['id']])) {
-            http_response_code(403);
-            echo json_encode(['success' => false, 'error' => 'Accès non autorisé']);
-            return;
-        }
+        $this->requireProjectAccessForApi($pid);
 
         $beatLabels = [
             'logline'     => 'Logline (1 phrase : personnage + objectif + obstacle + enjeu)',
@@ -285,12 +270,7 @@ class AiSynopsisController extends AiBaseController
             return;
         }
 
-        $projectModel = new \Project($this->f3->get('DB'));
-        if (!$projectModel->count(['id=? AND user_id=?', $pid, $this->currentUser()['id']])) {
-            http_response_code(403);
-            echo json_encode(['success' => false, 'error' => 'Accès non autorisé']);
-            return;
-        }
+        $this->requireProjectAccessForApi($pid);
 
         $defaults     = $this->getDefaultPrompts();
         [$provider, $apiKey, $model] = $this->resolveAiProvider();
@@ -343,12 +323,7 @@ class AiSynopsisController extends AiBaseController
             return;
         }
 
-        $projectModel = new \Project($this->f3->get('DB'));
-        if (!$projectModel->count(['id=? AND user_id=?', $pid, $this->currentUser()['id']])) {
-            http_response_code(403);
-            echo json_encode(['success' => false, 'error' => 'Accès non autorisé']);
-            return;
-        }
+        $this->requireProjectAccessForApi($pid);
 
         $beatLabels = [
             'logline' => 'Logline', 'pitch' => 'Accroche',
@@ -425,12 +400,7 @@ class AiSynopsisController extends AiBaseController
             return;
         }
 
-        $projectModel = new \Project($this->f3->get('DB'));
-        if (!$projectModel->count(['id=? AND user_id=?', $pid, $this->currentUser()['id']])) {
-            http_response_code(403);
-            echo json_encode(['success' => false, 'error' => 'Accès non autorisé']);
-            return;
-        }
+        $this->requireProjectAccessForApi($pid);
 
         $defaults     = $this->getDefaultPrompts();
         [$provider, $apiKey, $model] = $this->resolveAiProvider();

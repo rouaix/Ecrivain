@@ -148,13 +148,10 @@
             var id = parseInt(this.dataset.id, 10);
             var type = this.dataset.type;
             var checked = this.checked;
-            fetch(BASE + '/project/' + pid + '/export-toggle', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json', 'X-CSRF-Token': window.CSRF_TOKEN },
-                body: JSON.stringify({ id: id, type: type, is_exported: checked ? 1 : 0 })
-            }).then(function (r) {
-                if (!r.ok) { cb.checked = !checked; }
-            });
+            ApiClient.post(BASE + '/project/' + pid + '/export-toggle', { id: id, type: type, is_exported: checked ? 1 : 0 })
+                .then(function (r) {
+                    if (r && r.status >= 400) { cb.checked = !checked; }
+                }).catch(function () { cb.checked = !checked; });
         });
     });
 })();

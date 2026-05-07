@@ -32,113 +32,52 @@ class AiGenerateController extends AiBaseController
                 return;
             }
 
-            // --- Chargement du contexte document ---
-            $docContext      = [];
+            // --- Chargement du contexte document via service ---
+            $docContext = [];
             $fullContextText = '';
 
             if ($contextId && $contextType) {
-                $db = $this->f3->get('DB');
+                $contextService = new AiContextService($this->f3->get('DB'), $this->currentUser()['id']);
+                $docContext = $contextService->loadDocumentContext($contextType, $contextId);
 
-                if ($contextType === 'chapter') {
-                    $chapter = new \Chapter($db);
-                    $chapter->load(['id=?', $contextId]);
-                    if (!$chapter->dry()) {
-                        $projectModel = new \Project($db);
-                        if (!$projectModel->count(['id=? AND user_id=?', $chapter->project_id, $this->currentUser()['id']])) {
-                            http_response_code(403);
-                            echo json_encode(['error' => 'Accès non autorisé']);
-                            return;
-                        }
-                        $projectTitle = $db->exec('SELECT title FROM projects WHERE id=?', [$chapter->project_id])[0]['title'] ?? '';
-                        $actTitle     = '';
-                        if ($chapter->act_id) {
-                            $actTitle = $db->exec('SELECT title FROM acts WHERE id=?', [$chapter->act_id])[0]['title'] ?? '';
-                        }
-                        $docContext = [
-                            'type' => 'chapter', 'id' => $chapter->id,
-                            'project' => $projectTitle, 'act' => $actTitle,
-                            'title' => $chapter->title, 'content' => $chapter->content,
-                        ];
-                    }
-                } elseif ($contextType === 'section') {
-                    $section = new \Section($db);
-                    $section->load(['id=?', $contextId]);
-                    if (!$section->dry()) {
-                        $projectModel = new \Project($db);
-                        if (!$projectModel->count(['id=? AND user_id=?', $section->project_id, $this->currentUser()['id']])) {
-                            http_response_code(403);
-                            echo json_encode(['error' => 'Accès non autorisé']);
-                            return;
-                        }
-                        $projectTitle = $db->exec('SELECT title FROM projects WHERE id=?', [$section->project_id])[0]['title'] ?? '';
-                        $docContext   = [
-                            'type' => 'section', 'id' => $section->id,
-                            'project' => $projectTitle, 'title' => $section->title,
-                            'section_type' => $section->type, 'content' => $section->content,
-                        ];
-                    }
+                if (empty($docContext)) {
+                    http_response_code(403);
+                    echo json_encode(['error' => 'Accès non autorisé ou document introuvable']);
+                    return;
                 }
-            }
 
-            if (!empty($docContext)) {
-                if ($task === 'rephrase' || $task === 'custom') {
-                    $fullContextText = "\n[Contexte] Projet: " . ($docContext['project'] ?? '')
-                        . (!empty($docContext['act']) ? " | Acte: " . $docContext['act'] : '')
-                        . " | " . ucfirst($docContext['type'] ?? 'document') . ": " . ($docContext['title'] ?? '');
-                } else {
-                    $rawContent = strip_tags($docContext['content'] ?? '');
-                    $contentLen = mb_strlen($rawContent);
-                    if ($contentLen > 3000) {
-                        $rawContent = '…' . mb_substr($rawContent, $contentLen - 3000);
-                    }
-                    $lines = ["Projet: " . ($docContext['project'] ?? '')];
-                    if (!empty($docContext['act'])) $lines[] = "Acte: " . $docContext['act'];
-                    $lines[] = "Chapitre: " . ($docContext['title'] ?? '');
-                    if (!empty($rawContent)) $lines[] = "Fin du texte actuel:\n" . $rawContent;
-                    $fullContextText = "\n\n[CONTEXTE]\n" . implode("\n", $lines);
-                }
+                $fullContextText = $contextService->formatContextText($docContext, $task);
             } elseif ($context) {
                 $fullContextText = "\n\n[CONTEXTE EXTRAIT]\n" . $context;
             }
 
+            // --- Construction des prompts via service ---
             $defaults   = $this->getDefaultPrompts();
             $userConfig = $this->getUserConfig();
             [$provider, $apiKey, $model] = $this->resolveAiProvider();
             $service = new AiService($provider, $apiKey, $model);
 
-            $configSystem  = $userConfig['prompts']['system'] ?? '';
+            $promptBuilder = new AiPromptBuilder($defaults, $userConfig);
+            
+            $jsonSystemPrompt = $json['system_prompt'] ?? '';
             $jsonSystemSent = array_key_exists('system_prompt', $json ?? []);
-            $jsonSystem    = $json['system_prompt'] ?? '';
 
+            // Construire le prompt système
             if ($task === 'custom') {
-                $system = $jsonSystemSent ? $jsonSystem : ($configSystem ?: $defaults['system']);
+                $customSystem = $jsonSystemSent ? $jsonSystemPrompt : ($userConfig['prompts']['system'] ?? $defaults['system'] ?? '');
+                $system = $promptBuilder->buildSystemPrompt($task, $fullContextText, $customSystem);
             } else {
-                $system = !empty($configSystem) ? $configSystem : (!empty($jsonSystem) ? $jsonSystem : $defaults['system']);
+                $system = $promptBuilder->buildSystemPrompt($task, $fullContextText, $jsonSystemPrompt);
             }
 
-            if (!empty($fullContextText)) {
-                $system .= " Contexte du document fourni ci-dessous. Respecte le ton, les noms et le style.\n" . $fullContextText;
-            }
+            // Construire le prompt utilisateur
+            $userPrompt = $promptBuilder->buildUserPrompt($task, $prompt, $docContext['content'] ?? '');
+            
+            // Déterminer le nombre maximal de tokens
+            $maxTokens = $promptBuilder->getMaxTokens($task, $prompt);
 
-            if ($task === 'continue') {
-                $configContinue = $userConfig['prompts']['continue'] ?? '';
-                $system        .= " " . (!empty($configContinue) ? $configContinue : $defaults['continue']);
-                $userPrompt     = $prompt ?: "Continue l'histoire.";
-                $maxTokens      = 700;
-            } elseif ($task === 'rephrase') {
-                $configRephrase = $userConfig['prompts']['rephrase'] ?? '';
-                $system        .= " " . (!empty($configRephrase) ? $configRephrase : $defaults['rephrase']);
-                $userPrompt     = $prompt;
-                $maxTokens      = min(600, (int)(mb_strlen($prompt) / 3) + 100);
-            } elseif ($task === 'custom') {
-                $userPrompt = $prompt;
-                $maxTokens  = 1000;
-            } else {
-                $userPrompt = $prompt;
-                $maxTokens  = 800;
-            }
-
-            $system = $this->compressPrompt($system);
+            // Compresser le prompt système si nécessaire
+            $system = $promptBuilder->compressPrompt($system);
             if (empty($system) && $task !== 'custom') {
                 $system = "Tu es un assistant d'écriture créative.";
             }
@@ -176,12 +115,7 @@ class AiGenerateController extends AiBaseController
 
         if ($chapter->dry()) { $this->f3->error(404, 'Chapitre introuvable'); return; }
 
-        $projectModel = new \Project($db);
-        if (!$projectModel->count(['id=? AND user_id=?', $chapter->project_id, $this->currentUser()['id']])) {
-            http_response_code(403);
-            echo json_encode(['success' => false, 'error' => 'Accès non autorisé']);
-            return;
-        }
+        $this->requireProjectAccessForApi($chapter->project_id);
 
         if (!$this->checkRateLimit('ai_gen', 10, 60)) {
             http_response_code(429);
@@ -254,11 +188,7 @@ class AiGenerateController extends AiBaseController
         if ($act->dry()) { $this->f3->error(404, 'Acte introuvable'); return; }
 
         $projectModel = new \Project($db);
-        if (!$projectModel->count(['id=? AND user_id=?', $act->project_id, $this->currentUser()['id']])) {
-            http_response_code(403);
-            echo json_encode(['success' => false, 'error' => 'Accès non autorisé']);
-            return;
-        }
+        $this->requireProjectAccessForApi($act->project_id);
 
         if (!$this->checkRateLimit('ai_gen', 10, 60)) {
             http_response_code(429);
@@ -321,12 +251,7 @@ class AiGenerateController extends AiBaseController
 
         if ($elementModel->dry()) { $this->f3->error(404, 'Élément introuvable'); return; }
 
-        $projectModel = new \Project($db);
-        if (!$projectModel->count(['id=? AND user_id=?', $elementModel->project_id, $this->currentUser()['id']])) {
-            http_response_code(403);
-            echo json_encode(['success' => false, 'error' => 'Accès non autorisé']);
-            return;
-        }
+        $this->requireProjectAccessForApi($elementModel->project_id);
 
         if (!$this->checkRateLimit('ai_gen', 10, 60)) {
             http_response_code(429);

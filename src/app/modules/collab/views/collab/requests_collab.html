@@ -76,16 +76,12 @@
 <script nonce="{{ @nonce }}">
     (function () {
         var BASE = '{{ @base }}';
-        var CSRF = '{{ @csrfToken }}';
 
         document.querySelectorAll('.btn-cancel').forEach(function (btn) {
             btn.addEventListener('click', function () {
                 if (!confirm('Annuler cette demande ?')) return;
                 var id = this.dataset.id;
-                var fd = new FormData();
-                fd.append('csrf_token', CSRF);
-                fetch(BASE + '/collab/request/' + id + '/cancel', { method: 'POST', body: fd })
-                    .then(function (r) { return r.json(); })
+                ApiClient.postForm(BASE + '/collab/request/' + id + '/cancel', new FormData())
                     .then(function (res) {
                         if (res.status === 'ok') {
                             var card = document.getElementById('req-' + id);

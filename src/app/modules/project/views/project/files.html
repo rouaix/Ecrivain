@@ -156,8 +156,7 @@
                 e.preventDefault();
                 var formData = new FormData(this);
                 if (submitBtn) { submitBtn.disabled = true; submitBtn.textContent = 'Envoi…'; }
-                fetch(base + '/project/' + projectId + '/file/upload', { method: 'POST', body: formData })
-                    .then(function (r) { return r.json(); })
+                ApiClient.postForm(base + '/project/' + projectId + '/file/upload', form)
                     .then(function (data) {
                         if (data.success) { window.location.reload(); }
                         else { alert('Erreur : ' + (data.error || 'inconnue')); if (submitBtn) { submitBtn.disabled = false; submitBtn.innerHTML = '<i class="fas fa-upload"></i> Envoyer'; } }

@@ -20,10 +20,7 @@ class ElementController extends Controller
         $pid  = (int) $this->f3->get('PARAMS.pid');
         $teid = (int) $this->f3->get('PARAMS.teid');
 
-        $projectModel = new Project();
-        $project = $projectModel->findAndCast(['id=? AND user_id=?', $pid, $this->currentUser()['id']]);
-        if (!$project) { $this->f3->error(403); return; }
-        $project = $project[0];
+        $project = $this->requireOwnedProject($pid);
 
         $templateElementModel = new TemplateElement();
         $templateElementModel->load(['id=?', $teid]);
@@ -47,10 +44,10 @@ class ElementController extends Controller
 
         // Inject sub_count and subs into each top-level element
         foreach ($topLevel as &$el) {
-            $el['title'] = html_entity_decode(strip_tags($el['title'] ?? ''), ENT_QUOTES | ENT_HTML5, 'UTF-8');
+            $el['title'] = $this->sanitizeText($el['title'] ?? '');
             $subs = array_values($subMap[$el['id']] ?? []);
             foreach ($subs as &$sub) {
-                $sub['title'] = html_entity_decode(strip_tags($sub['title'] ?? ''), ENT_QUOTES | ENT_HTML5, 'UTF-8');
+                $sub['title'] = $this->sanitizeText($sub['title'] ?? '');
             }
             unset($sub);
             $el['subs']      = $subs;
@@ -79,12 +76,7 @@ class ElementController extends Controller
             return;
         }
 
-        $projectModel = new Project();
-        if (!$projectModel->count(['id=? AND user_id=?', $pid, $this->currentUser()['id']])) {
-            $this->f3->error(404);
-            return;
-        }
-        $project = $projectModel->findAndCast(['id=?', $pid])[0];
+        $project = $this->requireOwnedProject($pid);
 
         // Load template element config
         $templateElementModel = new TemplateElement();
@@ -127,13 +119,9 @@ class ElementController extends Controller
             return;
         }
 
-        $projectModel = new Project();
-        if (!$projectModel->count(['id=? AND user_id=?', $pid, $this->currentUser()['id']])) {
-            $this->f3->error(404);
-            return;
-        }
+        $project = $this->requireOwnedProject($pid);
 
-        $title = html_entity_decode(strip_tags(trim($_POST['title'] ?? '')), ENT_QUOTES | ENT_HTML5, 'UTF-8');
+        $title = $this->sanitizeText(trim($_POST['title'] ?? ''));
         $parentId = !empty($_POST['parent_id']) ? (int) $_POST['parent_id'] : null;
 
         $errors = [];
@@ -153,9 +141,6 @@ class ElementController extends Controller
                 $errors[] = 'Impossible de créer l\'élément.';
             }
         }
-
-        // Reload data for view
-        $project = $projectModel->findAndCast(['id=?', $pid])[0];
 
         $templateElementModel = new TemplateElement();
         $templateElementModel->load(['id=?', $templateElementId]);
@@ -189,15 +174,7 @@ class ElementController extends Controller
             return;
         }
 
-        $user = $this->currentUser();
-        // Ownership check & Get Project
-        $projectModel = new Project();
-        $project = $projectModel->findAndCast(['id=? AND user_id=?', $elementModel->project_id, $user['id']]);
-        if (!$project) {
-            $this->f3->error(403);
-            return;
-        }
-        $project = $project[0];
+        $project = $this->requireOwnedProject((int) $elementModel->project_id);
 
         // Load template element config
         $templateElementModel = new TemplateElement();
@@ -266,14 +243,9 @@ class ElementController extends Controller
             return;
         }
 
-        // Verify ownership
-        $projectModel = new Project();
-        if (!$projectModel->count(['id=? AND user_id=?', $elementModel->project_id, $this->currentUser()['id']])) {
-            $this->f3->error(403);
-            return;
-        }
+        $this->requireOwnedProject((int) $elementModel->project_id);
 
-        $title = html_entity_decode(strip_tags(trim($_POST['title'] ?? '')), ENT_QUOTES | ENT_HTML5, 'UTF-8');
+        $title = $this->sanitizeText(trim($_POST['title'] ?? ''));
         $content = $_POST['content'] ?? '';
         $content = $this->cleanQuillHtml($content);
         $resume = $_POST['resume'] ?? '';
@@ -338,12 +310,7 @@ class ElementController extends Controller
             return;
         }
 
-        // Verify ownership
-        $projectModel = new Project();
-        if (!$projectModel->count(['id=? AND user_id=?', $elementModel->project_id, $this->currentUser()['id']])) {
-            $this->f3->error(403);
-            return;
-        }
+        $this->requireOwnedProject((int) $elementModel->project_id);
 
         $pid   = $elementModel->project_id;
         $label = $elementModel->title;
