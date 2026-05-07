@@ -162,7 +162,7 @@ Remplacé ~33 occurrences dans 22 fichiers de vue.
 - ✅ `features/mindmap.css`: 21 → 7 remaining
 - ✅ `features/template-editor.css`: 21 → 8 remaining
 
-**Total: ~1892 → ~1101 magic numbers remaining** (réduction de ~791, ~42%)
+**Total: ~1892 → ~1106 magic numbers remaining** (réduction de ~786, ~42%)
 
 **Note**: Les nombres magiques restants sont principalement des propriétés de dimension (width, height, max-width, font-size, etc.) qui sont intentionnellement laissés en px selon la stratégie.
 
@@ -277,6 +277,6 @@ Le module `search` existe. L'enrichir avec : filtres par type (personnage, chapi
 |---|---|---|
 | PHP `new Model()` hors helper | ~107 occurrences / 21 fichiers | ✅ 100% (206 → 0 occurrences, 11 factory methods ajoutées) |
 | JS `fetch()` directs | 36 occurrences / 13 fichiers | ✅ ~95% (4 intentionnels conservés: `project/show.html` texte brut, `chapter/edit.html` autosave, `project/files.html` preview, `characters/relations.html`) |
-| CSS nombres magiques | ~1 892 occurrences | ✅ ~58% (1 892 → ~1 101 remaining, 29 files traités sur 29, ~791 remplacés) |
+| CSS nombres magiques | ~1 892 occurrences | ✅ ~58% (1 892 → ~1 106 remaining, 29 files traités sur 29, ~786 remplacés) |
 | HTML blocs erreurs dupliqués | ~33 fichiers | ✅ 100% (6 partiels créés, ~33 occurrences remplacées dans 22 fichiers) |
 | Contrôleurs > 700 lignes | 1 fichier | 75% (McpController 1231 restant, ApiController 745→745, AuthController 600→600, LectureController 744→744) |
