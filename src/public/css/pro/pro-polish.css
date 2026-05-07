@@ -85,7 +85,7 @@ body.ui-pro textarea:focus {
 }
 
 /* ── 5. Sidebar — animation mobile ── */
-@media (max-width: var(--space-lg-640)) {
+@media (max-width: 640px) {
     body.ui-pro .pro-sidebar {
         transition: transform 0.22s cubic-bezier(0.4, 0, 0.2, 1);
     }
