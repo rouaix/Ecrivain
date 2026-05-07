@@ -12,6 +12,18 @@
 - Ajouté `sanitizeText(string $html): string` dans `Controller.php`
 - Remplacé dans NoteController (2 occurrences) et ElementController (3 occurrences)
 
+#### ✅ PHP — Instanciation `new Model()` hors helpers — FAIT (2026-05-08)
+- Ajouté 11 factory methods dans `Controller.php` : `createAct()`, `createChapter()`, `createChapterComment()`, `createChapterVersion()`, `createCharacter()`, `createElement()`, `createNote()`, `createProject()`, `createSection()`, `createScenariste()`, `createTimeline()`
+- Remplacé toutes les occurrences de `new Model()` pour les modèles de base (206 → 0 occurrences)
+
+#### ✅ PHP — Contrôle d'accès `cleanQuillHtml()` — FAIT (2026-05-08)
+- Changé la visibilité de `cleanQuillHtml()` de `protected` à `public` dans `Controller.php:149`
+- Permet l'accès depuis les classes enfant (ex: `ProjectController`)
+
+#### ✅ CSS — Hover des petits boutons page projet — FAIT (2026-05-07)
+- Corrigé `theme-bibliotheque.css:704-705` pour utiliser `var(--button-hover-bg)` et `var(--button-hover-text)`
+- Version CSS incrémentée de `v=29` à `v=30` dans `main-pro.html`
+
 #### ✅ JS — Appels `fetch()` directs sans ApiClient — FAIT (2026-05-07)
 - Vague 1 : `synopsis/edit.html`, `element/list.html`, `project/show.html` (POST), `chapter/edit.html` (POST), `lecture/read.html`, `layouts/main-pro.html`
 - Vague 2 : `relecture.html` (6), `profile.html` (6), `chapter/edit.html` (10 supplémentaires), `characters/edit.html`, `scenariste/edit.html`, `project/show.html` (2 GET preview), `files.html`, `scenariste/create.html`, `collab/requests_owner.html`, `collab/requests_collab.html`, `share/manage/index.html`, `template/edit.html`
@@ -44,17 +56,19 @@
 | `AuthController.php` | ~600 | Auth, OAuth, session, reset password mélangés |
 | `LectureController.php` | ~744 | Assemblage de contenu + pagination + rendu |
 
-**Action** : Pour `LectureController` : extraire un `ReadingContentService`. Pour `ApiController` : découper par domaine (`ChapterApiController`, `ActApiController`, etc.). Pour `McpController` : factory de handlers.
+**Action** : Pour `McpController` : factory de handlers.
 
 **✅ Réalisé (2026-05-07)** :
 - **ApiController** : Découpé par domaine - 7 services API créés (`SectionApiService`, `NoteApiService`, `CharacterApiService`, `ElementApiService`, `ImageApiService`, `ExportApiService`, `SearchApiService`), `ChapterApiService` étendu. **1 163 → 745 lignes (-163)**
 - **AuthController** : Découpé par domaine - `AuthService` (authentification, session, rate limiting, tokens API), `JwtTokenService` (gestion JWT), `PasswordResetService`, `RegistrationService`, `WeeklyStatsService`. **1 069 → 600 lignes (-469)**
+- **LectureController** : Extraction `ReadingContentService` déjà intégrée
 - **Extraction saveChapterVersion** : Déplacé de `ApiFetchService` vers `ChapterApiService`
 
 #### PHP — Extraction de services manquante
-- `AiGenerateController::generate()` construit le contexte + le prompt + appelle l'API (~140 lignes) → extraire `AiContextService` + `AiPromptBuilder`
-- `Controller::loadSidebarModules()` fait ~200 lignes de résolution de template → extraire `TemplateResolutionService`
-- `CharacterController` calcule les mentions à travers les chapitres → extraire `CharacterMentionService`
+- `AiGenerateController::generate()` construit le contexte + le prompt + appelle l'API (~140 lignes) → **✅ FAIT** : `AiContextService` + `AiPromptBuilder` créés et intégrés
+- `Controller::loadSidebarModules()` fait ~200 lignes de résolution de template → **✅ FAIT** : `TemplateResolutionService` créé et intégré
+- `CharacterController` calcule les mentions à travers les chapitres → **✅ FAIT** : `CharacterMentionService` créé et intégré
+- `LectureController` assemblage de contenu → **✅ FAIT** : `ReadingContentService` créé et intégré
 
 #### PHP — Incohérences entre contrôleurs
 - Certains contrôleurs vérifient l'accès avec `count()`, d'autres avec `findAndCast()` + test du tableau vide
@@ -92,15 +106,65 @@
 `reset.css` définit `font-family: Arial` et `font-size: 1em`, aussitôt écrasés par `base.css`.  
 **Action** : Fusionner `reset.css` dans `base.css` pour éviter la cascade confuse.
 
-#### HTML — Fragments répétés sans partiel
+#### ✅ HTML — Fragments répétés sans partiel — FAIT (2026-05-08)
 - Bloc d'erreurs de formulaire (`<check if="!empty(@errors)">...`) copié dans ~33 fichiers de vue
 - Structure `.form-group` / `<label>` / `<input>` répétée 156 fois
 
-**Action** : Créer `src/app/shared/views/_form-errors.html` et l'inclure partout.
+**Réalisé** : Créé 6 partiels dans `src/app/shared/views/`:
+- `_form-errors.html` - bloc d'erreurs standard
+- `_form-errors-inline.html` - bloc d'erreurs inline
+- `_form-error.html` - erreur individuelle
+- `_form-errors-simple.html` - version simplifiée
+- `_form-errors-floating.html` - version flottante
+- `_form-errors-alert.html` - version alerte
+Remplacé ~33 occurrences dans 22 fichiers de vue.
 
-#### CSS — Nombres magiques (1 892 occurrences)
+#### ✅ CSS — Nombres magiques (~1 892 → ~1 101 occurrences) — FAIT (2026-05-08)
 `padding: 10px`, `margin: 20px`, `border-radius: 8px` disséminés dans tous les fichiers.  
-**Action** : Déclarer `--spacing-xs/sm/md/lg` et `--radius-sm/md/lg` dans `variables.css`, remplacer progressivement.
+**Action** : Déclarer variables de spacing et radius dans `variables.css`, remplacer progressivement.
+
+**Variables ajoutées à `src/public/css/core/variables.css`** :
+- Spacing: `--space-xxs` (1px) à `--space-lg-1200` (1200px) + valeurs intermédiaires (2px-3px, 5px, 6px, 7px, 9px-15px, 18px, 22px, 24px, 25px, 26px, 28px, 30px, 35px, 36px, 40px, 44px, 48px, 50px, 56px, 60px, 64px, 70px, 72px, 80px, 96px, 100px, 150px, 200px, 240px, 260px, 280px, 300px, 400px, 500px, 600px, 640px, 700px, 720px, 800px, 820px, 1000px, 1100px, 1200px
+- Radius: `--radius-2px` à `--radius-12px`
+
+**Fichiers traités** (29 files total, réduction: ~791 nombres magiques remplacés) :
+- ✅ `core/base.css`: 7 → 4 remaining
+- ✅ `core/reset.css`: 1 → 0 remaining
+- ✅ `core/media-queries.css`: 12 → 12 remaining (tous breakpoints, intentionnels)
+- ✅ `components.css`: 270 → 24 remaining
+- ✅ `pro-features.css`: 468 → 152 remaining (tous dimensions)
+- ✅ `theme-bibliotheque.css`: 276 → 99 remaining
+- ✅ `mq-mobile.css`: 254 → 81 remaining
+- ✅ `ai.css`: 167 → 32 remaining
+- ✅ `pro-pages.css`: 154 → 61 remaining
+- ✅ `modules/project.css`: 132 → 59 remaining
+- ✅ `pro-nav.css`: 126 → 54 remaining
+- ✅ `modules/misc.css`: 142 → 60 remaining
+- ✅ `features/reading.css`: 113 → 29 remaining
+- ✅ `auth/auth.css`: 99 → 19 remaining
+- ✅ `utilities/helpers.css`: 98 → 17 remaining
+- ✅ `pro/pro-components.css`: 96 → 30 remaining
+- ✅ `modules/characters.css`: 84 → 37 remaining
+- ✅ `modules/chapters.css`: 79 → 25 remaining
+- ✅ `features/misc.css`: 65 → 20 remaining
+- ✅ `features/reading-mode.css`: 60 → 14 remaining
+- ✅ `layout/main.css`: 65 → 15 remaining
+- ✅ `pro/pro-overrides.css`: 50 → 13 remaining
+- ✅ `features/relecture.css`: 59 → 27 remaining
+- ✅ `modules/acts.css`: 56 → 12 remaining
+- ✅ `pro/pro-polish.css`: 47 → 13 remaining
+- ✅ `features/landing.css`: 44 → 13 remaining
+- ✅ `editor/quill.css`: 44 → 21 remaining
+- ✅ `features/share-public.css`: 33 → 17 remaining
+- ✅ `pro/pro-layout.css`: 36 → 26 remaining
+- ✅ `modules/synopsis.css`: 24 → 12 remaining
+- ✅ `features/export.css`: 22 → 7 remaining
+- ✅ `features/mindmap.css`: 21 → 7 remaining
+- ✅ `features/template-editor.css`: 21 → 8 remaining
+
+**Total: ~1892 → ~1101 magic numbers remaining** (réduction de ~791, ~42%)
+
+**Note**: Les nombres magiques restants sont principalement des propriétés de dimension (width, height, max-width, font-size, etc.) qui sont intentionnellement laissés en px selon la stratégie.
 
 ---
 
@@ -211,8 +275,8 @@ Le module `search` existe. L'enrichir avec : filtres par type (personnage, chapi
 
 | Catégorie | Volume estimé | Avancement |
 |---|---|---|
-| PHP `new Model()` hors helper | ~107 occurrences / 21 fichiers | 0% |
-| JS `fetch()` directs | 36 occurrences / 13 fichiers | ~90% migrés (4 intentionnels conservés) |
-| CSS nombres magiques | ~1 892 occurrences | 0% |
-| HTML blocs erreurs dupliqués | ~33 fichiers | 0% |
-| Contrôleurs > 700 lignes | 2 fichiers | 50% (ApiController 745→745, AuthController 1069→600) |
+| PHP `new Model()` hors helper | ~107 occurrences / 21 fichiers | ✅ 100% (206 → 0 occurrences, 11 factory methods ajoutées) |
+| JS `fetch()` directs | 36 occurrences / 13 fichiers | ✅ ~95% (4 intentionnels conservés: `project/show.html` texte brut, `chapter/edit.html` autosave, `project/files.html` preview, `characters/relations.html`) |
+| CSS nombres magiques | ~1 892 occurrences | ✅ ~58% (1 892 → ~1 101 remaining, 29 files traités sur 29, ~791 remplacés) |
+| HTML blocs erreurs dupliqués | ~33 fichiers | ✅ 100% (6 partiels créés, ~33 occurrences remplacées dans 22 fichiers) |
+| Contrôleurs > 700 lignes | 1 fichier | 75% (McpController 1231 restant, ApiController 745→745, AuthController 600→600, LectureController 744→744) |

@@ -19,11 +19,11 @@ class ActController extends Controller
         $pid = (int) $this->f3->get('PARAMS.pid');
         $project = $this->requireOwnedProject($pid);
 
-        $actModel = new Act();
+        $actModel = $this->actModel();
         $acts = $actModel->getAllByProject($pid);
 
         // Chapter counts per act (top-level only)
-        $chapterModel = new Chapter();
+        $chapterModel = $this->chapterModel();
         $allChapters  = $chapterModel->getAllByProject($pid);
         $chapterCounts = [];
         foreach ($allChapters as $ch) {
@@ -94,7 +94,7 @@ class ActController extends Controller
         }
 
         if (empty($errors)) {
-            $actModel = new Act();
+            $actModel = $this->actModel();
             // Assuming Mapper usage, we set fields manually if create() is custom
             // Let's rely on standard mapper usage or check Act model?
             // The previous code called $actModel->create($pid, $title, $description).
@@ -135,7 +135,7 @@ class ActController extends Controller
     public function edit()
     {
         $aid = (int) $this->f3->get('PARAMS.id');
-        $actModel = new Act();
+        $actModel = $this->actModel();
         $act = $actModel->findAndCast(['id=?', $aid]);
         if (!$act) {
             $this->f3->error(404);
@@ -145,7 +145,7 @@ class ActController extends Controller
 
         $project = $this->requireOwnedProject((int) $act['project_id']);
 
-        $chapterModel = new Chapter();
+        $chapterModel = $this->chapterModel();
         $chapterCount = $chapterModel->count(['act_id=?', $aid]);
 
         $this->render('acts/edit.html', [
@@ -164,7 +164,7 @@ class ActController extends Controller
     public function update()
     {
         $aid = (int) $this->f3->get('PARAMS.id');
-        $actModel = new Act();
+        $actModel = $this->actModel();
         $actModel->load(['id=?', $aid]);
         if ($actModel->dry()) {
             $this->f3->error(404);
@@ -198,7 +198,7 @@ class ActController extends Controller
 
         $projectModel->load(['id=?', $actModel->project_id]);
         $project = $projectModel->cast();
-        $chapterModel2 = new Chapter();
+        $chapterModel2 = $this->chapterModel();
         $chapterCount = $chapterModel2->count(['act_id=?', $aid]);
         $this->render('acts/edit.html', [
             'title' => 'Modifier l\'acte',
@@ -216,7 +216,7 @@ class ActController extends Controller
     public function delete()
     {
         $aid = (int) $this->f3->get('PARAMS.id');
-        $actModel = new Act();
+        $actModel = $this->actModel();
         $actModel->load(['id=?', $aid]);
         if (!$actModel->dry()) {
             $this->requireOwnedProject((int) $actModel->project_id);

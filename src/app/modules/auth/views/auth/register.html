@@ -10,23 +10,7 @@
 
         </div>
 
-        <check if="!empty(@errors)">
-
-            <div class="auth-alert error">
-
-                <ul>
-
-                    <repeat group="@errors" value="@err">
-
-                        <li>{{ @err }}</li>
-
-                    </repeat>
-
-                </ul>
-
-            </div>
-
-        </check>
+        <include href="_form-errors-auth.html" />
 
         <form method="post" action="{{ @base }}/register">
 

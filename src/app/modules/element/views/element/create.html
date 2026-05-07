@@ -7,15 +7,7 @@
         </a>
     </div>
 
-    <check if="!empty(@errors)">
-        <div class="error edit-error">
-            <ul>
-                <repeat group="@errors" value="@err">
-                    <li>{{ @err }}</li>
-                </repeat>
-            </ul>
-        </div>
-    </check>
+    <include href="_form-errors.html" />
 
     <form method="post" action="{{ @base }}/project/{{ @project.id }}/element/create" id="elementCreateForm">
         <input type="hidden" name="csrf_token" value="{{ @csrfToken }}">

@@ -6,7 +6,7 @@
 /* ++ Relecture edit-header: restore Pro UI button distinction vs. theme overrides ++ */
 .edit-page-layout .edit-header .header-actions .button {
     background: var(--card-bg) !important;
-    border: 1px solid var(--input-border) !important;
+    border: var(--space-xxs) solid var(--input-border) !important;
     color: var(--text-main) !important;
     font-family: inherit !important;
 }
@@ -35,10 +35,10 @@
     align-items: center;
     gap: .35rem;
     padding: .4rem .85rem;
-    border-radius: 6px;
+    border-radius: var(--radius-6px);
     font-size: .84rem;
     font-weight: 600;
-    border: 1px solid var(--input-border);
+    border: var(--space-xxs) solid var(--input-border);
     background: var(--card-bg);
 }
 
@@ -66,11 +66,11 @@
 
 .report-annotation-item {
     background: var(--card-bg);
-    border: 1px solid var(--input-border);
-    border-radius: 7px;
+    border: var(--space-xxs) solid var(--input-border);
+    border-radius: var(--radius-7px);
     padding: .7rem 1rem;
     font-size: .85rem;
-    border-left: 3px solid #ccc;
+    border-left: var(--space-xs-3) solid #ccc;
 }
 
 .report-cat-badge {
@@ -78,8 +78,8 @@
     font-size: .7rem;
     font-weight: 700;
     text-transform: uppercase;
-    padding: 1px 8px;
-    border-radius: 4px;
+    padding: var(--space-xxs) var(--space-md);
+    border-radius: var(--radius-4px);
     margin-bottom: .35rem;
     letter-spacing: .04em;
 }
@@ -155,8 +155,8 @@
     margin-bottom: 1rem;
     padding: .5rem .75rem;
     background: var(--input-bg);
-    border-radius: 6px;
-    border: 1px solid var(--input-border);
+    border-radius: var(--radius-6px);
+    border: var(--space-xxs) solid var(--input-border);
 }
 
 .review-body {
@@ -176,13 +176,13 @@
     flex: 0 0 320px;
     width: 320px;
     /* position: sticky;
-    top: 64px; */
+    top: var(--space-lg-64); */
     align-self: flex-start;
     max-height: calc(100vh - 80px);
     overflow-y: auto;
     background: var(--card-bg);
-    border: 1px solid var(--input-border);
-    border-radius: 8px;
+    border: var(--space-xxs) solid var(--input-border);
+    border-radius: var(--radius-8px);
     padding: 1rem;
 }
 
@@ -192,8 +192,9 @@
 
 .review-tabs {
     display: flex;
+    justify-content: space-between;
     gap: 0;
-    border-bottom: 2px solid var(--input-border);
+    /* border-bottom: var(--space-xs) solid var(--input-border); */
     margin-bottom: .75rem;
 }
 
@@ -204,8 +205,8 @@
     border: none;
     background: none;
     cursor: pointer;
-    border-bottom: 2px solid transparent;
-    margin-bottom: -2px;
+    border-bottom: var(--space-xs) solid transparent;
+    margin-bottom: -var(--space-xs);
     color: var(--text-muted);
     transition: color .15s, border-color .15s;
 }
@@ -218,20 +219,20 @@
 .review-tab.active,
 .review-tab.is-active {
     color: var(--button-primary-bg);
-    border-bottom-color: var(--button-primary-bg);
+    /* border-bottom-color: var(--button-primary-bg); */
 }
 
 .review-tab.active:hover,
 .review-tab.is-active:hover {
     background: var(--button-hover-bg);
     color: var(--button-hover-text);
-    border-bottom-color: var(--button-hover-bg);
+    /* border-bottom-color: var(--button-hover-bg); */
 }
 
 .review-panel-count {
     background: var(--link-color, #3f51b5);
     color: #fff;
-    border-radius: 10px;
+    border-radius: var(--radius-10px);
     padding: .1rem .5rem;
     font-size: .72rem;
     font-weight: 700;
@@ -241,7 +242,7 @@
 .suggestion-count-badge {
     background: #f59e0b;
     color: #fff;
-    border-radius: 10px;
+    border-radius: var(--radius-10px);
     padding: .1rem .5rem;
     font-size: .72rem;
     font-weight: 700;
@@ -258,7 +259,7 @@
 .review-filter,
 .sug-filter {
     border: none;
-    border-radius: 4px;
+    border-radius: var(--radius-4px);
     padding: .2rem .5rem;
     font-size: .78rem;
     cursor: pointer;
@@ -324,21 +325,21 @@
 .annotation-card,
 .sug-card {
     background: var(--input-bg, #f5f5f5);
-    border-radius: 6px;
+    border-radius: var(--radius-6px);
     padding: .6rem .85rem;
     font-size: .84rem;
-    border-left: 3px solid #ccc;
+    border-left: var(--space-xs-3) solid #ccc;
     cursor: pointer;
     transition: border-color .15s, box-shadow .15s;
 }
 
 .annotation-card:hover,
 .sug-card:hover {
-    box-shadow: 0 1px 4px rgba(0, 0, 0, .1);
+    box-shadow: 0 var(--space-xxs) var(--space-sm) rgba(0, 0, 0, .1);
 }
 
 .annotation-card.is-active {
-    box-shadow: 0 0 0 2px rgba(63, 81, 181, .25);
+    box-shadow: 0 0 0 var(--space-xs) rgba(63, 81, 181, .25);
 }
 
 .annotation-card-header {
@@ -353,18 +354,18 @@
     font-size: .7rem;
     font-weight: 700;
     text-transform: uppercase;
-    padding: 1px 7px;
-    border-radius: 4px;
+    padding: var(--space-xxs) var(--space-sm-7);
+    border-radius: var(--radius-4px);
     letter-spacing: .04em;
 }
 
 .annotation-delete-btn,
 .sug-delete-btn {
     font-size: .7rem;
-    padding: 1px 6px;
-    border-radius: 3px;
+    padding: var(--space-xxs) var(--space-sm-6);
+    border-radius: var(--radius-3px);
     background: var(--input-bg);
-    border: 1px solid var(--input-border);
+    border: var(--space-xxs) solid var(--input-border);
     color: var(--text-muted);
     cursor: pointer;
 }
@@ -374,7 +375,7 @@
     font-size: .82rem;
     color: var(--text-muted);
     margin-bottom: .25rem;
-    border-bottom: 1px dashed var(--input-border);
+    border-bottom: var(--space-xxs) dashed var(--input-border);
     padding-bottom: .2rem;
 }
 
@@ -424,7 +425,7 @@
 .review-act-title {
     font-size: 1.4rem;
     color: #EF6C00;
-    border-bottom: 2px solid #EF6C00;
+    border-bottom: var(--space-xs) solid #EF6C00;
     padding-bottom: .3rem;
     margin-bottom: .75rem;
 }
@@ -443,7 +444,7 @@
 }
 
 .glossary-ref {
-    border-bottom: 1px dotted var(--link-color, #3f51b5);
+    border-bottom: var(--space-xxs) dotted var(--link-color, #3f51b5);
     cursor: help;
     color: var(--link-color, #3f51b5);
 }
@@ -451,12 +452,12 @@
 .glossary-tooltip {
     position: fixed;
     background: var(--card-bg);
-    border: 1px solid var(--input-border);
-    border-radius: 8px;
+    border: var(--space-xxs) solid var(--input-border);
+    border-radius: var(--radius-8px);
     padding: .6rem .85rem;
     font-size: .82rem;
     max-width: 280px;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, .15);
+    box-shadow: 0 var(--space-sm) 12px rgba(0, 0, 0, .15);
     z-index: 9000;
     pointer-events: none;
     display: none;
@@ -472,9 +473,9 @@
 }
 
 mark.annotation-mark {
-    border-radius: 2px;
+    border-radius: var(--radius-2px);
     cursor: pointer;
-    padding: 0 1px;
+    padding: 0 var(--space-xxs);
 }
 
 mark.ann-bg-to_rewrite {
@@ -537,12 +538,12 @@ body[data-layout="studio-nuit"] mark.ann-bg-sug-rejected {
 .annotation-popup {
     position: fixed;
     background: var(--card-bg);
-    border: 1px solid var(--input-border);
-    border-radius: 10px;
+    border: var(--space-xxs) solid var(--input-border);
+    border-radius: var(--radius-10px);
     padding: .85rem 1rem;
     width: 320px;
     max-width: 95vw;
-    box-shadow: 0 8px 24px rgba(0, 0, 0, .18);
+    box-shadow: 0 var(--space-md) var(--space-xl) rgba(0, 0, 0, .18);
     z-index: 8000;
     display: none;
     font-size: .88rem;
@@ -556,8 +557,8 @@ body[data-layout="studio-nuit"] mark.ann-bg-sug-rejected {
 .popup-mode-toggle {
     display: flex;
     gap: 0;
-    border: 1px solid var(--input-border);
-    border-radius: 5px;
+    border: var(--space-xxs) solid var(--input-border);
+    border-radius: var(--radius-5px);
     overflow: hidden;
     margin-bottom: .75rem;
 }
@@ -592,8 +593,8 @@ body[data-layout="studio-nuit"] mark.ann-bg-sug-rejected {
 
 .annotation-popup-text {
     background: var(--input-bg);
-    border: 1px solid var(--input-border);
-    border-radius: 5px;
+    border: var(--space-xxs) solid var(--input-border);
+    border-radius: var(--radius-5px);
     padding: .4rem .6rem;
     font-size: .82rem;
     font-style: italic;
@@ -615,7 +616,7 @@ body[data-layout="studio-nuit"] mark.ann-bg-sug-rejected {
 
 .suggestion-original-preview {
     background: #fee2e2;
-    border-radius: 4px;
+    border-radius: var(--radius-4px);
     padding: .3rem .5rem;
     font-size: .82rem;
     margin-bottom: .35rem;

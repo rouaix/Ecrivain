@@ -18,7 +18,7 @@ class CollabInviteController extends Controller
         $pid = (int) $this->f3->get('PARAMS.pid');
         $this->requireOwner($pid);
 
-        $invite  = new CollaboratorInvite();
+        $invite  = $this->collaboratorInviteModel();
         $project = $this->loadProject($pid);
 
         $this->render('collab/invite.html', [
@@ -38,7 +38,7 @@ class CollabInviteController extends Controller
         $user   = $this->currentUser();
         $this->requireOwner($pid);
 
-        $invite = new CollaboratorInvite();
+        $invite = $this->collaboratorInviteModel();
         $email  = trim($_POST['email'] ?? '');
         $errors = [];
 
@@ -91,7 +91,7 @@ class CollabInviteController extends Controller
         $uid = (int) $this->f3->get('PARAMS.uid');
         $this->requireOwner($pid);
 
-        (new CollaboratorInvite())->removeUser($pid, $uid);
+        ($this->collaboratorInviteModel())->removeUser($pid, $uid);
         $this->f3->reroute('/project/' . $pid . '/collaborateurs');
     }
 
@@ -101,7 +101,7 @@ class CollabInviteController extends Controller
     public function myInvitations()
     {
         $user   = $this->currentUser();
-        $invite = new CollaboratorInvite();
+        $invite = $this->collaboratorInviteModel();
 
         $this->render('collab/my_invitations.html', [
             'title'       => 'Mes invitations',
@@ -116,7 +116,7 @@ class CollabInviteController extends Controller
     {
         $id   = (int) $this->f3->get('PARAMS.id');
         $user = $this->currentUser();
-        (new CollaboratorInvite())->accept($id, $user['id']);
+        ($this->collaboratorInviteModel())->accept($id, $user['id']);
         $this->f3->reroute('/collab/invitations');
     }
 
@@ -127,7 +127,7 @@ class CollabInviteController extends Controller
     {
         $id   = (int) $this->f3->get('PARAMS.id');
         $user = $this->currentUser();
-        (new CollaboratorInvite())->decline($id, $user['id']);
+        ($this->collaboratorInviteModel())->decline($id, $user['id']);
         $this->f3->reroute('/collab/invitations');
     }
 
@@ -135,7 +135,7 @@ class CollabInviteController extends Controller
 
     private function loadProject(int $pid): ?array
     {
-        $rows = (new Project())->findAndCast(['id=?', $pid]);
+        $rows = ($this->projectModel())->findAndCast(['id=?', $pid]);
         return $rows ? $rows[0] : null;
     }
 }

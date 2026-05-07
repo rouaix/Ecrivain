@@ -1,22 +1,6 @@
 <h2>Ajouter un personnage au projet « {{ @project.title }} »</h2>
 
-<check if="{{ !empty(@errors) }}">
-
-    <div class="error">
-
-        <ul>
-
-            <repeat group="{{ @errors }}" value="{{ @err }}">
-
-                <li>{{ @err }}</li>
-
-            </repeat>
-
-        </ul>
-
-    </div>
-
-</check>
+    <include href="_form-errors.html" />
 
 <form method="post" action="{{ @base }}/project/{{ @project.id }}/character/create">
 

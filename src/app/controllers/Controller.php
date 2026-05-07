@@ -1,5 +1,17 @@
 <?php
 
+// Model class imports for factory methods
+require_once __DIR__ . '/../modules/project/models/Project.php';
+require_once __DIR__ . '/../modules/chapter/models/Chapter.php';
+require_once __DIR__ . '/../modules/acts/models/Act.php';
+require_once __DIR__ . '/../modules/characters/models/Character.php';
+require_once __DIR__ . '/../modules/note/models/Note.php';
+require_once __DIR__ . '/../modules/element/models/Element.php';
+require_once __DIR__ . '/../modules/auth/models/User.php';
+require_once __DIR__ . '/../modules/glossary/models/GlossaryEntry.php';
+require_once __DIR__ . '/../modules/collab/models/CollaborationRequest.php';
+require_once __DIR__ . '/../modules/collab/models/CollaboratorInvite.php';
+
 abstract class Controller
 {
     /** @var Base */
@@ -136,7 +148,7 @@ abstract class Controller
      * Clean Quill HTML to prevent accumulation of empty paragraphs.
      * Removes consecutive empty <p> tags that Quill adds on each save.
      */
-    protected function cleanQuillHtml(string $html): string
+    public function cleanQuillHtml(string $html): string
     {
         if (empty(trim($html))) {
             return $html;
@@ -657,5 +669,73 @@ abstract class Controller
         $_SESSION[$sessionKey] = $timestamps;
 
         return true;
+    }
+
+    // ── Model factories ────────────────────────────────────────────────────
+
+    /** @return Project */
+    protected function projectModel(): Project
+    {
+        return new Project();
+    }
+
+    /** @return Chapter */
+    protected function chapterModel(): Chapter
+    {
+        return new Chapter();
+    }
+
+    /** @return Act */
+    protected function actModel(): Act
+    {
+        return new Act();
+    }
+
+    /** @return Character */
+    protected function characterModel(): Character
+    {
+        return new Character();
+    }
+
+    /** @return Note */
+    protected function noteModel(): Note
+    {
+        return new Note();
+    }
+
+    /** @return Section */
+    protected function sectionModel(): Section
+    {
+        return new Section();
+    }
+
+    /** @return Element */
+    protected function elementModel(): Element
+    {
+        return new Element();
+    }
+
+    /** @return User */
+    protected function userModel(): User
+    {
+        return new User();
+    }
+
+    /** @return GlossaryEntry */
+    protected function glossaryEntryModel(): GlossaryEntry
+    {
+        return new GlossaryEntry();
+    }
+
+    /** @return CollaborationRequest */
+    protected function collaborationRequestModel(): CollaborationRequest
+    {
+        return new CollaborationRequest();
+    }
+
+    /** @return CollaboratorInvite */
+    protected function collaboratorInviteModel(): CollaboratorInvite
+    {
+        return new CollaboratorInvite();
     }
 }

@@ -18,7 +18,7 @@ class RelectureController extends Controller
     {
         if (!$this->hasProjectAccess($pid)) return null;
 
-        $projectModel = new Project();
+        $projectModel = $this->projectModel();
         $project = $projectModel->findAndCast(['id=?', $pid]);
         if (!$project) return null;
         $project = $project[0];
@@ -37,17 +37,17 @@ class RelectureController extends Controller
         }
 
         // Fetch content
-        $chapterModel = new Chapter();
+        $chapterModel = $this->chapterModel();
         $allChapters  = $chapterModel->getAllByProject($pid);
 
-        $actModel = new Act();
+        $actModel = $this->actModel();
         $acts     = $actModel->getAllByProject($pid);
 
-        $sectionModel   = new Section();
+        $sectionModel   = $this->sectionModel();
         $sectionsBefore = $sectionModel->getBeforeChapters($pid);
         $sectionsAfter  = $sectionModel->getAfterChapters($pid);
 
-        $noteModel = new Note();
+        $noteModel = $this->noteModel();
         $notes     = array_values(array_filter(
             $noteModel->getAllByProject($pid),
             fn($n) => ($n['type'] ?? 'note') !== 'scenario'
@@ -75,7 +75,7 @@ class RelectureController extends Controller
         $customElementsByType      = [];
         $customSubElementsByParent = [];
         if ($db->exists('elements')) {
-            $elementModel = new Element();
+            $elementModel = $this->elementModel();
             foreach ($elementModel->getAllByProject($pid) as $elem) {
                 if ($elem['parent_id']) {
                     $customSubElementsByParent[$elem['parent_id']][] = $elem;
@@ -532,7 +532,7 @@ class RelectureController extends Controller
             return;
         }
 
-        $projectModel = new Project();
+        $projectModel = $this->projectModel();
         $project = $projectModel->findAndCast(['id=?', $pid]);
         if (!$project) {
             $this->f3->error(404);
@@ -560,8 +560,8 @@ class RelectureController extends Controller
 
         // Group by content block and enrich with title
         $grouped      = [];
-        $chapterModel = new Chapter();
-        $noteModel    = new Note();
+        $chapterModel = $this->chapterModel();
+        $noteModel    = $this->noteModel();
 
         foreach ($rows as $row) {
             $key = $row['content_type'] . ':' . $row['content_id'];

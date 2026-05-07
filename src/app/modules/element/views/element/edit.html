@@ -20,15 +20,7 @@
         Inclure dans l'export
     </label>
 
-    <check if="{{ !empty(@errors) }}">
-        <div class="error edit-error">
-            <ul>
-                <repeat group="{{ @errors }}" value="{{ @err }}">
-                    <li>{{ @err }}</li>
-                </repeat>
-            </ul>
-        </div>
-    </check>
+    <include href="_form-errors.html" />
     <check if="{{ !empty(@success) }}">
         <div class="alert-success">{{ @success }}</div>
     </check>

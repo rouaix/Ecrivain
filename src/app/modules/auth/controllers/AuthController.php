@@ -220,7 +220,7 @@ class AuthController extends Controller
             }
 
             if (empty($errors)) {
-                $userModel = new User();
+                $userModel = $this->userModel();
                 $user = $userModel->findByUsernameOrEmail($identifier);
                 if (!$user || empty($user['email'])) {
                     $errors[] = 'Aucun compte ne correspond à cet identifiant.';

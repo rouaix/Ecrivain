@@ -28,7 +28,7 @@ body.ui-pro .container {
 
 /* ── 5. Cards classiques — stylisées dans le contexte Pro ── */
 body.ui-pro .card {
-    border: 1px solid var(--input-border);
+    border: var(--space-xxs) solid var(--input-border);
     border-radius: var(--radius-sm);
     box-shadow: none;
 }
@@ -38,7 +38,7 @@ body.ui-pro .alert,
 body.ui-pro .alert-success,
 body.ui-pro .error {
     font-size: 13px;
-    padding: 8px 12px;
+    padding: var(--space-md) var(--space-md-12);
     border-radius: var(--radius-sm);
 }
 
@@ -50,12 +50,12 @@ body.ui-pro .breadcrumb {
 /* ── 8. Pagination — compacte en Pro ── */
 body.ui-pro .pagination {
     font-size: 13px;
-    gap: 4px;
+    gap: var(--space-sm);
 }
 
 body.ui-pro .pagination a,
 body.ui-pro .pagination span {
-    padding: 4px 8px;
+    padding: var(--space-sm) var(--space-md);
 }
 
 /* ── 9. Sélecteur de thème classique — masqué (Pro a le sien) ── */
@@ -72,12 +72,12 @@ body.ui-pro .pro-content-inner>*:first-child {
 /*
 body.ui-pro.editor-mode .edit-header {
     position: sticky;
-    top: 48px;
+    top: var(--space-lg-48);
     z-index: 50;
     background: var(--card-bg);
-    border-bottom: 1px solid var(--input-border);
-    margin: 0 -20px 20px;
-    padding: 8px 20px;
+    border-bottom: var(--space-xxs) solid var(--input-border);
+    margin: 0 -var(--space-lg-20) var(--space-lg-20);
+    padding: var(--space-md) var(--space-lg-20);
 }
 */
 
@@ -99,10 +99,10 @@ body.ui-pro .edit-header h2 {
 body.ui-pro.editor-mode .editor-grid-row {
     display: grid;
     grid-template-columns: 1fr 1fr;
-    gap: 10px;
-    margin: 8px 0 4px;
-    padding: 10px 0 0;
-    border-top: 1px solid var(--input-border);
+    gap: var(--space-md-10);
+    margin: var(--space-md) 0 var(--space-sm);
+    padding: var(--space-md-10) 0 0;
+    border-top: var(--space-xxs) solid var(--input-border);
 }
 
 body.ui-pro.editor-mode .editor-grid-row .form-group {
@@ -115,12 +115,12 @@ body.ui-pro.editor-mode .editor-grid-row label {
     text-transform: uppercase;
     letter-spacing: 0.05em;
     color: var(--text-muted);
-    margin-bottom: 3px;
+    margin-bottom: var(--space-xs-3);
 }
 
 body.ui-pro.editor-mode .editor-grid-row select {
     font-size: 12px;
-    padding: 4px 8px;
+    padding: var(--space-sm) var(--space-md);
 }
 
 /* Quill editor — hauteur maximisée en mode focus */
@@ -131,9 +131,9 @@ body.ui-pro.editor-mode .editor-height-300 {
 /* Sections secondaires — compactes en Pro */
 body.ui-pro.editor-mode #glossaryFoundSection,
 body.ui-pro.editor-mode #annotationsSection {
-    border-top: 1px solid var(--input-border);
-    padding-top: 10px;
-    margin-top: 4px;
+    border-top: var(--space-xxs) solid var(--input-border);
+    padding-top: var(--space-md-10);
+    margin-top: var(--space-sm);
 }
 
 body.ui-pro.editor-mode #glossaryFoundSection .grammar-header label,
@@ -161,10 +161,10 @@ body.ui-pro.editor-mode .word-count.inline {
 
 /* Actions éditeur — compact, collé en bas */
 body.ui-pro.editor-mode .edit-actions {
-    padding: 10px 20px;
+    padding: var(--space-md-10) var(--space-lg-20);
     margin: 0;
     background: var(--card-bg);
-    border-top: 1px solid var(--input-border);
+    border-top: var(--space-xxs) solid var(--input-border);
 }
 
 /* ── 16. Export options list — cohérence Pro ── */
@@ -174,13 +174,13 @@ body.ui-pro .export-options-list {
     padding: 0;
     display: flex;
     flex-direction: column;
-    gap: 8px;
+    gap: var(--space-md);
 }
 
 body.ui-pro .export-options-list li {
     display: flex;
     align-items: center;
-    gap: 10px;
+    gap: var(--space-md-10);
 }
 
 body.ui-pro .export-options-list .export-format-desc {
@@ -190,8 +190,8 @@ body.ui-pro .export-options-list .export-format-desc {
 
 /* ── 17. Bouton dictée — au-dessus de la status bar éditeur ── */
 body.ui-pro.editor-mode #dictation-btn {
-    bottom: 60px;
-    /* 36px status bar + 24px espacement */
+    bottom: var(--space-lg-60);
+    /* var(--space-lg-36) status bar + var(--space-xl) espacement */
 }
 
 /* ── 18. Boutons icône IA — hover sombre cohérent avec les autres actions ── */
@@ -204,7 +204,7 @@ body.ui-pro .ai-element-summary-btn:hover {
 }
 
 /* ── 19. Liens dans le contenu Pro — neutralise le style agressif du thème ── */
-/* body.theme-default a applique padding:2px et fond sombre au hover sur TOUS les liens */
+/* body.theme-default a applique padding:var(--space-xs) et fond sombre au hover sur TOUS les liens */
 
 body.ui-pro .pro-content-inner a:not(.button):not(.pro-nav-item):not(.overview-resource-link):not(.ms-chapter-link):hover {
     background: none;
@@ -217,7 +217,7 @@ body.ui-pro button.modal-close {
     background: transparent !important;
     border: none !important;
     color: var(--button-primary-bg) font-size: 18px;
-    padding: 4px 8px;
+    padding: var(--space-sm) var(--space-md);
     line-height: 1;
 }
 
@@ -230,18 +230,18 @@ body.ui-pro button.modal-close:hover {
 body.ui-pro .pro-content-inner h1 {
     font-size: 20px;
     font-weight: 700;
-    margin-bottom: 16px;
+    margin-bottom: var(--space-lg);
 }
 
 body.ui-pro .pro-content-inner h2 {
     font-size: 17px;
     font-weight: 700;
-    margin-bottom: 12px;
+    margin-bottom: var(--space-md-12);
 }
 
 body.ui-pro .pro-content-inner h3 {
     font-size: 14px;
     font-weight: 600;
-    margin-bottom: 8px;
+    margin-bottom: var(--space-md);
     padding: 0;
 }

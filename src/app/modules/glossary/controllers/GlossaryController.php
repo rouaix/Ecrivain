@@ -17,7 +17,7 @@ class GlossaryController extends Controller
         if (!$this->isOwner($pid)) {
             return null;
         }
-        $pm   = new Project();
+        $pm   = $this->projectModel();
         $rows = $pm->findAndCast(['id=?', $pid]);
         return $rows ? $rows[0] : null;
     }
@@ -30,7 +30,7 @@ class GlossaryController extends Controller
         $project = $this->getProject($pid);
         if (!$project) { $this->f3->error(404); return; }
 
-        $model   = new GlossaryEntry();
+        $model   = $this->glossaryEntryModel();
         $entries = $model->getAllByProject($pid);
 
         // Group by category
@@ -86,7 +86,7 @@ class GlossaryController extends Controller
         if ($term === '') $errors[] = 'Le terme est obligatoire.';
 
         if (empty($errors)) {
-            $model             = new GlossaryEntry();
+            $model             = $this->glossaryEntryModel();
             $model->project_id = $pid;
             $model->term       = $term;
             $model->category   = $category;
@@ -114,7 +114,7 @@ class GlossaryController extends Controller
         $project = $this->getProject($pid);
         if (!$project) { $this->f3->error(404); return; }
 
-        $model = new GlossaryEntry();
+        $model = $this->glossaryEntryModel();
         $model->load(['id=? AND project_id=?', $eid, $pid]);
         if ($model->dry()) { $this->f3->error(404); return; }
 
@@ -136,7 +136,7 @@ class GlossaryController extends Controller
         $project = $this->getProject($pid);
         if (!$project) { $this->f3->error(404); return; }
 
-        $model = new GlossaryEntry();
+        $model = $this->glossaryEntryModel();
         $model->load(['id=? AND project_id=?', $eid, $pid]);
         if ($model->dry()) { $this->f3->error(404); return; }
 
@@ -177,7 +177,7 @@ class GlossaryController extends Controller
         $eid   = (int) $this->f3->get('PARAMS.eid');
         if (!$this->getProject($pid)) { $this->f3->error(404); return; }
 
-        $model = new GlossaryEntry();
+        $model = $this->glossaryEntryModel();
         $model->load(['id=? AND project_id=?', $eid, $pid]);
         if (!$model->dry()) {
             $label = $model->term;
@@ -198,7 +198,7 @@ class GlossaryController extends Controller
             echo json_encode([]);
             return;
         }
-        $model = new GlossaryEntry();
+        $model = $this->glossaryEntryModel();
         header('Content-Type: application/json');
         echo json_encode($model->getTermsJson($pid));
     }

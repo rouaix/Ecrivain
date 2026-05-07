@@ -20,7 +20,7 @@ class ProjectFileController extends ProjectBaseController
             return;
         }
 
-        $projectModel = new Project();
+        $projectModel = $this->projectModel();
         $projectRows  = $projectModel->findAndCast(['id=?', $pid]);
         if (!$projectRows) {
             $this->f3->error(404);

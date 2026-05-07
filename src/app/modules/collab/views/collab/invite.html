@@ -18,13 +18,7 @@
         </a>
     </nav>
 
-    <check if="{{ count(@errors) > 0 }}">
-        <div class="alert alert-error">
-            <repeat group="{{ @errors }}" value="{{ @err }}">
-                <p>{{ @err | esc }}</p>
-            </repeat>
-        </div>
-    </check>
+    <include href="_form-errors-count.html" />
 
     <!-- Inviter un collaborateur -->
     <div class="edit-card" class="mt-20">

@@ -5,11 +5,11 @@
 
 /* Icônes inline suivies de texte */
 .icon-mr {
-    margin-right: 6px;
+    margin-right: var(--space-sm-6);
 }
 
 .icon-ml {
-    margin-left: 6px;
+    margin-left: var(--space-sm-6);
 }
 
 /* Séparateur flex entre titre et actions */
@@ -21,7 +21,7 @@
 .inline-flex-center {
     display: inline-flex;
     align-items: center;
-    gap: 6px;
+    gap: var(--space-sm-6);
 }
 
 /* ==========================================
@@ -46,49 +46,49 @@
 }
 
 .edit-error {
-    border-radius: 8px;
-    margin-bottom: 20px;
+    border-radius: var(--radius-8px);
+    margin-bottom: var(--space-lg-20);
 }
 
 .edit-error ul {
     margin: 0;
-    padding-left: 20px;
+    padding-left: var(--space-lg-20);
 }
 
 .edit-card {
     background: var(--card-bg);
-    border: 1px solid var(--border-color);
-    border-radius: 12px;
-    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05);
-    padding: 10px;
-    margin-bottom: 30px;
+    border: var(--space-xxs) solid var(--border-color);
+    border-radius: var(--radius-12px);
+    box-shadow: 0 var(--space-md-10) var(--space-lg-30) rgba(0, 0, 0, 0.05);
+    padding: var(--space-md-10);
+    margin-bottom: var(--space-lg-30);
 }
 
 .edit-card h3 {
     margin-top: 0;
-    margin-bottom: 15px;
-    padding-bottom: 15px;
-    border-bottom: 1px solid var(--border-light);
+    margin-bottom: var(--space-md-15);
+    padding-bottom: var(--space-md-15);
+    border-bottom: var(--space-xxs) solid var(--border-light);
     font-size: 1.2rem;
     color: var(--text-main);
     display: flex;
     align-items: center;
-    gap: 10px;
+    gap: var(--space-md-10);
 }
 
 .edit-form-grid {
     display: grid;
     grid-template-columns: 1fr 1fr;
-    gap: 20px;
+    gap: var(--space-lg-20);
 }
 
 .edit-card .form-group {
-    margin-bottom: 10px;
+    margin-bottom: var(--space-md-10);
 }
 
 .edit-card label {
     display: block;
-    margin-bottom: 8px;
+    margin-bottom: var(--space-md);
     font-weight: 600;
     color: var(--text-muted);
     font-size: 0.85rem;
@@ -100,13 +100,13 @@
     width: 100%;
     height: 250px;
     background: var(--body-bg);
-    border-radius: 8px;
+    border-radius: var(--radius-8px);
     display: flex;
     align-items: center;
     justify-content: center;
     overflow: hidden;
-    border: 2px dashed var(--border-light);
-    margin-bottom: 15px;
+    border: var(--space-xs) dashed var(--border-light);
+    margin-bottom: var(--space-md-15);
     position: relative;
 }
 
@@ -117,7 +117,7 @@
 }
 
 .cover-placeholder-icon {
-    margin-bottom: 10px;
+    margin-bottom: var(--space-md-10);
     display: block;
     opacity: 0.3;
 }
@@ -141,15 +141,15 @@
 
 .cover-source-tabs {
     display: flex;
-    gap: 8px;
-    margin-bottom: 12px;
+    gap: var(--space-md);
+    margin-bottom: var(--space-md-12);
 }
 
 .cover-tab {
     flex: 1;
-    padding: 7px 12px;
-    border: 1px solid var(--border-light);
-    border-radius: 6px;
+    padding: var(--space-sm-7) var(--space-md-12);
+    border: var(--space-xxs) solid var(--border-light);
+    border-radius: var(--radius-6px);
     background: var(--body-bg);
     color: var(--text-muted);
     cursor: pointer;
@@ -165,16 +165,16 @@
 
 .cover-existing-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(80px, 1fr));
-    gap: 8px;
+    grid-template-columns: repeat(auto-fill, minmax(var(--space-lg-40), 1fr));
+    gap: var(--space-md);
     max-height: 200px;
     overflow-y: auto;
-    padding: 4px;
+    padding: var(--space-sm);
 }
 
 .cover-existing-item {
-    border: 2px solid var(--border-light);
-    border-radius: 6px;
+    border: var(--space-xs) solid var(--border-light);
+    border-radius: var(--radius-6px);
     overflow: hidden;
     cursor: pointer;
     transition: border-color 0.15s;
@@ -186,7 +186,7 @@
 
 .cover-existing-item.selected {
     border-color: var(--primary-color, #4a6fa5);
-    box-shadow: 0 0 0 2px var(--primary-color, #4a6fa5);
+    box-shadow: 0 0 0 var(--space-xs) var(--primary-color, #4a6fa5);
 }
 
 .cover-existing-item img {
@@ -199,7 +199,7 @@
 .cover-existing-name {
     font-size: 0.65rem;
     color: var(--text-muted);
-    padding: 2px 4px;
+    padding: var(--space-xs) var(--space-sm);
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
@@ -208,7 +208,7 @@
 .helper-text {
     font-size: 0.85rem;
     color: var(--text-muted);
-    margin-top: 5px;
+    margin-top: var(--space-sm-5);
 }
 
 .edit-actions {
@@ -216,11 +216,11 @@
 }
 
 .edit-actions .button {
-    margin-left: 10px;
+    margin-left: var(--space-md-10);
 }
 
 .edit-card-section {
-    padding-bottom: 10px;
+    padding-bottom: var(--space-md-10);
 }
 
 .edit-card-section:last-child {
@@ -231,8 +231,8 @@
 
 .edit-card-section h3 {
     margin-top: 0;
-    padding-bottom: 10px;
-    border-bottom: 1px solid var(--border-light);
+    padding-bottom: var(--space-md-10);
+    border-bottom: var(--space-xxs) solid var(--border-light);
     font-size: 1.1rem;
     font-weight: 600;
     color: var(--text-main);
@@ -241,7 +241,7 @@
 .breadcrumb {
     color: var(--text-muted);
     font-size: 0.95rem;
-    margin-top: 5px;
+    margin-top: var(--space-sm-5);
 }
 
 .breadcrumb a {
@@ -259,26 +259,26 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    padding: 40px 20px;
+    padding: var(--space-lg-40) var(--space-lg-20);
 }
 
 .form-card {
     background: var(--card-bg);
-    border: 1px solid var(--border-color);
-    border-radius: 12px;
-    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05);
-    padding: 40px;
+    border: var(--space-xxs) solid var(--border-color);
+    border-radius: var(--radius-12px);
+    box-shadow: 0 var(--space-md-10) var(--space-lg-30) rgba(0, 0, 0, 0.05);
+    padding: var(--space-lg-40);
     max-width: 600px;
     width: 100%;
 }
 
 .form-header {
     text-align: center;
-    margin-bottom: 30px;
+    margin-bottom: var(--space-lg-30);
 }
 
 .form-header h2 {
-    margin: 0 0 10px 0;
+    margin: 0 0 var(--space-md-10) 0;
     font-size: 1.8rem;
     color: var(--text-main);
     font-weight: 700;
@@ -291,12 +291,12 @@
 }
 
 .form-card .form-group {
-    margin-bottom: 20px;
+    margin-bottom: var(--space-lg-20);
 }
 
 .form-card label {
     display: block;
-    margin-bottom: 8px;
+    margin-bottom: var(--space-md);
     font-weight: 600;
     color: var(--text-main);
     font-size: 0.9rem;
@@ -306,9 +306,9 @@
 .form-card input[type="number"],
 .form-card textarea {
     width: 100%;
-    padding: 12px 16px;
-    border: 1px solid var(--input-border);
-    border-radius: 6px;
+    padding: var(--space-md-12) var(--space-lg);
+    border: var(--space-xxs) solid var(--input-border);
+    border-radius: var(--radius-6px);
     font-size: 1rem;
     transition: border-color 0.2s;
     box-sizing: border-box;
@@ -329,7 +329,7 @@
 .form-row {
     display: grid;
     grid-template-columns: 1fr 1fr;
-    gap: 15px;
+    gap: var(--space-md-15);
 }
 
 .form-row__col {
@@ -340,7 +340,7 @@
 /* Template-specific helper classes */
 .header-actions {
     display: flex;
-    gap: 10px;
+    gap: var(--space-md-10);
 }
 
 .text-muted-para {
@@ -380,13 +380,13 @@
 .help-text {
     color: var(--text-muted);
     display: block;
-    margin-top: 5px;
+    margin-top: var(--space-sm-5);
     font-size: 0.9rem;
 }
 
 .info-text {
     color: var(--text-muted);
-    margin: 0 0 20px 0;
+    margin: 0 0 var(--space-lg-20) 0;
 }
 
 /* Sortable.js styles */
@@ -401,8 +401,8 @@ div.dashboard-header>h2 {
 }
 
 div.dashboard-header>p {
-    margin-top: 5px;
-    margin-bottom: 20px;
+    margin-top: var(--space-sm-5);
+    margin-bottom: var(--space-lg-20);
 }
 
 /* Status labels */
@@ -429,11 +429,11 @@ div.dashboard-header>p {
 /* Order cell for sortable items */
 .order-cell {
     display: flex;
-    gap: 4px;
+    gap: var(--space-sm);
 }
 
 .order-cell .button.small {
-    padding: 4px 8px;
+    padding: var(--space-sm) var(--space-md);
     font-size: 0.75rem;
     min-width: 0;
 }
@@ -463,7 +463,7 @@ input[type="checkbox"].export-toggle-list {
 details summary {
     cursor: pointer;
     font-weight: 600;
-    padding: 5px;
+    padding: var(--space-sm-5);
     outline: none;
 }
 
@@ -478,7 +478,7 @@ details summary {
 
 .status-label {
     display: inline-block;
-    margin-left: 10px;
+    margin-left: var(--space-md-10);
 }
 
 /* ── Spacing ── */
@@ -487,23 +487,23 @@ details summary {
 }
 
 .mt-5 {
-    margin-top: 5px;
+    margin-top: var(--space-sm-5);
 }
 
 .mt-10 {
-    margin-top: 10px;
+    margin-top: var(--space-md-10);
 }
 
 .mt-15 {
-    margin-top: 15px;
+    margin-top: var(--space-md-15);
 }
 
 .mt-20 {
-    margin-top: 20px;
+    margin-top: var(--space-lg-20);
 }
 
 .mt-30 {
-    margin-top: 30px;
+    margin-top: var(--space-lg-30);
 }
 
 .mb-0 {
@@ -511,23 +511,23 @@ details summary {
 }
 
 .mb-5 {
-    margin-bottom: 5px;
+    margin-bottom: var(--space-sm-5);
 }
 
 .mb-10 {
-    margin-bottom: 10px;
+    margin-bottom: var(--space-md-10);
 }
 
 .mb-15 {
-    margin-bottom: 15px;
+    margin-bottom: var(--space-md-15);
 }
 
 .mb-20 {
-    margin-bottom: 20px;
+    margin-bottom: var(--space-lg-20);
 }
 
 .mb-30 {
-    margin-bottom: 30px;
+    margin-bottom: var(--space-lg-30);
 }
 
 .ml-auto {
@@ -543,7 +543,7 @@ details summary {
 }
 
 .pt-5 {
-    padding-top: 5px;
+    padding-top: var(--space-sm-5);
 }
 
 .pb-0 {
@@ -551,7 +551,7 @@ details summary {
 }
 
 .pb-5 {
-    padding-bottom: 5px;
+    padding-bottom: var(--space-sm-5);
 }
 
 .p-0 {
@@ -633,31 +633,31 @@ details summary {
 }
 
 .ml-10 {
-    margin-left: 10px;
+    margin-left: var(--space-md-10);
 }
 
 .gap-5 {
-    gap: 5px;
+    gap: var(--space-sm-5);
 }
 
 .gap-8 {
-    gap: 8px;
+    gap: var(--space-md);
 }
 
 .gap-10 {
-    gap: 10px;
+    gap: var(--space-md-10);
 }
 
 .gap-15 {
-    gap: 15px;
+    gap: var(--space-md-15);
 }
 
 .gap-16 {
-    gap: 16px;
+    gap: var(--space-lg);
 }
 
 .gap-20 {
-    gap: 20px;
+    gap: var(--space-lg-20);
 }
 
 .clearfix::after {

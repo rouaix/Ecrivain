@@ -160,7 +160,7 @@ class ProjectController extends ProjectBaseController
                 $templateId = $defaultTemplate['id'] ?? null;
             }
 
-            $projectModel              = new Project();
+            $projectModel              = $this->projectModel();
             $projectModel->user_id     = $this->currentUser()['id'];
             $projectModel->title       = $title;
             $projectModel->description = $description;
@@ -213,7 +213,7 @@ class ProjectController extends ProjectBaseController
         }
 
         $isOwner      = $this->isOwner($pid);
-        $projectModel = new Project();
+        $projectModel = $this->projectModel();
         $project      = $projectModel->findAndCast(['id=?', $pid]);
 
         if (!$project) {
@@ -273,7 +273,7 @@ class ProjectController extends ProjectBaseController
     {
         $pid          = (int) $this->f3->get('PARAMS.id');
         $user         = $this->currentUser();
-        $projectModel = new Project();
+        $projectModel = $this->projectModel();
         $projectModel->load(['id=? AND user_id=?', $pid, $user['id']]);
 
         if ($projectModel->dry()) {
@@ -418,7 +418,7 @@ class ProjectController extends ProjectBaseController
     public function delete()
     {
         $pid          = (int) $this->f3->get('PARAMS.id');
-        $projectModel = new Project();
+        $projectModel = $this->projectModel();
         $projectModel->load(['id=? AND user_id=?', $pid, $this->currentUser()['id']]);
         if (!$projectModel->dry()) {
             $projectModel->erase();
@@ -435,7 +435,7 @@ class ProjectController extends ProjectBaseController
             return;
         }
 
-        $projectModel = new Project();
+        $projectModel = $this->projectModel();
         $project      = $projectModel->findAndCast(['id=?', $pid]);
 
         if (!$project || empty($project[0]['cover_image'])) {

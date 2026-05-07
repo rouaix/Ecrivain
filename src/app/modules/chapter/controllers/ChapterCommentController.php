@@ -16,7 +16,7 @@ class ChapterCommentController extends Controller
      */
     private function loadOwned(int $cid): ?Chapter
     {
-        $chapter = new Chapter();
+        $chapter = $this->chapterModel();
         $chapter->load(['id=?', $cid]);
 
         if ($chapter->dry()) {

@@ -28,7 +28,7 @@ class ElementController extends Controller
         $templateElement = $templateElementModel->cast();
         $config = json_decode($templateElement['config_json'] ?? '{}', true);
 
-        $elementModel = new Element();
+        $elementModel = $this->elementModel();
         $elements = $elementModel->getByTemplateElement($pid, $teid);
 
         // Build hierarchy: top-level with their sub-elements
@@ -88,7 +88,7 @@ class ElementController extends Controller
         $templateElement = $templateElementModel->cast();
         $config = json_decode($templateElement['config_json'] ?? '{}', true);
 
-        $elementModel = new Element();
+        $elementModel = $this->elementModel();
         $topElements = $elementModel->getByTemplateElement($pid, $templateElementId);
 
         // Filter to only top-level for parent dropdown
@@ -130,7 +130,7 @@ class ElementController extends Controller
         }
 
         if (empty($errors)) {
-            $elementModel = new Element();
+            $elementModel = $this->elementModel();
             $eid = $elementModel->create($pid, $templateElementId, $title, $parentId);
             if ($eid) {
                 unset($_SESSION['_ai_ctx_' . $pid]);
@@ -147,7 +147,7 @@ class ElementController extends Controller
         $templateElement = $templateElementModel->cast();
         $config = json_decode($templateElement['config_json'] ?? '{}', true);
 
-        $elementModel = new Element();
+        $elementModel = $this->elementModel();
         $topElements = $elementModel->getByTemplateElement($pid, $templateElementId);
         $topLevelElements = array_filter($topElements, function($e) {
             return empty($e['parent_id']);
@@ -167,7 +167,7 @@ class ElementController extends Controller
     public function show()
     {
         $eid = (int) $this->f3->get('PARAMS.id');
-        $elementModel = new Element();
+        $elementModel = $this->elementModel();
         $elementModel->load(['id=?', $eid]);
         if ($elementModel->dry()) {
             $this->f3->error(404);
@@ -185,7 +185,7 @@ class ElementController extends Controller
         // Context: Parent Element (for sub-elements)
         $parentElement = null;
         if ($elementModel->parent_id) {
-            $parent = new Element();
+            $parent = $this->elementModel();
             $parent->load(['id=?', $elementModel->parent_id]);
             if (!$parent->dry()) {
                 $parentElement = $parent->cast();
@@ -235,7 +235,7 @@ class ElementController extends Controller
     {
         $eid = (int) $this->f3->get('PARAMS.id');
 
-        $elementModel = new Element();
+        $elementModel = $this->elementModel();
         $elementModel->load(['id=?', $eid]);
 
         if ($elementModel->dry()) {
@@ -302,7 +302,7 @@ class ElementController extends Controller
     public function delete()
     {
         $eid = (int) $this->f3->get('PARAMS.id');
-        $elementModel = new Element();
+        $elementModel = $this->elementModel();
         $elementModel->load(['id=?', $eid]);
 
         if ($elementModel->dry()) {

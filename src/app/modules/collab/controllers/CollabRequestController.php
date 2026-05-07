@@ -43,7 +43,7 @@ class CollabRequestController extends Controller
             return;
         }
 
-        $req = new CollaborationRequest();
+        $req = $this->collaborationRequestModel();
         $id  = $req->submit(
             $pid, $user['id'], $requestType, $contentType, $contentId,
             $contentTitle, $currentSnapshot, $proposedContent, $message
@@ -61,7 +61,7 @@ class CollabRequestController extends Controller
         if (!$this->isCollaborator($pid)) { $this->f3->error(403); return; }
 
         $project  = $this->loadProject($pid);
-        $requests = (new CollaborationRequest())->findByProjectAndUser($pid, $user['id']);
+        $requests = ($this->collaborationRequestModel())->findByProjectAndUser($pid, $user['id']);
 
         $this->render('collab/requests_collab.html', [
             'title'    => 'Mes demandes — ' . ($project['title'] ?? ''),
@@ -79,7 +79,7 @@ class CollabRequestController extends Controller
         $rid  = (int) $this->f3->get('PARAMS.rid');
         $user = $this->currentUser();
 
-        $req = new CollaborationRequest();
+        $req = $this->collaborationRequestModel();
         if (!$req->findPendingByIdAndUser($rid, $user['id'])) {
             echo json_encode(['status' => 'error', 'message' => 'Demande introuvable.']);
             return;
@@ -100,7 +100,7 @@ class CollabRequestController extends Controller
         $this->requireOwner($pid);
 
         $project  = $this->loadProject($pid);
-        $requests = (new CollaborationRequest())->findByProject($pid);
+        $requests = ($this->collaborationRequestModel())->findByProject($pid);
 
         $pendingCount = 0;
         foreach ($requests as $r) {
@@ -126,7 +126,7 @@ class CollabRequestController extends Controller
         $rid  = (int) $this->f3->get('PARAMS.rid');
         $user = $this->currentUser();
 
-        $req    = new CollaborationRequest();
+        $req    = $this->collaborationRequestModel();
         $record = $req->findPendingForOwner($rid, $user['id']);
 
         if (!$record) {
@@ -155,7 +155,7 @@ class CollabRequestController extends Controller
         $user = $this->currentUser();
         $note = trim($_POST['owner_note'] ?? '');
 
-        $req = new CollaborationRequest();
+        $req = $this->collaborationRequestModel();
         if (!$req->findPendingForOwner($rid, $user['id'])) {
             echo json_encode(['status' => 'error', 'message' => 'Demande introuvable.']);
             return;
@@ -246,7 +246,7 @@ class CollabRequestController extends Controller
 
     private function loadProject(int $pid): ?array
     {
-        $rows = (new Project())->findAndCast(['id=?', $pid]);
+        $rows = ($this->projectModel())->findAndCast(['id=?', $pid]);
         return $rows ? $rows[0] : null;
     }
 

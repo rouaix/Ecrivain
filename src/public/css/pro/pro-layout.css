@@ -38,10 +38,10 @@ body.ui-pro .pro-topbar {
     color: var(--text-main);
     display: flex;
     align-items: center;
-    padding: 0 16px;
-    gap: 8px;
+    padding: 0 var(--space-lg);
+    gap: var(--space-md);
     z-index: 200;
-    border-bottom: 1px solid var(--border-color);
+    border-bottom: var(--space-xxs) solid var(--border-color);
     box-shadow: none;
 }
 
@@ -53,7 +53,7 @@ body.ui-pro .pro-sidebar {
     bottom: 0;
     width: 240px;
     background: var(--card-bg);
-    border-right: 1px solid var(--input-border);
+    border-right: var(--space-xxs) solid var(--input-border);
     overflow-y: auto;
     overflow-x: hidden;
     z-index: 100;
@@ -73,7 +73,7 @@ body.ui-pro .pro-sidebar::-webkit-scrollbar-track {
 
 body.ui-pro .pro-sidebar::-webkit-scrollbar-thumb {
     background: var(--input-border);
-    border-radius: 2px;
+    border-radius: var(--radius-2px);
 }
 
 /* ── Content ── */
@@ -85,7 +85,7 @@ body.ui-pro .pro-content {
 }
 
 body.ui-pro .pro-content-inner {
-    padding: 20px;
+    padding: var(--space-lg-20);
     max-width: 100%;
 }
 
@@ -119,7 +119,7 @@ body.ui-pro .pro-content-inner {
         transition: transform 0.25s ease;
         width: 260px;
         z-index: 300;
-        box-shadow: 4px 0 24px rgba(0, 0, 0, 0.15);
+        box-shadow: var(--space-sm) 0 var(--space-lg-24) rgba(0, 0, 0, 0.15);
     }
 
     body.ui-pro .pro-sidebar.is-open {
@@ -150,11 +150,11 @@ body.ui-pro.editor-mode .editor-top-bar {
     right: 0;
     height: 36px;
     background: var(--card-bg);
-    border-top: 1px solid var(--input-border);
-    padding: 0 20px;
+    border-top: var(--space-xxs) solid var(--input-border);
+    padding: 0 var(--space-lg-20);
     display: flex;
     align-items: center;
-    gap: 16px;
+    gap: var(--space-lg);
     z-index: 90;
     font-size: 12px;
 }

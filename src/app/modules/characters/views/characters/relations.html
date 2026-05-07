@@ -166,14 +166,14 @@
     </div>
 </div>
 
+<script src="{{ @base }}/public/js/api-client.js?v=3" nonce="{{ @nonce }}"></script>
 <script src="https://unpkg.com/vis-network@9.1.9/standalone/umd/vis-network.min.js" nonce="{{ @nonce }}"></script>
 
 <script nonce="{{ @nonce }}">
     (function () {
-        var BASE = '{{ @base }}';
-        var PID = {{ @project.id
+        const BASE = '{{ @base }}';
+        const PID = {{ @project.id
     }};
-    var CSRF = '{{ @csrfToken }}';
 
     // ── Build initial data from PHP ──────────────────────────────────────────
 
@@ -306,13 +306,15 @@
         var isBidi = document.getElementById('relBidirectional').checked;
         var reverseLabel = document.getElementById('relReverseLabel').value.trim();
 
-        fetch(BASE + '/project/' + PID + '/characters/relation/add', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/x-www-form-urlencoded', 'X-CSRF-Token': CSRF },
-            body: new URLSearchParams({ char_from: fromId, char_to: toId, label: label, color: selectedColor,
-                bidirectional: isBidi ? '1' : '', reverse_label: reverseLabel, csrf_token: CSRF })
-        })
-            .then(function (r) { return r.json(); })
+        var formData = new URLSearchParams();
+        formData.set('char_from', fromId);
+        formData.set('char_to', toId);
+        formData.set('label', label);
+        formData.set('color', selectedColor);
+        if (isBidi) formData.set('bidirectional', '1');
+        if (reverseLabel) formData.set('reverse_label', reverseLabel);
+
+        ApiClient.postForm(BASE + '/project/' + PID + '/characters/relation/add', formData)
             .then(function (data) {
                 if (!data.success) { showStatus(data.error || 'Erreur', 'err'); return; }
                 var r = data.relation;
@@ -343,12 +345,8 @@
     function deleteRelation(rid) {
         if (!confirm('Supprimer ce lien ?')) return;
 
-        fetch(BASE + '/project/' + PID + '/characters/relation/' + rid + '/delete', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/x-www-form-urlencoded', 'X-CSRF-Token': CSRF },
-            body: new URLSearchParams({ csrf_token: CSRF })
-        })
-            .then(function (r) { return r.json(); })
+        var formData = new URLSearchParams();
+        ApiClient.postForm(BASE + '/project/' + PID + '/characters/relation/' + rid + '/delete', formData)
             .then(function (data) {
                 if (!data.success) return;
                 edges.remove(rid);
@@ -423,12 +421,7 @@
         suggestLoading.classList.remove('is-hidden');
         suggestList.innerHTML = '';
 
-        fetch(BASE + '/ai/suggest-relations', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json', 'X-CSRF-Token': CSRF },
-            body: JSON.stringify({ project_id: PID })
-        })
-            .then(function (r) { return r.json(); })
+        ApiClient.post(BASE + '/ai/suggest-relations', { project_id: PID })
             .then(function (data) {
                 suggestLoading.classList.add('is-hidden');
                 if (!data.success) {
@@ -468,18 +461,12 @@
                     if (btnAccept) {
                         btnAccept.disabled = true;
                         var idx = btnAccept.dataset.i;
-                        fetch(BASE + '/project/' + PID + '/characters/relation/add', {
-                            method: 'POST',
-                            headers: { 'Content-Type': 'application/x-www-form-urlencoded', 'X-CSRF-Token': CSRF },
-                            body: new URLSearchParams({
-                                char_from: btnAccept.dataset.from,
-                                char_to: btnAccept.dataset.to,
-                                label: btnAccept.dataset.label,
-                                color: btnAccept.dataset.color,
-                                csrf_token: CSRF
-                            })
-                        })
-                            .then(function (r) { return r.json(); })
+                        var formData = new URLSearchParams();
+                        formData.set('char_from', btnAccept.dataset.from);
+                        formData.set('char_to', btnAccept.dataset.to);
+                        formData.set('label', btnAccept.dataset.label);
+                        formData.set('color', btnAccept.dataset.color);
+                        ApiClient.postForm(BASE + '/project/' + PID + '/characters/relation/add', formData)
                             .then(function (data) {
                                 if (!data.success) { btnAccept.disabled = false; return; }
                                 // Add to graph and list

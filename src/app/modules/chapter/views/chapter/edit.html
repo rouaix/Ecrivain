@@ -53,15 +53,7 @@
         Inclure dans l'export
     </label>
 
-    <check if="{{ !empty(@errors) }}">
-        <div class="error edit-error">
-            <ul>
-                <repeat group="{{ @errors }}" value="{{ @err }}">
-                    <li>{{ @err }}</li>
-                </repeat>
-            </ul>
-        </div>
-    </check>
+    <include href="_form-errors.html" />
     <check if="{{ !empty(@success) }}">
         <div class="alert-success">{{ @success }}</div>
         <a href="{{ @base }}/project/{{ @project.id }}/chapter/create" class="button">Nouveau chapitre</a>
@@ -294,11 +286,11 @@
         </div>
         <div class="modal-body" style="flex: 1; display: flex; flex-direction: column; overflow: hidden;">
             <div class="ai-panel" style="height: 100%; display: flex; flex-direction: column;">
-                <div style="margin-bottom: 12px;">
+                <div style="">
                     <span class="editor-badge-context">Contexte Projet</span>
                 </div>
 
-                <div class="ai-messages" id="aiChatOutput" style="flex: 1; overflow-y: auto; margin-bottom: 16px;">
+                <div class="ai-messages" id="aiChatOutput" style="flex: 1; overflow-y: auto;">
                     <div class="ai-msg system">
                         Je connais l'intégralité de votre projet « {{ @project.title }} ». Posez-moi une
                         question.

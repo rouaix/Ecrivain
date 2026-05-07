@@ -8,15 +8,7 @@
         </div>
     </div>
 
-    <check if="{{ !empty(@errors) }}">
-        <true>
-            <div class="alert alert-error" class="mt-20">
-                <repeat group="{{ @errors }}" value="{{ @err }}">
-                    <p>{{ @err }}</p>
-                </repeat>
-            </div>
-        </true>
-    </check>
+    <include href="_form-errors-glossary.html" />
 
     <div class="edit-card" class="mt-20">
         <form method="POST"

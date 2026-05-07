@@ -12,8 +12,8 @@ body.ui-pro .pro-page-header {
     display: flex;
     align-items: flex-start;
     justify-content: space-between;
-    margin-bottom: 24px;
-    gap: 16px;
+    margin-bottom: var(--space-xl);
+    gap: var(--space-lg);
     flex-wrap: wrap;
 }
 
@@ -25,7 +25,7 @@ body.ui-pro .pro-page-title {
     font-size: 20px;
     font-weight: 700;
     color: var(--text-main);
-    margin: 0 0 3px;
+    margin: 0 0 var(--space-xs-3);
     line-height: 1.25;
 }
 
@@ -38,7 +38,7 @@ body.ui-pro .pro-page-subtitle {
 body.ui-pro .pro-page-actions {
     display: flex;
     align-items: center;
-    gap: 8px;
+    gap: var(--space-md);
     flex-shrink: 0;
     flex-wrap: wrap;
 }
@@ -66,13 +66,13 @@ body.ui-pro a.button,
 body.ui-pro input[type="submit"] {
     display: inline-flex;
     align-items: center;
-    gap: 6px;
-    padding: 7px 14px;
+    gap: var(--space-sm-6);
+    padding: var(--space-sm-7) var(--space-md-14);
     font-size: 13px;
     font-weight: 500;
     font-family: inherit;
     border-radius: var(--radius-sm);
-    border: 1px solid var(--input-border);
+    border: var(--space-xxs) solid var(--input-border);
     background: var(--card-bg);
     color: var(--text-main);
     text-decoration: none !important;
@@ -140,13 +140,13 @@ body.ui-pro a.button.delete:hover {
 }
 
 body.ui-pro .button.large {
-    padding: 10px 22px;
+    padding: var(--space-md-10) 22px;
     font-size: 14px;
 }
 
 body.ui-pro .button.small,
 body.ui-pro .button.btn-sm {
-    padding: 4px 10px;
+    padding: var(--space-sm) var(--space-md-10);
     font-size: 12px;
 }
 
@@ -160,22 +160,22 @@ body.ui-pro .button.disabled {
 /* ── Carte Pro ── */
 body.ui-pro .pro-card {
     background: var(--card-bg);
-    border: 1px solid var(--input-border);
+    border: var(--space-xxs) solid var(--input-border);
     border-radius: var(--radius-md);
     overflow: hidden;
 }
 
 body.ui-pro .pro-card+.pro-card {
-    margin-top: 16px;
+    margin-top: var(--space-lg);
 }
 
 body.ui-pro .pro-card-header {
-    padding: 13px 16px;
-    border-bottom: 1px solid var(--input-border);
+    padding: var(--space-md-13) var(--space-lg);
+    border-bottom: var(--space-xxs) solid var(--input-border);
     display: flex;
     align-items: center;
     justify-content: space-between;
-    gap: 12px;
+    gap: var(--space-md-12);
     background: var(--table-header-bg);
 }
 
@@ -187,21 +187,21 @@ body.ui-pro .pro-card-title {
 }
 
 body.ui-pro .pro-card-body {
-    padding: 16px;
+    padding: var(--space-lg);
 }
 
 body.ui-pro .pro-card-footer {
-    padding: 12px 16px;
-    border-top: 1px solid var(--input-border);
+    padding: var(--space-md-12) var(--space-lg);
+    border-top: var(--space-xxs) solid var(--input-border);
     background: var(--table-header-bg);
     display: flex;
     align-items: center;
-    gap: 8px;
+    gap: var(--space-md);
 }
 
 /* ── Table Pro ── */
 body.ui-pro .pro-table-wrap {
-    border: 1px solid var(--input-border);
+    border: var(--space-xxs) solid var(--input-border);
     border-radius: var(--radius-md);
     overflow: hidden;
     background: var(--card-bg);
@@ -214,7 +214,7 @@ body.ui-pro .pro-table {
 }
 
 body.ui-pro .pro-table th {
-    padding: 9px 14px;
+    padding: var(--space-md-9) var(--space-md-14);
     text-align: left;
     font-size: 11px;
     font-weight: 700;
@@ -222,14 +222,14 @@ body.ui-pro .pro-table th {
     letter-spacing: 0.06em;
     color: var(--text-muted);
     background: var(--table-header-bg);
-    border-bottom: 1px solid var(--input-border);
+    border-bottom: var(--space-xxs) solid var(--input-border);
     white-space: nowrap;
     user-select: none;
 }
 
 body.ui-pro .pro-table td {
-    padding: 10px 14px;
-    border-bottom: 1px solid var(--input-border);
+    padding: var(--space-md-10) var(--space-md-14);
+    border-bottom: var(--space-xxs) solid var(--input-border);
     color: var(--text-main);
     vertical-align: middle;
 }
@@ -248,7 +248,7 @@ body.ui-pro .pro-table tbody tr:hover td {
 
 body.ui-pro .pro-table .pro-table-actions {
     display: flex;
-    gap: 6px;
+    gap: var(--space-sm-6);
     opacity: 0;
     transition: opacity 0.1s;
     justify-content: flex-end;
@@ -262,15 +262,15 @@ body.ui-pro .pro-table tbody tr:hover .pro-table-actions {
 body.ui-pro .pro-metrics {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
-    gap: 14px;
-    margin-bottom: 24px;
+    gap: var(--space-md-14);
+    margin-bottom: var(--space-xl);
 }
 
 body.ui-pro .pro-metric {
     background: var(--card-bg);
-    border: 1px solid var(--input-border);
+    border: var(--space-xxs) solid var(--input-border);
     border-radius: var(--radius-md);
-    padding: 14px 16px;
+    padding: var(--space-md-14) var(--space-lg);
 }
 
 body.ui-pro .pro-metric-label {
@@ -279,7 +279,7 @@ body.ui-pro .pro-metric-label {
     text-transform: uppercase;
     letter-spacing: 0.07em;
     color: var(--text-muted);
-    margin-bottom: 5px;
+    margin-bottom: var(--space-sm-5);
 }
 
 body.ui-pro .pro-metric-value {
@@ -292,18 +292,18 @@ body.ui-pro .pro-metric-value {
 body.ui-pro .pro-metric-sub {
     font-size: 12px;
     color: var(--text-muted);
-    margin-top: 3px;
+    margin-top: var(--space-xs-3);
 }
 
 /* ── Status badges ── */
 body.ui-pro .pro-badge {
     display: inline-flex;
     align-items: center;
-    gap: 5px;
+    gap: var(--space-sm-5);
     font-size: 11px;
     font-weight: 600;
-    padding: 2px 8px;
-    border-radius: 10px;
+    padding: var(--space-xs) var(--space-md);
+    border-radius: var(--radius-10px);
     white-space: nowrap;
 }
 
@@ -363,14 +363,14 @@ body.ui-pro .pro-badge--danger::before {
 /* ── Panneau slide-in ── */
 body.ui-pro .pro-slide-panel {
     position: fixed;
-    top: 48px;
+    top: var(--space-lg-48);
     right: 0;
     width: 480px;
     max-width: 90vw;
-    height: calc(100vh - 48px);
+    height: calc(100vh - var(--space-lg-48));
     background: var(--card-bg);
-    border-left: 1px solid var(--input-border);
-    box-shadow: -4px 0 28px rgba(0, 0, 0, 0.1);
+    border-left: var(--space-xxs) solid var(--input-border);
+    box-shadow: -var(--space-sm) 0 28px rgba(0, 0, 0, 0.1);
     transform: translateX(100%);
     transition: transform 0.22s ease;
     z-index: 150;
@@ -387,8 +387,8 @@ body.ui-pro .pro-slide-panel-header {
     display: flex;
     align-items: center;
     justify-content: space-between;
-    padding: 14px 16px;
-    border-bottom: 1px solid var(--input-border);
+    padding: var(--space-md-14) var(--space-lg);
+    border-bottom: var(--space-xxs) solid var(--input-border);
     flex-shrink: 0;
     background: var(--table-header-bg);
 }
@@ -403,7 +403,7 @@ body.ui-pro .pro-slide-panel-title {
 body.ui-pro .pro-slide-panel-body {
     flex: 1;
     overflow-y: auto;
-    padding: 20px;
+    padding: var(--space-lg-20);
 }
 
 body.ui-pro .pro-slide-panel-close {
@@ -412,7 +412,7 @@ body.ui-pro .pro-slide-panel-close {
     font-size: 18px;
     cursor: pointer;
     color: var(--text-muted);
-    padding: 4px 6px;
+    padding: var(--space-sm) var(--space-sm-6);
     line-height: 1;
     display: flex;
     align-items: center;
@@ -430,7 +430,7 @@ body.ui-pro .pro-slide-panel-close:hover {
 body.ui-pro .pro-form-grid {
     display: grid;
     grid-template-columns: 1fr 1fr;
-    gap: 14px;
+    gap: var(--space-md-14);
 }
 
 body.ui-pro .pro-form-grid .form-group,
@@ -445,44 +445,44 @@ body.ui-pro .pro-form-grid .span-2 {
 /* ── Empty state ── */
 body.ui-pro .pro-empty {
     text-align: center;
-    padding: 48px 24px;
+    padding: var(--space-lg-48) var(--space-xl);
     color: var(--text-muted);
 }
 
 body.ui-pro .pro-empty-icon {
     font-size: 36px;
     opacity: 0.3;
-    margin-bottom: 12px;
+    margin-bottom: var(--space-md-12);
 }
 
 body.ui-pro .pro-empty-title {
     font-size: 15px;
     font-weight: 600;
     color: var(--text-main);
-    margin: 0 0 6px;
+    margin: 0 0 var(--space-sm-6);
 }
 
 body.ui-pro .pro-empty-text {
     font-size: 13px;
-    margin: 0 0 20px;
+    margin: 0 0 var(--space-lg-20);
 }
 
 /* ── Tabs ── */
 body.ui-pro .pro-tabs {
     display: flex;
-    border-bottom: 1px solid var(--input-border);
-    margin-bottom: 20px;
+    border-bottom: var(--space-xxs) solid var(--input-border);
+    margin-bottom: var(--space-lg-20);
     gap: 0;
 }
 
 body.ui-pro .pro-tab {
-    padding: 9px 16px;
+    padding: var(--space-md-9) var(--space-lg);
     font-size: 13px;
     font-weight: 500;
     color: var(--text-muted);
     text-decoration: none;
-    border-bottom: 2px solid transparent;
-    margin-bottom: -1px;
+    border-bottom: var(--space-xs) solid transparent;
+    margin-bottom: -var(--space-xxs);
     cursor: pointer;
     transition: color 0.12s, border-color 0.12s;
     background: none;
@@ -507,14 +507,14 @@ body.ui-pro .pro-tab.is-active {
 body.ui-pro .pro-progress-bar {
     height: 4px;
     background: var(--input-border);
-    border-radius: 2px;
+    border-radius: var(--radius-2px);
     overflow: hidden;
 }
 
 body.ui-pro .pro-progress-fill {
     height: 100%;
     background: var(--button-primary-bg);
-    border-radius: 2px;
+    border-radius: var(--radius-2px);
     transition: width 0.3s;
 }
 
@@ -522,11 +522,11 @@ body.ui-pro .pro-progress-fill {
 body.ui-pro .pro-alert {
     display: flex;
     align-items: flex-start;
-    gap: 10px;
-    padding: 10px 14px;
+    gap: var(--space-md-10);
+    padding: var(--space-md-10) var(--space-md-14);
     border-radius: var(--radius-sm);
     font-size: 13px;
-    margin-bottom: 16px;
+    margin-bottom: var(--space-lg);
 }
 
 body.ui-pro .pro-alert--success {

@@ -4,7 +4,7 @@
 
 /* ── Sidebar section header ── */
 body.ui-pro .pro-nav-section {
-    padding: 18px 14px 4px;
+    padding: var(--space-lg-18) var(--space-md-14) var(--space-sm);
     font-size: 10px;
     font-weight: 700;
     letter-spacing: 0.1em;
@@ -25,12 +25,12 @@ body.ui-pro .pro-nav-item,
 body.ui-pro a.pro-nav-item {
     display: flex;
     align-items: center;
-    gap: 10px;
-    padding: 5px 10px !important;
-    font-size: 13.5px;
+    gap: var(--space-md-10);
+    padding: var(--space-sm-5) var(--space-md-10) !important;
+    font-size: 13.var(--space-sm-5);
     color: var(--text-main);
     text-decoration: none;
-    border-left: 3px solid transparent;
+    border-left: var(--space-xs-3) solid transparent;
     border-top: none;
     border-right: none;
     border-bottom: none;
@@ -79,8 +79,8 @@ body.ui-pro .pro-nav-badge {
     margin-left: auto;
     background: var(--color-danger);
     color: #fff;
-    border-radius: 10px;
-    padding: 1px 6px;
+    border-radius: var(--radius-10px);
+    padding: var(--space-xxs) var(--space-sm-6);
     font-size: 10px;
     font-weight: 700;
     line-height: 1.5;
@@ -93,15 +93,15 @@ body.ui-pro .pro-nav-badge {
 body.ui-pro .pro-nav-divider {
     height: 1px;
     background: var(--input-border);
-    margin: 6px 0;
+    margin: var(--space-sm-6) 0;
 }
 
 /* ── Titre de section projet ── */
 body.ui-pro .pro-nav-project-header {
     display: flex;
     align-items: center;
-    gap: 8px;
-    padding: 10px;
+    gap: var(--space-md);
+    padding: var(--space-md-10);
     font-size: 11px;
     font-weight: 700;
     letter-spacing: 0.05em;
@@ -125,8 +125,8 @@ body.ui-pro .pro-nav-project-title {
 /* ── Sidebar footer ── */
 body.ui-pro .pro-sidebar-footer {
     margin-top: auto;
-    border-top: 1px solid var(--input-border);
-    padding: 6px 0;
+    border-top: var(--space-xxs) solid var(--input-border);
+    padding: var(--space-sm-6) 0;
 }
 
 /* ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
@@ -150,7 +150,7 @@ body.ui-pro .pro-user-dropdown button:hover {
 body.ui-pro .pro-topbar-logo {
     display: flex;
     align-items: center;
-    gap: 8px;
+    gap: var(--space-md);
     color: var(--accent);
     text-decoration: none;
     font-family: var(--font-serif);
@@ -176,7 +176,7 @@ body.ui-pro .pro-topbar-sep {
 body.ui-pro .pro-breadcrumb {
     display: flex;
     align-items: center;
-    gap: 5px;
+    gap: var(--space-sm-5);
     font-size: 13px;
     color: var(--text-muted);
     overflow: hidden;
@@ -218,7 +218,7 @@ body.ui-pro .pro-topbar-spacer {
 body.ui-pro .pro-topbar-actions {
     display: flex;
     align-items: center;
-    gap: 2px;
+    gap: var(--space-xs);
     flex-shrink: 0;
 }
 
@@ -228,7 +228,7 @@ body.ui-pro .pro-topbar-btn {
     justify-content: center;
     width: 34px;
     height: 34px;
-    border-radius: 6px;
+    border-radius: var(--radius-6px);
     background: none;
     border: none;
     color: var(--text-muted);
@@ -253,12 +253,12 @@ body.ui-pro .pro-topbar-btn.is-active {
 
 body.ui-pro .pro-topbar-badge {
     position: absolute;
-    top: 4px;
-    right: 3px;
+    top: var(--space-sm);
+    right: var(--space-xs-3);
     background: var(--color-danger);
     color: #fff;
-    border-radius: 8px;
-    padding: 0 4px;
+    border-radius: var(--radius-8px);
+    padding: 0 var(--space-sm);
     font-size: 9px;
     font-weight: 700;
     line-height: 1.6;
@@ -301,12 +301,12 @@ body.ui-pro .pro-user-menu.is-open .pro-user-chevron {
 body.ui-pro .pro-user-dropdown {
     display: none;
     position: absolute;
-    top: calc(100% + 6px);
+    top: calc(100% + var(--space-sm-6));
     right: 0;
     background: var(--card-bg);
-    border: 1px solid var(--input-border);
+    border: var(--space-xxs) solid var(--input-border);
     border-radius: var(--radius-md);
-    box-shadow: var(--shadow-md), 0 8px 24px rgba(0, 0, 0, 0.08);
+    box-shadow: var(--shadow-md), 0 var(--space-md) 24px rgba(0, 0, 0, 0.08);
     min-width: 220px;
     z-index: 500;
     overflow: hidden;
@@ -320,7 +320,7 @@ body.ui-pro .pro-user-dropdown.is-open {
 @keyframes proDropdownIn {
     from {
         opacity: 0;
-        transform: translateY(-4px);
+        transform: translateY(-var(--space-sm));
     }
 
     to {
@@ -330,15 +330,15 @@ body.ui-pro .pro-user-dropdown.is-open {
 }
 
 body.ui-pro .pro-user-dropdown-header {
-    padding: 12px 14px 10px;
-    border-bottom: 1px solid var(--input-border);
+    padding: var(--space-md-12) var(--space-md-14) var(--space-md-10);
+    border-bottom: var(--space-xxs) solid var(--input-border);
 }
 
 body.ui-pro .pro-user-dropdown-name {
     font-size: 13px;
     font-weight: 600;
     color: var(--text-main);
-    margin-bottom: 1px;
+    margin-bottom: var(--space-xxs);
 }
 
 body.ui-pro .pro-user-dropdown-email {
@@ -352,8 +352,8 @@ body.ui-pro .pro-user-dropdown-email {
 body.ui-pro .pro-user-dropdown-item {
     display: flex;
     align-items: center;
-    gap: 10px;
-    padding: 9px 14px !important;
+    gap: var(--space-md-10);
+    padding: var(--space-md-9) var(--space-md-14) !important;
     font-size: 13px;
     color: var(--text-main);
     text-decoration: none;
@@ -396,12 +396,12 @@ body.ui-pro .pro-user-dropdown-item.is-danger i {
 body.ui-pro .pro-user-dropdown-sep {
     height: 1px;
     background: var(--input-border);
-    margin: 3px 0;
+    margin: var(--space-xs-3) 0;
 }
 
 /* ── Sélecteur de thème (dans dropdown) ── */
 body.ui-pro .pro-theme-picker {
-    padding: 8px 14px 10px;
+    padding: var(--space-md) var(--space-md-14) var(--space-md-10);
 }
 
 body.ui-pro .pro-theme-picker-label {
@@ -410,12 +410,12 @@ body.ui-pro .pro-theme-picker-label {
     text-transform: uppercase;
     letter-spacing: 0.07em;
     color: var(--text-muted);
-    margin-bottom: 7px;
+    margin-bottom: var(--space-sm-7);
 }
 
 body.ui-pro .pro-theme-swatches {
     display: flex;
-    gap: 7px;
+    gap: var(--space-sm-7);
 }
 
 body.ui-pro .pro-theme-swatch {
@@ -423,7 +423,7 @@ body.ui-pro .pro-theme-swatch {
     height: 22px;
     border-radius: 50%;
     cursor: pointer;
-    border: 2px solid transparent;
+    border: var(--space-xs) solid transparent;
     transition: transform 0.12s, border-color 0.12s;
     flex-shrink: 0;
     padding: 0;
@@ -435,63 +435,63 @@ body.ui-pro .pro-theme-swatch:hover {
 
 body.ui-pro .pro-theme-swatch.is-active {
     border-color: var(--button-primary-bg);
-    box-shadow: 0 0 0 2px var(--card-bg), 0 0 0 4px var(--button-primary-bg);
+    box-shadow: 0 0 0 var(--space-xs) var(--card-bg), 0 0 0 var(--space-sm) var(--button-primary-bg);
 }
 
 body.ui-pro .pro-theme-swatch--default {
     background: linear-gradient(135deg, #fff 50%, #d65151 50%);
-    border: 1px solid #d65151;
+    border: var(--space-xxs) solid #d65151;
 }
 
 body.ui-pro .pro-theme-swatch--blue {
     background: linear-gradient(135deg, #e8f0fe 50%, #2563eb 50%);
-    border: 1px solid #2563eb;
+    border: var(--space-xxs) solid #2563eb;
 }
 
 body.ui-pro .pro-theme-swatch--dark {
     background: linear-gradient(135deg, #1e2433 50%, #60a5fa 50%);
-    border: 1px solid #444;
+    border: var(--space-xxs) solid #444;
 }
 
 body.ui-pro .pro-theme-swatch--forest {
     background: linear-gradient(135deg, #f0f7f0 50%, #4a7a59 50%);
-    border: 1px solid #4a7a59;
+    border: var(--space-xxs) solid #4a7a59;
 }
 
 body.ui-pro .pro-theme-swatch--moderne {
     background: linear-gradient(135deg, #f5f5f5 50%, #3f51b5 50%);
-    border: 1px solid #3f51b5;
+    border: var(--space-xxs) solid #3f51b5;
 }
 
 /* ── Layout picker dans la topbar ── */
 body.ui-pro .pro-layout-picker-bar {
     display: flex;
     align-items: center;
-    gap: 5px;
-    padding: 0 4px;
-    border-left: 1px solid var(--border-color);
-    margin-left: 4px;
+    gap: var(--space-sm-5);
+    padding: 0 var(--space-sm);
+    border-left: var(--space-xxs) solid var(--border-color);
+    margin-left: var(--space-sm);
 }
 
 /* Couleurs des swatches layout — valeurs neutres (override par theme CSS) */
 body.ui-pro .pro-theme-swatch--manuscrit {
     background: #fbf7ee;
-    border: 2px solid #6b3f2a;
+    border: var(--space-xs) solid #6b3f2a;
 }
 
 body.ui-pro .pro-theme-swatch--bibliotheque {
     background: #f7f6f2;
-    border: 2px solid #1e2a4a;
+    border: var(--space-xs) solid #1e2a4a;
 }
 
 body.ui-pro .pro-theme-swatch--atelier {
     background: #f6efe2;
-    border: 2px solid #c4623c;
+    border: var(--space-xs) solid #c4623c;
 }
 
 body.ui-pro .pro-theme-swatch--studio-nuit {
     background: #161413;
-    border: 2px solid #d4a04a;
+    border: var(--space-xs) solid #d4a04a;
 }
 
 
@@ -509,9 +509,9 @@ body.ui-pro .pro-theme-swatch--studio-nuit {
     body.ui-pro .pro-nav-item {
         font-size: 0;
         justify-content: center;
-        padding: 10px 0;
+        padding: var(--space-md-10) 0;
         gap: 0;
-        border-left-width: 2px;
+        border-left-width: var(--space-xs);
         position: relative;
     }
 
@@ -524,12 +524,12 @@ body.ui-pro .pro-theme-swatch--studio-nuit {
     body.ui-pro .pro-nav-item[title]::after {
         content: attr(title);
         position: absolute;
-        left: calc(100% + 10px);
+        left: calc(100% + var(--space-md-10));
         top: 50%;
         transform: translateY(-50%);
         background: #111111;
         color: #ffffff;
-        padding: 4px 9px;
+        padding: var(--space-sm) var(--space-md-9);
         font-size: 12px;
         font-weight: 500;
         border-radius: var(--radius-sm);
@@ -546,7 +546,7 @@ body.ui-pro .pro-theme-swatch--studio-nuit {
 
     /* Séparateur plus compact */
     body.ui-pro .pro-nav-divider {
-        margin: 4px 8px;
+        margin: var(--space-sm) var(--space-md);
     }
 
     /* Logo : icône seule */
@@ -574,11 +574,11 @@ body.ui-pro .pro-theme-swatch--studio-nuit {
     }
 
     body.ui-pro .pro-nav-item {
-        font-size: 13.5px;
+        font-size: 13.var(--space-sm-5);
         justify-content: flex-start;
-        padding: 8px 14px 8px 16px;
-        gap: 10px;
-        border-left-width: 3px;
+        padding: var(--space-md) var(--space-md-14) var(--space-md) var(--space-lg);
+        gap: var(--space-md-10);
+        border-left-width: var(--space-xs-3);
     }
 
     body.ui-pro .pro-nav-item i {
@@ -611,9 +611,9 @@ body.ui-pro .pro-nav-count {
     font-weight: 600;
     color: var(--text-muted);
     background: var(--table-header-bg, rgba(0, 0, 0, .05));
-    border: 1px solid var(--input-border);
-    border-radius: 10px;
-    padding: 0 5px;
+    border: var(--space-xxs) solid var(--input-border);
+    border-radius: var(--radius-10px);
+    padding: 0 var(--space-sm-5);
     line-height: 1.7;
     min-width: 18px;
     text-align: center;
@@ -628,7 +628,7 @@ body.ui-pro .pro-nav-item.is-active .pro-nav-count {
 
 /* ── Sous-section label dans le projet ── */
 body.ui-pro .pro-nav-section-label {
-    padding: 10px;
+    padding: var(--space-md-10);
     font-size: 10px;
     font-weight: 700;
     letter-spacing: 0.08em;

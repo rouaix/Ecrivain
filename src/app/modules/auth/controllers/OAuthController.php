@@ -360,7 +360,7 @@ class OAuthController extends Controller
 
     private function issueLegacyCompatibleToken(int $userId, int $ttl): string
     {
-        $userModel = new User();
+        $userModel = $this->userModel();
         $userModel->load(['id=?', $userId]);
         if ($userModel->dry()) {
             throw new RuntimeException('Utilisateur introuvable pour émission du token.');

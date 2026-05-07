@@ -7,26 +7,26 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    padding: 40px 20px;
+    padding: var(--space-lg-40) var(--space-lg-20);
 }
 
 .auth-card {
     background: var(--card-bg);
-    border: 1px solid var(--border-color);
-    border-radius: 12px;
-    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05);
-    padding: 40px;
+    border: var(--space-xxs) solid var(--border-color);
+    border-radius: var(--radius-12px);
+    box-shadow: 0 var(--space-md-10) var(--space-lg-30) rgba(0, 0, 0, 0.05);
+    padding: var(--space-lg-40);
     max-width: 450px;
     width: 100%;
 }
 
 .auth-header {
     text-align: center;
-    margin-bottom: 30px;
+    margin-bottom: var(--space-lg-30);
 }
 
 .auth-header h2 {
-    margin: 0 0 10px 0;
+    margin: 0 0 var(--space-md-10) 0;
     font-size: 1.8rem;
     color: var(--text-main);
     font-weight: 700;
@@ -39,12 +39,12 @@
 }
 
 .auth-card .form-group {
-    margin-bottom: 20px;
+    margin-bottom: var(--space-lg-20);
 }
 
 .auth-card label {
     display: block;
-    margin-bottom: 8px;
+    margin-bottom: var(--space-md);
     font-weight: 600;
     color: var(--text-main);
     font-size: 0.9rem;
@@ -54,9 +54,9 @@
 .auth-card input[type="password"],
 .auth-card input[type="email"] {
     width: 100%;
-    padding: 12px 16px;
-    border: 1px solid var(--input-border);
-    border-radius: 6px;
+    padding: var(--space-md-12) var(--space-lg);
+    border: var(--space-xxs) solid var(--input-border);
+    border-radius: var(--radius-6px);
     font-size: 1rem;
     transition: border-color 0.2s;
 }
@@ -72,22 +72,22 @@
 .profile-card input[type="submit"],
 .form-card input[type="submit"] {
     width: 100% !important;
-    padding: 12px !important;
+    padding: var(--space-md-12) !important;
     height: auto !important;
     font-size: 1rem !important;
     font-weight: 600;
-    margin-top: 10px;
+    margin-top: var(--space-md-10);
 }
 
 .auth-footer {
     margin-top: 25px;
-    padding-top: 20px;
-    border-top: 1px solid var(--border-light);
+    padding-top: var(--space-lg-20);
+    border-top: var(--space-xxs) solid var(--border-light);
     text-align: center;
 }
 
 .auth-footer p {
-    margin: 10px 0;
+    margin: var(--space-md-10) 0;
     color: var(--text-muted);
     font-size: 0.9rem;
 }
@@ -103,31 +103,31 @@
 }
 
 .auth-alert {
-    padding: 12px 16px;
-    border-radius: 6px;
-    margin-bottom: 20px;
+    padding: var(--space-md-12) var(--space-lg);
+    border-radius: var(--radius-6px);
+    margin-bottom: var(--space-lg-20);
     font-size: 0.9rem;
 }
 
 .auth-alert.error {
     background: var(--error-bg);
-    border: 1px solid var(--error-text);
+    border: var(--space-xxs) solid var(--error-text);
     color: var(--error-text);
 }
 
 .auth-alert.success {
     background: var(--success-bg);
-    border: 1px solid var(--success-text);
+    border: var(--space-xxs) solid var(--success-text);
     color: var(--success-text);
 }
 
 .auth-alert ul {
-    margin: 5px 0;
-    padding-left: 20px;
+    margin: var(--space-sm-5) 0;
+    padding-left: var(--space-lg-20);
 }
 
 .auth-alert li {
-    margin: 3px 0;
+    margin: var(--space-xs-3) 0;
 }
 
 form.login {
@@ -141,8 +141,8 @@ form.login {
 .profile-header {
     display: flex;
     flex-wrap: wrap;
-    gap: 30px;
-    margin-bottom: 30px;
+    gap: var(--space-lg-30);
+    margin-bottom: var(--space-lg-30);
     align-items: flex-start;
 }
 
@@ -156,8 +156,8 @@ form.login {
     height: 150px;
     border-radius: 50%;
     object-fit: cover;
-    border: 4px solid var(--border-light);
-    margin-bottom: 15px;
+    border: var(--space-sm) solid var(--border-light);
+    margin-bottom: var(--space-md-15);
     background-color: var(--table-row-bg);
 }
 
@@ -169,20 +169,20 @@ form.login {
     display: flex;
     flex-direction: column;
     align-items: center;
-    gap: 10px;
+    gap: var(--space-md-10);
 }
 
 .photo-name {
     font-size: 0.85rem;
     color: var(--text-muted);
-    margin-top: 5px;
+    margin-top: var(--space-sm-5);
 }
 
 .section-title {
-    border-bottom: 1px solid var(--border-light);
-    padding-bottom: 10px;
-    margin-top: 30px;
-    margin-bottom: 20px;
+    border-bottom: var(--space-xxs) solid var(--border-light);
+    padding-bottom: var(--space-md-10);
+    margin-top: var(--space-lg-30);
+    margin-bottom: var(--space-lg-20);
     font-size: 1.2em;
     font-weight: bold;
     color: var(--text-muted);
@@ -194,24 +194,24 @@ form.login {
 
 .profile-container {
     margin: 0 auto;
-    padding: 40px 20px;
+    padding: var(--space-lg-40) var(--space-lg-20);
 }
 
 .profile-card {
     background: var(--card-bg);
-    border: 1px solid var(--border-color);
-    border-radius: 12px;
-    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05);
-    padding: 40px;
+    border: var(--space-xxs) solid var(--border-color);
+    border-radius: var(--radius-12px);
+    box-shadow: 0 var(--space-md-10) var(--space-lg-30) rgba(0, 0, 0, 0.05);
+    padding: var(--space-lg-40);
 }
 
 .profile-card-header {
     text-align: center;
-    margin-bottom: 30px;
+    margin-bottom: var(--space-lg-30);
 }
 
 .profile-card-header h2 {
-    margin: 0 0 10px 0;
+    margin: 0 0 var(--space-md-10) 0;
     font-size: 1.8rem;
     color: var(--text-main);
     font-weight: 700;
@@ -227,27 +227,27 @@ form.login {
     display: flex;
     flex-direction: column;
     align-items: center;
-    margin-bottom: 30px;
-    padding-bottom: 30px;
-    border-bottom: 1px solid var(--border-light);
+    margin-bottom: var(--space-lg-30);
+    padding-bottom: var(--space-lg-30);
+    border-bottom: var(--space-xxs) solid var(--border-light);
 }
 
 .section-divider {
     font-size: 1.1rem;
     font-weight: 700;
     color: var(--text-main);
-    margin: 30px 0 20px 0;
-    padding-bottom: 10px;
-    border-bottom: 2px solid var(--border-light);
+    margin: var(--space-lg-30) 0 var(--space-lg-20) 0;
+    padding-bottom: var(--space-md-10);
+    border-bottom: var(--space-xs) solid var(--border-light);
 }
 
 .profile-card .form-group {
-    margin-bottom: 20px;
+    margin-bottom: var(--space-lg-20);
 }
 
 .profile-card label {
     display: block;
-    margin-bottom: 8px;
+    margin-bottom: var(--space-md);
     font-weight: 600;
     color: var(--text-main);
     font-size: 0.9rem;
@@ -257,9 +257,9 @@ form.login {
 .profile-card input[type="password"],
 .profile-card input[type="date"] {
     width: 100%;
-    padding: 12px 16px;
-    border: 1px solid var(--input-border);
-    border-radius: 6px;
+    padding: var(--space-md-12) var(--space-lg);
+    border: var(--space-xxs) solid var(--input-border);
+    border-radius: var(--radius-6px);
     font-size: 1rem;
     transition: border-color 0.2s;
     box-sizing: border-box;
@@ -275,42 +275,42 @@ form.login {
 .profile-card .form-row {
     display: grid;
     grid-template-columns: 1fr 1fr;
-    gap: 15px;
+    gap: var(--space-md-15);
 }
 
 .profile-card small {
     display: block;
     color: var(--text-muted);
     font-size: 0.85rem;
-    margin-top: 5px;
+    margin-top: var(--space-sm-5);
 }
 
 .form-alert {
-    padding: 12px 16px;
-    border-radius: 6px;
-    margin-bottom: 20px;
+    padding: var(--space-md-12) var(--space-lg);
+    border-radius: var(--radius-6px);
+    margin-bottom: var(--space-lg-20);
     font-size: 0.9rem;
 }
 
 .form-alert.error {
     background: var(--error-bg);
-    border: 1px solid var(--error-text);
+    border: var(--space-xxs) solid var(--error-text);
     color: var(--error-text);
 }
 
 .form-alert.success {
     background: var(--success-bg);
-    border: 1px solid var(--success-text);
+    border: var(--space-xxs) solid var(--success-text);
     color: var(--success-text);
 }
 
 .form-alert ul {
-    margin: 5px 0;
-    padding-left: 20px;
+    margin: var(--space-sm-5) 0;
+    padding-left: var(--space-lg-20);
 }
 
 .form-alert li {
-    margin: 3px 0;
+    margin: var(--space-xs-3) 0;
 }
 
 /* ==========================================
@@ -357,7 +357,7 @@ form.login {
 .mcp-config-block {
     background: var(--code-bg, #1e1e2e);
     color: var(--code-text, #cdd6f4);
-    border-radius: 8px;
+    border-radius: var(--radius-8px);
     padding: 1rem 1.25rem;
     font-size: .82rem;
     line-height: 1.6;
@@ -370,7 +370,7 @@ form.login {
     font-size: .85rem;
     color: var(--warning-text, #b45309);
     background: var(--warning-bg, #fef3c7);
-    border-radius: 6px;
+    border-radius: var(--radius-6px);
     padding: .6rem .9rem;
     margin-top: .75rem;
     gap: .5rem;
@@ -387,8 +387,8 @@ form.login {
     justify-content: space-between;
     gap: 1rem;
     padding: .65rem .75rem;
-    border: 1px solid var(--border);
-    border-radius: 8px;
+    border: var(--space-xxs) solid var(--border);
+    border-radius: var(--radius-8px);
     margin-bottom: .5rem;
     background: var(--surface-alt, var(--surface));
 }
@@ -411,9 +411,9 @@ form.login {
 .mcp-inline-config {
     margin: -.25rem 0 .5rem;
     padding: .75rem;
-    border: 1px solid var(--border);
+    border: var(--space-xxs) solid var(--border);
     border-top: none;
-    border-radius: 0 0 8px 8px;
+    border-radius: 0 0 var(--space-md) var(--space-md);
     background: var(--surface-alt, var(--surface));
 }
 
@@ -427,14 +427,14 @@ form.login {
     background: var(--code-bg, #f3f4f6);
     color: var(--code-text, #374151);
     padding: .1rem .4rem;
-    border-radius: 4px;
+    border-radius: var(--radius-4px);
 }
 
 .mcp-new-token {
     margin-top: 1.25rem;
     padding: 1rem;
-    border: 2px solid var(--success-text, #16a34a);
-    border-radius: 8px;
+    border: var(--space-xs) solid var(--success-text, #16a34a);
+    border-radius: var(--radius-8px);
     background: var(--success-bg, #f0fdf4);
 }
 
@@ -457,8 +457,8 @@ form.login {
     font-family: monospace;
     font-size: .82rem;
     padding: .5rem .75rem;
-    border: 1px solid var(--border);
-    border-radius: 6px;
+    border: var(--space-xxs) solid var(--border);
+    border-radius: var(--radius-6px);
     background: var(--surface);
     color: var(--text-primary);
 }
@@ -477,10 +477,10 @@ form.login {
     font-size: .78rem;
     font-weight: 600;
     padding: .25rem .6rem;
-    border-radius: 20px;
+    border-radius: var(--radius-12px);
     background: var(--primary-light, rgba(99, 102, 241, 0.1));
     color: var(--primary, #6366f1);
-    border: 1px solid var(--primary-border, rgba(99, 102, 241, 0.25));
+    border: var(--space-xxs) solid var(--primary-border, rgba(99, 102, 241, 0.25));
 }
 
 .mcp-client-select {
@@ -496,8 +496,8 @@ form.login {
 .mcp-client-selector {
     flex: 1;
     padding: .35rem .6rem;
-    border: 1px solid var(--input-border);
-    border-radius: 6px;
+    border: var(--space-xxs) solid var(--input-border);
+    border-radius: var(--radius-6px);
     background: var(--card-bg);
     color: var(--text-main);
     font-size: .85rem;
@@ -508,19 +508,19 @@ form.login {
    TOKENS
    ========================================== */
 .token-item {
-    margin-bottom: 10px;
-    padding: 10px;
+    margin-bottom: var(--space-md-10);
+    padding: var(--space-md-10);
     background: var(--input-bg);
-    border: 1px solid var(--border-color);
+    border: var(--space-xxs) solid var(--border-color);
     display: flex;
     align-items: unset;
     justify-content: space-between;
-    border-radius: 4px;
+    border-radius: var(--radius-4px);
 }
 
 .token-info {
     flex-grow: 1;
-    margin-right: 10px;
+    margin-right: var(--space-md-10);
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
@@ -532,7 +532,7 @@ form.login {
     background: transparent;
     font-family: monospace;
     color: var(--text-main);
-    padding: 4px !important;
+    padding: var(--space-sm) !important;
 }
 
 .token-list {
@@ -548,5 +548,5 @@ form.login {
 
 .token-actions {
     display: flex;
-    gap: 5px;
+    gap: var(--space-sm-5);
 }

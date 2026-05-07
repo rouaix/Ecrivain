@@ -23,7 +23,7 @@ class NoteController extends Controller
             return;
         }
 
-        $projectModel = new Project();
+        $projectModel = $this->projectModel();
         $rows = $projectModel->findAndCast(['id=?', $pid]);
         if (!$rows) {
             $this->f3->error(404);
@@ -31,7 +31,7 @@ class NoteController extends Controller
         }
         $project = $rows[0];
 
-        $noteModel = new Note();
+        $noteModel = $this->noteModel();
         $notes = $noteModel->getAllByProject($pid);
 
         // Assign cycling color index + compute word count from content
@@ -78,7 +78,7 @@ class NoteController extends Controller
         // Load note if editing
         $note = null;
         if ($noteId) {
-            $noteModel = new Note();
+            $noteModel = $this->noteModel();
             $notes = $noteModel->findAndCast(['id=? AND project_id=?', $noteId, $pid]);
             if ($notes) {
                 $note = $notes[0];
@@ -112,7 +112,7 @@ class NoteController extends Controller
         $errors = [];
 
         if (empty($errors)) {
-            $noteModel = new Note();
+            $noteModel = $this->noteModel();
             if ($noteId) {
                 $noteModel->load(['id=? AND project_id=?', $noteId, $pid]);
                 if (!$noteModel->dry()) {
@@ -148,7 +148,7 @@ class NoteController extends Controller
     {
         $nid = (int) $this->f3->get('PARAMS.id');
 
-        $noteModel = new Note();
+        $noteModel = $this->noteModel();
         $noteModel->load(['id=?', $nid]);
 
         if (!$noteModel->dry()) {

@@ -22,23 +22,7 @@
         </label>
     </check>
 
-    <check if="{{ !empty(@errors) }}">
-
-        <div class="error edit-error">
-
-            <ul>
-
-                <repeat group="{{ @errors }}" value="{{ @err }}">
-
-                    <li>{{ @err }}</li>
-
-                </repeat>
-
-            </ul>
-
-        </div>
-
-    </check>
+    <include href="_form-errors.html" />
 
     <form method="post"
         action="{{ @character.id ? (@base . '/character/' . @character.id . '/edit') : (@base . '/project/' . @project.id . '/character/create') }}"

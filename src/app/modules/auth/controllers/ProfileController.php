@@ -45,7 +45,7 @@ class ProfileController extends Controller
 
     public function update()
     {
-        $userModel = new User();
+        $userModel = $this->userModel();
         $user = $this->currentUser();
         if (!$user) {
             $this->f3->reroute('/login');
@@ -153,7 +153,7 @@ class ProfileController extends Controller
         // If the user is logged in and requests their own photo, it's easy.
         // If we need to support arbitrary users, we'd need to lookup email by username from DB.
 
-        $userModel = new User();
+        $userModel = $this->userModel();
         $userModel->load(['username=?', $username]);
         if ($userModel->dry()) {
             $this->f3->error(404);

@@ -6,13 +6,7 @@
         </a>
     </div>
 
-    <check if="{{ !empty(@errors) }}">
-        <div class="error edit-error">
-            <repeat group="{{ @errors }}" value="{{ @err }}">
-                <div>{{ @err | esc }}</div>
-            </repeat>
-        </div>
-    </check>
+    <include href="_form-errors.html" />
 
     <div class="edit-card">
         <div class="edit-card-section">

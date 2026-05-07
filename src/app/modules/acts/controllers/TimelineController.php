@@ -17,7 +17,7 @@ class TimelineController extends Controller
         if (!$this->isOwner($pid)) {
             return null;
         }
-        $pm   = new Project();
+        $pm   = $this->projectModel();
         $rows = $pm->findAndCast(['id=?', $pid]);
         return $rows ? $rows[0] : null;
     }
@@ -30,7 +30,7 @@ class TimelineController extends Controller
         $project = $this->getProject($pid);
         if (!$project) { $this->f3->error(404); return; }
 
-        $actModel = new Act();
+        $actModel = $this->actModel();
         $acts     = $actModel->getAllByProject($pid);
 
         // Load all chapters (top-level + sub) to compute total wc per top-level chapter

@@ -9,7 +9,7 @@
     height: 100%;
     margin: 0px;
     position: relative;
-    padding: 10px;
+    padding: var(--space-md-10);
 }
 
 /* Quill custom icons */
@@ -24,13 +24,13 @@
 
 /* Editor Tools & AI Panels */
 .editor-tools-wrapper {
-    margin-top: 10px;
+    margin-top: var(--space-md-10);
 }
 
 /* Editors */
 .editor-wrapper {
     display: flex;
-    gap: 20px;
+    gap: var(--space-lg-20);
     align-items: flex-start;
 }
 
@@ -40,11 +40,11 @@
 
 .editor-surface {
     color: var(--input-text);
-    border: 1px solid var(--input-border);
-    border-radius: 6px;
+    border: var(--space-xxs) solid var(--input-border);
+    border-radius: var(--radius-6px);
     background: var(--input-bg);
     transition: border-color 0.2s;
-    padding: 20px;
+    padding: var(--space-lg-20);
     overflow-x: hidden;
     overflow-y: auto;
 }
@@ -84,7 +84,7 @@
 }
 
 .word-count {
-    margin-top: 10px;
+    margin-top: var(--space-md-10);
     font-size: 0.9rem;
     color: var(--text-muted);
     text-align: right;
@@ -95,7 +95,7 @@ p.word-count {
     font-style: italic;
     font-weight: bold;
     margin: 0;
-    padding: 5px;
+    padding: var(--space-sm-5);
     color: var(--button-delete-bg);
 }
 
@@ -104,11 +104,11 @@ p.word-count {
 }
 
 .image-preview {
-    margin-bottom: 15px;
+    margin-bottom: var(--space-md-15);
     display: flex;
     flex-direction: column;
     align-items: center;
-    gap: 10px;
+    gap: var(--space-md-10);
 }
 
 .image-preview__img {
@@ -119,7 +119,7 @@ p.word-count {
 /* Editor-specific utilities */
 .editor-input-title {
     font-size: 1.2rem;
-    padding: 10px;
+    padding: var(--space-md-10);
 }
 
 .editor-badge {
@@ -141,7 +141,7 @@ p.word-count {
 .editor-grid-row {
     display: grid;
     grid-template-columns: 1fr 1fr;
-    gap: 20px;
+    gap: var(--space-lg-20);
 }
 
 .editor-label-row {
@@ -151,10 +151,10 @@ p.word-count {
 }
 
 .editor-badge-context {
-    font-size: 0.7rem;
-    background: rgba(0, 0, 0, 0.1);
-    padding: 2px 6px;
-    border-radius: 4px;
+    /*font-size: 0.7rem;*/
+    /*background: rgba(0, 0, 0, 0.1);*/
+    padding: 0 var(--space-md-12);
+    border-radius: var(--radius-4px);
 }
 
 .full-width-form-group {
@@ -162,7 +162,7 @@ p.word-count {
 }
 
 .edit-footer-links {
-    padding: 20px;
+    padding: var(--space-lg-20);
 }
 
 /* ==========================================
@@ -228,7 +228,7 @@ p.word-count {
     background: transparent !important;
     color: #444 !important;
     border: none !important;
-    padding: 0 5px !important;
+    padding: 0 var(--space-sm-5) !important;
     cursor: pointer;
     width: auto !important;
     display: inline-block !important;
@@ -236,6 +236,7 @@ p.word-count {
     line-height: 24px !important;
     height: auto !important;
 }
+
 /* Specific fix for custom text buttons (Tiret, Grouper, etc.) */
 .ql-toolbar button.ql-emdash,
 .ql-toolbar button.ql-group_lines,
@@ -243,54 +244,63 @@ p.word-count {
 .ql-toolbar button.ql-grammarcheck {
     width: auto !important;
     min-width: 24px;
-    padding: 0 8px !important;
-    margin-right: 2px;
+    padding: 0 var(--space-md) !important;
+    margin-right: var(--space-xs);
     font-weight: 600 !important;
     font-size: 12px !important;
     font-family: sans-serif;
     vertical-align: middle;
     text-align: center;
 }
+
 /* Hover states */
 .ql-toolbar button:hover {
     color: #06c !important;
 }
+
 /* Fix SVG icons inside buttons (Undo, Redo, Bold, etc.) */
 .ql-toolbar button svg {
     float: none !important;
     vertical-align: middle;
 }
+
 .ql-toolbar button svg .ql-stroke {
     stroke: #444 !important;
 }
+
 .ql-toolbar button:hover svg .ql-stroke {
     stroke: #06c !important;
 }
+
 .ql-toolbar button svg .ql-fill {
     fill: #444 !important;
 }
+
 .ql-toolbar button:hover svg .ql-fill {
     fill: #06c !important;
 }
+
 /* Ensure toolbar groups wrap nicely */
 .ql-toolbar .ql-formats {
-    margin-right: 10px !important;
+    margin-right: var(--space-md-10) !important;
     display: inline-block;
     vertical-align: middle;
     float: none !important;
 }
+
 /* Critical Quill Overrides */
 .ql-toolbar.ql-snow .ql-formats {
-    margin-right: 15px !important;
+    margin-right: var(--space-md-15) !important;
     display: inline-flex !important;
     align-items: center !important;
     vertical-align: middle !important;
 }
+
 .ql-toolbar.ql-snow button {
     width: auto !important;
     height: 24px !important;
-    padding: 0 5px !important;
-    margin: 0 2px !important;
+    padding: 0 var(--space-sm-5) !important;
+    margin: 0 var(--space-xs) !important;
     float: none !important;
     display: inline-flex !important;
     align-items: center !important;
@@ -300,43 +310,53 @@ p.word-count {
     cursor: pointer !important;
     color: #444 !important;
 }
+
 .ql-toolbar.ql-snow button svg {
     width: 18px !important;
     height: 18px !important;
     float: none !important;
 }
+
 .ql-toolbar.ql-snow button svg .ql-stroke {
     stroke: #444 !important;
 }
+
 .ql-toolbar.ql-snow button svg .ql-fill {
     fill: #444 !important;
 }
+
 .ql-toolbar.ql-snow button svg path {
     stroke: #444 !important;
 }
+
 .ql-toolbar.ql-snow button svg polygon {
     stroke: #444 !important;
 }
+
 .ql-toolbar.ql-snow button svg line {
     stroke: #444 !important;
 }
+
 .ql-toolbar.ql-snow button:hover svg .ql-stroke,
 .ql-toolbar.ql-snow button.ql-active svg .ql-stroke {
     stroke: #06c !important;
 }
+
 .ql-toolbar.ql-snow button:hover svg .ql-fill,
 .ql-toolbar.ql-snow button.ql-active svg .ql-fill {
     fill: #06c !important;
 }
+
 .ql-toolbar.ql-snow button.ql-emdash,
 .ql-toolbar.ql-snow button.ql-group_lines,
 .ql-toolbar.ql-snow button.ql-remove_doublespaces {
     font-weight: bold !important;
     font-size: 13px !important;
-    padding: 0 8px !important;
+    padding: 0 var(--space-md) !important;
     min-width: 30px !important;
-    border: 1px solid transparent !important;
+    border: var(--space-xxs) solid transparent !important;
 }
+
 .ql-toolbar.ql-snow button.ql-emdash:hover,
 .ql-toolbar.ql-snow button.ql-group_lines:hover,
 .ql-toolbar.ql-snow button.ql-remove_doublespaces:hover {

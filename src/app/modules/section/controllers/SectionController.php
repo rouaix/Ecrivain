@@ -24,7 +24,7 @@ class SectionController extends Controller
 
         // Load section: by id if provided, otherwise by project+type
         $section = null;
-        $sectionModel = new Section();
+        $sectionModel = $this->sectionModel();
         if ($sectionId) {
             $rows = $sectionModel->findAndCast(['id=? AND project_id=?', $sectionId, $pid]);
             if ($rows) $section = $rows[0];
@@ -75,7 +75,7 @@ class SectionController extends Controller
 
         // Preserve existing image_path first
         if ($sectionId) {
-            $existingRows = (new Section())->findAndCast(['id=? AND project_id=?', $sectionId, $pid]);
+            $existingRows = ($this->sectionModel())->findAndCast(['id=? AND project_id=?', $sectionId, $pid]);
             if ($existingRows) {
                 $imagePath = $existingRows[0]['image_path'] ?? null;
             }
@@ -109,7 +109,7 @@ class SectionController extends Controller
         }
 
         if (empty($errors)) {
-            $sectionModel = new Section();
+            $sectionModel = $this->sectionModel();
 
             $result = $sectionModel->createOrUpdate($pid, $type, $title, $content, $comment, $imagePath, $sectionId);
 
@@ -124,7 +124,7 @@ class SectionController extends Controller
         // Re-render form with errors
         $section = null;
         if ($sectionId) {
-            $sectionModel = new Section();
+            $sectionModel = $this->sectionModel();
             $sections = $sectionModel->findAndCast(['id=?', $sectionId]);
             if ($sections) {
                 $section = $sections[0];
@@ -160,7 +160,7 @@ class SectionController extends Controller
         }
 
         // Clear image_path in DB
-        $sectionModel = new Section();
+        $sectionModel = $this->sectionModel();
         $sectionModel->load(['project_id=? AND type=?', $pid, $type]);
         if (!$sectionModel->dry()) {
             $sid = $sectionModel->id;
@@ -230,7 +230,7 @@ class SectionController extends Controller
     {
         $sid = (int) $this->f3->get('PARAMS.id');
 
-        $sectionModel = new Section();
+        $sectionModel = $this->sectionModel();
         $sectionModel->load(['id=?', $sid]);
 
         if (!$sectionModel->dry()) {

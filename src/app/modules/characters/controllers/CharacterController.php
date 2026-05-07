@@ -30,7 +30,7 @@ class CharacterController extends Controller
         $pid = (int) $this->f3->get('PARAMS.pid');
         $project = $this->requireOwnedProject($pid);
 
-        $charModel = new Character();
+        $charModel = $this->characterModel();
         $characters = $charModel->getAllByProject($pid);
 
         $this->render('characters/list.html', [
@@ -83,7 +83,7 @@ class CharacterController extends Controller
             return;
         }
 
-        $charModel              = new Character();
+        $charModel              = $this->characterModel();
         $charModel->project_id  = $pid;
         $charModel->name        = $name;
         $charModel->description = $description;
@@ -110,7 +110,7 @@ class CharacterController extends Controller
     public function edit()
     {
         $id = (int) $this->f3->get('PARAMS.id');
-        $charModel = new Character();
+        $charModel = $this->characterModel();
         $charModel->load(['id=?', $id]);
         if ($charModel->dry()) {
             $this->f3->error(404);
@@ -149,7 +149,7 @@ class CharacterController extends Controller
     public function update()
     {
         $id = (int) $this->f3->get('PARAMS.id');
-        $charModel = new Character();
+        $charModel = $this->characterModel();
         $charModel->load(['id=?', $id]);
         if ($charModel->dry()) {
             $this->f3->error(404);
@@ -206,7 +206,7 @@ class CharacterController extends Controller
     public function delete()
     {
         $id = (int) $this->f3->get('PARAMS.id');
-        $charModel = new Character();
+        $charModel = $this->characterModel();
         $charModel->load(['id=?', $id]);
         if (!$charModel->dry()) {
             $this->requireOwnedProject((int) $charModel->project_id);
@@ -230,10 +230,10 @@ class CharacterController extends Controller
             return;
         }
 
-        $projectModel = new Project();
+        $projectModel = $this->projectModel();
         $project = $projectModel->findAndCast(['id=?', $pid])[0];
 
-        $charModel  = new Character();
+        $charModel  = $this->characterModel();
         $characters = $charModel->getAllByProject($pid);
 
         // Assign a palette color per unique group_name
@@ -294,7 +294,7 @@ class CharacterController extends Controller
         }
 
         // Verify both characters belong to this project
-        $charModel = new Character();
+        $charModel = $this->characterModel();
         if (!$charModel->count(['id=? AND project_id=?', $charFrom, $pid]) ||
             !$charModel->count(['id=? AND project_id=?', $charTo, $pid])) {
             echo json_encode(['success' => false, 'error' => 'Personnage introuvable']);

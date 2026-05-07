@@ -46,12 +46,17 @@
 
     <!-- CSS dynamique : ordre des panneaux projet (généré par ProjectShowService) -->
     <check if="{{ isset(@panelCss) && @panelCss }}">
-        <style nonce="{{ @nonce }}">{{ @panelCss | raw }}</style>
+        <style nonce="{{ @nonce }}">
+            {
+                    {
+                    @panelCss | raw
+                }
+            }
+        </style>
     </check>
 </head>
 
-<body class="layout-bibliotheque ui-pro{{ isset(@bodyClass) ? ' '.@bodyClass : '' }}"
-    data-layout="bibliotheque">
+<body class="layout-bibliotheque ui-pro{{ isset(@bodyClass) ? ' '.@bodyClass : '' }}" data-layout="bibliotheque">
 
     <!-- Skip link accessibilité clavier -->
     <a href="#main-content" class="pro-skip-link">Aller au contenu</a>
@@ -126,7 +131,9 @@
                 </a>
 
                 <!-- Collaborations -->
-                <a href="{{ @base }}/collab/invitations" class="pro-topbar-btn {{ substr(@PATH, 0, 7) == '/collab' ? 'is-active' : '' }}" title="Invitations et collaborations">
+                <a href="{{ @base }}/collab/invitations"
+                    class="pro-topbar-btn {{ substr(@PATH, 0, 7) == '/collab' ? 'is-active' : '' }}"
+                    title="Invitations et collaborations">
                     <i class="fas fa-users" aria-hidden="true"></i>
                     <check if="{{ @pendingCollabCount > 0 }}">
                         <span class="pro-topbar-badge" aria-label="{{ @pendingCollabCount }} en attente">{{
@@ -646,11 +653,10 @@
                 </div>
                 <div class="modal-body" style="flex:1; display:flex; flex-direction:column; overflow:hidden;">
                     <div class="ai-panel" style="height:100%; display:flex; flex-direction:column;">
-                        <div style="margin-bottom:12px;">
+                        <div style="">
                             <span class="editor-badge-context">Contexte Projet</span>
                         </div>
-                        <div class="ai-messages" id="proAiChatOutput"
-                            style="flex:1; overflow-y:auto; margin-bottom:16px;">
+                        <div class="ai-messages" id="proAiChatOutput" style="flex:1; overflow-y:auto;">
                             <div class="ai-msg system">
                                 Je connais l'intégralité de votre projet « {{ @project.title }} ». Posez-moi une
                                 question.

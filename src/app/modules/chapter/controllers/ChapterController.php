@@ -15,10 +15,10 @@ class ChapterController extends Controller
         $pid = (int) $this->f3->get('PARAMS.pid');
         $project = $this->requireOwnedProject($pid);
 
-        $chapterModel = new Chapter();
+        $chapterModel = $this->chapterModel();
         $chapters = $chapterModel->getAllByProject($pid);
 
-        $actModel = new Act();
+        $actModel = $this->actModel();
         $acts = $actModel->getAllByProject($pid);
 
         // Build sub-chapter map keyed by parent_id
@@ -62,10 +62,10 @@ class ChapterController extends Controller
         $pid = (int) $this->f3->get('PARAMS.pid');
         $project = $this->requireOwnedProject($pid);
 
-        $actModel = new Act();
+        $actModel = $this->actModel();
         $acts = $actModel->getAllByProject($pid);
 
-        $chapterModel = new Chapter();
+        $chapterModel = $this->chapterModel();
         $chapters = $chapterModel->getTopLevelByProject($pid);
 
         $parentId = !empty($_GET['parent_id']) ? (int) $_GET['parent_id'] : null;
@@ -97,7 +97,7 @@ class ChapterController extends Controller
         }
 
         if (empty($errors)) {
-            $chapterModel = new Chapter();
+            $chapterModel = $this->chapterModel();
             // Inherit act from parent if not set
             if ($parentId && $actId === null) {
                 // We need to load parent to check its act_id
@@ -117,9 +117,9 @@ class ChapterController extends Controller
             }
         }
 
-        $actModel = new Act();
+        $actModel = $this->actModel();
         $acts = $actModel->getAllByProject($pid);
-        $chapterModel = new Chapter();
+        $chapterModel = $this->chapterModel();
         $chapters = $chapterModel->getTopLevelByProject($pid);
 
         $this->render('chapter/create.html', [
@@ -136,7 +136,7 @@ class ChapterController extends Controller
     public function show()
     {
         $cid = (int) $this->f3->get('PARAMS.id');
-        $chapterModel = new Chapter();
+        $chapterModel = $this->chapterModel();
         $chapterModel->load(['id=?', $cid]);
         if ($chapterModel->dry()) {
             $this->f3->error(404);
@@ -146,7 +146,7 @@ class ChapterController extends Controller
         $project = $this->requireOwnedProject((int) $chapterModel->project_id);
 
         // Additional data for the view
-        $actModel = new Act();
+        $actModel = $this->actModel();
         $acts = $actModel->getAllByProject($project['id']);
 
         // Context: Current Act
@@ -163,7 +163,7 @@ class ChapterController extends Controller
         // Context: Parent Chapter (for subchapters)
         $parentChapter = null;
         if ($chapterModel->parent_id) {
-            $parent = new Chapter();
+            $parent = $this->chapterModel();
             $parent->load(['id=?', $chapterModel->parent_id]);
             if (!$parent->dry()) {
                 $parentChapter = $parent->cast();
@@ -222,7 +222,7 @@ class ChapterController extends Controller
     {
         $cid = (int) $this->f3->get('PARAMS.id');
 
-        $chapterModel = new Chapter();
+        $chapterModel = $this->chapterModel();
         $chapterModel->load(['id=?', $cid]);
 
         if ($chapterModel->dry()) {
@@ -357,7 +357,7 @@ class ChapterController extends Controller
     public function delete()
     {
         $cid = (int) $this->f3->get('PARAMS.id');
-        $chapterModel = new Chapter();
+        $chapterModel = $this->chapterModel();
         $chapterModel->load(['id=?', $cid]);
 
         if ($chapterModel->dry()) {
@@ -424,7 +424,7 @@ class ChapterController extends Controller
         }
 
         if (empty($errors)) {
-            $chapterModel = new Chapter();
+            $chapterModel = $this->chapterModel();
             if ($parentId && $actId === null) {
                 $parent = $chapterModel->findAndCast(['id=?', $parentId]);
                 if ($parent) {
@@ -447,9 +447,9 @@ class ChapterController extends Controller
             }
         }
 
-        $actModel = new Act();
+        $actModel = $this->actModel();
         $acts = $actModel->getAllByProject($pid);
-        $chapterModel = new Chapter();
+        $chapterModel = $this->chapterModel();
         $chapters = $chapterModel->getTopLevelByProject($pid);
 
         $this->render('chapter/create.html', [

@@ -26,7 +26,7 @@ class ProjectContentController extends ProjectBaseController
         $db = $this->f3->get('DB');
 
         if ($type === 'chapter') {
-            $item = new Chapter();
+            $item = $this->chapterModel();
             $item->load(['id=? AND project_id=?', $itemId, $pid]);
             if ($item->dry()) return;
 
@@ -44,7 +44,7 @@ class ProjectContentController extends ProjectBaseController
             $table = 'chapters';
 
         } elseif ($type === 'section') {
-            $item = new Section();
+            $item = $this->sectionModel();
             $item->load(['id=? AND project_id=?', $itemId, $pid]);
             if ($item->dry()) return;
 
@@ -65,7 +65,7 @@ class ProjectContentController extends ProjectBaseController
             $table = 'sections';
 
         } elseif ($type === 'note') {
-            $item = new Note();
+            $item = $this->noteModel();
             $item->load(['id=? AND project_id=?', $itemId, $pid]);
             if ($item->dry()) return;
 
@@ -73,7 +73,7 @@ class ProjectContentController extends ProjectBaseController
             $table    = 'notes';
 
         } elseif ($type === 'act') {
-            $item = new Act();
+            $item = $this->actModel();
             $item->load(['id=? AND project_id=?', $itemId, $pid]);
             if ($item->dry()) return;
 
@@ -82,7 +82,7 @@ class ProjectContentController extends ProjectBaseController
 
         } elseif ($type === 'element') {
             if (!$this->f3->get('DB')->exists('elements')) { $this->f3->error(400); return; }
-            $item = new Element();
+            $item = $this->elementModel();
             $item->load(['id=? AND project_id=?', $itemId, $pid]);
             if ($item->dry()) return;
 
@@ -130,13 +130,13 @@ class ProjectContentController extends ProjectBaseController
             return;
         }
 
-        $projectModel = new Project();
+        $projectModel = $this->projectModel();
         if (!$projectModel->count(['id=? AND user_id=?', $pid, $this->currentUser()['id']])) {
             http_response_code(403);
             return;
         }
 
-        $chapterModel = new Chapter();
+        $chapterModel = $this->chapterModel();
         foreach ($order as $index => $id) {
             $chapterModel->load(['id=?', $id]);
             if (!$chapterModel->dry() && $chapterModel->project_id == $pid) {
@@ -160,13 +160,13 @@ class ProjectContentController extends ProjectBaseController
             return;
         }
 
-        $projectModel = new Project();
+        $projectModel = $this->projectModel();
         if (!$projectModel->count(['id=? AND user_id=?', $pid, $this->currentUser()['id']])) {
             http_response_code(403);
             return;
         }
 
-        $model = ($type === 'note' || $type === 'notes') ? new Note() : new Section();
+        $model = ($type === 'note' || $type === 'notes') ? $this->noteModel() : $this->sectionModel();
 
         foreach ($order as $index => $id) {
             $model->load(['id=? AND project_id=?', (int) $id, $pid]);
@@ -193,27 +193,27 @@ class ProjectContentController extends ProjectBaseController
             return;
         }
 
-        $projectModel = new Project();
+        $projectModel = $this->projectModel();
         if (!$projectModel->count(['id=? AND user_id=?', $pid, $this->currentUser()['id']])) {
             http_response_code(403);
             return;
         }
 
         if ($type === 'chapter') {
-            $model = new Chapter();
+            $model = $this->chapterModel();
         } elseif ($type === 'note') {
-            $model = new Note();
+            $model = $this->noteModel();
         } elseif ($type === 'act') {
-            $model = new Act();
+            $model = $this->actModel();
         } elseif ($type === 'character') {
-            $model = new Character();
+            $model = $this->characterModel();
         } elseif ($type === 'element') {
             if (!$this->f3->get('DB')->exists('elements')) { return; }
-            $model = new Element();
+            $model = $this->elementModel();
         } elseif ($type === 'scenario') {
             $model = new Scenario();
         } else {
-            $model = new Section();
+            $model = $this->sectionModel();
         }
 
         $model->load(['id=?', $id]);
@@ -238,16 +238,16 @@ class ProjectContentController extends ProjectBaseController
             return;
         }
 
-        $projectModel = new Project();
+        $projectModel = $this->projectModel();
         if (!$projectModel->count(['id=? AND user_id=?', $pid, $this->currentUser()['id']])) {
             http_response_code(403);
             return;
         }
 
         if ($type === 'chapter') {
-            $model = new Chapter();
+            $model = $this->chapterModel();
         } elseif ($type === 'act') {
-            $model = new Act();
+            $model = $this->actModel();
         } else {
             echo json_encode(['status' => 'error', 'message' => 'Invalid type']);
             return;
@@ -274,16 +274,16 @@ class ProjectContentController extends ProjectBaseController
         }
 
         if ($type === 'chapter') {
-            $model = new Chapter();
+            $model = $this->chapterModel();
         } elseif ($type === 'note') {
-            $model = new Note();
+            $model = $this->noteModel();
         } elseif ($type === 'element') {
             if (!$this->f3->get('DB')->exists('elements')) { $this->f3->error(404); return; }
-            $model = new Element();
+            $model = $this->elementModel();
         } elseif ($type === 'scenario') {
             $model = new Scenario();
         } else {
-            $model = new Section();
+            $model = $this->sectionModel();
         }
 
         $model->load(['id=?', $id]);

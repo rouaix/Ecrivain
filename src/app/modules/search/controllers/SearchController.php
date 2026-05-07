@@ -25,7 +25,7 @@ class SearchController extends Controller
             $error = 'Veuillez saisir au moins 2 caractères.';
         }
 
-        $projectModel = new Project();
+        $projectModel = $this->projectModel();
         $projects = $projectModel->find(['user_id=?', $user['id']], ['order' => 'title ASC']) ?: [];
 
         $this->render('search/results.html', [

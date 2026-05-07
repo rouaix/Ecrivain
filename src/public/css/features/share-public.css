@@ -6,7 +6,7 @@
 /* ++ Common share banner ++ */
 .share-banner {
     background: #fff3cd;
-    border-bottom: 1px solid #ffc107;
+    border-bottom: var(--space-xxs) solid #ffc107;
     padding: .5rem 1rem;
     font-size: .85rem;
     text-align: center;
@@ -35,14 +35,14 @@
 }
 
 .share-project-card {
-    border-radius: 10px;
+    border-radius: var(--radius-10px);
     padding: 1.25rem;
     background: var(--card-bg, #fff);
-    box-shadow: 0 1px 4px rgba(0, 0, 0, .1);
+    box-shadow: 0 var(--space-xxs) var(--space-sm) rgba(0, 0, 0, .1);
     display: flex;
     flex-direction: column;
     gap: .75rem;
-    border: 1px solid var(--border-light, #eee);
+    border: var(--space-xxs) solid var(--border-light, #eee);
 }
 
 .share-project-card h2 {
@@ -71,14 +71,14 @@
 /* ++ share/public/lecture.html ++ */
 .share-readonly-badge {
     background: rgba(255, 193, 7, .2);
-    border: 1px solid rgba(255, 193, 7, .5);
+    border: var(--space-xxs) solid rgba(255, 193, 7, .5);
     color: #fff;
-    border-radius: 4px;
-    padding: 4px 10px;
+    border-radius: var(--radius-4px);
+    padding: var(--space-sm) var(--space-md-10);
     font-size: .75rem;
     display: inline-flex;
     align-items: center;
-    gap: 4px;
+    gap: var(--space-sm);
     flex-shrink: 0;
 }
 
@@ -113,10 +113,10 @@
     align-items: center;
     gap: .35rem;
     padding: .35rem .75rem;
-    border-radius: 4px;
+    border-radius: var(--radius-4px);
     font-size: .82rem;
     text-decoration: none;
-    border: 1px solid rgba(255, 255, 255, .25);
+    border: var(--space-xxs) solid rgba(255, 255, 255, .25);
     background: rgba(255, 255, 255, .1);
     color: #fff;
 }
@@ -157,14 +157,14 @@
 
 .popup-content {
     background: #fff;
-    border-radius: 8px;
+    border-radius: var(--radius-8px);
     padding: 1.5rem;
     max-width: 1000px;
     width: 92vw;
     max-height: 70vh;
     overflow-y: auto;
     position: relative;
-    box-shadow: 0 4px 20px rgba(0, 0, 0, .2);
+    box-shadow: 0 var(--space-sm) var(--space-lg-20) rgba(0, 0, 0, .2);
 }
 
 .popup-close {
@@ -182,13 +182,13 @@
     left: 50%;
     transform: translateX(-50%);
     background: rgba(255, 255, 255, .9);
-    border-radius: 20px;
+    border-radius: var(--radius-20px);
     padding: .4rem 1rem;
     font-size: .78rem;
     color: #555;
     pointer-events: none;
     white-space: nowrap;
-    box-shadow: 0 1px 4px rgba(0, 0, 0, .15);
+    box-shadow: 0 var(--space-xxs) var(--space-sm) rgba(0, 0, 0, .15);
 }
 
 .mindmap-guide__muted {
@@ -204,8 +204,8 @@
 
 .share-project-cover {
     max-width: 260px;
-    border-radius: 8px;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, .15);
+    border-radius: var(--radius-8px);
+    box-shadow: 0 var(--space-xs) var(--space-md) rgba(0, 0, 0, .15);
     margin-bottom: 1.5rem;
 }
 
@@ -235,7 +235,7 @@
 /* ++ share/public/relecture.html ++ */
 .share-readonly-notice {
     background: #fff8e1;
-    border: 1px solid #ffe082;
+    border: var(--space-xxs) solid #ffe082;
     padding: .6rem 1rem;
     font-size: .85rem;
     color: #5d4037;
@@ -243,7 +243,7 @@
 }
 
 .ann-highlight {
-    border-radius: 2px;
+    border-radius: var(--radius-2px);
     cursor: pointer;
 }
 

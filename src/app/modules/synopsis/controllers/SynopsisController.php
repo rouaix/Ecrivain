@@ -43,7 +43,7 @@ class SynopsisController extends Controller
             return;
         }
 
-        $projectModel = new Project();
+        $projectModel = $this->projectModel();
         $project = $projectModel->findAndCast(['id=?', $pid]);
         if (!$project) {
             $this->f3->error(404);
@@ -183,7 +183,7 @@ class SynopsisController extends Controller
             return;
         }
 
-        $projectModel = new Project();
+        $projectModel = $this->projectModel();
         $project = $projectModel->findAndCast(['id=?', $pid]);
         if (!$project) {
             $this->f3->error(404);
@@ -365,7 +365,7 @@ class SynopsisController extends Controller
             $this->f3->error(403);
             return [null, null];
         }
-        $projectModel = new Project();
+        $projectModel = $this->projectModel();
         $project = $projectModel->findAndCast(['id=?', $pid]);
         if (!$project) {
             $this->f3->error(404);

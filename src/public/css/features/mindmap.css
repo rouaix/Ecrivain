@@ -7,22 +7,22 @@
     height: 800px;
     background: #f8f9fa;
     cursor: grab;
-    border-radius: 16px;
-    border: 1px solid #e0e0e0;
+    border-radius: 8px;
+    border: var(--space-xxs) solid #e0e0e0;
     overflow: hidden;
     font-family: 'Google Sans', 'Roboto', sans-serif;
-    margin-top: 15px;
+    margin-top: var(--space-md-15);
 }
 
 .mindmap-guide {
     color: #5f6368;
     font-family: 'Roboto', sans-serif;
     font-size: 14px;
-    margin-top: 15px;
+    margin-top: var(--space-md-15);
     background: #fff;
-    padding: 12px 20px;
+    padding: var(--space-md-12) var(--space-lg-20);
     border-radius: 24px;
-    border: 1px solid #e0e0e0;
+    border: var(--space-xxs) solid #e0e0e0;
     display: inline-block;
 }
 
@@ -35,7 +35,7 @@
 }
 
 .mindmap-error {
-    padding: 20px;
+    padding: var(--space-lg-20);
     color: red;
 }
 
@@ -49,7 +49,7 @@
     height: 100%;
     overflow: auto;
     background-color: rgba(32, 33, 36, 0.6);
-    backdrop-filter: blur(2px);
+    backdrop-filter: blur(var(--space-xs));
     justify-content: center;
     align-items: center;
 }
@@ -61,14 +61,14 @@
 .popup-content {
     background-color: #ffffff;
     margin: auto;
-    padding: 30px;
+    padding: var(--space-lg-30);
     border: none;
     width: 80%;
     max-width: 700px;
     max-height: 80vh;
     overflow-y: auto;
     border-radius: 24px;
-    box-shadow: 0 1px 3px rgba(60, 64, 67, 0.3), 0 4px 8px 3px rgba(60, 64, 67, 0.15);
+    box-shadow: 0 var(--space-xxs) var(--space-xs-3) rgba(60, 64, 67, 0.3), 0 var(--space-sm) var(--space-md) var(--space-xs-3) rgba(60, 64, 67, 0.15);
     position: relative;
 }
 
@@ -81,7 +81,7 @@
     transition: color 0.2s;
     background-color: transparent;
     position: relative;
-    top: -20px;
+    top: calc(-1 * var(--space-lg-20));
 }
 
 .popup-close:hover {

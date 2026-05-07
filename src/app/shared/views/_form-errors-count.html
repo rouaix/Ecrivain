@@ -1,0 +1,7 @@
+<check if="{{ count(@errors) > 0 }}">
+    <div class="alert alert-error">
+        <repeat group="{{ @errors }}" value="{{ @err }}">
+            <p>{{ @err | esc }}</p>
+        </repeat>
+    </div>
+</check>

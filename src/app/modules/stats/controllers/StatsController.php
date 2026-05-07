@@ -70,7 +70,7 @@ class StatsController extends Controller
         file_put_contents('/tmp/stats_debug.log', date('Y-m-d H:i:s') . " - projectId: " . $projectId . "\n", FILE_APPEND);
 
         // Project scope: restrict to one project or all user projects
-        $projectModel = new Project();
+        $projectModel = $this->projectModel();
         $projects = $projectModel->find(['user_id=?', $uid], ['order' => 'title ASC']) ?: [];
 
         $scopeClause = $projectId ? 'AND ws.project_id = ?' : '';

@@ -9,7 +9,7 @@
     color: #333;
     max-width: 800px;
     margin: 0 auto;
-    padding: 40px;
+    padding: var(--space-lg-40);
     background: #f9f9f9;
 }
 
@@ -20,23 +20,23 @@
 
 .export-document .book-header {
     text-align: center;
-    margin-bottom: 60px;
-    border-bottom: 2px solid #ddd;
-    padding-bottom: 40px;
+    margin-bottom: var(--space-lg-60);
+    border-bottom: var(--space-xs) solid #ddd;
+    padding-bottom: var(--space-lg-40);
 }
 
 .export-document .book-cover {
     width: 50vw;
     max-width: 400px;
     height: auto;
-    margin: 0 auto 20px auto;
+    margin: 0 auto var(--space-lg-20) auto;
     display: block;
-    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+    box-shadow: 0 var(--space-sm) var(--space-md-10) rgba(0, 0, 0, 0.1);
 }
 
 .export-document h1.book-title {
     font-size: 3em;
-    margin-bottom: 5px;
+    margin-bottom: var(--space-sm-5);
     color: #111;
 }
 
@@ -44,7 +44,7 @@
     font-size: 1.2em;
     color: #555;
     font-style: italic;
-    margin-bottom: 10px;
+    margin-bottom: var(--space-md-10);
 }
 
 .export-document .book-description {
@@ -54,18 +54,18 @@
     margin-left: auto;
     margin-right: auto;
     line-height: 1.5;
-    margin-bottom: 10px;
+    margin-bottom: var(--space-md-10);
 }
 
 .export-document h2 {
-    margin-top: 40px;
-    border-bottom: 1px solid #eee;
-    padding-bottom: 10px;
+    margin-top: var(--space-lg-40);
+    border-bottom: var(--space-xxs) solid #eee;
+    padding-bottom: var(--space-md-10);
     color: #444;
 }
 
 .export-document h3 {
-    margin-top: 30px;
+    margin-top: var(--space-lg-30);
     font-size: 1.3em;
     color: #666;
 }
@@ -73,7 +73,7 @@
 .export-document .chapter-content,
 .export-document .section-content {
     font-size: 1.1em;
-    margin-bottom: 20px;
+    margin-bottom: var(--space-lg-20);
 }
 
 /* Quill formatting support in export */

@@ -53,7 +53,7 @@ class SharePublicController extends Controller
             return;
         }
 
-        $projectModel = new Project();
+        $projectModel = $this->projectModel();
         $project = $projectModel->findAndCast(['id=?', $pid]);
         if (!$project) {
             $this->f3->error(404);
@@ -89,7 +89,7 @@ class SharePublicController extends Controller
             return;
         }
 
-        $projectModel = new Project();
+        $projectModel = $this->projectModel();
         $project = $projectModel->findAndCast(['id=?', $pid]);
         if (!$project) {
             $this->f3->error(404);
@@ -271,7 +271,7 @@ class SharePublicController extends Controller
      */
     private function buildReadingContent(int $pid): ?array
     {
-        $projectModel = new Project();
+        $projectModel = $this->projectModel();
         $project = $projectModel->findAndCast(['id=?', $pid]);
         if (!$project) return null;
         $project = $project[0];
@@ -290,17 +290,17 @@ class SharePublicController extends Controller
 
         $lpp = $project['lines_per_page'] ?: 38;
 
-        $chapterModel = new Chapter();
+        $chapterModel = $this->chapterModel();
         $allChapters  = $chapterModel->getAllByProject($pid);
 
-        $actModel = new Act();
+        $actModel = $this->actModel();
         $acts     = $actModel->getAllByProject($pid);
 
-        $sectionModel = new Section();
+        $sectionModel = $this->sectionModel();
         $sectionsBeforeChapters = $sectionModel->getBeforeChapters($pid);
         $sectionsAfterChapters  = $sectionModel->getAfterChapters($pid);
 
-        $noteModel = new Note();
+        $noteModel = $this->noteModel();
         $notes     = $noteModel->getAllByProject($pid);
 
         $chaptersByAct       = [];
@@ -320,7 +320,7 @@ class SharePublicController extends Controller
         $customElementsByType      = [];
         $customSubElementsByParent = [];
         if ($db->exists('elements')) {
-            $elementModel = new Element();
+            $elementModel = $this->elementModel();
             foreach ($elementModel->getAllByProject($pid) as $elem) {
                 if ($elem['parent_id']) {
                     $customSubElementsByParent[$elem['parent_id']][] = $elem;
@@ -520,7 +520,7 @@ class SharePublicController extends Controller
      */
     private function buildReviewItems(int $pid): ?array
     {
-        $projectModel = new Project();
+        $projectModel = $this->projectModel();
         $project = $projectModel->findAndCast(['id=?', $pid]);
         if (!$project) return null;
         $project = $project[0];
@@ -537,17 +537,17 @@ class SharePublicController extends Controller
             $templateElements = $template ? $templateModel->getElements($template['id']) : [];
         }
 
-        $chapterModel = new Chapter();
+        $chapterModel = $this->chapterModel();
         $allChapters  = $chapterModel->getAllByProject($pid);
 
-        $actModel = new Act();
+        $actModel = $this->actModel();
         $acts     = $actModel->getAllByProject($pid);
 
-        $sectionModel = new Section();
+        $sectionModel = $this->sectionModel();
         $sectionsBefore = $sectionModel->getBeforeChapters($pid);
         $sectionsAfter  = $sectionModel->getAfterChapters($pid);
 
-        $noteModel = new Note();
+        $noteModel = $this->noteModel();
         $notes     = $noteModel->getAllByProject($pid);
 
         $chaptersByAct       = [];
@@ -567,7 +567,7 @@ class SharePublicController extends Controller
         $customElementsByType      = [];
         $customSubElementsByParent = [];
         if ($db->exists('elements')) {
-            $elementModel = new Element();
+            $elementModel = $this->elementModel();
             foreach ($elementModel->getAllByProject($pid) as $elem) {
                 if ($elem['parent_id']) {
                     $customSubElementsByParent[$elem['parent_id']][] = $elem;
@@ -652,10 +652,10 @@ class SharePublicController extends Controller
     {
         $db = $this->f3->get('DB');
 
-        $characterModel = new Character();
+        $characterModel = $this->characterModel();
         $characters = $characterModel->getAllByProject($pid);
 
-        $noteModel = new Note();
+        $noteModel = $this->noteModel();
         $notes     = array_values(array_filter(
             $noteModel->getAllByProject($pid),
             fn($n) => ($n['type'] ?? 'note') !== 'scenario'
@@ -664,14 +664,14 @@ class SharePublicController extends Controller
         $scenarioModel = new Scenario();
         $scenarios     = $scenarioModel->getAllByProject($pid);
 
-        $actModel = new Act();
+        $actModel = $this->actModel();
         $acts     = $actModel->getAllByProject($pid);
 
-        $sectionModel   = new Section();
+        $sectionModel   = $this->sectionModel();
         $sectionsBefore = $sectionModel->getBeforeChapters($pid);
         $sectionsAfter  = $sectionModel->getAfterChapters($pid);
 
-        $chapterModel = new Chapter();
+        $chapterModel = $this->chapterModel();
         $chapters     = $chapterModel->getAllByProject($pid);
 
         $templateElements = [];
@@ -687,7 +687,7 @@ class SharePublicController extends Controller
         $topElementsByType   = [];
         $subElementsByParent = [];
         if ($db->exists('elements')) {
-            $elementModel = new Element();
+            $elementModel = $this->elementModel();
             foreach ($elementModel->getAllByProject($pid) as $elem) {
                 if (!($elem['is_exported'] ?? 1)) continue;
                 if (!empty($elem['parent_id'])) {

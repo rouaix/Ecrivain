@@ -19,7 +19,7 @@ class LectureController extends Controller
             return;
         }
 
-        $projectModel = new Project();
+        $projectModel = $this->projectModel();
         $project = $projectModel->findAndCast(['id=?', $pid]);
 
         if (!$project) {
@@ -100,13 +100,13 @@ class LectureController extends Controller
 
         // Determine the model based on type
         if ($type === 'chapter' || $type === 'subchapter') {
-            $model = new Chapter();
+            $model = $this->chapterModel();
         } elseif ($type === 'act') {
-            $model = new Act();
+            $model = $this->actModel();
         } elseif ($type === 'section') {
-            $model = new Section();
+            $model = $this->sectionModel();
         } elseif ($type === 'note') {
-            $model = new Note();
+            $model = $this->noteModel();
         } elseif ($type === 'element' || $type === 'subelement') {
             $db = $this->f3->get('DB');
             if (!$db->exists('elements')) {
@@ -114,7 +114,7 @@ class LectureController extends Controller
                 echo json_encode(['status' => 'error', 'message' => 'Elements module not available']);
                 return;
             }
-            $model = new Element();
+            $model = $this->elementModel();
         } else {
             http_response_code(400);
             echo json_encode(['status' => 'error', 'message' => 'Invalid type']);

@@ -9,7 +9,7 @@
     color: #333;
     max-width: 800px;
     margin: 0 auto;
-    padding: 40px;
+    padding: var(--space-lg-40);
     background: #f9f9f9;
 }
 
@@ -20,23 +20,23 @@
 
 .export-document .book-header {
     text-align: center;
-    margin-bottom: 60px;
-    border-bottom: 2px solid #ddd;
-    padding-bottom: 40px;
+    margin-bottom: var(--space-lg-60);
+    border-bottom: var(--space-xs) solid #ddd;
+    padding-bottom: var(--space-lg-40);
 }
 
 .export-document .book-cover {
     width: 50vw;
     max-width: 400px;
     height: auto;
-    margin: 0 auto 20px auto;
+    margin: 0 auto var(--space-lg-20) auto;
     display: block;
-    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+    box-shadow: 0 var(--space-sm) var(--space-md-10) rgba(0, 0, 0, 0.1);
 }
 
 .export-document h1.book-title {
     font-size: 3em;
-    margin-bottom: 5px;
+    margin-bottom: var(--space-sm-5);
     color: #111;
 }
 
@@ -44,7 +44,7 @@
     font-size: 1.2em;
     color: #555;
     font-style: italic;
-    margin-bottom: 10px;
+    margin-bottom: var(--space-md-10);
 }
 
 .export-document .book-description {
@@ -54,18 +54,18 @@
     margin-left: auto;
     margin-right: auto;
     line-height: 1.5;
-    margin-bottom: 10px;
+    margin-bottom: var(--space-md-10);
 }
 
 .export-document h2 {
-    margin-top: 40px;
-    border-bottom: 1px solid #eee;
-    padding-bottom: 10px;
+    margin-top: var(--space-lg-40);
+    border-bottom: var(--space-xxs) solid #eee;
+    padding-bottom: var(--space-md-10);
     color: #444;
 }
 
 .export-document h3 {
-    margin-top: 30px;
+    margin-top: var(--space-lg-30);
     font-size: 1.3em;
     color: #666;
 }
@@ -73,7 +73,7 @@
 .export-document .chapter-content,
 .export-document .section-content {
     font-size: 1.1em;
-    margin-bottom: 20px;
+    margin-bottom: var(--space-lg-20);
 }
 
 .export-document .ql-align-left {
@@ -110,7 +110,7 @@
 
 .export-document .page-break {
     page-break-before: always;
-    margin-top: 50px;
+    margin-top: var(--space-lg-50);
 }
 
 .export-document .act-title {
@@ -118,10 +118,10 @@
     text-align: center;
     font-size: 2em;
     margin-top: 100px;
-    margin-bottom: 50px;
+    margin-bottom: var(--space-lg-50);
     color: #222;
     text-transform: uppercase;
-    letter-spacing: 2px;
+    letter-spacing: var(--space-xs);
 }
 
 /* ==========================================
@@ -136,7 +136,7 @@
 
 .edit-card .data-table th,
 .edit-card .data-table td {
-    padding: 10px 15px;
+    padding: var(--space-md-10) var(--space-md-15);
     vertical-align: middle;
 }
 
@@ -154,7 +154,7 @@
 
 .tpl-col-actions .actions {
     display: flex;
-    gap: 4px;
+    gap: var(--space-sm);
     justify-content: flex-end;
 }
 
@@ -171,7 +171,7 @@
 }
 
 .sub-indent {
-    margin-left: 20px;
+    margin-left: var(--space-lg-20);
 }
 
 .elements td span {
@@ -186,22 +186,22 @@
     height: 800px;
     background: #f8f9fa;
     cursor: grab;
-    border-radius: 16px;
-    border: 1px solid #e0e0e0;
+    border-radius: var(--radius-12px);
+    border: var(--space-xxs) solid #e0e0e0;
     overflow: hidden;
     font-family: 'Google Sans', 'Roboto', sans-serif;
-    margin-top: 15px;
+    margin-top: var(--space-md-15);
 }
 
 .mindmap-guide {
     color: #5f6368;
     font-family: 'Roboto', sans-serif;
     font-size: 14px;
-    margin-top: 15px;
+    margin-top: var(--space-md-15);
     background: #fff;
-    padding: 12px 20px;
-    border-radius: 24px;
-    border: 1px solid #e0e0e0;
+    padding: var(--space-md-12) var(--space-lg-20);
+    border-radius: var(--radius-12px);
+    border: var(--space-xxs) solid #e0e0e0;
     display: inline-block;
 }
 
@@ -214,7 +214,7 @@
 }
 
 .mindmap-error {
-    padding: 20px;
+    padding: var(--space-lg-20);
     color: red;
 }
 
@@ -228,7 +228,7 @@
     height: 100%;
     overflow: auto;
     background-color: rgba(32, 33, 36, 0.6);
-    backdrop-filter: blur(2px);
+    backdrop-filter: blur(var(--space-xs));
     justify-content: center;
     align-items: center;
 }
@@ -240,14 +240,14 @@
 .popup-content {
     background-color: #ffffff;
     margin: auto;
-    padding: 30px;
+    padding: var(--space-lg-30);
     border: none;
     width: 80%;
     max-width: 700px;
     max-height: 80vh;
     overflow-y: auto;
-    border-radius: 24px;
-    box-shadow: 0 1px 3px rgba(60, 64, 67, 0.3), 0 4px 8px 3px rgba(60, 64, 67, 0.15);
+    border-radius: var(--radius-12px);
+    box-shadow: 0 var(--space-xxs) var(--space-xs-3) rgba(60, 64, 67, 0.3), 0 var(--space-sm) var(--space-md) var(--space-xs-3) rgba(60, 64, 67, 0.15);
     position: relative;
 }
 
@@ -260,7 +260,7 @@
     transition: color 0.2s;
     background-color: transparent;
     position: relative;
-    top: -20px;
+    top: -var(--space-lg-20);
 }
 
 .popup-close:hover {
@@ -284,8 +284,8 @@
    ========================================== */
 #dictation-btn {
     position: fixed;
-    bottom: 24px;
-    right: 24px;
+    bottom: var(--space-xl);
+    right: var(--space-xl);
     width: 48px;
     height: 48px;
     border-radius: 50%;
@@ -294,7 +294,7 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    box-shadow: 0 2px 10px rgba(0, 0, 0, .3);
+    box-shadow: 0 var(--space-xs) var(--space-md-10) rgba(0, 0, 0, .3);
     z-index: 8000;
     transition: background .2s, transform .15s;
 }
@@ -320,7 +320,7 @@
     }
 
     70% {
-        box-shadow: 0 0 0 14px rgba(231, 76, 60, 0);
+        box-shadow: 0 0 0 var(--space-md-14) rgba(231, 76, 60, 0);
     }
 
     100% {
@@ -331,13 +331,13 @@
 #dictation-indicator {
     position: fixed;
     bottom: 84px;
-    right: 24px;
+    right: var(--space-xl);
     max-width: 300px;
     background: rgba(0, 0, 0, .72);
     font-size: .82rem;
     line-height: 1.4;
-    padding: 6px 12px;
-    border-radius: 8px;
+    padding: var(--space-sm-6) var(--space-md-12);
+    border-radius: var(--radius-8px);
     z-index: 8000;
     word-wrap: break-word;
     display: none;

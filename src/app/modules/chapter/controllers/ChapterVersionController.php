@@ -16,7 +16,7 @@ class ChapterVersionController extends Controller
      */
     private function loadOwned(int $cid, bool $jsonError = false): ?Chapter
     {
-        $chapter = new Chapter();
+        $chapter = $this->chapterModel();
         $chapter->load(['id=?', $cid]);
 
         if ($chapter->dry()) {

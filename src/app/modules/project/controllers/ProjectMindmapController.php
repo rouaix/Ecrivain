@@ -19,7 +19,7 @@ class ProjectMindmapController extends ProjectBaseController
             return;
         }
 
-        $projectModel = new Project();
+        $projectModel = $this->projectModel();
         $project = $projectModel->findAndCast(['id=?', $pid]);
 
         if (!$project) {
@@ -28,10 +28,10 @@ class ProjectMindmapController extends ProjectBaseController
         }
 
         // --- Fetch Data ---
-        $characterModel = new Character();
+        $characterModel = $this->characterModel();
         $characters = $characterModel->getAllByProject($pid);
 
-        $noteModel = new Note();
+        $noteModel = $this->noteModel();
         $notes = array_values(array_filter(
             $noteModel->getAllByProject($pid),
             fn($n) => ($n['type'] ?? 'note') !== 'scenario'
@@ -40,14 +40,14 @@ class ProjectMindmapController extends ProjectBaseController
         $scenarioModel = new Scenario();
         $scenarios = $scenarioModel->getAllByProject($pid);
 
-        $actModel = new Act();
+        $actModel = $this->actModel();
         $acts = $actModel->getAllByProject($pid);
 
-        $sectionModel = new Section();
+        $sectionModel = $this->sectionModel();
         $sectionsBefore = $sectionModel->getBeforeChapters($pid);
         $sectionsAfter  = $sectionModel->getAfterChapters($pid);
 
-        $chapterModel = new Chapter();
+        $chapterModel = $this->chapterModel();
         $chapters = $chapterModel->getAllByProject($pid);
 
         $synopsisModel = new Synopsis();
@@ -86,7 +86,7 @@ class ProjectMindmapController extends ProjectBaseController
         $topElementsByType   = [];
         $subElementsByParent = [];
         if ($db->exists('elements')) {
-            $elementModel = new Element();
+            $elementModel = $this->elementModel();
             $allElements  = $elementModel->getAllByProject($pid);
 
             foreach ($allElements as $elem) {

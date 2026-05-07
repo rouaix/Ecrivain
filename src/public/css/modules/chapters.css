@@ -3,15 +3,15 @@
    CHAPTERS
    ========================================== */
 .section-group-block {
-    margin-bottom: 5px;
-    /*padding-left: 20px;*/
+    margin-bottom: var(--space-sm-5);
+    /*padding-left: var(--space-lg-20);*/
 }
 
 .section-group-heading {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    margin-bottom: 10px;
+    margin-bottom: var(--space-md-10);
 }
 
 .section-group-heading h4 {
@@ -29,7 +29,7 @@
     font-size: 0.7em;
     font-style: italic;
     margin: 0;
-    padding: 5px 10px;
+    padding: var(--space-sm-5) var(--space-md-10);
     color: var(--button-delete-bg);
 }
 
@@ -46,7 +46,7 @@
 .chapter-create-tabs {
     display: flex;
     gap: 0;
-    border-bottom: 2px solid var(--input-border);
+    border-bottom: var(--space-xs) solid var(--input-border);
     margin-bottom: 1.5rem;
 }
 
@@ -58,8 +58,8 @@
     border: none;
     background: none;
     cursor: pointer;
-    border-bottom: 2px solid transparent;
-    margin-bottom: -2px;
+    border-bottom: var(--space-xs) solid transparent;
+    margin-bottom: -var(--space-xs);
     transition: color .15s;
 }
 
@@ -83,8 +83,8 @@
 
 .import-source-btn {
     padding: .4rem .85rem;
-    border: 1px solid var(--input-border);
-    border-radius: 4px;
+    border: var(--space-xxs) solid var(--input-border);
+    border-radius: var(--radius-4px);
     background: var(--input-bg);
     font-size: .85rem;
     cursor: pointer;
@@ -98,8 +98,8 @@
 }
 
 .import-file-zone {
-    border: 2px dashed var(--input-border, #ccc);
-    border-radius: 8px;
+    border: var(--space-xs) dashed var(--input-border, #ccc);
+    border-radius: var(--radius-8px);
     padding: 2rem;
     text-align: center;
     cursor: pointer;
@@ -170,8 +170,8 @@
 /* ++ Chapter edit ++ */
 .autosave-indicator {
     font-size: .78rem;
-    padding: 3px 10px;
-    border-radius: 12px;
+    padding: var(--space-xs-3) var(--space-md-10);
+    border-radius: var(--radius-12px);
     font-weight: 500;
     transition: background .2s, color .2s;
     white-space: nowrap;
@@ -221,7 +221,7 @@
     gap: .75rem;
     flex-wrap: wrap;
     padding: .5rem .75rem;
-    border-bottom: 1px solid var(--input-border);
+    border-bottom: var(--space-xxs) solid var(--input-border);
     background: var(--card-bg);
 }
 
@@ -231,9 +231,9 @@
     gap: .5rem;
     font-size: .78rem;
     color: var(--text-muted, #888);
-    border: 1px solid var(--input-border);
-    border-radius: 6px;
-    padding: 3px 10px;
+    border: var(--space-xxs) solid var(--input-border);
+    border-radius: var(--radius-6px);
+    padding: var(--space-xs-3) var(--space-md-10);
     cursor: pointer;
     user-select: none;
     transition: border-color .15s;
@@ -251,14 +251,14 @@
     width: 60px;
     height: 5px;
     background: var(--border-color, #ddd);
-    border-radius: 3px;
+    border-radius: var(--radius-3px);
     overflow: hidden;
 }
 
 .session-goal-fill {
     height: 100%;
     background: var(--link-color, #3f51b5);
-    border-radius: 3px;
+    border-radius: var(--radius-3px);
     transition: width .3s;
 }
 
@@ -321,8 +321,8 @@ body.focus-mode .focus-exit-btn {
 }
 
 .grammar-item {
-    border: 1px solid var(--input-border);
-    border-radius: 6px;
+    border: var(--space-xxs) solid var(--input-border);
+    border-radius: var(--radius-6px);
     padding: .6rem .8rem;
     margin-bottom: .5rem;
     font-size: .85rem;
@@ -336,25 +336,25 @@ body.focus-mode .focus-exit-btn {
 
 .grammar-fix-btn {
     font-size: .78rem;
-    padding: 2px 8px;
-    border-radius: 4px;
+    padding: var(--space-xs) var(--space-md);
+    border-radius: var(--radius-4px);
     background: var(--link-color, #3f51b5);
     color: #fff;
     border: none;
     cursor: pointer;
-    margin-top: 4px;
+    margin-top: var(--space-sm);
 }
 
 .grammar-ignore-btn,
 .grammar-dict-btn {
     font-size: .78rem;
-    padding: 2px 8px;
-    border-radius: 4px;
+    padding: var(--space-xs) var(--space-md);
+    border-radius: var(--radius-4px);
     background: var(--input-bg);
-    border: 1px solid var(--input-border);
+    border: var(--space-xxs) solid var(--input-border);
     cursor: pointer;
-    margin-top: 4px;
-    margin-left: 4px;
+    margin-top: var(--space-sm);
+    margin-left: var(--space-sm);
 }
 
 .continuity-hint {
@@ -376,15 +376,15 @@ body.focus-mode .focus-exit-btn {
 }
 
 .continuity-item {
-    border: 1px solid var(--input-border);
-    border-radius: 6px;
+    border: var(--space-xxs) solid var(--input-border);
+    border-radius: var(--radius-6px);
     padding: .5rem .75rem;
     font-size: .83rem;
 }
 
 .continuity-text {
     font-weight: 500;
-    margin-bottom: 2px;
+    margin-bottom: var(--space-xs);
 }
 
 .resume-label-row {
@@ -412,8 +412,8 @@ body.focus-mode .focus-exit-btn {
 }
 
 .inconsistency-issue {
-    border: 1px solid var(--input-border);
-    border-radius: 6px;
+    border: var(--space-xxs) solid var(--input-border);
+    border-radius: var(--radius-6px);
     padding: .55rem .75rem;
     font-size: .83rem;
 }
@@ -437,8 +437,8 @@ body.focus-mode .focus-exit-btn {
 }
 
 .glossary-modal-entry {
-    border: 1px solid var(--input-border);
-    border-radius: 6px;
+    border: var(--space-xxs) solid var(--input-border);
+    border-radius: var(--radius-6px);
     padding: .5rem .75rem;
     font-size: .83rem;
     cursor: pointer;
@@ -461,17 +461,17 @@ body.focus-mode .focus-exit-btn {
 .glossary-meta {
     font-size: .75rem;
     color: var(--text-muted);
-    margin-top: 2px;
+    margin-top: var(--space-xs);
 }
 
 .glossary-category {
     display: inline-block;
     font-size: .7rem;
-    padding: 1px 6px;
+    padding: var(--space-xxs) var(--space-sm-6);
     border-radius: 10px;
     background: var(--table-header-bg);
     color: var(--text-muted);
-    margin-right: 4px;
+    margin-right: var(--space-sm);
 }
 
 .glossary-table {
@@ -483,7 +483,7 @@ body.focus-mode .focus-exit-btn {
 .glossary-table th,
 .glossary-table td {
     padding: .4rem .6rem;
-    border-bottom: 1px solid var(--input-border);
+    border-bottom: var(--space-xxs) solid var(--input-border);
     text-align: left;
 }
 
@@ -496,9 +496,9 @@ body.focus-mode .focus-exit-btn {
 
 .glossary-chip {
     background: var(--table-header-bg);
-    border: 1px solid var(--input-border);
-    border-radius: 4px;
-    padding: 2px 8px;
+    border: var(--space-xxs) solid var(--input-border);
+    border-radius: var(--radius-4px);
+    padding: var(--space-xs) var(--space-md);
     font-size: .78rem;
     cursor: pointer;
     transition: border-color .15s;
@@ -524,7 +524,7 @@ body.focus-mode .focus-exit-btn {
 body.ui-pro .chapters-layout {
     display: grid;
     grid-template-columns: 30% 1fr;
-    gap: 20px;
+    gap: var(--space-lg-20);
     align-items: start;
 }
 
@@ -535,10 +535,10 @@ body.ui-pro .chapters-layout {
 body.ui-pro .chapters-preview-col {
     display: block;
     position: sticky;
-    top: 64px;
+    top: var(--space-lg-64);
     background: var(--card-bg);
-    border: 1px solid var(--input-border);
-    border-radius: var(--radius-md, 8px);
+    border: var(--space-xxs) solid var(--input-border);
+    border-radius: var(--radius-md, var(--space-md));
     min-height: 300px;
     overflow: hidden;
 }
@@ -548,8 +548,8 @@ body.ui-pro .chapters-preview-col {
     align-items: center;
     gap: 0;
     background: var(--card-bg);
-    border: 1px solid var(--input-border);
-    border-radius: var(--radius-md, 8px);
+    border: var(--space-xxs) solid var(--input-border);
+    border-radius: var(--radius-md, var(--space-md));
     margin-bottom: .5rem;
     cursor: pointer;
     transition: box-shadow 0.15s, border-color 0.15s;
@@ -559,24 +559,24 @@ body.ui-pro .chapters-preview-col {
 .chapter-list-item:hover,
 .chapter-list-item:focus {
     border-color: var(--button-primary-bg, #3f51b5);
-    box-shadow: 0 2px 8px rgba(0, 0, 0, .08);
+    box-shadow: 0 var(--space-xs) var(--space-md) rgba(0, 0, 0, .08);
     outline: none;
 }
 
 .chapter-list-item.is-active {
     border-color: var(--button-primary-bg, #3f51b5);
-    box-shadow: 0 0 0 2px rgba(63, 81, 181, .18);
+    box-shadow: 0 0 0 var(--space-xs) rgba(63, 81, 181, .18);
 }
 
 .chapter-list-sub {
-    padding-left: 12px;
+    padding-left: var(--space-md-12);
 }
 
 .chapter-list-sub-indent {
     width: 4px;
     align-self: stretch;
     flex-shrink: 0;
-    margin-left: 2px;
+    margin-left: var(--space-xs);
 }
 
 .chapter-list-body {
@@ -596,7 +596,7 @@ body.ui-pro .chapters-preview-col {
 .chapter-list-meta {
     font-size: .74rem;
     color: var(--text-muted, #888);
-    margin-top: 2px;
+    margin-top: var(--space-xs);
 }
 
 .chapter-list-actions {
@@ -628,7 +628,7 @@ body.ui-pro .chapters-preview-col {
     justify-content: space-between;
     gap: 1rem;
     padding: 1rem 1.25rem .75rem;
-    border-bottom: 1px solid var(--input-border);
+    border-bottom: var(--space-xxs) solid var(--input-border);
 }
 
 .chapters-preview-header h3 {
@@ -661,7 +661,7 @@ body.ui-pro .chapters-preview-col {
 }
 
 .chapters-preview-resume {
-    border-top: 1px solid var(--input-border);
+    border-top: var(--space-xxs) solid var(--input-border);
     padding: .75rem 1.25rem;
     background: var(--input-bg, #f9f9f9);
 }
@@ -696,8 +696,8 @@ body.ui-pro .chapters-preview-col {
     align-items: center;
     gap: .75rem;
     background: var(--card-bg);
-    border: 1px solid var(--input-border);
-    border-radius: 8px;
+    border: var(--space-xxs) solid var(--input-border);
+    border-radius: var(--radius-8px);
     padding: .65rem 1rem;
 }
 
@@ -722,7 +722,7 @@ body.ui-pro .chapters-preview-col {
 .version-words {
     font-size: .78rem;
     color: var(--text-muted);
-    margin-top: 1px;
+    margin-top: var(--space-xxs);
 }
 
 .version-actions {

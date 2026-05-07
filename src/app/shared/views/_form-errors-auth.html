@@ -1,0 +1,9 @@
+<check if="!empty(@errors)">
+    <div class="auth-alert error">
+        <ul>
+            <repeat group="@errors" value="@err">
+                <li>{{ @err }}</li>
+            </repeat>
+        </ul>
+    </div>
+</check>

@@ -62,7 +62,7 @@ class ShareManageController extends Controller
             return;
         }
 
-        $projectModel = new Project();
+        $projectModel = $this->projectModel();
         $projects = $projectModel->findAndCast(['user_id=?', $user['id']]) ?? [];
 
         $this->render('share/manage/form', [
@@ -106,7 +106,7 @@ class ShareManageController extends Controller
         $link               = $shareLink->cast();
         $link['project_ids'] = $shareLink->getProjectIds($id);
 
-        $projectModel = new Project();
+        $projectModel = $this->projectModel();
         $projects = $projectModel->findAndCast(['user_id=?', $user['id']]) ?? [];
 
         $this->render('share/manage/form', [
@@ -163,7 +163,7 @@ class ShareManageController extends Controller
      */
     private function filterOwnedProjects(array $ids, int $userId): array
     {
-        $projectModel = new Project();
+        $projectModel = $this->projectModel();
         $valid = [];
         foreach ($ids as $pid) {
             $pid = (int)$pid;

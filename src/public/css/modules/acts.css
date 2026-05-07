@@ -3,20 +3,20 @@
    ACTS
    ========================================== */
 .act-container {
-    border: 1px solid var(--border-light);
-    border-radius: 6px;
-    margin-bottom: 10px;
+    border: var(--space-xxs) solid var(--border-light);
+    border-radius: var(--radius-6px);
+    margin-bottom: var(--space-md-10);
     padding: 0;
     background: var(--card-bg);
 }
 
 .act-summary {
     /* list-style: none;*/
-    /* padding: 10px; */
+    /* padding: var(--space-md-10); */
     background: var(--table-row-bg);
-    border-radius: 4px;
+    border-radius: var(--radius-4px);
     position: relative;
-    padding-left: 10px;
+    padding-left: var(--space-md-10);
 }
 
 /* Hide default marker across browsers */
@@ -33,7 +33,7 @@
     /*content: "►";*/
     /* Or use a border-triangle */
     position: absolute;
-    left: 10px;
+    left: var(--space-md-10);
     top: 50%;
     transform: translateY(-50%);
     font-size: 0.8rem;
@@ -49,7 +49,7 @@ details[open]>.act-summary::before {
 details.act-chapters>summary {
     /*list-style: none;*/
     position: relative;
-    padding-left: 10px;
+    padding-left: var(--space-md-10);
 }
 
 details.act-chapters>summary::-webkit-details-marker {
@@ -80,7 +80,7 @@ details.act-chapters[open]>summary::before {
 .act-actions {
     float: right;
     display: flex;
-    gap: 5px;
+    gap: var(--space-sm-5);
     /*
     position: relative;
     top: -4px;
@@ -91,12 +91,12 @@ details.act-chapters[open]>summary::before {
     font-style: italic;
     color: var(--text-muted);
     margin: 0;
-    /*border-left: 3px solid var(--border-light);*/
-    padding: 5px;
+    /*border-left: var(--space-xs-3) solid var(--border-light);*/
+    padding: var(--space-sm-5);
 }
 
 .act-chapters {
-    margin: 5px;
+    margin: var(--space-sm-5);
     padding: 0;
 }
 
@@ -105,10 +105,10 @@ details.act-chapters[open]>summary::before {
     text-align: justify;
     font-style: italic;
     color: var(--text-muted);
-    margin-left: 10px;
-    border-left: 3px solid var(--border-color);
-    padding-left: 10px;
-    padding-right: 10px;
+    margin-left: var(--space-md-10);
+    border-left: var(--space-xs-3) solid var(--border-color);
+    padding-left: var(--space-md-10);
+    padding-right: var(--space-md-10);
     font-size: 0.9em;
 }
 
@@ -121,7 +121,7 @@ details.act-chapters[open]>summary::before {
 
 .collapse-toggle {
     cursor: pointer;
-    margin-right: 5px;
+    margin-right: var(--space-sm-5);
     user-select: none;
     font-size: 12px;
 }
@@ -134,7 +134,7 @@ details.act-chapters[open]>summary::before {
 body.ui-pro .acts-layout {
     display: grid;
     grid-template-columns: 30% 1fr;
-    gap: 20px;
+    gap: var(--space-lg-20);
     align-items: start;
 }
 
@@ -145,10 +145,10 @@ body.ui-pro .acts-layout {
 body.ui-pro .acts-preview-col {
     display: block;
     position: sticky;
-    top: 64px;
+    top: var(--space-lg-64);
     background: var(--card-bg);
-    border: 1px solid var(--input-border);
-    border-radius: var(--radius-md, 8px);
+    border: var(--space-xxs) solid var(--input-border);
+    border-radius: var(--radius-8px);
     min-height: 300px;
     overflow: hidden;
 }
@@ -158,8 +158,8 @@ body.ui-pro .acts-preview-col {
     align-items: center;
     gap: 0;
     background: var(--card-bg);
-    border: 1px solid var(--input-border);
-    border-radius: var(--radius-md, 8px);
+    border: var(--space-xxs) solid var(--input-border);
+    border-radius: var(--radius-8px);
     margin-bottom: .5rem;
     cursor: pointer;
     transition: box-shadow 0.15s, border-color 0.15s;
@@ -169,13 +169,13 @@ body.ui-pro .acts-preview-col {
 .act-list-item:hover,
 .act-list-item:focus {
     border-color: var(--button-primary-bg, #3f51b5);
-    box-shadow: 0 2px 8px rgba(0, 0, 0, .08);
+    box-shadow: 0 var(--space-xs) var(--space-md) rgba(0, 0, 0, .08);
     outline: none;
 }
 
 .act-list-item.is-active {
     border-color: var(--button-primary-bg, #3f51b5);
-    box-shadow: 0 0 0 2px rgba(63, 81, 181, .18);
+    box-shadow: 0 0 0 var(--space-xs) rgba(63, 81, 181, .18);
 }
 
 .act-list-body {
@@ -195,7 +195,7 @@ body.ui-pro .acts-preview-col {
 .act-list-meta {
     font-size: .74rem;
     color: var(--text-muted, #888);
-    margin-top: 2px;
+    margin-top: var(--space-xs);
 }
 
 .act-list-actions {
@@ -234,7 +234,7 @@ body.ui-pro .acts-preview-col {
     justify-content: space-between;
     gap: 1rem;
     padding: 1rem 1.25rem .75rem;
-    border-bottom: 1px solid var(--input-border);
+    border-bottom: var(--space-xxs) solid var(--input-border);
 }
 
 .acts-preview-header h3 {
@@ -250,7 +250,7 @@ body.ui-pro .acts-preview-col {
     padding: .75rem 1.25rem;
     font-size: .78rem;
     color: var(--text-muted, #888);
-    border-bottom: 1px solid var(--input-border);
+    border-bottom: var(--space-xxs) solid var(--input-border);
 }
 
 .acts-preview-body {
@@ -260,7 +260,7 @@ body.ui-pro .acts-preview-col {
 }
 
 .acts-preview-resume {
-    border-top: 1px solid var(--input-border);
+    border-top: var(--space-xxs) solid var(--input-border);
     padding: .75rem 1.25rem;
     background: var(--input-bg, #f9f9f9);
 }
@@ -311,8 +311,8 @@ body.ui-pro .acts-preview-col {
     flex-wrap: wrap;
     padding: .75rem 1rem;
     background: var(--card-bg);
-    border: 1px solid var(--input-border);
-    border-radius: 8px;
+    border: var(--space-xxs) solid var(--input-border);
+    border-radius: var(--radius-8px);
     margin-bottom: 1.25rem;
 }
 
@@ -320,7 +320,7 @@ body.ui-pro .acts-preview-col {
     display: flex;
     flex-direction: column;
     align-items: center;
-    gap: 2px;
+    gap: var(--space-xs);
     font-size: .78rem;
     color: var(--text-muted, #888);
 }
@@ -340,14 +340,14 @@ body.ui-pro .acts-preview-col {
 
 .timeline-act {
     background: var(--card-bg);
-    border: 1px solid var(--input-border);
-    border-radius: 10px;
+    border: var(--space-xxs) solid var(--input-border);
+    border-radius: var(--radius-10px);
     overflow: hidden;
 }
 
 .timeline-act.drag-over-act {
     border-color: var(--link-color, #3f51b5);
-    box-shadow: 0 0 0 2px rgba(63, 81, 181, .25);
+    box-shadow: 0 0 0 var(--space-xs) rgba(63, 81, 181, .25);
 }
 
 .timeline-act.dragging-act {
@@ -360,14 +360,14 @@ body.ui-pro .acts-preview-col {
     gap: .5rem;
     padding: .75rem 1rem;
     background: var(--table-header-bg, #f5f5f5);
-    border-bottom: 1px solid var(--input-border);
+    border-bottom: var(--space-xxs) solid var(--input-border);
 }
 
 .act-drag-handle {
     cursor: grab;
     color: var(--text-muted, #aaa);
     font-size: .85rem;
-    padding: 0 2px;
+    padding: 0 var(--space-xs);
 }
 
 .act-drag-handle:active {
@@ -394,8 +394,8 @@ body.ui-pro .acts-preview-col {
 
 .chapter-card {
     background: var(--body-bg, #f9f9f9);
-    border: 1px solid var(--input-border);
-    border-radius: 7px;
+    border: var(--space-xxs) solid var(--input-border);
+    border-radius: var(--radius-7px);
     padding: .5rem .75rem;
     display: flex;
     align-items: center;
@@ -414,7 +414,7 @@ body.ui-pro .acts-preview-col {
 
 .chapter-card.dragging {
     opacity: .45;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, .15);
+    box-shadow: 0 var(--space-sm) 12px rgba(0, 0, 0, .15);
 }
 
 .chapter-card-handle {
@@ -440,7 +440,7 @@ body.ui-pro .acts-preview-col {
 
 .chapter-card-actions {
     display: flex;
-    gap: 2px;
+    gap: var(--space-xs);
     flex-shrink: 0;
 }
 
@@ -465,13 +465,13 @@ body.ui-pro .acts-preview-col {
     right: 1.5rem;
     background: #1e293b;
     color: #fff;
-    border-radius: 8px;
+    border-radius: var(--radius-8px);
     padding: .65rem 1.1rem;
     font-size: .85rem;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, .25);
+    box-shadow: 0 var(--space-sm) 12px rgba(0, 0, 0, .25);
     z-index: 9999;
     opacity: 0;
-    transform: translateY(8px);
+    transform: translateY(var(--space-md));
     transition: opacity .25s, transform .25s;
     pointer-events: none;
 }
