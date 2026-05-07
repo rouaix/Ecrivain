@@ -1848,7 +1848,7 @@ body.ui-pro div.ms-hidden-cell {
 }
 
 body.ui-pro .ms-status-cell {
-    width: var(--space-lg-28);
+    width: 28px;
     padding: 0 var(--space-sm) 0 var(--space-md-10);
     text-align: center;
     vertical-align: middle;
@@ -2114,7 +2114,7 @@ body.ui-pro .section-group-heading {
 
 /* ── Colonne droite — stats ── */
 body.ui-pro .overview-stat-big {
-    font-size: var(--space-lg-26);
+    font-size: 26px;
     font-weight: 700;
     color: var(--text-main);
     line-height: 1;
