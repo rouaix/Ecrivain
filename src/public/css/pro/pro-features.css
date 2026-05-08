@@ -1138,6 +1138,59 @@ body.ui-pro .search-results {
     gap: var(--space-sm-6);
 }
 
+/* Filtres par type */
+body.ui-pro .search-filters {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: var(--space-sm-6);
+    margin-top: calc(var(--space-md) * -0.5);
+    margin-bottom: var(--space-md);
+}
+
+body.ui-pro .search-filter-pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    padding: 3px 10px;
+    border-radius: 20px;
+    font-size: 11px;
+    font-weight: 500;
+    border: 1px solid var(--border-color);
+    color: var(--text-muted);
+    background: transparent;
+    cursor: pointer;
+    transition: border-color 0.15s, color 0.15s, background 0.15s;
+    line-height: 1.6;
+}
+
+body.ui-pro .search-filter-pill:hover {
+    border-color: var(--accent-color, #5b6ecc);
+    color: var(--accent-color, #5b6ecc);
+}
+
+body.ui-pro .search-filter-pill.is-active {
+    background: var(--accent-color, #5b6ecc);
+    border-color: var(--accent-color, #5b6ecc);
+    color: #fff;
+}
+
+body.ui-pro .search-filter-dialogues {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    margin-left: var(--space-sm);
+    font-size: 11px;
+    color: var(--text-muted);
+    cursor: pointer;
+    user-select: none;
+}
+
+body.ui-pro .search-filter-dialogues input[type="checkbox"] {
+    accent-color: var(--accent-color, #5b6ecc);
+    cursor: pointer;
+}
+
 /* ============================================================
    LEXIQUE (GLOSSAIRE) PRO
    ============================================================ */
@@ -1887,6 +1940,17 @@ body.ui-pro .ms-actions-cell {
 
 body.ui-pro .ms-chapter-table tr:hover .ms-actions-cell {
     opacity: 1;
+}
+
+
+body.ui-pro .ms-chapter-resume {
+    font-size: 12px;
+    color: var(--text-muted);
+    padding: var(--space-md) var(--space-md-12);
+    border-bottom: var(--space-xxs) solid var(--input-border);
+    /*background: var(--body-bg);*/
+    line-height: 1.5;
+    text-align: justify;
 }
 
 /* Cercles de statut / done-toggle */
