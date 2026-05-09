@@ -260,23 +260,26 @@ $isHttps = (!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off')
 
 // Setting a specific domain like 'rouaix.com' would block www.rouaix.com
 
-session_set_cookie_params([
+$sessionLifetime = 24 * 60 * 60; // 1 day sliding window
+ini_set('session.gc_maxlifetime', $sessionLifetime);
 
-    'lifetime' => 0,
-
+$sessionCookieParams = [
+    'lifetime' => $sessionLifetime,
     'path' => '/',
-
-    'domain' => $sessionDomain, // Use configured domain (e.g. .rouaix.com)
-
-    'secure' => $isLocal ? false : $isHttps, // Secure in production HTTPS
-
+    'domain' => $sessionDomain,
+    'secure' => $isLocal ? false : $isHttps,
     'httponly' => true,
+    'samesite' => 'Lax',
+];
 
-    'samesite' => 'Lax', // Changed from Strict to Lax to allow normal navigation
-
-]);
+session_set_cookie_params($sessionCookieParams);
 
 session_start();
+
+// Sliding session: refresh the cookie expiry on every request
+setcookie(session_name(), session_id(), array_merge($sessionCookieParams, [
+    'expires' => time() + $sessionLifetime,
+]));
 
 // Unified error handler: JSON for API/AJAX routes, HTML for browser routes.
 $f3->set('ONERROR', function (Base $f3) {

@@ -121,6 +121,14 @@ var QuillTools = {
         if (!QuillTools.dictation.button) {
             QuillTools.dictation.init();
         }
+
+        // Blur after all DOMContentLoaded paste/focus calls so the editor
+        // does not hold focus on page load.
+        requestAnimationFrame(function () {
+            if (document.activeElement && document.activeElement !== document.body) {
+                document.activeElement.blur();
+            }
+        });
     },
 
     styleCustomButtons: function () {
