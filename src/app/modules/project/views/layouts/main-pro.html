@@ -30,7 +30,7 @@
     <script nonce="{{ @nonce }}" src="{{ @base }}/public/js/pro-ui.js?v=5"></script>
 
     <!-- CSS : base + Pro -->
-    <link rel="stylesheet" href="{{ @base }}/public/style.css?v=80">
+    <link rel="stylesheet" href="{{ @base }}/public/style.css?v=81">
     <link rel="stylesheet" href="{{ @base }}/public/css/pro/pro.css?v=54">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 
@@ -224,6 +224,11 @@
             <a href="{{ @base }}/templates" title="Templates"
                 class="pro-nav-item {{ substr(@PATH, 0, 10) == '/templates' || substr(@PATH, 0, 9) == '/template' ? 'is-active' : '' }}">
                 <i class="fas fa-layer-group" aria-hidden="true"></i> Templates
+            </a>
+
+            <a href="{{ @base }}/agents" title="Agents IA"
+                class="pro-nav-item {{ substr(@PATH, 0, 6) == '/agent' ? 'is-active' : '' }}">
+                <i class="fas fa-robot" aria-hidden="true"></i> Agents IA
             </a>
 
             <a href="{{ @base }}/collab/invitations" title="Collaborations"

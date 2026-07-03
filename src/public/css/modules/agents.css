@@ -1,0 +1,177 @@
+/* ── Agents IA ──────────────────────────────────────────────────────────────
+   Galerie de vignettes + formulaire d'édition d'agent.
+   Utilise les variables de thème (variables.css) pour rester cohérent. */
+
+.agents-intro {
+    color: var(--text-muted);
+    margin: 0 0 1.25rem;
+    max-width: 60ch;
+}
+
+/* ── Galerie ── */
+.agents-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+    gap: 1rem;
+}
+
+.agent-card {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+    padding: 1.1rem;
+    background: var(--bg-card, #fff);
+    border: 1px solid var(--border-color, #e5e7eb);
+    border-radius: 12px;
+    transition: box-shadow 0.15s ease, transform 0.15s ease;
+}
+
+.agent-card:hover {
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.08);
+    transform: translateY(-2px);
+}
+
+.agent-card.is-inactive {
+    opacity: 0.6;
+}
+
+.agent-card-head {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+}
+
+.agent-card-icon {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 44px;
+    height: 44px;
+    border-radius: 10px;
+    color: #fff;
+    font-size: 1.15rem;
+    flex-shrink: 0;
+}
+
+.agent-card-title {
+    min-width: 0;
+}
+
+.agent-card-name {
+    margin: 0;
+    font-size: 1.05rem;
+    line-height: 1.2;
+}
+
+.agent-card-role {
+    font-size: 0.8rem;
+    color: var(--text-muted);
+}
+
+.agent-card-badge {
+    margin-left: auto;
+    font-size: 0.7rem;
+    text-transform: uppercase;
+    padding: 0.1rem 0.4rem;
+    border-radius: 6px;
+    background: var(--border-color, #e5e7eb);
+    color: var(--text-muted);
+}
+
+.agent-card-desc {
+    margin: 0;
+    font-size: 0.9rem;
+    color: var(--text-main);
+    line-height: 1.45;
+    flex: 1;
+}
+
+.agent-card-meta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.9rem;
+    font-size: 0.8rem;
+    color: var(--text-muted);
+}
+
+.agent-card-actions {
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+    padding-top: 0.5rem;
+    border-top: 1px solid var(--border-color, #eee);
+}
+
+.agent-card-actions .button:first-child {
+    margin-right: auto;
+}
+
+/* ── Formulaire d'édition ── */
+.agent-form-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 1rem;
+}
+
+.agent-form-advanced {
+    border: 1px solid var(--border-color, #e5e7eb);
+    border-radius: 10px;
+    padding: 1rem 1.1rem;
+    margin: 1.25rem 0;
+}
+
+.agent-form-advanced legend {
+    padding: 0 0.4rem;
+    font-weight: 600;
+    color: var(--text-muted);
+}
+
+.form-group-checkbox {
+    display: flex;
+    align-items: flex-end;
+}
+
+.agent-form-buttons {
+    display: flex;
+    gap: 0.6rem;
+    margin-top: 1rem;
+}
+
+.form-hint {
+    display: block;
+    margin-top: 0.3rem;
+    font-size: 0.78rem;
+    color: var(--text-muted);
+}
+
+/* ── Bloc des actions (lecture seule pour l'instant) ── */
+.agent-actions-block {
+    margin-top: 2rem;
+    padding-top: 1.25rem;
+    border-top: 1px solid var(--border-color, #e5e7eb);
+}
+
+.agent-actions-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.88rem;
+}
+
+.agent-actions-table th,
+.agent-actions-table td {
+    text-align: left;
+    padding: 0.5rem 0.65rem;
+    border-bottom: 1px solid var(--border-color, #eee);
+}
+
+.agent-actions-table th {
+    color: var(--text-muted);
+    font-weight: 600;
+}
+
+.agent-actions-table code {
+    font-size: 0.82rem;
+    background: var(--border-color, #f1f1f1);
+    padding: 0.1rem 0.35rem;
+    border-radius: 4px;
+}
