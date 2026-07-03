@@ -234,7 +234,8 @@
     position: relative;
 }
 
-/* Aligne le trigger sur les inputs standards (bat la règle globale button:not(.ql-toolbar button)). */
+/* Aligne le trigger sur les inputs du layout bibliothèque (mêmes padding/bordure/rayon/police).
+   !important pour battre la règle globale button:not(.ql-toolbar button). */
 .icon-select-trigger {
     display: flex;
     align-items: center;
@@ -243,20 +244,20 @@
     width: 100%;
     height: auto !important;
     margin: 0 !important;
-    padding: var(--space-sm-6) !important;
-    border: var(--space-xxs) solid var(--input-border) !important;
-    border-radius: var(--radius-sm);
-    background: var(--input-bg) !important;
-    color: var(--input-text) !important;
-    font-family: inherit !important;
-    font-size: 1em !important;
+    padding: var(--space-md) var(--space-md-12) !important;
+    border: var(--space-xxs) solid var(--border-color) !important;
+    border-radius: var(--radius-md) !important;
+    background: #fff !important;
+    color: var(--text-main) !important;
+    font-family: var(--font-sans) !important;
+    font-size: 13px !important;
     line-height: normal !important;
     text-align: left;
     cursor: pointer;
 }
 
 .icon-select-trigger:hover {
-    background: var(--input-bg) !important;
+    background: #fff !important;
     border-color: var(--primary, #6366f1) !important;
 }
 
