@@ -6,6 +6,20 @@ class AiService extends Prefab
     private $apiKey;
     private $model;
 
+    /**
+     * Providers dont l'API est compatible OpenAI (chat/completions, Bearer).
+     * Ajouter une entrée ici suffit à activer un nouveau provider OpenAI-compatible.
+     */
+    private const OPENAI_COMPATIBLE = [
+        'openai'     => 'https://api.openai.com/v1/chat/completions',
+        'mistral'    => 'https://api.mistral.ai/v1/chat/completions',
+        'deepseek'   => 'https://api.deepseek.com/v1/chat/completions',
+        'openrouter' => 'https://openrouter.ai/api/v1/chat/completions',
+        'zai'        => 'https://api.z.ai/api/paas/v4/chat/completions',
+        'xai'        => 'https://api.x.ai/v1/chat/completions',
+        'groq'       => 'https://api.groq.com/openai/v1/chat/completions',
+    ];
+
     public function __construct(string $provider, string $apiKey, string $model)
     {
         $this->provider = strtolower($provider);
@@ -32,11 +46,11 @@ class AiService extends Prefab
                 return $this->generateGemini($systemPrompt, $userPrompt, $temperature, $maxTokens);
             case 'anthropic':
                 return $this->generateAnthropic($systemPrompt, $userPrompt, $temperature, $maxTokens);
-            case 'mistral':
-                return $this->generateOpenAI($systemPrompt, $userPrompt, $temperature, 'https://api.mistral.ai/v1/chat/completions', $maxTokens);
-            case 'openai':
             default:
-                return $this->generateOpenAI($systemPrompt, $userPrompt, $temperature, 'https://api.openai.com/v1/chat/completions', $maxTokens);
+                // Tous les providers OpenAI-compatibles (openai, mistral, deepseek,
+                // openrouter, zai, xai, groq…) partagent le même appel.
+                $url = self::OPENAI_COMPATIBLE[$this->provider] ?? self::OPENAI_COMPATIBLE['openai'];
+                return $this->generateOpenAI($systemPrompt, $userPrompt, $temperature, $url, $maxTokens);
         }
     }
 
@@ -64,10 +78,40 @@ class AiService extends Prefab
             if (isset($json['object']) && $json['object'] === 'error') {
                 return ['success' => false, 'error' => 'API Error: ' . ($json['message'] ?? json_encode($json))];
             }
-            $text = $json['choices'][0]['message']['content'] ?? null;
-            if (!$text) {
-                return ['success' => false, 'error' => 'Invalid Response: ' . json_encode(array_keys($json))];
+            $choice  = $json['choices'][0] ?? null;
+            $message = $choice['message'] ?? [];
+            $content = $message['content'] ?? '';
+
+            // Certains providers renvoient le contenu sous forme de tableau de « parts ».
+            if (is_array($content)) {
+                $parts = array_map(
+                    fn($p) => is_array($p) ? ($p['text'] ?? '') : (string) $p,
+                    $content
+                );
+                $content = implode('', $parts);
             }
+            $text = is_string($content) ? trim($content) : '';
+
+            // Repli : certains modèles de raisonnement ne remplissent que reasoning_content.
+            if ($text === '' && !empty($message['reasoning_content'])) {
+                $text = trim((string) $message['reasoning_content']);
+            }
+
+            if ($text === '') {
+                // Refus explicite du modèle.
+                if (!empty($message['refusal'])) {
+                    return ['success' => false, 'error' => 'Refus du modèle : ' . $message['refusal']];
+                }
+                $reason = $choice['finish_reason'] ?? '';
+                if ($reason === 'length') {
+                    return ['success' => false, 'error' => "Réponse vide : budget de tokens atteint (finish_reason=length). Augmentez « Max tokens » de l'action ; les modèles de raisonnement peuvent tout consommer en réflexion."];
+                }
+                if ($reason === 'content_filter') {
+                    return ['success' => false, 'error' => 'Réponse bloquée par le filtre de contenu du provider.'];
+                }
+                return ['success' => false, 'error' => 'Réponse vide du modèle (finish_reason=' . ($reason ?: 'inconnu') . ').'];
+            }
+
             return [
                 'success'           => true,
                 'text'              => $text,

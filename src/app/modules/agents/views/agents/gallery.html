@@ -1,0 +1,76 @@
+<div class="edit-header">
+
+    <h2><i class="fas fa-robot" aria-hidden="true"></i> Agents IA</h2>
+
+    <span>
+        <a href="{{ @base }}/agent/create" class="button" title="Nouvel agent">
+            <i class="fas fa-plus" aria-hidden="true"></i> Nouvel agent
+        </a>
+    </span>
+
+</div>
+
+<p class="agents-intro">
+    Chaque agent a un rôle et un « skill » propre. Ouvrez un agent pour choisir l'action à exécuter
+    et les données du projet à lui fournir.
+</p>
+
+<check if="{{ empty(@agents) }}">
+    <div class="panel-empty">
+        <p>Aucun agent pour l'instant.</p>
+        <a href="{{ @base }}/agent/create" class="button small">
+            <i class="fas fa-plus" aria-hidden="true"></i> Créer le premier agent
+        </a>
+    </div>
+</check>
+
+<div class="agents-grid">
+
+    <repeat group="{{ @agents }}" value="{{ @agent }}">
+
+        <article class="agent-card {{ @agent.is_active ? '' : 'is-inactive' }}">
+
+            <div class="agent-card-head">
+                <span class="agent-card-icon" style="background: {{ @agent.color | esc }};">
+                    <i class="fas fa-{{ @agent.icon | esc }}" aria-hidden="true"></i>
+                </span>
+                <div class="agent-card-title">
+                    <h3 class="agent-card-name">{{ @agent.name | esc }}</h3>
+                    <check if="{{ @agent.role }}">
+                        <span class="agent-card-role">{{ @agent.role | esc }}</span>
+                    </check>
+                </div>
+                <check if="{{ !@agent.is_active }}">
+                    <span class="agent-card-badge muted" title="Agent désactivé">off</span>
+                </check>
+            </div>
+
+            <p class="agent-card-desc">{{ @agent.description | esc }}</p>
+
+            <div class="agent-card-meta">
+                <span title="Nombre d'actions">
+                    <i class="fas fa-bolt" aria-hidden="true"></i> {{ @agent.action_count }} action{{ @agent.action_count > 1 ? 's' : '' }}
+                </span>
+                <check if="{{ @agent.provider }}">
+                    <span title="Provider dédié"><i class="fas fa-microchip" aria-hidden="true"></i> {{ @agent.provider | esc }}</span>
+                </check>
+            </div>
+
+            <div class="agent-card-actions">
+                <a class="button small" href="{{ @base }}/agent/{{ @agent.id }}/run" title="Utiliser cet agent">
+                    <i class="fas fa-play" aria-hidden="true"></i> Utiliser
+                </a>
+                <a class="button small secondary" href="{{ @base }}/agent/{{ @agent.id }}/edit" title="Modifier">
+                    <i class="fas fa-edit" aria-hidden="true"></i>
+                </a>
+                <a class="button small delete js-confirm" href="{{ @base }}/agent/{{ @agent.id }}/delete"
+                    data-confirm="Supprimer l'agent « {{ @agent.name | esc }} » et ses actions ?" title="Supprimer">
+                    <i class="fas fa-trash" aria-hidden="true"></i>
+                </a>
+            </div>
+
+        </article>
+
+    </repeat>
+
+</div>

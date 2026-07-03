@@ -35,6 +35,11 @@
                 <button type="button" class="ai-provider-tab" data-provider="gemini">Gemini</button>
                 <button type="button" class="ai-provider-tab" data-provider="anthropic">Anthropic</button>
                 <button type="button" class="ai-provider-tab" data-provider="mistral">Mistral</button>
+                <button type="button" class="ai-provider-tab" data-provider="deepseek">DeepSeek</button>
+                <button type="button" class="ai-provider-tab" data-provider="openrouter">OpenRouter</button>
+                <button type="button" class="ai-provider-tab" data-provider="zai">z.ai (GLM)</button>
+                <button type="button" class="ai-provider-tab" data-provider="xai">xAI (Grok)</button>
+                <button type="button" class="ai-provider-tab" data-provider="groq">Groq</button>
             </div>
 
             <div class="section-divider">Fournisseur et Modèle</div>
@@ -51,9 +56,17 @@
 
                     <option value="mistral" {{@config.active_provider=='mistral' ?'selected':''}}>Mistral AI</option>
 
-                    <option value="anthropic" {{@config.active_provider=='anthropic' ?'selected':''}}>Anthropic (Claude)
+                    <option value="anthropic" {{@config.active_provider=='anthropic' ?'selected':''}}>Anthropic (Claude)</option>
 
-                    </option>
+                    <option value="deepseek" {{@config.active_provider=='deepseek' ?'selected':''}}>DeepSeek</option>
+
+                    <option value="openrouter" {{@config.active_provider=='openrouter' ?'selected':''}}>OpenRouter</option>
+
+                    <option value="zai" {{@config.active_provider=='zai' ?'selected':''}}>z.ai (GLM)</option>
+
+                    <option value="xai" {{@config.active_provider=='xai' ?'selected':''}}>xAI (Grok)</option>
+
+                    <option value="groq" {{@config.active_provider=='groq' ?'selected':''}}>Groq</option>
 
                 </select>
 
@@ -73,11 +86,14 @@
 
                 <label for="model">Modèle</label>
 
-                <select id="model" name="model">
+                <input type="text" id="model" name="model" list="modelOptions" autocomplete="off"
+                    placeholder="Choisir ou saisir un identifiant de modèle">
 
-                    <!-- Populated by JS -->
+                <datalist id="modelOptions"><!-- Populated by JS --></datalist>
 
-                </select>
+                <small>Choisissez dans la liste ou saisissez librement un identifiant.
+                    Ex. OpenRouter (modèles gratuits) : <code>deepseek/deepseek-r1:free</code>,
+                    <code>meta-llama/llama-3.3-70b-instruct:free</code>.</small>
 
             </div>
 
@@ -91,15 +107,15 @@
 
                     const provider = document.getElementById('provider').value;
 
-                    const modelSelect = document.getElementById('model');
+                    const dataList = document.getElementById('modelOptions');
 
-                    modelSelect.innerHTML = '';
+                    const modelInput = document.getElementById('model');
+
+                    dataList.innerHTML = '';
 
                     const providerModels = models[provider] || [];
 
                     const providerConfig = providers[provider] || {};
-
-                    const currentModel = providerConfig.model || '';
 
                     providerModels.forEach(m => {
 
@@ -107,13 +123,13 @@
 
                         opt.value = m;
 
-                        opt.textContent = m;
-
-                        if (m === currentModel) opt.selected = true;
-
-                        modelSelect.appendChild(opt);
+                        dataList.appendChild(opt);
 
                     });
+
+                    // Valeur courante = modèle enregistré pour ce provider, sinon 1er suggéré (modifiable librement)
+
+                    modelInput.value = providerConfig.model || (providerModels[0] || '');
 
                     const apiKeyInput = document.getElementById('api_key');
 

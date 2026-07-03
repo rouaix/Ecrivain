@@ -1,0 +1,324 @@
+<div class="edit-header">
+
+    <h2>
+        <i class="fas fa-{{ (@agent.icon ? @agent.icon : 'robot') | esc }}" aria-hidden="true"></i>
+        {{ @agent.id ? 'Modifier l\'agent' : 'Nouvel agent' }}
+    </h2>
+
+    <span>
+        <a href="{{ @base }}/agents" class="button secondary" title="Retour aux agents">
+            <i class="fas fa-arrow-left" aria-hidden="true"></i>
+        </a>
+    </span>
+
+</div>
+
+<check if="{{ !empty(@errors) }}">
+    <div class="alert alert-error">
+        <ul>
+            <repeat group="{{ @errors }}" value="{{ @err }}"><li>{{ @err | esc }}</li></repeat>
+        </ul>
+    </div>
+</check>
+
+<form method="post"
+    action="{{ @base }}{{ @agent.id ? '/agent/'.@agent.id.'/edit' : '/agent/create' }}"
+    class="agent-form">
+
+    <input type="hidden" name="csrf_token" value="{{ @csrfToken }}">
+
+    <div class="agent-form-grid">
+
+        <div class="form-group">
+            <label for="name">Nom *</label>
+            <input type="text" id="name" name="name" value="{{ @agent.name | esc }}" required maxlength="120">
+        </div>
+
+        <div class="form-group">
+            <label for="role">Rôle</label>
+            <input type="text" id="role" name="role" value="{{ @agent.role | esc }}" maxlength="80"
+                placeholder="Écriture, Relecture, Correction…">
+        </div>
+
+        <div class="form-group">
+            <label>Icône</label>
+            <input type="hidden" id="iconValue" name="icon" value="{{ (@agent.icon ? @agent.icon : 'robot') | esc }}">
+            <div class="icon-select" id="iconSelect">
+                <button type="button" class="icon-select-trigger" id="iconTrigger" aria-haspopup="listbox" aria-expanded="false">
+                    <span class="icon-select-current">
+                        <i class="fas fa-fw fa-{{ (@agent.icon ? @agent.icon : 'robot') | esc }}" id="iconTriggerGlyph" aria-hidden="true"></i>
+                        <span id="iconTriggerLabel">{{ (@agent.icon ? @agent.icon : 'robot') | esc }}</span>
+                    </span>
+                    <i class="fas fa-chevron-down" aria-hidden="true"></i>
+                </button>
+                <div class="icon-select-panel" id="iconPanel" role="listbox" hidden>
+                    <input type="text" class="icon-select-search" id="iconSearch" placeholder="Filtrer une icône…" autocomplete="off">
+                    <div class="icon-select-options" id="iconOptions"></div>
+                </div>
+            </div>
+        </div>
+
+        <div class="form-group">
+            <label for="color">Couleur</label>
+            <input type="color" id="color" name="color" value="{{ (@agent.color ? @agent.color : '#6366f1') | esc }}">
+        </div>
+
+    </div>
+
+    <div class="form-group">
+        <label for="description">Description (affichée sur la vignette)</label>
+        <textarea id="description" name="description" rows="2" maxlength="400">{{ @agent.description | esc }}</textarea>
+    </div>
+
+    <div class="form-group">
+        <label for="system_prompt">Skill de l'agent (prompt système)</label>
+        <textarea id="system_prompt" name="system_prompt" rows="6"
+            placeholder="Décris qui est l'agent et comment il doit se comporter…">{{ @agent.system_prompt | esc }}</textarea>
+        <small class="form-hint">C'est l'instruction permanente de l'agent, envoyée à chaque exécution.</small>
+    </div>
+
+    <fieldset class="agent-form-advanced">
+        <legend>Modèle IA</legend>
+
+        <div class="agent-form-grid">
+
+            <div class="form-group">
+                <label for="provider">Provider</label>
+                <select id="provider" name="provider">
+                    <repeat group="{{ @providers }}" key="{{ @pkey }}" value="{{ @plabel }}">
+                        <option value="{{ @pkey | esc }}" {{ @agent.provider == @pkey ? 'selected' : '' }}>{{ @plabel | esc }}</option>
+                    </repeat>
+                </select>
+                <small class="form-hint">« Par défaut » = provider actif configuré dans vos réglages IA.</small>
+            </div>
+
+            <div class="form-group">
+                <label for="model">Modèle (optionnel)</label>
+                <input type="text" id="model" name="model" list="agentModelOptions" autocomplete="off"
+                    value="{{ @agent.model | esc }}" maxlength="60"
+                    placeholder="Hérite du modèle du provider">
+                <datalist id="agentModelOptions"></datalist>
+                <small class="form-hint">Laissez vide pour utiliser le modèle configuré du provider.
+                    Les suggestions dépendent du provider choisi ci-dessus.</small>
+            </div>
+
+            <div class="form-group">
+                <label for="temperature">Température ({{ @agent.temperature }})</label>
+                <input type="range" id="temperature" name="temperature" min="0" max="2" step="0.1"
+                    value="{{ @agent.temperature }}"
+                    oninput="document.getElementById('tempVal').textContent=this.value">
+                <small class="form-hint">Créativité : <span id="tempVal">{{ @agent.temperature }}</span></small>
+            </div>
+
+            <div class="form-group form-group-checkbox">
+                <label>
+                    <input type="checkbox" name="is_active" value="1" {{ @agent.is_active ? 'checked' : '' }}>
+                    Agent actif
+                </label>
+            </div>
+
+        </div>
+    </fieldset>
+
+    <div class="agent-form-buttons">
+        <button type="submit" class="button">
+            <i class="fas fa-save" aria-hidden="true"></i> Enregistrer
+        </button>
+        <a href="{{ @base }}/agents" class="button secondary">Annuler</a>
+    </div>
+
+</form>
+
+<check if="{{ @agent.id }}">
+    <section class="agent-actions-block">
+        <div class="agent-actions-head">
+            <h3><i class="fas fa-bolt" aria-hidden="true"></i> Actions de l'agent</h3>
+            <a href="{{ @base }}/agent/{{ @agent.id }}/run" class="button small">
+                <i class="fas fa-play" aria-hidden="true"></i> Utiliser cet agent
+            </a>
+        </div>
+
+        <check if="{{ empty(@actions) }}">
+            <p class="form-hint">Aucune action définie. Ajoutez-en une ci-dessous.</p>
+        </check>
+
+        <repeat group="{{ @actions }}" value="{{ @act }}">
+            <form method="post" action="{{ @base }}/agent/action/{{ @act.id }}/update" class="agent-action-row">
+                <input type="hidden" name="csrf_token" value="{{ @csrfToken }}">
+                <div class="agent-action-fields">
+                    <label>Libellé
+                        <input type="text" name="label" value="{{ @act.label | esc }}" required maxlength="120">
+                    </label>
+                    <label>Clé
+                        <input type="text" name="action_key" value="{{ @act.action_key | esc }}" maxlength="60">
+                    </label>
+                    <label>Résultat
+                        <select name="output_mode">
+                            <option value="display" {{ @act.output_mode == 'display' ? 'selected' : '' }}>Afficher</option>
+                            <option value="replace" {{ @act.output_mode == 'replace' ? 'selected' : '' }}>Remplacer la source</option>
+                            <option value="append" {{ @act.output_mode == 'append' ? 'selected' : '' }}>Ajouter à la source</option>
+                        </select>
+                    </label>
+                    <label>Max tokens
+                        <input type="number" name="max_tokens" value="{{ @act.max_tokens }}" min="50" max="32000" step="50">
+                    </label>
+                </div>
+                <label class="agent-action-instruction">Instruction
+                    <textarea name="instruction" rows="2">{{ @act.instruction | esc }}</textarea>
+                </label>
+                <div class="agent-action-buttons">
+                    <button type="submit" class="button small"><i class="fas fa-save" aria-hidden="true"></i> Enregistrer</button>
+                    <a class="button small delete js-confirm" href="{{ @base }}/agent/action/{{ @act.id }}/delete"
+                        data-confirm="Supprimer l'action « {{ @act.label | esc }} » ?" title="Supprimer">
+                        <i class="fas fa-trash" aria-hidden="true"></i>
+                    </a>
+                </div>
+            </form>
+        </repeat>
+
+        <!-- Ajout d'une action -->
+        <form method="post" action="{{ @base }}/agent/{{ @agent.id }}/action/add" class="agent-action-row agent-action-add">
+            <input type="hidden" name="csrf_token" value="{{ @csrfToken }}">
+            <h4><i class="fas fa-plus" aria-hidden="true"></i> Ajouter une action</h4>
+            <div class="agent-action-fields">
+                <label>Libellé
+                    <input type="text" name="label" placeholder="Corriger, Résumer…" required maxlength="120">
+                </label>
+                <label>Clé
+                    <input type="text" name="action_key" placeholder="correct" maxlength="60">
+                </label>
+                <label>Résultat
+                    <select name="output_mode">
+                        <option value="display">Afficher</option>
+                        <option value="replace">Remplacer la source</option>
+                        <option value="append">Ajouter à la source</option>
+                    </select>
+                </label>
+                <label>Max tokens
+                    <input type="number" name="max_tokens" value="800" min="50" max="32000" step="50">
+                </label>
+            </div>
+            <label class="agent-action-instruction">Instruction
+                <textarea name="instruction" rows="2" placeholder="Ce que l'agent doit faire avec les données…"></textarea>
+            </label>
+            <div class="agent-action-buttons">
+                <button type="submit" class="button small"><i class="fas fa-plus" aria-hidden="true"></i> Ajouter</button>
+            </div>
+        </form>
+    </section>
+</check>
+
+<script nonce="{{ @nonce }}">
+(function () {
+    var ICONS = [
+        { v: 'robot', l: 'Robot' }, { v: 'feather-pointed', l: 'Plume' },
+        { v: 'feather', l: 'Plume simple' }, { v: 'pen', l: 'Stylo' },
+        { v: 'pen-nib', l: 'Plume à encre' }, { v: 'pen-fancy', l: 'Stylo plume' },
+        { v: 'pen-clip', l: 'Stylo clip' }, { v: 'signature', l: 'Signature' },
+        { v: 'highlighter', l: 'Surligneur' }, { v: 'book', l: 'Livre' },
+        { v: 'book-open', l: 'Livre ouvert' }, { v: 'book-open-reader', l: 'Lecteur' },
+        { v: 'scroll', l: 'Parchemin' }, { v: 'file-lines', l: 'Document' },
+        { v: 'glasses', l: 'Lunettes' }, { v: 'spell-check', l: 'Correcteur' },
+        { v: 'magnifying-glass', l: 'Loupe' }, { v: 'list-check', l: 'Liste' },
+        { v: 'clipboard-check', l: 'Relecture' }, { v: 'user-pen', l: 'Éditeur' },
+        { v: 'brain', l: 'Cerveau' }, { v: 'lightbulb', l: 'Idée' },
+        { v: 'wand-magic-sparkles', l: 'Baguette magique' }, { v: 'hat-wizard', l: 'Magicien' },
+        { v: 'comment', l: 'Commentaire' }, { v: 'comments', l: 'Discussion' },
+        { v: 'quote-right', l: 'Citation' }, { v: 'masks-theater', l: 'Théâtre' },
+        { v: 'palette', l: 'Palette' }, { v: 'compass', l: 'Boussole' },
+        { v: 'graduation-cap', l: 'Érudit' }, { v: 'language', l: 'Langue' },
+        { v: 'keyboard', l: 'Clavier' }, { v: 'microphone', l: 'Micro' },
+        { v: 'bolt', l: 'Éclair' }, { v: 'star', l: 'Étoile' }
+    ];
+
+    var wrap = document.getElementById('iconSelect');
+    var input = document.getElementById('iconValue');
+    var trigger = document.getElementById('iconTrigger');
+    var glyph = document.getElementById('iconTriggerGlyph');
+    var label = document.getElementById('iconTriggerLabel');
+    var panel = document.getElementById('iconPanel');
+    var search = document.getElementById('iconSearch');
+    var optsBox = document.getElementById('iconOptions');
+    if (!wrap || !input || !trigger) return;
+
+    function friendly(v) {
+        var f = ICONS.filter(function (i) { return i.v === v; })[0];
+        return f ? f.l : v;
+    }
+
+    function render(filter) {
+        filter = (filter || '').toLowerCase();
+        optsBox.innerHTML = '';
+        ICONS.filter(function (i) {
+            return !filter || i.v.indexOf(filter) >= 0 || i.l.toLowerCase().indexOf(filter) >= 0;
+        }).forEach(function (i) {
+            var b = document.createElement('button');
+            b.type = 'button';
+            b.className = 'icon-select-option' + (i.v === input.value ? ' is-selected' : '');
+            b.innerHTML = '<i class="fas fa-fw fa-' + i.v + '" aria-hidden="true"></i>' +
+                '<span class="ico-l">' + i.l + '</span>' +
+                '<span class="ico-v">' + i.v + '</span>';
+            b.addEventListener('click', function () { select(i.v); });
+            optsBox.appendChild(b);
+        });
+        if (!optsBox.children.length) {
+            optsBox.innerHTML = '<p class="form-hint">Aucune icône. Vous pouvez laisser le nom saisi.</p>';
+        }
+    }
+
+    function select(v) {
+        input.value = v;
+        glyph.className = 'fas fa-fw fa-' + v;
+        label.textContent = friendly(v);
+        close();
+    }
+    function open() {
+        panel.hidden = false;
+        trigger.setAttribute('aria-expanded', 'true');
+        render('');
+        search.value = '';
+        search.focus();
+    }
+    function close() {
+        panel.hidden = true;
+        trigger.setAttribute('aria-expanded', 'false');
+    }
+
+    trigger.addEventListener('click', function () { panel.hidden ? open() : close(); });
+    search.addEventListener('input', function () { render(this.value); });
+    document.addEventListener('click', function (e) { if (!wrap.contains(e.target)) close(); });
+    document.addEventListener('keydown', function (e) { if (e.key === 'Escape') close(); });
+
+    label.textContent = friendly(input.value);
+})();
+</script>
+
+<script nonce="{{ @nonce }}">
+(function () {
+    var MODELS = {{ @modelsJson | raw }};
+    var prov = document.getElementById('provider');
+    var dl = document.getElementById('agentModelOptions');
+    if (!prov || !dl) return;
+
+    function fill() {
+        var p = prov.value, list;
+        if (p && MODELS[p]) {
+            list = MODELS[p];
+        } else {
+            // Provider par défaut : suggère l'union de tous les modèles connus.
+            list = [];
+            Object.keys(MODELS).forEach(function (k) { list = list.concat(MODELS[k] || []); });
+            list = list.filter(function (v, i) { return list.indexOf(v) === i; });
+        }
+        dl.innerHTML = '';
+        list.forEach(function (m) {
+            var o = document.createElement('option');
+            o.value = m;
+            dl.appendChild(o);
+        });
+    }
+
+    prov.addEventListener('change', fill);
+    fill();
+})();
+</script>
