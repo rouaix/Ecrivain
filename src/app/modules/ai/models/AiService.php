@@ -78,10 +78,40 @@ class AiService extends Prefab
             if (isset($json['object']) && $json['object'] === 'error') {
                 return ['success' => false, 'error' => 'API Error: ' . ($json['message'] ?? json_encode($json))];
             }
-            $text = $json['choices'][0]['message']['content'] ?? null;
-            if (!$text) {
-                return ['success' => false, 'error' => 'Invalid Response: ' . json_encode(array_keys($json))];
+            $choice  = $json['choices'][0] ?? null;
+            $message = $choice['message'] ?? [];
+            $content = $message['content'] ?? '';
+
+            // Certains providers renvoient le contenu sous forme de tableau de « parts ».
+            if (is_array($content)) {
+                $parts = array_map(
+                    fn($p) => is_array($p) ? ($p['text'] ?? '') : (string) $p,
+                    $content
+                );
+                $content = implode('', $parts);
             }
+            $text = is_string($content) ? trim($content) : '';
+
+            // Repli : certains modèles de raisonnement ne remplissent que reasoning_content.
+            if ($text === '' && !empty($message['reasoning_content'])) {
+                $text = trim((string) $message['reasoning_content']);
+            }
+
+            if ($text === '') {
+                // Refus explicite du modèle.
+                if (!empty($message['refusal'])) {
+                    return ['success' => false, 'error' => 'Refus du modèle : ' . $message['refusal']];
+                }
+                $reason = $choice['finish_reason'] ?? '';
+                if ($reason === 'length') {
+                    return ['success' => false, 'error' => "Réponse vide : budget de tokens atteint (finish_reason=length). Augmentez « Max tokens » de l'action ; les modèles de raisonnement peuvent tout consommer en réflexion."];
+                }
+                if ($reason === 'content_filter') {
+                    return ['success' => false, 'error' => 'Réponse bloquée par le filtre de contenu du provider.'];
+                }
+                return ['success' => false, 'error' => 'Réponse vide du modèle (finish_reason=' . ($reason ?: 'inconnu') . ').'];
+            }
+
             return [
                 'success'           => true,
                 'text'              => $text,
