@@ -13,14 +13,6 @@
 
 </div>
 
-<check if="{{ @flash_success }}">
-    <div class="alert alert-success">{{ @flash_success | esc }}</div>
-</check>
-
-<check if="{{ @flash_error }}">
-    <div class="alert alert-error">{{ @flash_error | esc }}</div>
-</check>
-
 <check if="{{ !empty(@errors) }}">
     <div class="alert alert-error">
         <ul>
