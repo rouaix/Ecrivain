@@ -229,6 +229,112 @@
     margin-top: 0.6rem;
 }
 
+/* ── Sélecteur d'icône (edit.html) ── */
+.icon-select {
+    position: relative;
+}
+
+.icon-select-trigger {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.5rem;
+    width: 100%;
+    padding: 0.5rem 0.7rem;
+    border: 1px solid var(--border-color, #d1d5db);
+    border-radius: 8px;
+    background: var(--bg-input, #fff);
+    color: var(--text-main);
+    cursor: pointer;
+    font: inherit;
+}
+
+.icon-select-trigger:hover {
+    border-color: var(--primary, #6366f1);
+}
+
+.icon-select-current {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.55rem;
+}
+
+.icon-select-current > i:first-child {
+    font-size: 1.05rem;
+    color: var(--primary, #6366f1);
+}
+
+.icon-select-panel {
+    position: absolute;
+    z-index: 30;
+    top: calc(100% + 4px);
+    left: 0;
+    right: 0;
+    background: var(--bg-card, #fff);
+    border: 1px solid var(--border-color, #d1d5db);
+    border-radius: 8px;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
+    padding: 0.5rem;
+}
+
+.icon-select-search {
+    width: 100%;
+    padding: 0.4rem 0.6rem;
+    margin-bottom: 0.5rem;
+    border: 1px solid var(--border-color, #d1d5db);
+    border-radius: 6px;
+    font: inherit;
+}
+
+.icon-select-options {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+    gap: 0.25rem;
+    max-height: 260px;
+    overflow-y: auto;
+}
+
+.icon-select-option {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.4rem 0.55rem;
+    border: 1px solid transparent;
+    border-radius: 6px;
+    background: transparent;
+    cursor: pointer;
+    font: inherit;
+    text-align: left;
+    color: var(--text-main);
+}
+
+.icon-select-option:hover {
+    background: var(--bg-hover, #f3f4f6);
+}
+
+.icon-select-option.is-selected {
+    border-color: var(--primary, #6366f1);
+    background: color-mix(in srgb, var(--primary, #6366f1) 10%, transparent);
+}
+
+.icon-select-option > i:first-child {
+    font-size: 1rem;
+    color: var(--primary, #6366f1);
+}
+
+.icon-select-option .ico-l {
+    flex: 1;
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.icon-select-option .ico-v {
+    font-size: 0.7rem;
+    color: var(--text-muted);
+}
+
 /* ── Page d'exécution (run.html) ── */
 .agent-run-icon {
     display: inline-flex;

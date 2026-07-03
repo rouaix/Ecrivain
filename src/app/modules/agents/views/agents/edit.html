@@ -41,9 +41,21 @@
         </div>
 
         <div class="form-group">
-            <label for="icon">Icône (nom Font Awesome, sans « fa- »)</label>
-            <input type="text" id="icon" name="icon" value="{{ @agent.icon | esc }}" maxlength="40"
-                placeholder="robot, feather-pointed, glasses…">
+            <label>Icône</label>
+            <input type="hidden" id="iconValue" name="icon" value="{{ (@agent.icon ? @agent.icon : 'robot') | esc }}">
+            <div class="icon-select" id="iconSelect">
+                <button type="button" class="icon-select-trigger" id="iconTrigger" aria-haspopup="listbox" aria-expanded="false">
+                    <span class="icon-select-current">
+                        <i class="fas fa-fw fa-{{ (@agent.icon ? @agent.icon : 'robot') | esc }}" id="iconTriggerGlyph" aria-hidden="true"></i>
+                        <span id="iconTriggerLabel">{{ (@agent.icon ? @agent.icon : 'robot') | esc }}</span>
+                    </span>
+                    <i class="fas fa-chevron-down" aria-hidden="true"></i>
+                </button>
+                <div class="icon-select-panel" id="iconPanel" role="listbox" hidden>
+                    <input type="text" class="icon-select-search" id="iconSearch" placeholder="Filtrer une icône…" autocomplete="off">
+                    <div class="icon-select-options" id="iconOptions"></div>
+                </div>
+            </div>
         </div>
 
         <div class="form-group">
@@ -191,3 +203,88 @@
         </form>
     </section>
 </check>
+
+<script nonce="{{ @nonce }}">
+(function () {
+    var ICONS = [
+        { v: 'robot', l: 'Robot' }, { v: 'feather-pointed', l: 'Plume' },
+        { v: 'feather', l: 'Plume simple' }, { v: 'pen', l: 'Stylo' },
+        { v: 'pen-nib', l: 'Plume à encre' }, { v: 'pen-fancy', l: 'Stylo plume' },
+        { v: 'pen-clip', l: 'Stylo clip' }, { v: 'signature', l: 'Signature' },
+        { v: 'highlighter', l: 'Surligneur' }, { v: 'book', l: 'Livre' },
+        { v: 'book-open', l: 'Livre ouvert' }, { v: 'book-open-reader', l: 'Lecteur' },
+        { v: 'scroll', l: 'Parchemin' }, { v: 'file-lines', l: 'Document' },
+        { v: 'glasses', l: 'Lunettes' }, { v: 'spell-check', l: 'Correcteur' },
+        { v: 'magnifying-glass', l: 'Loupe' }, { v: 'list-check', l: 'Liste' },
+        { v: 'clipboard-check', l: 'Relecture' }, { v: 'user-pen', l: 'Éditeur' },
+        { v: 'brain', l: 'Cerveau' }, { v: 'lightbulb', l: 'Idée' },
+        { v: 'wand-magic-sparkles', l: 'Baguette magique' }, { v: 'hat-wizard', l: 'Magicien' },
+        { v: 'comment', l: 'Commentaire' }, { v: 'comments', l: 'Discussion' },
+        { v: 'quote-right', l: 'Citation' }, { v: 'masks-theater', l: 'Théâtre' },
+        { v: 'palette', l: 'Palette' }, { v: 'compass', l: 'Boussole' },
+        { v: 'graduation-cap', l: 'Érudit' }, { v: 'language', l: 'Langue' },
+        { v: 'keyboard', l: 'Clavier' }, { v: 'microphone', l: 'Micro' },
+        { v: 'bolt', l: 'Éclair' }, { v: 'star', l: 'Étoile' }
+    ];
+
+    var wrap = document.getElementById('iconSelect');
+    var input = document.getElementById('iconValue');
+    var trigger = document.getElementById('iconTrigger');
+    var glyph = document.getElementById('iconTriggerGlyph');
+    var label = document.getElementById('iconTriggerLabel');
+    var panel = document.getElementById('iconPanel');
+    var search = document.getElementById('iconSearch');
+    var optsBox = document.getElementById('iconOptions');
+    if (!wrap || !input || !trigger) return;
+
+    function friendly(v) {
+        var f = ICONS.filter(function (i) { return i.v === v; })[0];
+        return f ? f.l : v;
+    }
+
+    function render(filter) {
+        filter = (filter || '').toLowerCase();
+        optsBox.innerHTML = '';
+        ICONS.filter(function (i) {
+            return !filter || i.v.indexOf(filter) >= 0 || i.l.toLowerCase().indexOf(filter) >= 0;
+        }).forEach(function (i) {
+            var b = document.createElement('button');
+            b.type = 'button';
+            b.className = 'icon-select-option' + (i.v === input.value ? ' is-selected' : '');
+            b.innerHTML = '<i class="fas fa-fw fa-' + i.v + '" aria-hidden="true"></i>' +
+                '<span class="ico-l">' + i.l + '</span>' +
+                '<span class="ico-v">' + i.v + '</span>';
+            b.addEventListener('click', function () { select(i.v); });
+            optsBox.appendChild(b);
+        });
+        if (!optsBox.children.length) {
+            optsBox.innerHTML = '<p class="form-hint">Aucune icône. Vous pouvez laisser le nom saisi.</p>';
+        }
+    }
+
+    function select(v) {
+        input.value = v;
+        glyph.className = 'fas fa-fw fa-' + v;
+        label.textContent = friendly(v);
+        close();
+    }
+    function open() {
+        panel.hidden = false;
+        trigger.setAttribute('aria-expanded', 'true');
+        render('');
+        search.value = '';
+        search.focus();
+    }
+    function close() {
+        panel.hidden = true;
+        trigger.setAttribute('aria-expanded', 'false');
+    }
+
+    trigger.addEventListener('click', function () { panel.hidden ? open() : close(); });
+    search.addEventListener('input', function () { render(this.value); });
+    document.addEventListener('click', function (e) { if (!wrap.contains(e.target)) close(); });
+    document.addEventListener('keydown', function (e) { if (e.key === 'Escape') close(); });
+
+    label.textContent = friendly(input.value);
+})();
+</script>
