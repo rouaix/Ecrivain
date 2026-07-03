@@ -138,8 +138,10 @@
                 }
                 var html = '';
                 items.forEach(function (it) {
-                    html += '<label class="agent-run-item"><input type="checkbox" value="' + it.id + '"> ' +
-                        escapeHtml(it.title) + '</label>';
+                    var cls = 'agent-run-item' + (it.sub ? ' agent-run-item--sub' : '');
+                    var prefix = it.sub ? '↳ ' : '';
+                    html += '<label class="' + cls + '"><input type="checkbox" value="' + it.id + '"> ' +
+                        prefix + escapeHtml(it.title) + '</label>';
                 });
                 elItems.innerHTML = html;
                 updateCount();

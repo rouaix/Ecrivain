@@ -397,6 +397,11 @@
     cursor: pointer;
 }
 
+.agent-run-item--sub {
+    padding-left: 1.4rem;
+    color: var(--text-muted);
+}
+
 .agent-run-result {
     padding: 1.1rem;
     border: 1px solid var(--border-color, #e5e7eb);

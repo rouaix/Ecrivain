@@ -223,8 +223,12 @@ class AgentRunController extends AiBaseController
     {
         switch ($type) {
             case 'chapter':
-                $rows = $this->db->exec('SELECT id, title FROM chapters WHERE project_id=? ORDER BY order_index ASC, id ASC', [$projectId]);
-                break;
+                // Liste hiérarchique : chaque chapitre suivi de ses sous-chapitres (indentés).
+                $rows = $this->db->exec(
+                    'SELECT id, title, parent_id FROM chapters WHERE project_id=? ORDER BY order_index ASC, id ASC',
+                    [$projectId]
+                );
+                return $this->buildChapterHierarchy($rows);
             case 'act':
                 $rows = $this->db->exec('SELECT id, title FROM acts WHERE project_id=? ORDER BY order_index ASC, id ASC', [$projectId]);
                 break;
@@ -255,6 +259,49 @@ class AgentRunController extends AiBaseController
         }
 
         return array_map(fn($r) => ['id' => (int) $r['id'], 'title' => (string) ($r['title'] ?: '(sans titre)')], $rows);
+    }
+
+    /**
+     * Ordonne les chapitres en hiérarchie : chaque chapitre de 1er niveau suivi de ses
+     * sous-chapitres. Retourne [{id, title, sub}] (sub=true pour un sous-chapitre).
+     */
+    private function buildChapterHierarchy(array $rows): array
+    {
+        $children = [];
+        $tops     = [];
+        foreach ($rows as $r) {
+            $pid = (int) ($r['parent_id'] ?? 0);
+            if ($pid > 0) {
+                $children[$pid][] = $r;
+            } else {
+                $tops[] = $r;
+            }
+        }
+
+        $mk = fn($r, $sub) => [
+            'id'    => (int) $r['id'],
+            'title' => (string) ($r['title'] ?: '(sans titre)'),
+            'sub'   => $sub,
+        ];
+
+        $out    = [];
+        $placed = [];
+        foreach ($tops as $t) {
+            $out[] = $mk($t, false);
+            $placed[(int) $t['id']] = true;
+            foreach ($children[(int) $t['id']] ?? [] as $c) {
+                $out[] = $mk($c, true);
+                $placed[(int) $c['id']] = true;
+            }
+        }
+        // Sous-chapitres dont le parent n'est pas dans ce projet : ajoutés à la fin.
+        foreach ($rows as $r) {
+            if (empty($placed[(int) $r['id']])) {
+                $out[] = $mk($r, (int) ($r['parent_id'] ?? 0) > 0);
+            }
+        }
+
+        return $out;
     }
 
     /** Construit le texte de contexte à partir des données sélectionnées (limité en taille). */
