@@ -147,7 +147,7 @@ class AgentActionController extends Controller
             $mode = 'display';
         }
         $maxTokens = (int) ($_POST['max_tokens'] ?? 800);
-        $maxTokens = max(50, min(4000, $maxTokens));
+        $maxTokens = max(50, min(32000, $maxTokens));
 
         return [
             'label'       => trim($_POST['label'] ?? ''),
