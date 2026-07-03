@@ -234,23 +234,30 @@
     position: relative;
 }
 
+/* Aligne le trigger sur les inputs standards (bat la règle globale button:not(.ql-toolbar button)). */
 .icon-select-trigger {
     display: flex;
     align-items: center;
     justify-content: space-between;
     gap: 0.5rem;
     width: 100%;
-    padding: 0.5rem 0.7rem;
-    border: 1px solid var(--border-color, #d1d5db);
-    border-radius: 8px;
-    background: var(--bg-input, #fff);
-    color: var(--text-main);
+    height: auto !important;
+    margin: 0 !important;
+    padding: var(--space-sm-6) !important;
+    border: var(--space-xxs) solid var(--input-border) !important;
+    border-radius: var(--radius-sm);
+    background: var(--input-bg) !important;
+    color: var(--input-text) !important;
+    font-family: inherit !important;
+    font-size: 1em !important;
+    line-height: normal !important;
+    text-align: left;
     cursor: pointer;
-    font: inherit;
 }
 
 .icon-select-trigger:hover {
-    border-color: var(--primary, #6366f1);
+    background: var(--input-bg) !important;
+    border-color: var(--primary, #6366f1) !important;
 }
 
 .icon-select-current {
@@ -260,7 +267,7 @@
 }
 
 .icon-select-current > i:first-child {
-    font-size: 1.05rem;
+    font-size: 1em;
     color: var(--primary, #6366f1);
 }
 
