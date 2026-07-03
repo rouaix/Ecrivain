@@ -57,10 +57,9 @@
             </div>
 
             <div class="agent-card-actions">
-                <!-- L'exécution sera branchée aux étapes 5→7 -->
-                <button type="button" class="button small" disabled title="Exécution disponible à l'étape suivante">
+                <a class="button small" href="{{ @base }}/agent/{{ @agent.id }}/run" title="Utiliser cet agent">
                     <i class="fas fa-play" aria-hidden="true"></i> Utiliser
-                </button>
+                </a>
                 <a class="button small secondary" href="{{ @base }}/agent/{{ @agent.id }}/edit" title="Modifier">
                     <i class="fas fa-edit" aria-hidden="true"></i>
                 </a>

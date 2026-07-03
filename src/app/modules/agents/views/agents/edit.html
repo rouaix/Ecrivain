@@ -17,6 +17,10 @@
     <div class="alert alert-success">{{ @flash_success | esc }}</div>
 </check>
 
+<check if="{{ @flash_error }}">
+    <div class="alert alert-error">{{ @flash_error | esc }}</div>
+</check>
+
 <check if="{{ !empty(@errors) }}">
     <div class="alert alert-error">
         <ul>
@@ -119,33 +123,79 @@
 
 <check if="{{ @agent.id }}">
     <section class="agent-actions-block">
-        <h3><i class="fas fa-bolt" aria-hidden="true"></i> Actions de l'agent</h3>
+        <div class="agent-actions-head">
+            <h3><i class="fas fa-bolt" aria-hidden="true"></i> Actions de l'agent</h3>
+            <a href="{{ @base }}/agent/{{ @agent.id }}/run" class="button small">
+                <i class="fas fa-play" aria-hidden="true"></i> Utiliser cet agent
+            </a>
+        </div>
 
         <check if="{{ empty(@actions) }}">
-            <p class="form-hint">Aucune action définie pour l'instant.</p>
+            <p class="form-hint">Aucune action définie. Ajoutez-en une ci-dessous.</p>
         </check>
 
-        <check if="{{ !empty(@actions) }}">
-            <table class="agent-actions-table">
-                <thead>
-                    <tr><th>Action</th><th>Clé</th><th>Résultat</th><th>Max tokens</th></tr>
-                </thead>
-                <tbody>
-                    <repeat group="{{ @actions }}" value="{{ @act }}">
-                        <tr>
-                            <td>{{ @act.label | esc }}</td>
-                            <td><code>{{ @act.action_key | esc }}</code></td>
-                            <td>{{ @act.output_mode | esc }}</td>
-                            <td>{{ @act.max_tokens }}</td>
-                        </tr>
-                    </repeat>
-                </tbody>
-            </table>
-        </check>
+        <repeat group="{{ @actions }}" value="{{ @act }}">
+            <form method="post" action="{{ @base }}/agent/action/{{ @act.id }}/update" class="agent-action-row">
+                <input type="hidden" name="csrf_token" value="{{ @csrfToken }}">
+                <div class="agent-action-fields">
+                    <label>Libellé
+                        <input type="text" name="label" value="{{ @act.label | esc }}" required maxlength="120">
+                    </label>
+                    <label>Clé
+                        <input type="text" name="action_key" value="{{ @act.action_key | esc }}" maxlength="60">
+                    </label>
+                    <label>Résultat
+                        <select name="output_mode">
+                            <option value="display" {{ @act.output_mode == 'display' ? 'selected' : '' }}>Afficher</option>
+                            <option value="replace" {{ @act.output_mode == 'replace' ? 'selected' : '' }}>Remplacer la source</option>
+                            <option value="append" {{ @act.output_mode == 'append' ? 'selected' : '' }}>Ajouter à la source</option>
+                        </select>
+                    </label>
+                    <label>Max tokens
+                        <input type="number" name="max_tokens" value="{{ @act.max_tokens }}" min="50" max="4000" step="50">
+                    </label>
+                </div>
+                <label class="agent-action-instruction">Instruction
+                    <textarea name="instruction" rows="2">{{ @act.instruction | esc }}</textarea>
+                </label>
+                <div class="agent-action-buttons">
+                    <button type="submit" class="button small"><i class="fas fa-save" aria-hidden="true"></i> Enregistrer</button>
+                    <a class="button small delete js-confirm" href="{{ @base }}/agent/action/{{ @act.id }}/delete"
+                        data-confirm="Supprimer l'action « {{ @act.label | esc }} » ?" title="Supprimer">
+                        <i class="fas fa-trash" aria-hidden="true"></i>
+                    </a>
+                </div>
+            </form>
+        </repeat>
 
-        <p class="form-hint">
-            <i class="fas fa-info-circle" aria-hidden="true"></i>
-            La gestion complète des actions (ajout / édition) et l'exécution seront ajoutées à l'étape suivante.
-        </p>
+        <!-- Ajout d'une action -->
+        <form method="post" action="{{ @base }}/agent/{{ @agent.id }}/action/add" class="agent-action-row agent-action-add">
+            <input type="hidden" name="csrf_token" value="{{ @csrfToken }}">
+            <h4><i class="fas fa-plus" aria-hidden="true"></i> Ajouter une action</h4>
+            <div class="agent-action-fields">
+                <label>Libellé
+                    <input type="text" name="label" placeholder="Corriger, Résumer…" required maxlength="120">
+                </label>
+                <label>Clé
+                    <input type="text" name="action_key" placeholder="correct" maxlength="60">
+                </label>
+                <label>Résultat
+                    <select name="output_mode">
+                        <option value="display">Afficher</option>
+                        <option value="replace">Remplacer la source</option>
+                        <option value="append">Ajouter à la source</option>
+                    </select>
+                </label>
+                <label>Max tokens
+                    <input type="number" name="max_tokens" value="800" min="50" max="4000" step="50">
+                </label>
+            </div>
+            <label class="agent-action-instruction">Instruction
+                <textarea name="instruction" rows="2" placeholder="Ce que l'agent doit faire avec les données…"></textarea>
+            </label>
+            <div class="agent-action-buttons">
+                <button type="submit" class="button small"><i class="fas fa-plus" aria-hidden="true"></i> Ajouter</button>
+            </div>
+        </form>
     </section>
 </check>

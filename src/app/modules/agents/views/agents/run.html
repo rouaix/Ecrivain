@@ -1,0 +1,221 @@
+<div class="edit-header">
+    <h2>
+        <span class="agent-run-icon" style="background: {{ @agent.color | esc }};">
+            <i class="fas fa-{{ (@agent.icon ? @agent.icon : 'robot') | esc }}" aria-hidden="true"></i>
+        </span>
+        {{ @agent.name | esc }}
+        <check if="{{ @agent.role }}"><small class="agent-run-role">{{ @agent.role | esc }}</small></check>
+    </h2>
+    <span>
+        <a href="{{ @base }}/agent/{{ @agent.id }}/history" class="button secondary" title="Historique">
+            <i class="fas fa-clock-rotate-left" aria-hidden="true"></i>
+        </a>
+        <a href="{{ @base }}/agent/{{ @agent.id }}/edit" class="button secondary" title="Configurer">
+            <i class="fas fa-cog" aria-hidden="true"></i>
+        </a>
+        <a href="{{ @base }}/agents" class="button secondary" title="Retour aux agents">
+            <i class="fas fa-arrow-left" aria-hidden="true"></i>
+        </a>
+    </span>
+</div>
+
+<check if="{{ empty(@actions) }}">
+    <div class="alert alert-error">
+        Cet agent n'a aucune action. <a href="{{ @base }}/agent/{{ @agent.id }}/edit">Ajoutez-en une</a> avant de l'utiliser.
+    </div>
+</check>
+
+<div class="agent-run-layout">
+
+    <!-- ── Configuration ── -->
+    <div class="agent-run-config">
+
+        <div class="form-group">
+            <label for="runAction">Action</label>
+            <select id="runAction">
+                <repeat group="{{ @actions }}" value="{{ @act }}">
+                    <option value="{{ @act.id }}" data-output="{{ @act.output_mode | esc }}">{{ @act.label | esc }}</option>
+                </repeat>
+            </select>
+            <small class="form-hint" id="runActionHint"></small>
+        </div>
+
+        <div class="form-group">
+            <label for="runProject">Projet</label>
+            <select id="runProject">
+                <option value="">— Choisir un projet —</option>
+                <repeat group="{{ @projects }}" value="{{ @proj }}">
+                    <option value="{{ @proj.id }}">{{ @proj.title | esc }}</option>
+                </repeat>
+            </select>
+        </div>
+
+        <div class="form-group">
+            <label for="runType">Type de données</label>
+            <select id="runType">
+                <repeat group="{{ @types }}" key="{{ @tkey }}" value="{{ @tlabel }}">
+                    <option value="{{ @tkey | esc }}">{{ @tlabel | esc }}</option>
+                </repeat>
+            </select>
+        </div>
+
+        <div class="form-group">
+            <label>Données <small class="form-hint" id="runItemsCount"></small></label>
+            <div id="runItems" class="agent-run-items">
+                <p class="form-hint">Choisissez un projet pour lister les données.</p>
+            </div>
+        </div>
+
+        <div class="form-group">
+            <label for="runExtra">Consigne complémentaire (optionnel)</label>
+            <textarea id="runExtra" rows="2" placeholder="Ex. : concentre-toi sur les dialogues…"></textarea>
+        </div>
+
+        <button type="button" id="runExecute" class="button">
+            <i class="fas fa-play" aria-hidden="true"></i> Exécuter
+        </button>
+    </div>
+
+    <!-- ── Résultat ── -->
+    <div class="agent-run-result">
+        <div class="agent-run-result-head">
+            <h3>Résultat</h3>
+            <button type="button" id="runCopy" class="button small secondary" hidden>
+                <i class="fas fa-copy" aria-hidden="true"></i> Copier
+            </button>
+        </div>
+        <div id="runStatus" class="agent-run-status">Le résultat s'affichera ici.</div>
+        <div id="runOutput" class="agent-run-output" hidden></div>
+    </div>
+
+</div>
+
+<script nonce="{{ @nonce }}">
+(function () {
+    var BASE = '{{ @base }}';
+    var AGENT_ID = {{ @agent.id }};
+
+    var elAction = document.getElementById('runAction');
+    var elHint = document.getElementById('runActionHint');
+    var elProject = document.getElementById('runProject');
+    var elType = document.getElementById('runType');
+    var elItems = document.getElementById('runItems');
+    var elItemsCount = document.getElementById('runItemsCount');
+    var elExtra = document.getElementById('runExtra');
+    var elExec = document.getElementById('runExecute');
+    var elStatus = document.getElementById('runStatus');
+    var elOutput = document.getElementById('runOutput');
+    var elCopy = document.getElementById('runCopy');
+
+    var OUTPUT_LABELS = {
+        display: 'Le résultat sera seulement affiché.',
+        replace: 'Le résultat remplacera le contenu de la source (une seule source).',
+        append: 'Le résultat sera ajouté à la fin de la source (une seule source).'
+    };
+
+    function refreshHint() {
+        var opt = elAction.options[elAction.selectedIndex];
+        elHint.textContent = opt ? (OUTPUT_LABELS[opt.dataset.output] || '') : '';
+    }
+    if (elAction) { elAction.addEventListener('change', refreshHint); refreshHint(); }
+
+    function loadItems() {
+        var pid = elProject.value;
+        var type = elType.value;
+        if (!pid) {
+            elItems.innerHTML = '<p class="form-hint">Choisissez un projet pour lister les données.</p>';
+            elItemsCount.textContent = '';
+            return;
+        }
+        elItems.innerHTML = '<p class="form-hint">Chargement…</p>';
+        ApiClient.get(BASE + '/agent/run-items', { project_id: pid, type: type })
+            .then(function (data) {
+                var items = (data && data.items) || [];
+                if (!items.length) {
+                    elItems.innerHTML = '<p class="form-hint">Aucune donnée de ce type dans ce projet.</p>';
+                    elItemsCount.textContent = '';
+                    return;
+                }
+                var html = '';
+                items.forEach(function (it) {
+                    html += '<label class="agent-run-item"><input type="checkbox" value="' + it.id + '"> ' +
+                        escapeHtml(it.title) + '</label>';
+                });
+                elItems.innerHTML = html;
+                updateCount();
+                elItems.querySelectorAll('input[type=checkbox]').forEach(function (cb) {
+                    cb.addEventListener('change', updateCount);
+                });
+            })
+            .catch(function () {
+                elItems.innerHTML = '<p class="form-hint">Erreur de chargement.</p>';
+            });
+    }
+
+    function selectedIds() {
+        return Array.prototype.slice.call(elItems.querySelectorAll('input[type=checkbox]:checked'))
+            .map(function (cb) { return parseInt(cb.value, 10); });
+    }
+    function updateCount() {
+        var n = selectedIds().length;
+        elItemsCount.textContent = n ? '(' + n + ' sélectionné' + (n > 1 ? 's' : '') + ')' : '';
+    }
+
+    function escapeHtml(s) {
+        var d = document.createElement('div'); d.textContent = s || ''; return d.innerHTML;
+    }
+
+    if (elProject) elProject.addEventListener('change', loadItems);
+    if (elType) elType.addEventListener('change', loadItems);
+
+    if (elExec) elExec.addEventListener('click', function () {
+        var actionId = parseInt(elAction.value, 10);
+        if (!actionId) { AppUI.notify('Aucune action disponible.', 'error'); return; }
+        var ids = selectedIds();
+        var extra = elExtra.value.trim();
+        if (!ids.length && !extra) {
+            AppUI.notify('Sélectionnez des données ou saisissez une consigne.', 'error');
+            return;
+        }
+
+        elExec.disabled = true;
+        elStatus.hidden = false;
+        elStatus.textContent = 'Génération en cours…';
+        elOutput.hidden = true;
+        elCopy.hidden = true;
+
+        ApiClient.post(BASE + '/agent/run', {
+            agent_id: AGENT_ID,
+            action_id: actionId,
+            project_id: parseInt(elProject.value, 10) || 0,
+            type: elType.value,
+            ids: ids,
+            extra: extra
+        }).then(function (res) {
+            elExec.disabled = false;
+            if (!res || !res.success) {
+                elStatus.hidden = false;
+                elStatus.textContent = (res && res.error) || 'Erreur lors de la génération.';
+                return;
+            }
+            elStatus.hidden = true;
+            elOutput.hidden = false;
+            elOutput.textContent = res.text || '';
+            elCopy.hidden = false;
+            if (res.message) {
+                AppUI.notify(res.message, res.applied ? 'success' : 'info');
+            }
+        }).catch(function () {
+            elExec.disabled = false;
+            elStatus.hidden = false;
+            elStatus.textContent = 'Erreur réseau.';
+        });
+    });
+
+    if (elCopy) elCopy.addEventListener('click', function () {
+        navigator.clipboard.writeText(elOutput.textContent || '').then(function () {
+            AppUI.notify('Copié.', 'success');
+        });
+    });
+})();
+</script>
