@@ -9,7 +9,18 @@
 class AgentController extends Controller
 {
     /** Providers proposés dans le formulaire (clé vide = hérite du provider actif de l'utilisateur). */
-    private const PROVIDERS = ['' => 'Provider par défaut', 'openai' => 'OpenAI', 'gemini' => 'Gemini', 'anthropic' => 'Anthropic', 'mistral' => 'Mistral'];
+    private const PROVIDERS = [
+        ''           => 'Provider par défaut',
+        'openai'     => 'OpenAI',
+        'gemini'     => 'Gemini',
+        'anthropic'  => 'Anthropic',
+        'mistral'    => 'Mistral',
+        'deepseek'   => 'DeepSeek',
+        'openrouter' => 'OpenRouter',
+        'zai'        => 'z.ai (GLM)',
+        'xai'        => 'xAI (Grok)',
+        'groq'       => 'Groq',
+    ];
 
     public function beforeRoute(Base $f3)
     {

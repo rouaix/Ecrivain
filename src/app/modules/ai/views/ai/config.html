@@ -35,6 +35,11 @@
                 <button type="button" class="ai-provider-tab" data-provider="gemini">Gemini</button>
                 <button type="button" class="ai-provider-tab" data-provider="anthropic">Anthropic</button>
                 <button type="button" class="ai-provider-tab" data-provider="mistral">Mistral</button>
+                <button type="button" class="ai-provider-tab" data-provider="deepseek">DeepSeek</button>
+                <button type="button" class="ai-provider-tab" data-provider="openrouter">OpenRouter</button>
+                <button type="button" class="ai-provider-tab" data-provider="zai">z.ai (GLM)</button>
+                <button type="button" class="ai-provider-tab" data-provider="xai">xAI (Grok)</button>
+                <button type="button" class="ai-provider-tab" data-provider="groq">Groq</button>
             </div>
 
             <div class="section-divider">Fournisseur et Modèle</div>
@@ -51,9 +56,17 @@
 
                     <option value="mistral" {{@config.active_provider=='mistral' ?'selected':''}}>Mistral AI</option>
 
-                    <option value="anthropic" {{@config.active_provider=='anthropic' ?'selected':''}}>Anthropic (Claude)
+                    <option value="anthropic" {{@config.active_provider=='anthropic' ?'selected':''}}>Anthropic (Claude)</option>
 
-                    </option>
+                    <option value="deepseek" {{@config.active_provider=='deepseek' ?'selected':''}}>DeepSeek</option>
+
+                    <option value="openrouter" {{@config.active_provider=='openrouter' ?'selected':''}}>OpenRouter</option>
+
+                    <option value="zai" {{@config.active_provider=='zai' ?'selected':''}}>z.ai (GLM)</option>
+
+                    <option value="xai" {{@config.active_provider=='xai' ?'selected':''}}>xAI (Grok)</option>
+
+                    <option value="groq" {{@config.active_provider=='groq' ?'selected':''}}>Groq</option>
 
                 </select>
 

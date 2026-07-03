@@ -6,6 +6,20 @@ class AiService extends Prefab
     private $apiKey;
     private $model;
 
+    /**
+     * Providers dont l'API est compatible OpenAI (chat/completions, Bearer).
+     * Ajouter une entrée ici suffit à activer un nouveau provider OpenAI-compatible.
+     */
+    private const OPENAI_COMPATIBLE = [
+        'openai'     => 'https://api.openai.com/v1/chat/completions',
+        'mistral'    => 'https://api.mistral.ai/v1/chat/completions',
+        'deepseek'   => 'https://api.deepseek.com/v1/chat/completions',
+        'openrouter' => 'https://openrouter.ai/api/v1/chat/completions',
+        'zai'        => 'https://api.z.ai/api/paas/v4/chat/completions',
+        'xai'        => 'https://api.x.ai/v1/chat/completions',
+        'groq'       => 'https://api.groq.com/openai/v1/chat/completions',
+    ];
+
     public function __construct(string $provider, string $apiKey, string $model)
     {
         $this->provider = strtolower($provider);
@@ -32,11 +46,11 @@ class AiService extends Prefab
                 return $this->generateGemini($systemPrompt, $userPrompt, $temperature, $maxTokens);
             case 'anthropic':
                 return $this->generateAnthropic($systemPrompt, $userPrompt, $temperature, $maxTokens);
-            case 'mistral':
-                return $this->generateOpenAI($systemPrompt, $userPrompt, $temperature, 'https://api.mistral.ai/v1/chat/completions', $maxTokens);
-            case 'openai':
             default:
-                return $this->generateOpenAI($systemPrompt, $userPrompt, $temperature, 'https://api.openai.com/v1/chat/completions', $maxTokens);
+                // Tous les providers OpenAI-compatibles (openai, mistral, deepseek,
+                // openrouter, zai, xai, groq…) partagent le même appel.
+                $url = self::OPENAI_COMPATIBLE[$this->provider] ?? self::OPENAI_COMPATIBLE['openai'];
+                return $this->generateOpenAI($systemPrompt, $userPrompt, $temperature, $url, $maxTokens);
         }
     }
 
