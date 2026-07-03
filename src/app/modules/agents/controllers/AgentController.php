@@ -78,6 +78,7 @@ class AgentController extends Controller
             'agent'     => $this->blankAgent(),
             'actions'   => [],
             'providers' => self::PROVIDERS,
+            'modelsJson' => $this->modelsJson(),
             'errors'    => [],
         ]);
     }
@@ -97,6 +98,7 @@ class AgentController extends Controller
                 'agent'     => $data + ['id' => null],
                 'actions'   => [],
                 'providers' => self::PROVIDERS,
+            'modelsJson' => $this->modelsJson(),
                 'errors'    => ['Le nom est obligatoire'],
             ]);
             return;
@@ -139,6 +141,7 @@ class AgentController extends Controller
             'agent'     => $agent,
             'actions'   => (new AgentAction())->getAllByAgent($id),
             'providers' => self::PROVIDERS,
+            'modelsJson' => $this->modelsJson(),
             'errors'    => [],
         ]);
     }
@@ -166,6 +169,7 @@ class AgentController extends Controller
                 'agent'     => $data + ['id' => $id],
                 'actions'   => (new AgentAction())->getAllByAgent($id),
                 'providers' => self::PROVIDERS,
+            'modelsJson' => $this->modelsJson(),
                 'errors'    => ['Le nom est obligatoire'],
             ]);
             return;
@@ -226,6 +230,19 @@ class AgentController extends Controller
             'temperature'   => $temp,
             'is_active'     => isset($_POST['is_active']) ? 1 : 0,
         ];
+    }
+
+    /** Liste des modèles par provider (depuis ai_models.json), en JSON pour la vue. */
+    private function modelsJson(): string
+    {
+        $file = $this->f3->get('ROOT') . '/app/ai_models.json';
+        $data = is_file($file) ? json_decode((string) file_get_contents($file), true) : [];
+        if (!is_array($data)) {
+            $data = [];
+        }
+        // Retire les clés de commentaire (préfixe « _ »).
+        $data = array_filter($data, fn($k) => $k === '' || $k[0] !== '_', ARRAY_FILTER_USE_KEY);
+        return json_encode($data);
     }
 
     /** Valeurs par défaut pour un nouvel agent. */

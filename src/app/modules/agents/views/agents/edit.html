@@ -94,8 +94,12 @@
 
             <div class="form-group">
                 <label for="model">Modèle (optionnel)</label>
-                <input type="text" id="model" name="model" value="{{ @agent.model | esc }}" maxlength="60"
-                    placeholder="gpt-4o, claude-…">
+                <input type="text" id="model" name="model" list="agentModelOptions" autocomplete="off"
+                    value="{{ @agent.model | esc }}" maxlength="60"
+                    placeholder="Hérite du modèle du provider">
+                <datalist id="agentModelOptions"></datalist>
+                <small class="form-hint">Laissez vide pour utiliser le modèle configuré du provider.
+                    Les suggestions dépendent du provider choisi ci-dessus.</small>
             </div>
 
             <div class="form-group">
@@ -286,5 +290,35 @@
     document.addEventListener('keydown', function (e) { if (e.key === 'Escape') close(); });
 
     label.textContent = friendly(input.value);
+})();
+</script>
+
+<script nonce="{{ @nonce }}">
+(function () {
+    var MODELS = {{ @modelsJson | raw }};
+    var prov = document.getElementById('provider');
+    var dl = document.getElementById('agentModelOptions');
+    if (!prov || !dl) return;
+
+    function fill() {
+        var p = prov.value, list;
+        if (p && MODELS[p]) {
+            list = MODELS[p];
+        } else {
+            // Provider par défaut : suggère l'union de tous les modèles connus.
+            list = [];
+            Object.keys(MODELS).forEach(function (k) { list = list.concat(MODELS[k] || []); });
+            list = list.filter(function (v, i) { return list.indexOf(v) === i; });
+        }
+        dl.innerHTML = '';
+        list.forEach(function (m) {
+            var o = document.createElement('option');
+            o.value = m;
+            dl.appendChild(o);
+        });
+    }
+
+    prov.addEventListener('change', fill);
+    fill();
 })();
 </script>
